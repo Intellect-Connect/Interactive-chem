@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
+<base target="_parent">
+<title>Maxwell-Boltzmann Distribution - Interactive Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --curve-low: #2B6CB0;
+    --curve-low-light: #EBF4FF;
+    --curve-mid: #6B46C1;
+    --curve-mid-light: #F3E8FF;
+    --curve-high: #C53030;
+    --curve-high-light: #FFF5F5;
+    --threshold: #2F855A;
+    --threshold-light: #F0FFF4;
+    --liquid-fill: rgba(43,108,176,0.25);
+    --gas-fill: rgba(197,48,48,0.25);
+    --slate-900: #1A202C;
+    --slate-700: #334155;
+    --slate-500: #64748B;
+    --slate-300: #CBD5E1;
+    --slate-100: #F1F5F9;
+    --parchment: #FAFAF7;
+    --success: #2F855A;
+    --success-light: #F0FFF4;
+    --gold: #B7791F;
+    --gold-light: #FEFCBF;
+    --accent: #6B46C1;
+    --accent-light: #F3E8FF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    background-color: #FAFAF7 !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    font-family: 'Source Sans 3', 'Segoe UI', Roboto, -apple-system, sans-serif;
+    background-color: #FAFAF7 !important;
+    color: #1A202C !important;
+    line-height: 1.7;
+    font-size: 17px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  html, body, .container, section, .controls-panel,
+  .graph-wrap, .legend-card, .thought-prompt, footer,
+  .stats-bar, .substance-select, .slider-group {
+    color-scheme: light !important;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, var(--curve-low) 0%, var(--slate-900) 50%, var(--curve-high) 100%);
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 25% 55%, rgba(107,70,193,0.25) 0%, transparent 50%),
+      radial-gradient(circle at 75% 45%, rgba(197,48,48,0.25) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    color: #fff !important;
+    position: relative;
+    letter-spacing: -0.5px;
+  }
+  .hero .subtitle {
+    color: rgba(255,255,255,0.8) !important;
+    font-size: 1.15rem;
+    margin-top: 0.75rem;
+    font-weight: 300;
+    position: relative;
+  }
+  .hero .tag-bar {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    position: relative;
+    flex-wrap: wrap;
+  }
+  .tag-bar span {
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.35rem 1.2rem;
+    border-radius: 4px;
+  }
+  .tag-bar .tag-velocity { background: rgba(43,108,176,0.35); color: #BEE3F8; }
+  .tag-bar .tag-temp { background: rgba(197,48,48,0.35); color: #FEB2B2; }
+  .tag-bar .tag-phase { background: rgba(107,70,193,0.35); color: #D6BCFA; }
+
+  /* ---- LAYOUT ---- */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    background-color: #FAFAF7;
+  }
+
+  section {
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--slate-300);
+    background-color: #FAFAF7;
+  }
+  section:last-of-type { border-bottom: none; }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.9rem;
+    margin-bottom: 1.25rem;
+    color: #1A202C !important;
+  }
+  h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.35rem;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--slate-700) !important;
+  }
+  p { color: #1A202C !important; }
+  p + p { margin-top: 1rem; }
+
+  .key-term {
+    font-weight: 700;
+    border-bottom: 2px solid var(--gold);
+    cursor: help;
+  }
+
+  /* ---- THOUGHT PROMPT ---- */
+  .thought-prompt {
+    background: var(--gold-light);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+  }
+  .thought-prompt strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+  }
+
+  /* ---- INSTRUCTIONS ---- */
+  .instructions {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    color: #1A202C !important;
+  }
+  .instructions strong.inst-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+  }
+
+  /* ---- CONTROLS PANEL ---- */
+  .controls-panel {
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .controls-panel h3 {
+    margin: 0 0 1rem;
+    padding-bottom: 0.6rem;
+    font-size: 1.15rem;
+  }
+  .controls-panel h3.border-accent {
+    border-bottom: 2px solid var(--accent);
+    color: var(--slate-900) !important;
+  }
+  .controls-panel h3.border-warm {
+    border-bottom: 2px solid var(--curve-high);
+    color: var(--slate-900) !important;
+  }
+
+  /* ---- SUBSTANCE SELECT ---- */
+  .substance-select {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    background: #fff;
+    color: #1A202C !important;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+  .substance-select:focus {
+    border-color: var(--accent);
+    outline: none;
+  }
+
+  /* ---- FORMULA BOX ---- */
+  .formula-box {
+    background: var(--slate-100);
+    border: 1px solid var(--slate-300);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    text-align: center;
+  }
+  .formula-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--slate-900) !important;
+    margin-bottom: 0.35rem;
+  }
+  .formula-desc {
+    font-size: 0.8rem;
+    color: var(--slate-500) !important;
+  }
+
+  /* ---- SLIDER GROUP ---- */
+  .slider-group {
+    margin-bottom: 1.25rem;
+  }
+  .slider-group:last-child { margin-bottom: 0; }
+
+  .slider-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  .slider-label-text {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--slate-700) !important;
+  }
+  .slider-value-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.85rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    min-width: 5rem;
+    text-align: center;
+  }
+  .slider-value-badge.temp-badge {
+    background: var(--curve-high);
+    color: #fff !important;
+  }
+  .slider-value-badge.pressure-badge {
+    background: var(--curve-low);
+    color: #fff !important;
+  }
+
+  .slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--slate-300);
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .slider-hint {
+    font-size: 0.78rem;
+    color: var(--slate-500) !important;
+    margin-top: 0.35rem;
+    font-style: italic;
+  }
+
+  /* ---- STATS BAR (compact, below graph) ---- */
+  .stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .stats-bar-item {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.65rem 0.75rem;
+    border-right: 1px solid var(--slate-100);
+    min-width: 0;
+  }
+  .stats-bar-item:last-child { border-right: none; }
+  .stats-bar-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--slate-500) !important;
+    white-space: nowrap;
+  }
+  .stats-bar-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    color: var(--accent) !important;
+    margin-top: 0.15rem;
+    white-space: nowrap;
+  }
+  .stats-bar-highlight {
+    background: var(--threshold-light);
+  }
+  .stats-bar-highlight .stats-bar-label {
+    color: var(--threshold) !important;
+  }
+  .stats-bar-highlight .gas-val {
+    font-size: 1.15rem;
+    color: var(--threshold) !important;
+  }
+  @media (max-width: 640px) {
+    .stats-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .stats-bar-item {
+      border-right: none;
+      border-bottom: 1px solid var(--slate-100);
+    }
+    .stats-bar-highlight {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ---- TWO-COL CONTROLS ---- */
+  .controls-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 0;
+  }
+  @media (max-width: 640px) { .controls-two-col { grid-template-columns: 1fr; } }
+
+  /* ---- GRAPH ---- */
+  .graph-wrap {
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 0.75rem 0 0.75rem;
+  }
+  canvas {
+    width: 100%;
+    height: 440px;
+    cursor: crosshair;
+    display: block;
+  }
+
+  /* ---- LEGEND CARDS ---- */
+  .legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 640px) { .legend-grid { grid-template-columns: 1fr; } }
+
+  .legend-card {
+    border-radius: 10px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .legend-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .legend-card h4 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+  }
+  .legend-card p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .legend-card.card-dist { background: var(--curve-mid-light); border: 1px solid rgba(107,70,193,0.2); }
+  .legend-card.card-dist::before { background: var(--curve-mid); }
+  .legend-card.card-dist h4 { color: var(--curve-mid) !important; }
+
+  .legend-card.card-threshold { background: var(--threshold-light); border: 1px solid rgba(47,133,90,0.2); }
+  .legend-card.card-threshold::before { background: var(--threshold); }
+  .legend-card.card-threshold h4 { color: var(--threshold) !important; }
+
+  .legend-card.card-temp { background: var(--curve-high-light); border: 1px solid rgba(197,48,48,0.2); }
+  .legend-card.card-temp::before { background: var(--curve-high); }
+  .legend-card.card-temp h4 { color: var(--curve-high) !important; }
+
+  .legend-card.card-imf { background: var(--curve-low-light); border: 1px solid rgba(43,108,176,0.2); }
+  .legend-card.card-imf::before { background: var(--curve-low); }
+  .legend-card.card-imf h4 { color: var(--curve-low) !important; }
+
+  /* ---- IMF TABLE ---- */
+  .imf-table-wrap {
+    margin: 1.25rem 0;
+    overflow-x: auto;
+  }
+  .imf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .imf-table th {
+    background: var(--slate-100);
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--slate-700) !important;
+    padding: 0.7rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--slate-300);
+  }
+  .imf-table td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--slate-100);
+    color: #1A202C !important;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .imf-table tbody tr:last-child td { border-bottom: none; }
+  .imf-table tbody tr:hover { background: var(--slate-100); }
+  .imf-table .strength-low {
+    font-weight: 700;
+    color: var(--threshold) !important;
+  }
+  .imf-table .strength-mid {
+    font-weight: 700;
+    color: var(--accent) !important;
+  }
+  .imf-table .strength-high {
+    font-weight: 700;
+    color: var(--curve-high) !important;
+  }
+
+  /* ---- EQUATION HIGHLIGHT ---- */
+  .equation-box {
+    text-align: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    padding: 1.25rem;
+    background: #fff;
+    border: 1px solid var(--slate-300);
+    border-radius: 8px;
+    margin: 1.25rem 0;
+    letter-spacing: 0.3px;
+    color: var(--slate-900) !important;
+  }
+  .equation-box .eq-sub {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.85rem;
+    color: var(--slate-500) !important;
+    margin-top: 0.4rem;
+    font-weight: 400;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    font-size: 0.85rem;
+    color: var(--slate-500);
+    border-top: 1px solid var(--slate-300);
+    background-color: #FAFAF7;
+  }
+
+  /* ---- DARK MODE OVERRIDE ---- */
+  @media (prefers-color-scheme: dark) {
+    html, body {
+      background-color: #FAFAF7 !important;
+      color: #1A202C !important;
+    }
+    .container, section, footer,
+    .controls-panel, .graph-wrap, .legend-card,
+    .thought-prompt, .stats-bar, .formula-box,
+    .imf-table, .imf-table th, .imf-table td {
+      background-color: inherit;
+      color: inherit;
+    }
+    h2, h3, h4, p, span, div, button, label, select {
+      color: inherit !important;
+    }
+  }
+
+  h2 { color: #1A202C !important; }
+  .legend-card p { color: #334155 !important; }
+  .thought-prompt { color: #1A202C !important; }
+</style>
+</head>
+<body>
+
+<!-- ====== HERO ====== -->
+<div class="hero">
+  <h1>Maxwell-Boltzmann Distribution</h1>
+  <p class="subtitle">How does molecular velocity connect to vapor pressure and phase transitions?</p>
+  <div class="tag-bar">
+    <span class="tag-velocity">Velocity</span>
+    <span class="tag-temp">Temperature</span>
+    <span class="tag-phase">Phase Equilibria</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ====== SECTION 1: INTERACTIVE TOOL ====== -->
+<section>
+  <div class="instructions">
+    <strong class="inst-label">Key concept</strong>
+    At any temperature, molecules have a distribution of velocities. As temperature increases, the distribution shifts to higher velocities and broadens. In a closed system at dynamic equilibrium, molecules continuously cross the energy threshold in both directions. The percentage of molecules with sufficient kinetic energy (shown in red on the graph) determines the <strong>vapor pressure</strong>: a higher gas phase fraction means higher vapor pressure. At the boiling point, vapor pressure equals atmospheric pressure.
+  </div>
+
+  <!-- Controls: Substance + Sliders side by side -->
+  <div class="controls-two-col">
+    <div class="controls-panel">
+      <h3 class="border-accent">Substance</h3>
+      <select class="substance-select" id="substanceSelect">
+        <option value="ether">Diethyl Ether (weak IMFs)</option>
+        <option value="hexane">Hexane (London only)</option>
+        <option value="acetone" selected>Acetone (dipole-dipole)</option>
+        <option value="ethanol">Ethanol (H-bonding)</option>
+        <option value="water">Water (strong H-bonding)</option>
+      </select>
+      <div class="formula-box">
+        <div class="formula-text">f(v) = 4&pi;(M/2&pi;RT)<sup>3/2</sup> v&sup2; e<sup>&minus;Mv&sup2;/2RT</sup></div>
+        <div class="formula-desc">M = molar mass, R = gas constant, T = temperature (K), v = velocity</div>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <h3 class="border-warm">Temperature &amp; Pressure</h3>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-label-text">Temperature</span>
+          <span class="slider-value-badge temp-badge" id="tempDisplay">25&deg;C</span>
+        </div>
+        <input type="range" class="slider" id="tempSlider" min="-20" max="150" value="25" step="5">
+        <div class="slider-hint">Shifts the distribution shape and gas phase fraction</div>
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-label-text">Pressure</span>
+          <span class="slider-value-badge pressure-badge" id="pressureDisplay">760 mmHg</span>
+        </div>
+        <input type="range" class="slider" id="pressureSlider" min="200" max="1520" value="760" step="10">
+        <div class="slider-hint">Affects the boiling point and energy threshold</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graph -->
+  <div class="graph-wrap">
+    <canvas id="distributionCanvas"></canvas>
+  </div>
+
+  <!-- Stats Panel (compact, below graph) -->
+  <div class="stats-bar">
+    <div class="stats-bar-item">
+      <span class="stats-bar-label">Substance</span>
+      <span class="stats-bar-value" id="substanceName">Acetone</span>
+    </div>
+    <div class="stats-bar-item">
+      <span class="stats-bar-label">Molar Mass</span>
+      <span class="stats-bar-value" id="molarMass">58.1 g/mol</span>
+    </div>
+    <div class="stats-bar-item">
+      <span class="stats-bar-label">IMF Type</span>
+      <span class="stats-bar-value" id="imfType">Dipole-dipole</span>
+    </div>
+    <div class="stats-bar-item">
+      <span class="stats-bar-label">BP (current pressure)</span>
+      <span class="stats-bar-value" id="boilingPoint">56.5&deg;C</span>
+    </div>
+    <div class="stats-bar-item stats-bar-highlight">
+      <span class="stats-bar-label">Gas Phase %</span>
+      <span class="stats-bar-value gas-val" id="gasFraction">0%</span>
+    </div>
+  </div>
+
+  <div class="thought-prompt">
+    <strong>Stop and Think</strong>
+    Set the substance to water and the temperature to 100 C at sea level pressure (760 mmHg). What is the gas phase percentage? Now switch to diethyl ether at the same temperature. Why is ether's gas phase percentage so much higher? What does this tell you about IMF strength?
+  </div>
+</section>
+
+<!-- ====== SECTION 2: UNDERSTANDING ====== -->
+<section>
+  <h2>Understanding the Distribution</h2>
+  <p>
+    The <span class="key-term" title="A probability distribution describing the speeds of particles in an ideal gas at thermal equilibrium.">Maxwell-Boltzmann distribution</span> describes how molecular velocities are spread across a population at a given temperature. It is not a single speed but a continuous range, and the shape of that range determines everything about vapor pressure and phase behavior.
+  </p>
+
+  <p>
+    Whether a given molecule can escape the liquid surface depends on a competition between two energies. Its <span class="key-term" title="The energy of motion, KE = 1/2 mv squared, where m is mass and v is velocity.">kinetic energy</span> (KE = &frac12;mv<sup>2</sup>) is the energy of its motion, determined by its velocity and mass. Working against that motion is the <span class="key-term" title="The total energy required to overcome all intermolecular attractions holding a molecule in the liquid phase.">binding energy</span> (PE<sub>binding</sub>)&mdash;the total energy a molecule must overcome to break free of the intermolecular forces holding it to its neighbors in the liquid.
+  </p>
+
+  <p>
+    PE<sub>binding</sub> is not a single bond being broken. It is the cumulative cost of overcoming <em>all</em> of the intermolecular attractions acting on one molecule at the liquid surface. The magnitude of PE<sub>binding</sub> depends directly on the type and strength of those attractions:
+  </p>
+
+  <div class="imf-table-wrap">
+    <table class="imf-table">
+      <thead>
+        <tr>
+          <th>IMF Type</th>
+          <th>Origin</th>
+          <th>Relative PE<sub>binding</sub></th>
+          <th>Example in Tool</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>London dispersion</td>
+          <td>Temporary dipoles from electron motion; strength increases with molecular size and surface area</td>
+          <td class="strength-low">Lowest (for small molecules)</td>
+          <td>Hexane</td>
+        </tr>
+        <tr>
+          <td>Dipole-dipole</td>
+          <td>Permanent partial charges from electronegativity differences in polar bonds</td>
+          <td class="strength-mid">Moderate</td>
+          <td>Acetone, diethyl ether</td>
+        </tr>
+        <tr>
+          <td>Hydrogen bonding</td>
+          <td>Especially strong dipole-dipole attraction when H is bonded to N, O, or F</td>
+          <td class="strength-high">Highest</td>
+          <td>Water, ethanol</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    A substance with stronger IMFs has a larger PE<sub>binding</sub>, which means its molecules need more kinetic energy&mdash;and therefore higher velocities&mdash;to escape. This is the molecular-level reason why water (strong hydrogen bonding, high PE<sub>binding</sub>) requires a much higher temperature to boil than diethyl ether (weak dipole-dipole, low PE<sub>binding</sub>).
+  </p>
+
+  <div class="equation-box">
+    KE<sub>molecule</sub> = &frac12;mv<sup>2</sup> &nbsp;&nbsp;&ge;&nbsp;&nbsp; PE<sub>binding</sub> &nbsp;&nbsp;&rarr;&nbsp;&nbsp; molecule can enter gas phase
+    <div class="eq-sub">A molecule escapes the liquid when its kinetic energy meets or exceeds the binding energy set by intermolecular forces</div>
+  </div>
+
+  <p>
+    The graph displays three curves spanning a 200 &deg;C range (current temperature &plusmn; 100 &deg;C) so you can see the dramatic reshaping that occurs. The green dashed line marks the <span class="key-term" title="The minimum velocity a molecule needs to overcome intermolecular forces and enter the gas phase.">velocity threshold</span>&mdash;the minimum speed at which &frac12;mv<sup>2</sup> equals PE<sub>binding</sub>. Everything to the right of that line (the red region) represents molecules with enough energy to enter the gas phase.
+  </p>
+
+  <div class="legend-grid">
+    <div class="legend-card card-dist">
+      <h4>Distribution Shape and Temperature</h4>
+      <p>The total area under every curve equals 1 (all probabilities sum to 100%). When temperature increases, molecules spread over a wider velocity range, so the peak must drop to conserve area. The <strong>shortest, broadest peak always represents the highest temperature</strong> and contains far more molecules in its high-velocity tail.</p>
+    </div>
+    <div class="legend-card card-threshold">
+      <h4>Energy Threshold and IMFs</h4>
+      <p>The green threshold line sits at the velocity where KE = PE<sub>binding</sub>. <strong>Stronger IMFs mean larger PE<sub>binding</sub></strong>, which pushes the threshold to higher velocities. Compare water and ether in the tool: water's threshold sits much farther right because its hydrogen bonds create a much larger binding energy to overcome.</p>
+    </div>
+    <div class="legend-card card-temp">
+      <h4>Why Vapor Pressure Rises Exponentially</h4>
+      <p>The tail of the Maxwell-Boltzmann distribution falls off exponentially. A small temperature increase shifts the entire distribution rightward, moving <strong>exponentially more molecules past the threshold</strong>. This is why vapor pressure rises exponentially with temperature, not linearly.</p>
+    </div>
+    <div class="legend-card card-imf">
+      <h4>Connecting to the Vapor Pressure Curve</h4>
+      <p>The gas phase percentage shown below the graph maps directly to vapor pressure: Gas Phase % = P<sub>vapor</sub> / P<sub>atmospheric</sub>. When this fraction reaches 100%, the substance is at its <strong>boiling point</strong>. Different substances reach 100% at different temperatures because their PE<sub>binding</sub> values differ.</p>
+    </div>
+  </div>
+
+  <div class="thought-prompt">
+    <strong>Challenge Question</strong>
+    Hexane (London dispersion only, molar mass 86.2 g/mol) and acetone (dipole-dipole, molar mass 58.1 g/mol) have similar boiling points despite very different IMF types. Use the interactive tool to compare their distributions at the same temperature. What combination of molar mass and IMF strength produces this coincidence?
+  </div>
+</section>
+
+</div>
+
+<footer>
+  Interactive Thermochemistry Module &middot; Maxwell-Boltzmann Distribution and Phase Transitions
+</footer>
+
+<script>
+  /* ==============================
+     SUBSTANCE DATA
+     Antoine: log10(P_mmHg) = A - B / (C + T_celsius)
+     ============================== */
+  var substances = {
+    water: {
+      name: 'Water', formula: 'H\u2082O', molarMass: 18.0, normalBP: 100.0,
+      A: 8.07131, B: 1730.63, C: 233.426, imf: 'Strong H-bonding'
+    },
+    ethanol: {
+      name: 'Ethanol', formula: 'C\u2082H\u2085OH', molarMass: 46.1, normalBP: 78.4,
+      A: 8.04494, B: 1554.3, C: 222.65, imf: 'H-bonding'
+    },
+    acetone: {
+      name: 'Acetone', formula: 'C\u2083H\u2086O', molarMass: 58.1, normalBP: 56.5,
+      A: 7.11714, B: 1210.595, C: 229.664, imf: 'Dipole-dipole'
+    },
+    hexane: {
+      name: 'Hexane', formula: 'C\u2086H\u2081\u2084', molarMass: 86.2, normalBP: 68.7,
+      A: 6.87601, B: 1171.17, C: 224.41, imf: 'London dispersion'
+    },
+    ether: {
+      name: 'Diethyl Ether', formula: 'C\u2084H\u2081\u2080O', molarMass: 74.1, normalBP: 34.6,
+      A: 6.92032, B: 1064.07, C: 228.800, imf: 'Weak dipole-dipole'
+    }
+  };
+
+  var currentSubstance = 'acetone';
+  var currentTemp = 25;
+  var currentPressure = 760;
+
+  var canvas = document.getElementById('distributionCanvas');
+  var ctx = canvas.getContext('2d');
+
+  /* ==============================
+     EVENT LISTENERS
+     ============================== */
+  document.getElementById('substanceSelect').addEventListener('change', function(e) {
+    currentSubstance = e.target.value;
+    updateStats();
+    drawGraph();
+  });
+
+  document.getElementById('tempSlider').addEventListener('input', function(e) {
+    currentTemp = parseInt(e.target.value);
+    document.getElementById('tempDisplay').textContent = currentTemp + '°C';
+    updateStats();
+    drawGraph();
+  });
+
+  document.getElementById('pressureSlider').addEventListener('input', function(e) {
+    currentPressure = parseInt(e.target.value);
+    document.getElementById('pressureDisplay').textContent = currentPressure + ' mmHg';
+    updateStats();
+    drawGraph();
+  });
+
+  /* ==============================
+     PHYSICS FUNCTIONS
+     ============================== */
+  function maxwellBoltzmann(v, T, M) {
+    var R = 8.314;
+    var T_K = T + 273.15;
+    var M_kg = M / 1000;
+    var a = M_kg / (2 * Math.PI * R * T_K);
+    var coef = 4 * Math.PI * Math.pow(a, 1.5);
+    var exponent = -(M_kg * v * v) / (2 * R * T_K);
+    return coef * v * v * Math.exp(exponent);
+  }
+
+  function mostProbableVelocity(T, M) {
+    var R = 8.314;
+    var T_K = T + 273.15;
+    var M_kg = M / 1000;
+    return Math.sqrt((2 * R * T_K) / M_kg);
+  }
+
+  function calculateVaporPressure(substance, tempC) {
+    var s = substances[substance];
+    var logP = s.A - (s.B / (tempC + s.C));
+    return Math.pow(10, logP);
+  }
+
+  function calculateBoilingPoint(substance, pressure) {
+    var s = substances[substance];
+    var logP = Math.log10(pressure);
+    return s.B / (s.A - logP) - s.C;
+  }
+
+  function calculateGasFraction(substance, T, pressure) {
+    var vaporPressure = calculateVaporPressure(substance, T);
+    var fraction = vaporPressure / pressure;
+    return Math.min(fraction, 1.0);
+  }
+
+  /*  Integrate the MB distribution tail from v_cut to a large upper bound.
+      Uses trapezoidal rule with small step size for accuracy. */
+  function mbTailFraction(v_cut, T, M) {
+    var v_mp = mostProbableVelocity(T, M);
+    var vUpper = v_mp * 5;          // far enough into the tail
+    if (v_cut >= vUpper) return 0;
+    if (v_cut <= 0) return 1;
+    var steps = 200;
+    var dv = (vUpper - v_cut) / steps;
+    var sum = 0;
+    var fPrev = maxwellBoltzmann(v_cut, T, M);
+    for (var i = 1; i <= steps; i++) {
+      var v = v_cut + i * dv;
+      var fCur = maxwellBoltzmann(v, T, M);
+      sum += (fPrev + fCur) * 0.5 * dv;
+      fPrev = fCur;
+    }
+    return sum;
+  }
+
+  /*  Find the threshold velocity where the tail fraction of the MB
+      distribution equals the Antoine-derived gas fraction.
+      Uses binary search for robustness. */
+  function findThresholdVelocity(substance, T, pressure) {
+    var gasFrac = calculateGasFraction(substance, T, pressure);
+    var M = substances[substance].molarMass;
+
+    // Edge cases
+    if (gasFrac >= 1.0) return 0;               // at or above boiling
+    if (gasFrac <= 0.0001) {                     // negligible vapor
+      return mostProbableVelocity(T, M) * 4.5;  // place far right, off visible tail
+    }
+
+    // Binary search: find v where tailFraction(v) = gasFrac
+    var vLow = 0;
+    var vHigh = mostProbableVelocity(T, M) * 5;
+    for (var iter = 0; iter < 35; iter++) {
+      var vMid = (vLow + vHigh) * 0.5;
+      var tailFrac = mbTailFraction(vMid, T, M);
+      if (tailFrac > gasFrac) {
+        vLow = vMid;    // threshold too low, move right
+      } else {
+        vHigh = vMid;   // threshold too high, move left
+      }
+    }
+    return (vLow + vHigh) * 0.5;
+  }
+
+  /* ==============================
+     GRAPH DRAWING
+     ============================== */
+  function resizeCanvas() {
+    var rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * window.devicePixelRatio;
+    canvas.height = rect.height * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    drawGraph();
+  }
+
+  function drawGraph() {
+    var substance = substances[currentSubstance];
+    var rect = canvas.getBoundingClientRect();
+    var width = rect.width;
+    var height = rect.height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    var margin = { top: 45, right: 60, bottom: 60, left: 80 };
+    var graphWidth = width - margin.left - margin.right;
+    var graphHeight = height - margin.top - margin.bottom;
+
+    // Three temperatures
+    var tempLow = currentTemp - 100;
+    var tempMid = currentTemp;
+    var tempHigh = currentTemp + 100;
+    var temperatures = [tempLow, tempMid, tempHigh];
+    var tempColors = ['#2B6CB0', '#6B46C1', '#C53030'];
+    var tempLabels = ['Low (' + tempLow + '\u00B0C)', 'Current (' + tempMid + '\u00B0C)', 'High (' + tempHigh + '\u00B0C)'];
+
+    // Velocity range
+    var v_mp_max = mostProbableVelocity(tempHigh, substance.molarMass);
+    var vMax = v_mp_max * 3.5;
+
+    // Find max distribution value
+    var maxDist = 0;
+    for (var ti = 0; ti < temperatures.length; ti++) {
+      for (var v = 0; v <= vMax; v += 5) {
+        var dist = maxwellBoltzmann(v, temperatures[ti], substance.molarMass);
+        if (dist > maxDist) maxDist = dist;
+      }
+    }
+
+    var v_escape = findThresholdVelocity(currentSubstance, currentTemp, currentPressure);
+
+    function xScale(v) { return margin.left + (v / vMax) * graphWidth; }
+    function yScale(f) { return margin.top + graphHeight - (f / maxDist) * graphHeight; }
+
+    // Grid
+    ctx.strokeStyle = '#E2E8F0';
+    ctx.lineWidth = 1;
+    var vStep = Math.ceil(vMax / 8 / 100) * 100;
+    for (var gv = 0; gv <= vMax; gv += vStep) {
+      ctx.beginPath();
+      ctx.moveTo(xScale(gv), margin.top);
+      ctx.lineTo(xScale(gv), margin.top + graphHeight);
+      ctx.stroke();
+    }
+    var numYTicks = 5;
+    for (var yi = 0; yi <= numYTicks; yi++) {
+      var fVal = (maxDist / numYTicks) * yi;
+      ctx.beginPath();
+      ctx.moveTo(margin.left, yScale(fVal));
+      ctx.lineTo(margin.left + graphWidth, yScale(fVal));
+      ctx.stroke();
+    }
+
+    // Filled areas for current temperature
+    // Liquid region (blue)
+    ctx.beginPath();
+    ctx.moveTo(xScale(0), yScale(0));
+    for (var fv = 0; fv <= Math.min(v_escape, vMax); fv += 1) {
+      ctx.lineTo(xScale(fv), yScale(maxwellBoltzmann(fv, currentTemp, substance.molarMass)));
+    }
+    ctx.lineTo(xScale(Math.min(v_escape, vMax)), yScale(0));
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(43,108,176,0.2)';
+    ctx.fill();
+
+    // Gas region (red)
+    if (v_escape < vMax) {
+      ctx.beginPath();
+      ctx.moveTo(xScale(v_escape), yScale(0));
+      for (var gfv = v_escape; gfv <= vMax; gfv += 1) {
+        ctx.lineTo(xScale(gfv), yScale(maxwellBoltzmann(gfv, currentTemp, substance.molarMass)));
+      }
+      ctx.lineTo(xScale(vMax), yScale(0));
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(197,48,48,0.2)';
+      ctx.fill();
+    }
+
+    // Draw all three curves
+    for (var ci = 0; ci < temperatures.length; ci++) {
+      var cTemp = temperatures[ci];
+      ctx.strokeStyle = tempColors[ci];
+      ctx.lineWidth = ci === 1 ? 3.5 : 2.5;
+      ctx.beginPath();
+      for (var cv = 0; cv <= vMax; cv += 1) {
+        var cf = maxwellBoltzmann(cv, cTemp, substance.molarMass);
+        var cx = xScale(cv);
+        var cy = yScale(cf);
+        if (cv === 0) ctx.moveTo(cx, cy);
+        else ctx.lineTo(cx, cy);
+      }
+      ctx.stroke();
+
+      // Peak dot
+      var v_mp = mostProbableVelocity(cTemp, substance.molarMass);
+      var f_peak = maxwellBoltzmann(v_mp, cTemp, substance.molarMass);
+      ctx.fillStyle = tempColors[ci];
+      ctx.beginPath();
+      ctx.arc(xScale(v_mp), yScale(f_peak), 5, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+
+    // Escape velocity threshold line (skip if at boiling point, i.e. threshold = 0)
+    var gasFracForLabel = calculateGasFraction(currentSubstance, currentTemp, currentPressure);
+
+    if (v_escape > 0 && xScale(v_escape) < margin.left + graphWidth + 10) {
+      ctx.setLineDash([10, 5]);
+      ctx.strokeStyle = '#2F855A';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(xScale(v_escape), margin.top);
+      ctx.lineTo(xScale(v_escape), margin.top + graphHeight);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Position label: nudge right if too close to y-axis
+      var labelX = xScale(v_escape);
+      var labelAlign = 'center';
+      if (labelX < margin.left + 100) {
+        labelX = xScale(v_escape) + 8;
+        labelAlign = 'left';
+      }
+      ctx.fillStyle = '#2F855A';
+      ctx.font = '700 12px Source Sans 3, sans-serif';
+      ctx.textAlign = labelAlign;
+      ctx.fillText('v_threshold = ' + v_escape.toFixed(0) + ' m/s', labelX, margin.top + 16);
+      ctx.font = '400 11px Source Sans 3, sans-serif';
+      ctx.fillText('Gas phase: ' + (gasFracForLabel * 100).toFixed(1) + '%', labelX, margin.top + 30);
+    } else if (gasFracForLabel >= 1.0) {
+      // At or above boiling: entire distribution is gas phase
+      ctx.fillStyle = '#2F855A';
+      ctx.font = '700 12px Source Sans 3, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('At/above boiling point', margin.left + 10, margin.top + 16);
+      ctx.font = '400 11px Source Sans 3, sans-serif';
+      ctx.fillText('Gas phase: 100% (all molecules exceed threshold)', margin.left + 10, margin.top + 30);
+    }
+
+    // Axes
+    ctx.strokeStyle = '#1A202C';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(margin.left, margin.top);
+    ctx.lineTo(margin.left, margin.top + graphHeight);
+    ctx.lineTo(margin.left + graphWidth, margin.top + graphHeight);
+    ctx.stroke();
+
+    // X labels
+    ctx.fillStyle = '#334155';
+    ctx.font = '600 13px Source Sans 3, sans-serif';
+    ctx.textAlign = 'center';
+    for (var xv = 0; xv <= vMax; xv += vStep) {
+      ctx.fillText(xv.toFixed(0), xScale(xv), margin.top + graphHeight + 22);
+    }
+    ctx.font = '700 14px Source Sans 3, sans-serif';
+    ctx.fillText('Molecular Velocity (m/s)', margin.left + graphWidth / 2, margin.top + graphHeight + 48);
+
+    // Y labels
+    ctx.textAlign = 'right';
+    ctx.font = '600 12px Source Sans 3, sans-serif';
+    for (var yti = 1; yti <= numYTicks; yti++) {
+      var ytVal = (maxDist / numYTicks) * yti;
+      ctx.fillText(ytVal.toExponential(1), margin.left - 10, yScale(ytVal) + 5);
+    }
+    ctx.save();
+    ctx.translate(18, margin.top + graphHeight / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.font = '700 14px Source Sans 3, sans-serif';
+    ctx.fillText('Probability Density f(v)', 0, 0);
+    ctx.restore();
+
+    // Canvas legend box (upper right)
+    var legX = width - 260;
+    var legY = margin.top + 8;
+    var legW = 245;
+    var legH = 128;
+
+    ctx.fillStyle = 'rgba(250,250,247,0.95)';
+    ctx.fillRect(legX, legY, legW, legH);
+    ctx.strokeStyle = '#CBD5E1';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(legX, legY, legW, legH);
+
+    ctx.textAlign = 'left';
+    ctx.font = '700 11px Source Sans 3, sans-serif';
+    ctx.fillStyle = '#1A202C';
+    ctx.fillText('Graph Legend', legX + 10, legY + 16);
+
+    // Liquid area swatch
+    var liy = legY + 32;
+    ctx.fillStyle = 'rgba(43,108,176,0.3)';
+    ctx.fillRect(legX + 10, liy - 6, 20, 12);
+    ctx.fillStyle = '#334155';
+    ctx.font = '500 11px Source Sans 3, sans-serif';
+    ctx.fillText('Liquid phase (v < threshold)', legX + 36, liy + 3);
+
+    // Gas area swatch
+    liy += 20;
+    ctx.fillStyle = 'rgba(197,48,48,0.3)';
+    ctx.fillRect(legX + 10, liy - 6, 20, 12);
+    ctx.fillStyle = '#334155';
+    ctx.fillText('Gas phase (v >= threshold)', legX + 36, liy + 3);
+
+    // Curve swatches
+    for (var li = 0; li < 3; li++) {
+      liy += 20;
+      ctx.strokeStyle = tempColors[li];
+      ctx.lineWidth = li === 1 ? 3.5 : 2.5;
+      ctx.beginPath();
+      ctx.moveTo(legX + 10, liy);
+      ctx.lineTo(legX + 30, liy);
+      ctx.stroke();
+      ctx.fillStyle = '#334155';
+      ctx.font = '500 11px Source Sans 3, sans-serif';
+      ctx.fillText(tempLabels[li], legX + 36, liy + 4);
+    }
+  }
+
+  /* ==============================
+     UPDATE STATS
+     ============================== */
+  function updateStats() {
+    var substance = substances[currentSubstance];
+    var bp = calculateBoilingPoint(currentSubstance, currentPressure);
+    var gasFrac = calculateGasFraction(currentSubstance, currentTemp, currentPressure);
+
+    document.getElementById('substanceName').textContent = substance.name;
+    document.getElementById('molarMass').textContent = substance.molarMass + ' g/mol';
+    document.getElementById('boilingPoint').textContent = bp.toFixed(1) + '°C';
+    document.getElementById('imfType').textContent = substance.imf;
+    document.getElementById('gasFraction').textContent = (gasFrac * 100).toFixed(1) + '%';
+  }
+
+  /* ==============================
+     IFRAME AUTO-RESIZE
+     ============================== */
+  function postHeight() {
+    var h = document.documentElement.scrollHeight;
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'resize', height: h }, '*');
+    }
+  }
+  window.addEventListener('load', function() {
+    postHeight();
+    setTimeout(postHeight, 500);
+    setTimeout(postHeight, 2000);
+  });
+  window.addEventListener('resize', function() {
+    postHeight();
+    resizeCanvas();
+  });
+  if (typeof MutationObserver !== 'undefined') {
+    var resizeObs = new MutationObserver(function() { setTimeout(postHeight, 100); });
+    resizeObs.observe(document.body, { childList: true, subtree: true, attributes: true });
+  }
+
+  /* ==============================
+     INITIALIZE
+     ============================== */
+  updateStats();
+  resizeCanvas();
+</script>
+</body>
+</html>
