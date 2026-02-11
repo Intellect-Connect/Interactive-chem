@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
+<base target="_parent">
+<title>Colligative Properties - Interactive Phase Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --freeze: #0891B2;
+    --freeze-light: #ECFEFF;
+    --boil: #DC2626;
+    --boil-light: #FEF2F2;
+    --pure: #2563EB;
+    --pure-light: #EBF4FF;
+    --solution: #DC2626;
+    --solution-light: #FEF2F2;
+    --slate-900: #1A202C;
+    --slate-700: #334155;
+    --slate-500: #64748B;
+    --slate-300: #CBD5E1;
+    --slate-100: #F1F5F9;
+    --parchment: #FAFAF7;
+    --success: #2F855A;
+    --success-light: #F0FFF4;
+    --gold: #B7791F;
+    --gold-light: #FEFCBF;
+    --accent: #5B6ABF;
+    --accent-light: #F0F0FF;
+    --particle: #B45309;
+    --particle-light: #FFF7ED;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    background-color: #FAFAF7 !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    font-family: 'Source Sans 3', 'Segoe UI', Roboto, -apple-system, sans-serif;
+    background-color: #FAFAF7 !important;
+    color: #1A202C !important;
+    line-height: 1.7;
+    font-size: 17px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  html, body, .container, section, .controls-panel, .controls-sidebar,
+  .graph-wrap, .concept-card, .thought-prompt, .equation-box,
+  .stats-bar, footer, .comparison-wrap, .legend-card {
+    color-scheme: light !important;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, var(--freeze) 0%, var(--slate-900) 50%, var(--boil) 100%);
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 25% 55%, rgba(8,145,178,0.25) 0%, transparent 50%),
+      radial-gradient(circle at 75% 45%, rgba(220,38,38,0.25) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    color: #fff !important;
+    position: relative;
+    letter-spacing: -0.5px;
+  }
+  .hero .subtitle {
+    color: rgba(255,255,255,0.8) !important;
+    font-size: 1.15rem;
+    margin-top: 0.75rem;
+    font-weight: 300;
+    position: relative;
+  }
+  .hero .tag-bar {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    position: relative;
+    flex-wrap: wrap;
+  }
+  .tag-bar span {
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.35rem 1.2rem;
+    border-radius: 4px;
+  }
+  .tag-bar .tag-freeze { background: rgba(8,145,178,0.35); color: #A5F3FC; }
+  .tag-bar .tag-particles { background: rgba(180,83,9,0.35); color: #FED7AA; }
+  .tag-bar .tag-boil { background: rgba(220,38,38,0.35); color: #FECACA; }
+
+  /* ---- LAYOUT ---- */
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    background-color: #FAFAF7;
+  }
+
+  section {
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--slate-300);
+    background-color: #FAFAF7;
+  }
+  section:last-of-type { border-bottom: none; }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.9rem;
+    margin-bottom: 1.25rem;
+    color: #1A202C !important;
+  }
+  h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.35rem;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--slate-700) !important;
+  }
+  p { color: #1A202C !important; }
+  p + p { margin-top: 1rem; }
+
+  .key-term {
+    font-weight: 700;
+    border-bottom: 2px solid var(--gold);
+    cursor: help;
+  }
+
+  /* ---- THOUGHT PROMPT ---- */
+  .thought-prompt {
+    background: var(--gold-light);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+  }
+  .thought-prompt strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+  }
+
+  /* ---- INSTRUCTIONS ---- */
+  .instructions {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    color: #1A202C !important;
+  }
+  .instructions strong.inst-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+  }
+
+  /* ---- CONTROLS PANEL ---- */
+  .controls-panel {
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .controls-panel h3 {
+    margin: 0 0 1rem;
+    padding-bottom: 0.6rem;
+    font-size: 1.15rem;
+  }
+  .controls-panel h3.border-accent {
+    border-bottom: 2px solid var(--accent);
+    color: var(--slate-900) !important;
+  }
+  .controls-panel h3.border-warm {
+    border-bottom: 2px solid var(--particle);
+    color: var(--slate-900) !important;
+  }
+
+  /* ---- DIAGRAM + SIDEBAR LAYOUT ---- */
+  .diagram-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.25rem;
+    align-items: start;
+  }
+  @media (max-width: 840px) {
+    .diagram-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+  .controls-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .controls-sidebar .controls-panel {
+    margin: 0;
+    padding: 1.1rem;
+  }
+  .controls-sidebar .controls-panel h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.7rem;
+    padding-bottom: 0.5rem;
+  }
+  .controls-sidebar .substance-select {
+    font-size: 0.88rem;
+    padding: 0.55rem 0.85rem;
+    padding-right: 1.8rem;
+  }
+  .controls-sidebar .info-pill {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.82rem;
+    margin-top: 0.6rem;
+  }
+  .controls-sidebar .info-pill .vhf-value {
+    font-size: 1.1rem;
+  }
+  .controls-sidebar .info-pill .dissociation {
+    font-size: 0.78rem;
+    margin-top: 0.25rem;
+  }
+  .controls-sidebar .particle-viz {
+    padding: 0.4rem 0.5rem;
+    margin-top: 0.6rem;
+    min-height: 0;
+    gap: 0.35rem;
+  }
+  .controls-sidebar .particle-viz-label {
+    font-size: 0.7rem;
+    margin-bottom: 0.1rem;
+  }
+  .controls-sidebar .particle {
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: 0.7rem;
+  }
+  .controls-sidebar .particle-arrow {
+    font-size: 0.85rem;
+  }
+  .controls-sidebar .slider-label-text {
+    font-size: 0.88rem;
+  }
+  .controls-sidebar .slider-group {
+    margin-bottom: 0.6rem;
+  }
+  .controls-sidebar .slider-hint {
+    font-size: 0.72rem;
+    margin-top: 0.25rem;
+  }
+  .controls-sidebar .effective-m-display {
+    padding: 0.4rem 0.5rem;
+    margin-top: 0.6rem;
+  }
+  .controls-sidebar .effective-m-label {
+    font-size: 0.7rem;
+  }
+  .controls-sidebar .effective-m-value {
+    font-size: 1.15rem;
+    margin-top: 0.05rem;
+  }
+
+  /* ---- SUBSTANCE SELECT ---- */
+  .substance-select {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    background: #fff;
+    color: #1A202C !important;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+  .substance-select:focus {
+    border-color: var(--accent);
+    outline: none;
+  }
+
+  /* ---- INFO PILL (van't Hoff) ---- */
+  .info-pill {
+    background: var(--accent-light);
+    border: 1px solid rgba(91,106,191,0.2);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    margin-top: 0.85rem;
+    font-size: 0.9rem;
+  }
+  .info-pill .vhf-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--accent) !important;
+  }
+  .info-pill .dissociation {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--slate-500) !important;
+    line-height: 1.4;
+  }
+
+  /* ---- PARTICLE VISUALIZATION ---- */
+  .particle-viz {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.85rem;
+    padding: 0.75rem;
+    background: var(--particle-light);
+    border: 1px solid rgba(180,83,9,0.15);
+    border-radius: 8px;
+    min-height: 3.5rem;
+  }
+  .particle-viz-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--slate-500) !important;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.25rem;
+  }
+  .particle {
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: var(--particle);
+    color: #fff !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.82rem;
+  }
+  .particle-arrow {
+    font-size: 1.1rem;
+    color: var(--slate-500) !important;
+    font-weight: 600;
+  }
+
+  /* ---- SLIDER ---- */
+  .slider-group { margin-bottom: 1rem; }
+  .slider-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  .slider-label-text {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--slate-700) !important;
+  }
+  .slider-value-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.85rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    min-width: 4.5rem;
+    text-align: center;
+    background: var(--accent);
+    color: #fff !important;
+  }
+  .slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--slate-300);
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .slider-hint {
+    font-size: 0.78rem;
+    color: var(--slate-500) !important;
+    margin-top: 0.35rem;
+    font-style: italic;
+  }
+
+  /* ---- EFFECTIVE MOLALITY DISPLAY ---- */
+  .effective-m-display {
+    background: var(--particle-light);
+    border: 2px solid var(--particle);
+    border-radius: 10px;
+    padding: 0.75rem;
+    text-align: center;
+    margin-top: 0.85rem;
+  }
+  .effective-m-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--particle) !important;
+  }
+  .effective-m-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    color: var(--particle) !important;
+    margin-top: 0.15rem;
+  }
+
+  /* ---- GRAPH ---- */
+  .graph-wrap {
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 0;
+  }
+  canvas {
+    width: 100%;
+    height: 540px;
+    cursor: crosshair;
+    display: block;
+  }
+
+  /* ---- STATS BAR ---- */
+  .stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .stats-bar-item {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.65rem 0.5rem;
+    border-right: 1px solid var(--slate-100);
+    min-width: 0;
+  }
+  .stats-bar-item:last-child { border-right: none; }
+  .stats-bar-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--slate-500) !important;
+    white-space: nowrap;
+  }
+  .stats-bar-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 0.95rem;
+    color: var(--slate-900) !important;
+    margin-top: 0.15rem;
+    white-space: nowrap;
+  }
+  .stats-bar-item.freeze-highlight {
+    background: var(--freeze-light);
+  }
+  .stats-bar-item.freeze-highlight .stats-bar-label { color: var(--freeze) !important; }
+  .stats-bar-item.freeze-highlight .stats-bar-value { color: var(--freeze) !important; font-size: 1.05rem; }
+  .stats-bar-item.boil-highlight {
+    background: var(--boil-light);
+  }
+  .stats-bar-item.boil-highlight .stats-bar-label { color: var(--boil) !important; }
+  .stats-bar-item.boil-highlight .stats-bar-value { color: var(--boil) !important; font-size: 1.05rem; }
+  @media (max-width: 640px) {
+    .stats-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .stats-bar-item {
+      border-right: none;
+      border-bottom: 1px solid var(--slate-100);
+    }
+  }
+
+  /* ---- CONCEPT CARDS ---- */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  @media (max-width: 640px) { .concept-grid { grid-template-columns: 1fr; } }
+  .concept-card {
+    border-radius: 10px;
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .concept-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .concept-card.freeze-card {
+    background: var(--freeze-light);
+    border: 1px solid rgba(8,145,178,0.2);
+  }
+  .concept-card.freeze-card::before { background: var(--freeze); }
+  .concept-card.freeze-card h3 { color: var(--freeze) !important; margin-top: 0; }
+  .concept-card.boil-card {
+    background: var(--boil-light);
+    border: 1px solid rgba(220,38,38,0.2);
+  }
+  .concept-card.boil-card::before { background: var(--boil); }
+  .concept-card.boil-card h3 { color: var(--boil) !important; margin-top: 0; }
+  .concept-card p { color: var(--slate-700) !important; font-size: 0.95rem; }
+  .concept-card .sign-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+  .concept-card .sign {
+    display: inline-block;
+    text-align: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    padding: 0.3rem 1rem;
+    border-radius: 6px;
+  }
+  .concept-card .sign sub {
+    font-size: 0.75em;
+  }
+  .concept-card.freeze-card .sign { background: var(--freeze); color: #fff; }
+  .concept-card.boil-card .sign { background: var(--boil); color: #fff; }
+
+  /* ---- EQUATION BOX ---- */
+  .equation-box {
+    text-align: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    padding: 1.25rem;
+    background: #fff;
+    border: 1px solid var(--slate-300);
+    border-radius: 8px;
+    margin: 1.25rem 0;
+    letter-spacing: 0.3px;
+    color: var(--slate-900) !important;
+  }
+  .equation-box .eq-sub {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.85rem;
+    color: var(--slate-500) !important;
+    margin-top: 0.4rem;
+    font-weight: 400;
+  }
+
+  /* ---- LEGEND CARDS ---- */
+  .legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 640px) { .legend-grid { grid-template-columns: 1fr; } }
+  .legend-card {
+    border-radius: 10px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .legend-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .legend-card h4 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+  }
+  .legend-card p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: #334155 !important;
+  }
+
+  .legend-card.card-pure { background: var(--pure-light); border: 1px solid rgba(37,99,235,0.2); }
+  .legend-card.card-pure::before { background: var(--pure); }
+  .legend-card.card-pure h4 { color: var(--pure) !important; }
+  .legend-card.card-solution { background: var(--solution-light); border: 1px solid rgba(220,38,38,0.2); }
+  .legend-card.card-solution::before { background: var(--solution); }
+  .legend-card.card-solution h4 { color: var(--solution) !important; }
+  .legend-card.card-particle { background: var(--particle-light); border: 1px solid rgba(180,83,9,0.2); }
+  .legend-card.card-particle::before { background: var(--particle); }
+  .legend-card.card-particle h4 { color: var(--particle) !important; }
+  .legend-card.card-phase { background: var(--success-light); border: 1px solid rgba(47,133,90,0.2); }
+  .legend-card.card-phase::before { background: var(--success); }
+  .legend-card.card-phase h4 { color: var(--success) !important; }
+
+  /* ---- COMPARISON TABLE ---- */
+  .comparison-wrap {
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin: 2rem 0;
+    overflow-x: auto;
+  }
+  .comparison-wrap h3 {
+    margin: 0 0 0.25rem;
+    text-align: center;
+  }
+  .comparison-subtitle {
+    text-align: center;
+    color: var(--slate-500) !important;
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+  }
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .comp-table th {
+    background: var(--slate-100);
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--slate-700) !important;
+    padding: 0.7rem 0.85rem;
+    text-align: left;
+    border-bottom: 2px solid var(--slate-300);
+  }
+  .comp-table td {
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid var(--slate-100);
+    color: #1A202C !important;
+    vertical-align: middle;
+    line-height: 1.5;
+  }
+  .comp-table tbody tr:last-child td { border-bottom: none; }
+  .comp-table tbody tr:hover { background: var(--slate-100); }
+  .comp-table tbody tr.current-row {
+    background: var(--accent-light) !important;
+  }
+  .comp-table tbody tr.current-row td {
+    font-weight: 600;
+  }
+  .comp-table .val-freeze { color: var(--freeze) !important; font-weight: 600; }
+  .comp-table .val-boil { color: var(--boil) !important; font-weight: 600; }
+
+  /* ---- FOOTER ---- */
+  footer {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    font-size: 0.85rem;
+    color: var(--slate-500);
+    border-top: 1px solid var(--slate-300);
+    background-color: #FAFAF7;
+  }
+
+  /* ---- DARK MODE OVERRIDE ---- */
+  @media (prefers-color-scheme: dark) {
+    html, body {
+      background-color: #FAFAF7 !important;
+      color: #1A202C !important;
+    }
+    .container, section, footer,
+    .controls-panel, .controls-sidebar, .graph-wrap, .concept-card,
+    .thought-prompt, .stats-bar, .equation-box,
+    .legend-card, .comparison-wrap, .comp-table th, .comp-table td {
+      background-color: inherit;
+      color: inherit;
+    }
+    h2, h3, h4, p, span, div, button, label, select {
+      color: inherit !important;
+    }
+  }
+
+  h2 { color: #1A202C !important; }
+  .thought-prompt { color: #1A202C !important; }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== HERO ====== -->
+<div class="hero">
+  <h1>Colligative Properties</h1>
+  <p class="subtitle">How do dissolved particles shift freezing points, boiling points, and the shape of a phase diagram?</p>
+  <div class="tag-bar">
+    <span class="tag-freeze">Freezing Point</span>
+    <span class="tag-particles">Solute Particles</span>
+    <span class="tag-boil">Boiling Point</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ====== SECTION 1: INTERACTIVE PHASE DIAGRAM ====== -->
+<section>
+  <h2>Interactive Phase Diagram</h2>
+  <p>
+    <span class="key-term" title="Properties that depend on the number of dissolved particles, not their identity.">Colligative properties</span> depend on <em>how many</em> solute particles are dissolved, not what those particles are. Adding any non-volatile solute to water lowers the freezing point and raises the boiling point. The phase diagram below shows this in real time: the red solution curves shift relative to the blue pure-water boundaries as you change the solute and concentration.
+  </p>
+
+  <div class="instructions">
+    <strong class="inst-label">How to use this tool</strong>
+    <p>Select a solute to see how its <span class="key-term" title="The number of particles one formula unit produces in solution. i = 1 for molecular solutes, i = 2 for NaCl, i = 3 for CaCl&#8322;, etc.">van't Hoff factor (i)</span> affects dissociation. Then adjust the molality slider and watch the phase boundaries shift on the diagram. The stats bar below the graph updates the calculated freezing and boiling points in real time.</p>
+  </div>
+
+  <!-- Diagram + Controls: side by side -->
+  <div class="diagram-layout">
+    <!-- Phase Diagram (left) -->
+    <div class="graph-wrap">
+      <canvas id="phaseCanvas"></canvas>
+    </div>
+
+    <!-- Controls Sidebar (right) -->
+    <div class="controls-sidebar">
+      <div class="controls-panel">
+        <h3 class="border-accent">Solute Selection</h3>
+        <select class="substance-select" id="solute-select">
+          <option value="molecular">Glucose (C&#8326;H&#8321;&#8322;O&#8326;) - Molecular</option>
+          <option value="nacl">Sodium Chloride (NaCl) - Ionic</option>
+          <option value="cacl2">Calcium Chloride (CaCl&#8322;) - Ionic</option>
+          <option value="alcl3">Aluminum Chloride (AlCl&#8323;) - Ionic</option>
+          <option value="al2so43">Aluminum Sulfate (Al&#8322;(SO&#8324;)&#8323;) - Ionic</option>
+        </select>
+        <div class="info-pill">
+          <strong>van't Hoff factor: </strong><span class="vhf-value" id="vant-hoff-display">1</span>
+          <span class="dissociation" id="dissociation-display"></span>
+        </div>
+        <div class="particle-viz">
+          <span class="particle-viz-label">Particles per formula unit</span>
+          <div id="particle-display" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;flex-wrap:wrap;"></div>
+        </div>
+      </div>
+
+      <div class="controls-panel">
+        <h3 class="border-warm">Concentration</h3>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span class="slider-label-text">Molality (m)</span>
+            <span class="slider-value-badge" id="molality-badge">1.0 m</span>
+          </div>
+          <input type="range" class="slider" id="molality-slider" min="0" max="2.5" step="0.1" value="1.0">
+          <div class="slider-hint">mol solute per kg solvent</div>
+        </div>
+        <div class="effective-m-display">
+          <div class="effective-m-label">Effective Molality (i x m)</div>
+          <div class="effective-m-value" id="effective-molality">1.00 m</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stats-bar-item">
+      <span class="stats-bar-label">Solute</span>
+      <span class="stats-bar-value" id="stat-solute">Glucose</span>
+    </div>
+    <div class="stats-bar-item">
+      <span class="stats-bar-label">i value</span>
+      <span class="stats-bar-value" id="stat-i">1</span>
+    </div>
+    <div class="stats-bar-item">
+      <span class="stats-bar-label">Eff. Molality</span>
+      <span class="stats-bar-value" id="stat-effm">1.00 m</span>
+    </div>
+    <div class="stats-bar-item freeze-highlight">
+      <span class="stats-bar-label">New FP</span>
+      <span class="stats-bar-value" id="stat-fp">0.00 C</span>
+    </div>
+    <div class="stats-bar-item freeze-highlight">
+      <span class="stats-bar-label">&#916;T<sub>f</sub></span>
+      <span class="stats-bar-value" id="stat-dtf">-0.00 C</span>
+    </div>
+    <div class="stats-bar-item boil-highlight">
+      <span class="stats-bar-label">New BP</span>
+      <span class="stats-bar-value" id="stat-bp">100.00 C</span>
+    </div>
+    <div class="stats-bar-item boil-highlight">
+      <span class="stats-bar-label">&#916;T<sub>b</sub></span>
+      <span class="stats-bar-value" id="stat-dtb">+0.00 C</span>
+    </div>
+  </div>
+
+  <div class="thought-prompt">
+    <strong>Stop and Think</strong>
+    Set the solute to NaCl at 1.0 m, then switch to CaCl<sub>2</sub> at the same molality. Both are ionic, but CaCl<sub>2</sub> produces a larger shift. Why? What matters more for colligative properties: the identity of the ions or the number of ions?
+  </div>
+</section>
+
+<!-- ====== SECTION 2: UNDERSTANDING THE SHIFTS ====== -->
+<section>
+  <h2>Understanding the Shifts</h2>
+  <p>
+    Colligative properties arise from a single cause: dissolved solute particles lower the <span class="key-term" title="The pressure exerted by the vapor above a liquid in equilibrium. Solute particles reduce the fraction of surface molecules that can escape.">vapor pressure</span> of the solvent. Solute particles occupy positions at the liquid surface, reducing the number of solvent molecules that can escape into the gas phase. This vapor pressure lowering cascades into two observable effects.
+  </p>
+
+  <div class="concept-grid">
+    <div class="concept-card freeze-card">
+      <h3>Freezing Point Depression</h3>
+      <p>With lower vapor pressure, the liquid's curve on the phase diagram shifts. It now intersects the solid-phase boundary at a <strong>lower temperature</strong>. The liquid must be cooled further before it freezes.</p>
+      <div class="sign-area">
+        <div class="sign">&#916;T<sub>f</sub> = &minus;i K<sub>f</sub> m</div>
+        <p style="margin-top:0.5rem; font-size:0.85rem;">K<sub>f</sub> = 1.86 &deg;C&middot;kg/mol for water</p>
+      </div>
+    </div>
+    <div class="concept-card boil-card">
+      <h3>Boiling Point Elevation</h3>
+      <p>Boiling occurs when vapor pressure equals atmospheric pressure. Since solute particles <strong>lower</strong> vapor pressure, a higher temperature is needed to reach 1 atm. The boiling point rises.</p>
+      <div class="sign-area">
+        <div class="sign">&#916;T<sub>b</sub> = +i K<sub>b</sub> m</div>
+        <p style="margin-top:0.5rem; font-size:0.85rem;">K<sub>b</sub> = 0.512 &deg;C&middot;kg/mol for water</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="equation-box">
+    &#916;T = i &middot; K &middot; m
+    <div class="eq-sub">i = van't Hoff factor (particles per formula unit) &nbsp;|&nbsp; K = molal constant (K<sub>f</sub> or K<sub>b</sub>) &nbsp;|&nbsp; m = molality</div>
+  </div>
+
+  <p>
+    The <span class="key-term" title="The ratio of moles of particles in solution to moles of solute dissolved. For strong electrolytes, i equals the total number of ions per formula unit.">van't Hoff factor (i)</span> captures the key insight: a strong electrolyte like NaCl dissociates into 2 ions per formula unit, so it produces twice the colligative effect of a molecular solute like glucose at the same molality. CaCl<sub>2</sub> produces 3 particles, AlCl<sub>3</sub> produces 4, and so on. What matters is the <em>total particle count</em> in solution&mdash;the <strong>effective molality (i x m)</strong>.
+  </p>
+
+  <div class="legend-grid">
+    <div class="legend-card card-pure">
+      <h4>Pure Water Boundaries (Blue)</h4>
+      <p>The blue curves trace the phase boundaries of pure water: the solid-liquid line (nearly vertical with a slight <strong>negative slope</strong>&mdash;unique to water because ice is less dense than liquid), the liquid-gas curve (exponential, following the Clausius-Clapeyron equation), and the sublimation curve below the triple point.</p>
+    </div>
+    <div class="legend-card card-solution">
+      <h4>Solution Boundaries (Red)</h4>
+      <p>Adding solute shifts the solid-liquid boundary <strong>left</strong> (lower freezing point) and the liquid-gas boundary <strong>right and down</strong> (lower vapor pressure, higher boiling point). The liquid phase region <strong>expands</strong> at the expense of solid and gas.</p>
+    </div>
+    <div class="legend-card card-particle">
+      <h4>The Role of i</h4>
+      <p>Colligative properties depend on particle count, not particle identity. NaCl (i=2) and glucose (i=1) at the same molality produce different shifts because NaCl puts <strong>twice as many particles</strong> into solution. This is why road salt (NaCl or CaCl<sub>2</sub>) is more effective than sugar at melting ice.</p>
+    </div>
+    <div class="legend-card card-phase">
+      <h4>Key Phase Diagram Points</h4>
+      <p>The <strong>triple point</strong> (0.01 &deg;C, 4.59 mmHg) is where ice, liquid, and vapor coexist. The <strong>normal</strong> freezing and boiling points are where phase boundaries cross the 1 atm line. Solute shifts these crossings, and the magnitude is proportional to effective molality.</p>
+    </div>
+  </div>
+
+  <div class="thought-prompt">
+    <strong>Challenge Question</strong>
+    A 1.0 m solution of Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub> produces 5 particles per formula unit (i = 5). Calculate its freezing point depression and boiling point elevation. Then verify your answer using the interactive tool above. Why does the magnitude of Delta T<sub>f</sub> always exceed Delta T<sub>b</sub> for the same solution?
+  </div>
+</section>
+
+<!-- ====== SECTION 3: COMPARING SOLUTES ====== -->
+<section>
+  <h2>Comparing Solutes</h2>
+  <p>
+    The table below shows the calculated shifts for every solute at the current molality. Notice how the van't Hoff factor acts as a direct multiplier: doubling i doubles both &#916;T<sub>f</sub> and &#916;T<sub>b</sub>. The currently selected solute is highlighted.
+  </p>
+
+  <div class="comparison-wrap">
+    <h3 style="margin-bottom:0.25rem;">All Solutes at <span id="comparison-molality">1.00</span> m</h3>
+    <p class="comparison-subtitle">Compare how the van't Hoff factor scales colligative effects</p>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Solute</th>
+          <th>i</th>
+          <th>Effective m</th>
+          <th>&#916;T<sub>f</sub></th>
+          <th>New FP</th>
+          <th>&#916;T<sub>b</sub></th>
+          <th>New BP</th>
+        </tr>
+      </thead>
+      <tbody id="comparison-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="thought-prompt">
+    <strong>Stop and Think</strong>
+    A city needs to choose between NaCl and CaCl<sub>2</sub> for road de-icing. At 1.0 m, CaCl<sub>2</sub> depresses the freezing point 50% more than NaCl. But CaCl<sub>2</sub> also has a higher molar mass (110.98 g/mol vs 58.44 g/mol). Per kilogram of salt purchased, which is actually more cost-effective at lowering the freezing point? Set up the calculation.
+  </div>
+</section>
+
+</div>
+
+<footer>
+  Interactive Chemistry Module &middot; Colligative Properties and Phase Diagrams
+</footer>
+
+<script>
+  /* ==============================
+     CONSTANTS
+     ============================== */
+  var Kb = 0.512;
+  var Kf = 1.86;
+  var MM_water = 18.015;
+  var TRIPLE_POINT_T = 0.01;
+  var TRIPLE_POINT_P = 0.00604;
+  var NORMAL_FREEZING_T = 0.00;
+  var NORMAL_BOILING_T = 100.00;
+  var NORMAL_P = 1.0;
+  var CRITICAL_T = 373.99;
+  var CRITICAL_P = 217.75;
+
+  var solutes = {
+    molecular: { name: 'Glucose', formula: 'C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>', i: 1, dissociation: 'C\u2086H\u2081\u2082O\u2086 stays intact in solution (molecular solute)' },
+    nacl:      { name: 'NaCl',    formula: 'NaCl',     i: 2, dissociation: 'NaCl \u2192 Na\u207A + Cl\u207B' },
+    cacl2:     { name: 'CaCl\u2082',   formula: 'CaCl<sub>2</sub>',    i: 3, dissociation: 'CaCl\u2082 \u2192 Ca\u00B2\u207A + 2 Cl\u207B' },
+    alcl3:     { name: 'AlCl\u2083',   formula: 'AlCl<sub>3</sub>',    i: 4, dissociation: 'AlCl\u2083 \u2192 Al\u00B3\u207A + 3 Cl\u207B' },
+    al2so43:   { name: 'Al\u2082(SO\u2084)\u2083', formula: 'Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub>', i: 5, dissociation: 'Al\u2082(SO\u2084)\u2083 \u2192 2 Al\u00B3\u207A + 3 SO\u2084\u00B2\u207B' }
+  };
+
+  var soluteSelect = document.getElementById('solute-select');
+  var molalitySlider = document.getElementById('molality-slider');
+  var canvas = document.getElementById('phaseCanvas');
+  var ctx = canvas.getContext('2d');
+
+  /* ==============================
+     VAPOR PRESSURE (Antoine for liquid water)
+     ============================== */
+  function vaporPressure_atm(tempC) {
+    var A = 8.07131;
+    var B = 1730.63;
+    var C = 233.426;
+    var logP = A - (B / (C + tempC));
+    return Math.pow(10, logP) / 760.0;
+  }
+
+  /* ==============================
+     SUBLIMATION PRESSURE (Clausius-Clapeyron for ice)
+     ln(P/P_tp) = -dH_sub/R * (1/T - 1/T_tp)
+     dH_sub = 51060 J/mol, R = 8.314 J/(mol*K)
+     ============================== */
+  function sublimationPressure(tempC) {
+    var T_K = tempC + 273.15;
+    var T_tp = 273.16;
+    var dH_sub = 51060;
+    var R = 8.314;
+    return TRIPLE_POINT_P * Math.exp(-dH_sub / R * (1 / T_K - 1 / T_tp));
+  }
+
+  /* ==============================
+     SOLID-LIQUID BOUNDARY (Clausius-Clapeyron)
+     dP/dT = dH_fus / (T * dV_m)
+     dH_fus = 6010 J/mol, dV_m = -1.632e-6 m3/mol (ice less dense than water)
+     Slope ~ -133 atm/C (negative = unique to water)
+     Given a pressure, returns the freezing temperature.
+     ============================== */
+  function freezingTemp(pressure_atm) {
+    var dH_fus = 6010;
+    var dV_m = -1.632e-6;
+    var T_tp = 273.16;
+    var P_tp_Pa = TRIPLE_POINT_P * 101325;
+    var P_Pa = pressure_atm * 101325;
+    var T_K = T_tp + (P_Pa - P_tp_Pa) * T_tp * dV_m / dH_fus;
+    return T_K - 273.15;
+  }
+
+  /* ==============================
+     CANVAS RESIZE
+     ============================== */
+  function resizeCanvas() {
+    var container = canvas.parentElement;
+    var rect = canvas.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    drawPhaseDiagram();
+  }
+
+  /* ==============================
+     PHASE DIAGRAM DRAWING
+     ============================== */
+  function drawPhaseDiagram() {
+    var rect = canvas.getBoundingClientRect();
+    var width = rect.width;
+    var height = rect.height;
+    ctx.clearRect(0, 0, width, height);
+
+    var soluteType = soluteSelect.value;
+    var solute = solutes[soluteType];
+    var m = parseFloat(molalitySlider.value);
+
+    var deltaT_f = solute.i * Kf * m;
+    var T_f_solution = NORMAL_FREEZING_T - deltaT_f;
+    var deltaT_b = solute.i * Kb * m;
+    var T_b_solution = NORMAL_BOILING_T + deltaT_b;
+
+    var molWater = 1000 / MM_water;
+    var molSolute = solute.i * m;
+    var X_solute = molSolute / (molWater + molSolute);
+    var vpFactor = 1 - X_solute;
+
+    var margin = { top: 40, right: 55, bottom: 58, left: 72 };
+    var plotWidth = width - margin.left - margin.right;
+    var plotHeight = height - margin.top - margin.bottom;
+
+    var tempMin = -25;
+    var tempMax = 140;
+    var pressureMin = -0.15;
+    var pressureMax = 2.0;
+
+    function tempToX(temp) {
+      return margin.left + (temp - tempMin) / (tempMax - tempMin) * plotWidth;
+    }
+    function pressureToY(pressure) {
+      var clampedP = Math.max(pressureMin, Math.min(pressure, pressureMax));
+      return margin.top + plotHeight - ((clampedP - pressureMin) / (pressureMax - pressureMin) * plotHeight);
+    }
+
+    // ---- PHASE REGION FILLS ----
+
+    // Solid region
+    ctx.fillStyle = 'rgba(8,145,178,0.12)';
+    ctx.beginPath();
+    ctx.moveTo(margin.left, margin.top);
+    ctx.lineTo(margin.left, margin.top + plotHeight);
+    ctx.lineTo(tempToX(TRIPLE_POINT_T), margin.top + plotHeight);
+    ctx.lineTo(tempToX(TRIPLE_POINT_T), pressureToY(TRIPLE_POINT_P));
+    for (var sfP = TRIPLE_POINT_P; sfP <= pressureMax; sfP += 0.05) {
+      ctx.lineTo(tempToX(freezingTemp(sfP)), pressureToY(sfP));
+    }
+    ctx.lineTo(tempToX(freezingTemp(pressureMax)), pressureToY(pressureMax));
+    ctx.lineTo(margin.left, pressureToY(pressureMax));
+    ctx.closePath();
+    ctx.fill();
+
+    // Liquid region
+    ctx.fillStyle = 'rgba(37,99,235,0.08)';
+    ctx.beginPath();
+    ctx.moveTo(tempToX(TRIPLE_POINT_T), pressureToY(TRIPLE_POINT_P));
+    for (var lfP = TRIPLE_POINT_P; lfP <= pressureMax; lfP += 0.05) {
+      ctx.lineTo(tempToX(freezingTemp(lfP)), pressureToY(lfP));
+    }
+    ctx.lineTo(tempToX(freezingTemp(pressureMax)), pressureToY(pressureMax));
+    ctx.lineTo(tempToX(tempMax), pressureToY(pressureMax));
+    for (var t = tempMax; t >= TRIPLE_POINT_T; t -= 1) {
+      var p = vaporPressure_atm(t);
+      if (p <= pressureMax && p >= pressureMin) ctx.lineTo(tempToX(t), pressureToY(p));
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    // Gas region
+    ctx.fillStyle = 'rgba(250,250,247,0.9)';
+    ctx.beginPath();
+    ctx.moveTo(tempToX(TRIPLE_POINT_T), pressureToY(TRIPLE_POINT_P));
+    for (var t = TRIPLE_POINT_T; t <= tempMax; t += 1) {
+      var p = vaporPressure_atm(t);
+      if (p <= pressureMax && p >= pressureMin) ctx.lineTo(tempToX(t), pressureToY(p));
+    }
+    var finalP = vaporPressure_atm(tempMax);
+    if (finalP > pressureMax) ctx.lineTo(tempToX(tempMax), pressureToY(pressureMax));
+    else ctx.lineTo(tempToX(tempMax), pressureToY(finalP));
+    ctx.lineTo(tempToX(tempMax), margin.top + plotHeight);
+    ctx.lineTo(tempToX(TRIPLE_POINT_T), margin.top + plotHeight);
+    ctx.closePath();
+    ctx.fill();
+
+    // ---- GRID ----
+    ctx.strokeStyle = '#E2E8F0';
+    ctx.lineWidth = 1;
+    for (var temp = -20; temp <= 140; temp += 20) {
+      ctx.beginPath();
+      ctx.moveTo(tempToX(temp), margin.top);
+      ctx.lineTo(tempToX(temp), margin.top + plotHeight);
+      ctx.stroke();
+    }
+    for (var pr = 0; pr <= 2.0; pr += 0.5) {
+      ctx.beginPath();
+      ctx.moveTo(margin.left, pressureToY(pr));
+      ctx.lineTo(margin.left + plotWidth, pressureToY(pr));
+      ctx.stroke();
+    }
+
+    // ---- AXES ----
+    ctx.strokeStyle = '#1A202C';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(margin.left, margin.top);
+    ctx.lineTo(margin.left, margin.top + plotHeight);
+    ctx.lineTo(margin.left + plotWidth, margin.top + plotHeight);
+    ctx.stroke();
+
+    // X labels
+    ctx.fillStyle = '#334155';
+    ctx.font = '600 13px Source Sans 3, sans-serif';
+    ctx.textAlign = 'center';
+    for (var t = -20; t <= 140; t += 20) {
+      ctx.fillText(t, tempToX(t), margin.top + plotHeight + 22);
+    }
+    ctx.font = '700 14px Source Sans 3, sans-serif';
+    ctx.fillText('Temperature (\u00B0C)', margin.left + plotWidth / 2, margin.top + plotHeight + 48);
+
+    // Y labels
+    ctx.textAlign = 'right';
+    ctx.font = '600 13px Source Sans 3, sans-serif';
+    for (var pr = 0; pr <= 2.0; pr += 0.5) {
+      ctx.fillText(pr.toFixed(1), margin.left - 10, pressureToY(pr) + 5);
+    }
+    ctx.save();
+    ctx.translate(18, margin.top + plotHeight / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.font = '700 14px Source Sans 3, sans-serif';
+    ctx.fillText('Pressure (atm)', 0, 0);
+    ctx.restore();
+
+    // ---- 1 ATM REFERENCE LINE ----
+    var y1atm = pressureToY(NORMAL_P);
+    ctx.strokeStyle = '#64748B';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 4]);
+    ctx.beginPath();
+    ctx.moveTo(margin.left, y1atm);
+    ctx.lineTo(margin.left + plotWidth, y1atm);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#64748B';
+    ctx.font = '700 11px Source Sans 3, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('1 atm', margin.left + 8, y1atm - 6);
+
+    // ---- DASHED VERTICAL REFERENCE LINES ----
+    ctx.setLineDash([5, 3]);
+    ctx.lineWidth = 1.5;
+
+    // Pure water verticals
+    ctx.strokeStyle = 'rgba(37,99,235,0.4)';
+    ctx.beginPath();
+    ctx.moveTo(tempToX(NORMAL_FREEZING_T), margin.top + plotHeight);
+    ctx.lineTo(tempToX(NORMAL_FREEZING_T), pressureToY(NORMAL_P));
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(tempToX(NORMAL_BOILING_T), margin.top + plotHeight);
+    ctx.lineTo(tempToX(NORMAL_BOILING_T), pressureToY(NORMAL_P));
+    ctx.stroke();
+
+    // Solution verticals
+    if (m > 0) {
+      ctx.strokeStyle = 'rgba(220,38,38,0.4)';
+      ctx.beginPath();
+      ctx.moveTo(tempToX(T_f_solution), margin.top + plotHeight);
+      ctx.lineTo(tempToX(T_f_solution), pressureToY(NORMAL_P));
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(tempToX(T_b_solution), margin.top + plotHeight);
+      ctx.lineTo(tempToX(T_b_solution), pressureToY(NORMAL_P));
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+
+    // ---- PURE WATER PHASE BOUNDARIES ----
+    ctx.lineWidth = 3.5;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    // Solid-Liquid (negative slope, Clausius-Clapeyron - unique to water)
+    ctx.strokeStyle = '#2563EB';
+    ctx.beginPath();
+    ctx.moveTo(tempToX(TRIPLE_POINT_T), pressureToY(TRIPLE_POINT_P));
+    for (var slP = TRIPLE_POINT_P; slP <= pressureMax; slP += 0.05) {
+      var slT = freezingTemp(slP);
+      ctx.lineTo(tempToX(slT), pressureToY(slP));
+    }
+    ctx.lineTo(tempToX(freezingTemp(pressureMax)), pressureToY(pressureMax));
+    ctx.stroke();
+
+    // Sublimation curve (Clausius-Clapeyron with actual enthalpy of sublimation)
+    ctx.beginPath();
+    var firstSub = true;
+    for (var t = tempMin; t <= TRIPLE_POINT_T; t += 0.5) {
+      var p = sublimationPressure(t);
+      if (p >= pressureMin && p <= pressureMax) {
+        if (firstSub) { ctx.moveTo(tempToX(t), pressureToY(p)); firstSub = false; }
+        else ctx.lineTo(tempToX(t), pressureToY(p));
+      }
+    }
+    ctx.lineTo(tempToX(TRIPLE_POINT_T), pressureToY(TRIPLE_POINT_P));
+    ctx.stroke();
+
+    // Liquid-Gas (vapor pressure curve)
+    ctx.beginPath();
+    ctx.moveTo(tempToX(TRIPLE_POINT_T), pressureToY(TRIPLE_POINT_P));
+    for (var t = TRIPLE_POINT_T; t <= tempMax; t += 0.5) {
+      var p = vaporPressure_atm(t);
+      if (p <= pressureMax && p >= pressureMin) ctx.lineTo(tempToX(t), pressureToY(p));
+    }
+    ctx.stroke();
+
+    // ---- SOLUTION PHASE BOUNDARIES ----
+    if (m > 0) {
+      var solutionTripleT = TRIPLE_POINT_T - deltaT_f;
+      var solutionTripleP = TRIPLE_POINT_P * vpFactor;
+
+      ctx.strokeStyle = '#DC2626';
+      ctx.lineWidth = 3.5;
+
+      // Solution solid-liquid (same slope as pure water, shifted by deltaT_f)
+      ctx.beginPath();
+      ctx.moveTo(tempToX(solutionTripleT), pressureToY(solutionTripleP));
+      for (var ssP = solutionTripleP; ssP <= pressureMax; ssP += 0.05) {
+        var ssT = freezingTemp(ssP) - deltaT_f;
+        ctx.lineTo(tempToX(ssT), pressureToY(ssP));
+      }
+      ctx.lineTo(tempToX(freezingTemp(pressureMax) - deltaT_f), pressureToY(pressureMax));
+      ctx.stroke();
+
+      // Solution liquid-gas (Raoult's law: P_solution = X_solvent * P_pure)
+      ctx.beginPath();
+      ctx.moveTo(tempToX(solutionTripleT), pressureToY(solutionTripleP));
+      for (var t = solutionTripleT; t <= tempMax; t += 0.5) {
+        var p_solution = vaporPressure_atm(t) * vpFactor;
+        if (p_solution <= pressureMax && p_solution >= pressureMin) ctx.lineTo(tempToX(t), pressureToY(p_solution));
+      }
+      ctx.stroke();
+    }
+
+    // ---- KEY POINTS ----
+
+    // Triple point
+    ctx.fillStyle = '#B7791F';
+    ctx.strokeStyle = '#78350F';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(tempToX(TRIPLE_POINT_T), pressureToY(TRIPLE_POINT_P), 7, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#78350F';
+    ctx.font = '700 10px Source Sans 3, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Triple point', tempToX(TRIPLE_POINT_T) + 45, pressureToY(TRIPLE_POINT_P) - 4);
+
+    // Pure water points on 1 atm line
+    ctx.fillStyle = '#2563EB';
+    ctx.strokeStyle = '#1E40AF';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(tempToX(NORMAL_FREEZING_T), y1atm, 7, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(tempToX(NORMAL_BOILING_T), y1atm, 7, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+
+    // Pure water labels
+    ctx.fillStyle = '#1E40AF';
+    ctx.font = '700 10px Source Sans 3, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Pure FP', tempToX(NORMAL_FREEZING_T), y1atm - 14);
+    ctx.fillStyle = '#2563EB';
+    ctx.font = '700 11px Source Sans 3, sans-serif';
+    ctx.fillText(NORMAL_FREEZING_T.toFixed(0) + '\u00B0C', tempToX(NORMAL_FREEZING_T), y1atm + 20);
+
+    ctx.fillStyle = '#1E40AF';
+    ctx.font = '700 10px Source Sans 3, sans-serif';
+    ctx.fillText('Pure BP', tempToX(NORMAL_BOILING_T), y1atm - 14);
+    ctx.fillStyle = '#2563EB';
+    ctx.font = '700 11px Source Sans 3, sans-serif';
+    ctx.fillText(NORMAL_BOILING_T.toFixed(0) + '\u00B0C', tempToX(NORMAL_BOILING_T), y1atm + 20);
+
+    // Solution points on 1 atm line
+    if (m > 0 && Math.abs(deltaT_f) > 0.05) {
+      ctx.fillStyle = '#DC2626';
+      ctx.strokeStyle = '#991B1B';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(tempToX(T_f_solution), y1atm, 7, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(tempToX(T_b_solution), y1atm, 7, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#DC2626';
+      ctx.font = '700 11px Source Sans 3, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(T_f_solution.toFixed(1) + '\u00B0C', tempToX(T_f_solution), y1atm + 35);
+      ctx.fillText(T_b_solution.toFixed(1) + '\u00B0C', tempToX(T_b_solution), y1atm + 35);
+    }
+
+    // ---- PHASE REGION LABELS ----
+    ctx.fillStyle = 'rgba(30, 64, 175, 0.6)';
+    ctx.font = '700 28px Source Sans 3, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Solid', tempToX(-14), pressureToY(1.8));
+    ctx.fillText('Liquid', tempToX(55), pressureToY(2.0));
+    ctx.fillText('Gas', tempToX(105), pressureToY(0.15));
+
+    // ---- CANVAS LEGEND ----
+    var legX = width - margin.right - 165;
+    var legY = margin.top + 8;
+    var legW = 160;
+    var legH = 100;
+
+    ctx.fillStyle = 'rgba(250,250,247,0.95)';
+    ctx.strokeStyle = '#CBD5E1';
+    ctx.lineWidth = 1.5;
+    ctx.fillRect(legX, legY, legW, legH);
+    ctx.strokeRect(legX, legY, legW, legH);
+
+    ctx.fillStyle = '#1A202C';
+    ctx.font = '700 11px Source Sans 3, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('Legend', legX + 10, legY + 16);
+
+    var itemY = legY + 34;
+    var lineH = 22;
+
+    // Pure water line
+    ctx.strokeStyle = '#2563EB';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(legX + 10, itemY);
+    ctx.lineTo(legX + 35, itemY);
+    ctx.stroke();
+    ctx.fillStyle = '#334155';
+    ctx.font = '500 11px Source Sans 3, sans-serif';
+    ctx.fillText('Pure water', legX + 42, itemY + 4);
+    itemY += lineH;
+
+    // Solution line
+    ctx.strokeStyle = '#DC2626';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(legX + 10, itemY);
+    ctx.lineTo(legX + 35, itemY);
+    ctx.stroke();
+    ctx.fillStyle = '#334155';
+    ctx.fillText('Solution', legX + 42, itemY + 4);
+    itemY += lineH;
+
+    // 1 atm ref
+    ctx.strokeStyle = '#64748B';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 3]);
+    ctx.beginPath();
+    ctx.moveTo(legX + 10, itemY);
+    ctx.lineTo(legX + 35, itemY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#334155';
+    ctx.fillText('1 atm reference', legX + 42, itemY + 4);
+  }
+
+  /* ==============================
+     UPDATE ALL CALCULATIONS
+     ============================== */
+  function updateCalculations() {
+    var soluteType = soluteSelect.value;
+    var solute = solutes[soluteType];
+    var m = parseFloat(molalitySlider.value);
+
+    // Controls panel
+    document.getElementById('vant-hoff-display').textContent = solute.i;
+    document.getElementById('dissociation-display').textContent = solute.dissociation;
+    document.getElementById('molality-badge').textContent = m.toFixed(1) + ' m';
+
+    var effectiveM = solute.i * m;
+    document.getElementById('effective-molality').textContent = effectiveM.toFixed(2) + ' m';
+
+    // Particle viz
+    updateParticleDisplay(solute.i);
+
+    // Calculations
+    var deltaT_f = solute.i * Kf * m;
+    var T_f = NORMAL_FREEZING_T - deltaT_f;
+    var deltaT_b = solute.i * Kb * m;
+    var T_b = NORMAL_BOILING_T + deltaT_b;
+
+    // Stats bar
+    document.getElementById('stat-solute').textContent = solute.name;
+    document.getElementById('stat-i').textContent = solute.i;
+    document.getElementById('stat-effm').textContent = effectiveM.toFixed(2) + ' m';
+    document.getElementById('stat-fp').textContent = T_f.toFixed(2) + '\u00B0C';
+    document.getElementById('stat-dtf').textContent = '-' + deltaT_f.toFixed(2) + '\u00B0C';
+    document.getElementById('stat-bp').textContent = T_b.toFixed(2) + '\u00B0C';
+    document.getElementById('stat-dtb').textContent = '+' + deltaT_b.toFixed(2) + '\u00B0C';
+
+    // Comparison table
+    updateComparisonTable(m, soluteType);
+
+    // Redraw
+    drawPhaseDiagram();
+  }
+
+  function updateParticleDisplay(i) {
+    var display = document.getElementById('particle-display');
+    var html = '<span class="particle-arrow">1 unit --></span>';
+    for (var j = 0; j < i; j++) {
+      html += '<div class="particle">' + (j + 1) + '</div>';
+    }
+    html += '<span class="particle-arrow" style="margin-left:0.25rem;">' + i + ' particles</span>';
+    display.innerHTML = html;
+  }
+
+  function updateComparisonTable(m, currentSolute) {
+    document.getElementById('comparison-molality').textContent = m.toFixed(2);
+    var tbody = document.getElementById('comparison-tbody');
+    tbody.innerHTML = '';
+
+    var keys = Object.keys(solutes);
+    for (var k = 0; k < keys.length; k++) {
+      var key = keys[k];
+      var solute = solutes[key];
+      var effectiveM = solute.i * m;
+      var deltaT_f = solute.i * Kf * m;
+      var deltaT_b = solute.i * Kb * m;
+      var T_f = NORMAL_FREEZING_T - deltaT_f;
+      var T_b = NORMAL_BOILING_T + deltaT_b;
+
+      var row = document.createElement('tr');
+      if (key === currentSolute) row.classList.add('current-row');
+
+      row.innerHTML =
+        '<td><strong>' + solute.formula + '</strong></td>' +
+        '<td>' + solute.i + '</td>' +
+        '<td>' + effectiveM.toFixed(2) + ' m</td>' +
+        '<td class="val-freeze">-' + deltaT_f.toFixed(2) + '\u00B0C</td>' +
+        '<td class="val-freeze">' + T_f.toFixed(2) + '\u00B0C</td>' +
+        '<td class="val-boil">+' + deltaT_b.toFixed(2) + '\u00B0C</td>' +
+        '<td class="val-boil">' + T_b.toFixed(2) + '\u00B0C</td>';
+      tbody.appendChild(row);
+    }
+  }
+
+  /* ==============================
+     EVENT LISTENERS
+     ============================== */
+  soluteSelect.addEventListener('change', updateCalculations);
+  molalitySlider.addEventListener('input', function() {
+    updateCalculations();
+  });
+
+  /* ==============================
+     IFRAME AUTO-RESIZE
+     ============================== */
+  function postHeight() {
+    var h = document.documentElement.scrollHeight;
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'resize', height: h }, '*');
+    }
+  }
+  window.addEventListener('load', function() {
+    postHeight();
+    setTimeout(postHeight, 500);
+    setTimeout(postHeight, 2000);
+  });
+  window.addEventListener('resize', function() {
+    postHeight();
+    resizeCanvas();
+  });
+  if (typeof MutationObserver !== 'undefined') {
+    var resizeObs = new MutationObserver(function() { setTimeout(postHeight, 100); });
+    resizeObs.observe(document.body, { childList: true, subtree: true, attributes: true });
+  }
+
+  /* ==============================
+     INITIALIZE
+     ============================== */
+  updateCalculations();
+  resizeCanvas();
+</script>
+</body>
+</html>
