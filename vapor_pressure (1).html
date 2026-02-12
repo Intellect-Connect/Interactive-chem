@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
+<base target="_parent">
+<title>Vapor Pressure Curves - Interactive Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --water: #2B6CB0;
+    --water-light: #EBF4FF;
+    --ethanol: #C05621;
+    --ethanol-light: #FFF0EB;
+    --acetone: #B7791F;
+    --acetone-light: #FEFCBF;
+    --ether: #C53030;
+    --ether-light: #FFF5F5;
+    --methanol: #6B46C1;
+    --methanol-light: #F3E8FF;
+    --hexane: #64748B;
+    --hexane-light: #F1F5F9;
+    --dcm: #0D9488;
+    --dcm-light: #D1FAE5;
+    --chloroform: #059669;
+    --chloroform-light: #ECFDF5;
+    --slate-900: #1A202C;
+    --slate-700: #334155;
+    --slate-500: #64748B;
+    --slate-300: #CBD5E1;
+    --slate-100: #F1F5F9;
+    --parchment: #FAFAF7;
+    --success: #2F855A;
+    --success-light: #F0FFF4;
+    --gold: #B7791F;
+    --gold-light: #FEFCBF;
+    --pressure-blue: #2B6CB0;
+    --pressure-light: #EBF4FF;
+    --imf-teal: #0D9488;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    background-color: #FAFAF7 !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    font-family: 'Source Sans 3', 'Segoe UI', Roboto, -apple-system, sans-serif;
+    background-color: #FAFAF7 !important;
+    color: #1A202C !important;
+    line-height: 1.7;
+    font-size: 17px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  html, body, .container, section, .controls-panel, .controls-sidebar,
+  .graph-wrap, .legend-card, .thought-prompt, .stats-bar, footer {
+    color-scheme: light !important;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, #0D9488 0%, var(--slate-900) 50%, var(--pressure-blue) 100%);
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 25% 55%, rgba(13,148,136,0.25) 0%, transparent 50%),
+      radial-gradient(circle at 75% 45%, rgba(43,108,176,0.25) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    color: #fff !important;
+    position: relative;
+    letter-spacing: -0.5px;
+  }
+  .hero .subtitle {
+    color: rgba(255,255,255,0.8) !important;
+    font-size: 1.15rem;
+    margin-top: 0.75rem;
+    font-weight: 300;
+    position: relative;
+  }
+  .hero .tag-bar {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    position: relative;
+    flex-wrap: wrap;
+  }
+  .tag-bar span {
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.35rem 1.2rem;
+    border-radius: 4px;
+  }
+  .tag-bar .tag-imf { background: rgba(13,148,136,0.35); color: #A7F3D0; }
+  .tag-bar .tag-temp { background: rgba(183,121,31,0.35); color: #FEFCBF; }
+  .tag-bar .tag-bp { background: rgba(43,108,176,0.35); color: #BEE3F8; }
+
+  /* ---- LAYOUT ---- */
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    background-color: #FAFAF7;
+  }
+
+  section {
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--slate-300);
+    background-color: #FAFAF7;
+  }
+  section:last-of-type { border-bottom: none; }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.9rem;
+    margin-bottom: 1.25rem;
+    color: #1A202C !important;
+  }
+  h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.35rem;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--slate-700) !important;
+  }
+  p { color: #1A202C !important; }
+  p + p { margin-top: 1rem; }
+
+  .key-term {
+    font-weight: 700;
+    border-bottom: 2px solid var(--gold);
+    cursor: help;
+  }
+
+  /* ---- THOUGHT PROMPT ---- */
+  .thought-prompt {
+    background: var(--gold-light);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+  }
+  .thought-prompt strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+  }
+
+  /* ---- DIAGRAM + SIDEBAR LAYOUT ---- */
+  .diagram-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.25rem;
+    align-items: stretch;
+    overflow: visible;
+  }
+  @media (max-width: 840px) {
+    .diagram-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---- CONTROLS SIDEBAR ---- */
+  .controls-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: visible;
+  }
+
+  .controls-panel {
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 12px;
+    padding: 1.1rem;
+    margin-bottom: 0;
+    overflow: visible;
+  }
+  .controls-panel h3 {
+    margin: 0 0 0.7rem;
+    padding-bottom: 0.5rem;
+    font-size: 1.05rem;
+    color: var(--slate-900) !important;
+  }
+  .controls-panel h3.border-pressure {
+    border-bottom: 2px solid var(--pressure-blue);
+  }
+  .controls-panel h3.border-substance {
+    border-bottom: 2px solid var(--imf-teal);
+  }
+
+  /* ---- PRESSURE DISPLAY (compact) ---- */
+  .pressure-display {
+    background: linear-gradient(135deg, var(--pressure-blue), #1E4E8C);
+    color: #fff !important;
+    padding: 0.35rem 0.6rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .pressure-display .p-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+  }
+  .pressure-display .p-label {
+    font-size: 0.72rem;
+    opacity: 0.8;
+  }
+
+  /* ---- SLIDER ---- */
+  .slider-wrap { margin-bottom: 0.5rem; }
+  .slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--slate-300);
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--pressure-blue);
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--pressure-blue);
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--slate-500) !important;
+    margin-top: 0.3rem;
+  }
+
+  /* ---- PRESET BUTTONS (compact 2x2) ---- */
+  .preset-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+  .preset-btn {
+    padding: 0.4rem 0.3rem;
+    border-radius: 6px;
+    border: 2px solid var(--slate-300);
+    background: #fff;
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-align: center;
+    line-height: 1.3;
+    transition: all 0.2s;
+    color: var(--slate-700) !important;
+  }
+  .preset-btn:hover {
+    border-color: var(--pressure-blue);
+    background: var(--pressure-light);
+    transform: translateY(-1px);
+  }
+  .preset-btn.active-preset {
+    border-color: var(--pressure-blue);
+    background: var(--pressure-light);
+    box-shadow: 0 1px 4px rgba(43,108,176,0.2);
+  }
+  .preset-btn .preset-name { display: block; font-weight: 700; }
+  .preset-btn .preset-val { display: block; font-weight: 400; font-size: 0.68rem; color: var(--slate-500); }
+
+  /* ---- MULTI-SELECT DROPDOWN ---- */
+  .dropdown-container {
+    position: relative;
+    margin-bottom: 0.65rem;
+    z-index: 500;
+  }
+  .dropdown-trigger {
+    width: 100%;
+    padding: 0.5rem 0.85rem;
+    padding-right: 1.8rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: #fff;
+    color: var(--slate-500) !important;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.65rem center;
+    text-align: left;
+  }
+  .dropdown-trigger:hover,
+  .dropdown-trigger.open {
+    border-color: var(--imf-teal);
+  }
+  .dropdown-trigger .count-badge {
+    display: inline-block;
+    background: var(--imf-teal);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.05rem 0.45rem;
+    border-radius: 10px;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+  }
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: -2px;
+    right: -2px;
+    background: #fff !important;
+    border: 2px solid var(--imf-teal);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    z-index: 500;
+    max-height: 340px;
+    overflow-y: auto;
+  }
+  .dropdown-menu.show { display: block; }
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--slate-100);
+    font-size: 0.82rem;
+    background: #fff !important;
+  }
+  .dropdown-item:last-child { border-bottom: none; }
+  .dropdown-item:hover { background: var(--slate-100) !important; }
+  .dropdown-item input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+    accent-color: var(--imf-teal);
+  }
+  .dropdown-item-info { flex: 1; min-width: 0; }
+  .dropdown-item-name {
+    font-weight: 700;
+    font-size: 0.82rem;
+    line-height: 1.3;
+    color: #1A202C !important;
+  }
+  .dropdown-item-meta {
+    font-size: 0.72rem;
+    color: var(--slate-500) !important;
+    line-height: 1.2;
+  }
+  .dropdown-item .color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ---- SUBSTANCE SUMMARY PILLS ---- */
+  .substance-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    transition: opacity 0.15s, visibility 0.15s;
+  }
+  .substance-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1.5px solid;
+    cursor: default;
+    line-height: 1.3;
+  }
+  .substance-pill .pill-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .substance-pill .pill-bp {
+    font-weight: 400;
+    font-size: 0.68rem;
+    opacity: 0.8;
+  }
+  .substance-pill .pill-remove {
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1;
+    opacity: 0.6;
+    margin-left: 0.1rem;
+    font-weight: 400;
+  }
+  .substance-pill .pill-remove:hover { opacity: 1; }
+
+  /* ---- GRAPH ---- */
+  .graph-wrap {
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 12px;
+    padding: 1.25rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  canvas {
+    width: 100%;
+    flex: 1;
+    min-height: 380px;
+    cursor: crosshair;
+    display: block;
+  }
+
+  /* ---- STATS BAR ---- */
+  .stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+  .stats-bar-item {
+    flex: 1;
+    min-width: 100px;
+    padding: 0.55rem 0.6rem;
+    text-align: center;
+    border-right: 1px solid var(--slate-300);
+  }
+  .stats-bar-item:last-child { border-right: none; }
+  .stats-bar-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.1rem;
+  }
+  .stats-bar-value {
+    display: block;
+    font-family: 'DM Serif Display', serif;
+    font-size: 0.92rem;
+    color: var(--slate-900) !important;
+    font-weight: 400;
+  }
+  @media (max-width: 640px) {
+    .stats-bar { flex-direction: column; }
+    .stats-bar-item {
+      border-right: none;
+      border-bottom: 1px solid var(--slate-300);
+      padding: 0.45rem;
+    }
+    .stats-bar-item:last-child { border-bottom: none; }
+  }
+
+  /* ---- LEGEND CARDS ---- */
+  .legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 640px) { .legend-grid { grid-template-columns: 1fr; } }
+
+  .legend-card {
+    border-radius: 10px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .legend-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .legend-card h4 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+  }
+  .legend-card p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .legend-card.card-imf { background: #ECFDF5; border: 1px solid rgba(5,150,105,0.2); }
+  .legend-card.card-imf::before { background: #059669; }
+  .legend-card.card-imf h4 { color: #059669 !important; }
+
+  .legend-card.card-temp { background: var(--gold-light); border: 1px solid rgba(183,121,31,0.2); }
+  .legend-card.card-temp::before { background: var(--gold); }
+  .legend-card.card-temp h4 { color: var(--gold) !important; }
+
+  .legend-card.card-bp { background: var(--pressure-light); border: 1px solid rgba(43,108,176,0.2); }
+  .legend-card.card-bp::before { background: var(--pressure-blue); }
+  .legend-card.card-bp h4 { color: var(--pressure-blue) !important; }
+
+  .legend-card.card-press { background: var(--ether-light); border: 1px solid rgba(197,48,48,0.2); }
+  .legend-card.card-press::before { background: #C53030; }
+  .legend-card.card-press h4 { color: #C53030 !important; }
+
+  /* ---- FOOTER ---- */
+  footer {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    font-size: 0.85rem;
+    color: var(--slate-500);
+    border-top: 1px solid var(--slate-300);
+    background-color: #FAFAF7;
+  }
+
+  /* ---- DARK MODE OVERRIDE ---- */
+  @media (prefers-color-scheme: dark) {
+    html, body {
+      background-color: #FAFAF7 !important;
+      color: #1A202C !important;
+    }
+    .container, section, footer,
+    .controls-panel, .controls-sidebar, .graph-wrap, .legend-card,
+    .thought-prompt, .stats-bar, .dropdown-menu, .dropdown-trigger,
+    .preset-btn, .substance-pill, .quick-check, .qc-option,
+    .match-select, .match-term, .rank-chip, .rank-slot,
+    .poe-choice, .mystery-suspect, .hunt-input, .ch-task {
+      background-color: inherit;
+      color: inherit;
+    }
+    h2, h3, h4, p, span, div, button, label {
+      color: inherit !important;
+    }
+  }
+
+  h2 { color: #1A202C !important; }
+  .legend-card p { color: #334155 !important; }
+  .thought-prompt { color: #1A202C !important; }
+
+  /* ---- QUICK CHECK QUESTIONS ---- */
+  .quick-check {
+    background: var(--parchment);
+    border: 2px solid var(--slate-300);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin: 2rem 0 0.5rem;
+  }
+  .qc-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .qc-header .qc-badge {
+    background: #5B6ABF;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 0.25rem 0.7rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .qc-header h3 {
+    margin: 0 !important;
+    font-size: 1.15rem;
+    color: #1A202C !important;
+  }
+  .qc-question {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--slate-100);
+  }
+  .qc-question:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .qc-question-text {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    color: #1A202C !important;
+  }
+  .qc-options { display: flex; flex-direction: column; gap: 0.5rem; }
+  .qc-option {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.6rem 1rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.92rem;
+    transition: all 0.2s;
+    color: #1A202C !important;
+    line-height: 1.5;
+  }
+  .qc-option:hover:not(.locked) {
+    border-color: #5B6ABF;
+    background: #F0F0FF;
+  }
+  .qc-option .qc-letter {
+    flex-shrink: 0;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--slate-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--slate-500) !important;
+    transition: all 0.2s;
+  }
+  .qc-option.correct-pick {
+    border-color: var(--success) !important;
+    background: var(--success-light) !important;
+  }
+  .qc-option.correct-pick .qc-letter {
+    background: var(--success) !important;
+    color: #fff !important;
+  }
+  .qc-option.wrong-pick {
+    border-color: #C53030 !important;
+    background: #FFF5F5 !important;
+  }
+  .qc-option.wrong-pick .qc-letter {
+    background: #C53030 !important;
+    color: #fff !important;
+  }
+  .qc-option.reveal-correct {
+    border-color: var(--success) !important;
+    border-style: dashed;
+    background: var(--success-light) !important;
+  }
+  .qc-option.reveal-correct .qc-letter {
+    background: var(--success) !important;
+    color: #fff !important;
+  }
+  .qc-option.multi-selected {
+    border-color: #5B6ABF;
+    background: #F0F0FF;
+  }
+  .qc-option.multi-selected .qc-letter {
+    background: #5B6ABF;
+    color: #fff !important;
+  }
+  .qc-feedback-inline {
+    margin-top: 0.6rem;
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    display: none;
+    animation: fadeSlideIn 0.3s ease-out;
+  }
+  .qc-feedback-inline.show { display: block; }
+  .qc-feedback-inline.correct {
+    background: var(--success-light) !important;
+    color: #2F855A !important;
+  }
+  .qc-feedback-inline.incorrect {
+    background: #FFF5F5 !important;
+    color: #C53030 !important;
+  }
+  .qc-check-btn {
+    display: inline-block;
+    margin-top: 0.75rem;
+    padding: 0.55rem 1.4rem;
+    border: 2px solid #5B6ABF;
+    border-radius: 8px;
+    background: #5B6ABF;
+    color: #fff !important;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .qc-check-btn:hover {
+    background: #4A59A8;
+    border-color: #4A59A8;
+  }
+  .qc-check-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* ---- MATCHING GRID ---- */
+  .match-instruction {
+    font-size: 0.92rem;
+    color: var(--slate-500) !important;
+    margin-bottom: 1rem;
+  }
+  .match-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.6rem 1rem;
+    align-items: center;
+  }
+  @media (max-width: 500px) { .match-grid { gap: 0.5rem 0.5rem; } }
+  .match-term {
+    padding: 0.6rem 1rem;
+    background: var(--slate-100);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: right;
+    color: #1A202C !important;
+  }
+  .match-arrow {
+    color: var(--slate-300) !important;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  .match-select {
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 8px;
+    background: #fff;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: #1A202C !important;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+  .match-select:focus { border-color: #5B6ABF; outline: none; }
+  .match-select.match-correct { border-color: var(--success) !important; background-color: var(--success-light) !important; }
+  .match-select.match-wrong { border-color: #C53030 !important; background-color: #FFF5F5 !important; }
+  .match-check-btn {
+    display: block;
+    margin: 1rem auto 0;
+    padding: 0.55rem 2rem;
+    border-radius: 8px;
+    border: 2px solid #5B6ABF;
+    background: #5B6ABF;
+    color: #fff !important;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .match-check-btn:hover { background: #4A5899; }
+  .match-check-btn:disabled { opacity: 0.5; cursor: default; }
+  .match-result {
+    text-align: center;
+    margin-top: 0.75rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+    display: none;
+  }
+  .match-result.show { display: block; animation: fadeSlideIn 0.3s ease-out; }
+  .match-result.correct { color: #2F855A !important; }
+  .match-result.incorrect { color: #C53030 !important; }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---- CHALLENGE CARDS ---- */
+  .ch-badge { background: #7C3AED !important; }
+  .ch-task, .ch-scenario {
+    background: var(--slate-100);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: #1A202C !important;
+  }
+  .ch-task-label {
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #7C3AED !important;
+    margin-bottom: 0.35rem;
+  }
+  .ch-scenario {
+    border-left: 4px solid #7C3AED;
+    background: #FAF5FF;
+    font-style: italic;
+  }
+  .ch-btn {
+    padding: 0.55rem 1.6rem;
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .ch-btn-primary {
+    background: #7C3AED;
+    border-color: #7C3AED;
+    color: #fff !important;
+  }
+  .ch-btn-primary:hover { background: #6D28D9; border-color: #6D28D9; }
+  .ch-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .ch-btn-secondary {
+    background: #fff;
+    border-color: var(--slate-300);
+    color: var(--slate-700) !important;
+  }
+  .ch-btn-secondary:hover { border-color: #7C3AED; color: #7C3AED !important; }
+  .ch-btn-secondary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* ---- RANKING CHALLENGE ---- */
+  .rank-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    margin: 1rem 0 0.75rem;
+    background: var(--slate-100);
+    border: 2px dashed var(--slate-300);
+    border-radius: 10px;
+    min-height: 2.8rem;
+  }
+  .rank-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    border: 2px solid var(--slate-300);
+    background: #fff;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+    color: #1A202C !important;
+  }
+  .rank-chip:hover:not(.used) { border-color: #7C3AED; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(124,58,237,0.15); }
+  .rank-chip.used { opacity: 0.3; cursor: default; pointer-events: none; }
+  .rank-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .rank-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+  .rank-slot {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.45rem 0.75rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 8px;
+    background: #fff;
+    min-height: 2.4rem;
+    transition: all 0.3s;
+  }
+  .rank-slot.filled { border-color: #7C3AED; border-style: solid; }
+  .rank-slot.rank-correct { border-color: var(--success) !important; background: var(--success-light) !important; }
+  .rank-slot.rank-wrong { border-color: #C53030 !important; background: #FFF5F5 !important; }
+  .rank-num {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--slate-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--slate-500) !important;
+    flex-shrink: 0;
+  }
+  .rank-slot.rank-correct .rank-num { background: var(--success); color: #fff !important; }
+  .rank-slot.rank-wrong .rank-num { background: #C53030; color: #fff !important; }
+  .rank-label {
+    font-size: 0.72rem;
+    color: var(--slate-500) !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .rank-placed {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1A202C !important;
+    margin-left: auto;
+  }
+  .rank-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+  .rank-score {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    display: none;
+    animation: fadeSlideIn 0.3s ease-out;
+  }
+  .rank-score.show { display: block; }
+
+  /* ---- PREDICT-OBSERVE-EXPLAIN ---- */
+  .poe-step { margin-top: 1.25rem; }
+  .poe-step.poe-locked {
+    opacity: 0.35;
+    pointer-events: none;
+    filter: blur(1px);
+    transition: all 0.4s ease;
+  }
+  .poe-step.poe-unlocked {
+    opacity: 1;
+    pointer-events: auto;
+    filter: none;
+    animation: fadeSlideIn 0.4s ease-out;
+  }
+  .poe-options {
+    display: flex;
+    gap: 0.65rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .poe-choice {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    flex: 1;
+    min-width: 160px;
+    transition: all 0.2s;
+    color: #1A202C !important;
+  }
+  .poe-choice:hover:not(.locked) { border-color: #7C3AED; background: #FAF5FF; }
+  .poe-choice.selected { border-color: #7C3AED; background: #FAF5FF; box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
+  .poe-choice.locked { cursor: default; }
+  .poe-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--slate-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    color: var(--slate-500) !important;
+  }
+  .poe-choice.selected .poe-icon { background: #7C3AED; color: #fff !important; }
+  .poe-sub { font-size: 0.8rem; color: var(--slate-500) !important; }
+  .poe-reveal-box {
+    margin-top: 0.75rem;
+    background: #FAF5FF;
+    border: 2px solid #DDD6FE;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .poe-reveal-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.92rem;
+    padding: 0.2rem 0;
+    color: #1A202C !important;
+  }
+  .poe-answer-row {
+    border-top: 2px solid #DDD6FE;
+    margin-top: 0.35rem;
+    padding-top: 0.55rem;
+    color: #7C3AED !important;
+    font-weight: 600;
+  }
+  .poe-answer-row strong { color: #7C3AED !important; }
+
+  /* ---- PRESSURE HUNT ---- */
+  .hunt-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.25rem 0 1rem;
+    flex-wrap: wrap;
+  }
+  .hunt-label {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: #1A202C !important;
+  }
+  .hunt-field {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .hunt-input {
+    width: 6rem;
+    padding: 0.55rem 0.75rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-align: center;
+    color: #1A202C !important;
+    background: #fff;
+    transition: border-color 0.2s;
+  }
+  .hunt-input:focus { border-color: #7C3AED; outline: none; }
+  .hunt-input.hunt-correct { border-color: var(--success) !important; background: var(--success-light) !important; }
+  .hunt-input.hunt-wrong { border-color: #C53030 !important; background: #FFF5F5 !important; }
+  .hunt-unit {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--slate-500) !important;
+  }
+
+  /* ---- MYSTERY SUBSTANCE ---- */
+  .mystery-lineup {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+  @media (max-width: 600px) { .mystery-lineup { grid-template-columns: repeat(2, 1fr); } }
+  .mystery-suspect {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.75rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    color: #1A202C !important;
+  }
+  .mystery-suspect:hover:not(.locked) { border-color: #7C3AED; background: #FAF5FF; }
+  .mystery-suspect.picked { border-color: #7C3AED; background: #FAF5FF; box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
+  .mystery-suspect.suspect-correct { border-color: var(--success) !important; background: var(--success-light) !important; }
+  .mystery-suspect.suspect-wrong { border-color: #C53030 !important; background: #FFF5F5 !important; }
+  .mystery-suspect.suspect-reveal { border-color: var(--success) !important; border-style: dashed; background: var(--success-light) !important; }
+  .mystery-suspect.locked { cursor: default; }
+  .mystery-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== HERO ====== -->
+<div class="hero">
+  <h1>Interactive Vapor Pressure Curves</h1>
+  <p class="subtitle">How do intermolecular forces, temperature, and external pressure affect boiling points?</p>
+  <div class="tag-bar">
+    <span class="tag-imf">IMF Strength</span>
+    <span class="tag-temp">Temperature</span>
+    <span class="tag-bp">Boiling Points</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ====== INTERACTIVE SECTION ====== -->
+<section>
+  <p>
+    Each substance has a characteristic <span class="key-term" title="The pressure exerted by the vapor of a liquid in equilibrium with its liquid phase at a given temperature.">vapor pressure curve</span> that depends on its <span class="key-term" title="Attractive forces between molecules: London dispersion, dipole-dipole, and hydrogen bonding.">intermolecular forces</span>. The curve shows how vapor pressure rises exponentially with temperature. A substance boils when its vapor pressure equals the <span class="key-term" title="The total pressure exerted by the atmosphere above the liquid.">atmospheric pressure</span> above it. Adjust the pressure and select substances to explore these relationships.
+  </p>
+
+  <!-- Diagram + Controls: side by side -->
+  <div class="diagram-layout" style="margin-top:1.25rem;">
+    <!-- Graph (left) -->
+    <div class="graph-wrap">
+      <canvas id="graphCanvas"></canvas>
+    </div>
+
+    <!-- Controls Sidebar (right) -->
+    <div class="controls-sidebar">
+
+      <!-- Pressure Panel -->
+      <div class="controls-panel">
+        <h3 class="border-pressure">Atmospheric Pressure</h3>
+        <div class="pressure-display">
+          <div class="p-value" id="pressureValue">760 mmHg</div>
+          <div class="p-label" id="pressureLabel">Sea Level (1 atm)</div>
+        </div>
+        <div class="slider-wrap">
+          <input type="range" min="200" max="1520" value="760" class="slider" id="pressureSlider">
+          <div class="slider-labels">
+            <span>200 mmHg</span>
+            <span>1520 mmHg</span>
+          </div>
+        </div>
+        <div class="preset-grid" id="presetGrid">
+          <button class="preset-btn" data-pressure="400" onclick="setPresetPressure(400)">
+            <span class="preset-name">Everest</span>
+            <span class="preset-val">~400 mmHg</span>
+          </button>
+          <button class="preset-btn" data-pressure="526" onclick="setPresetPressure(526)">
+            <span class="preset-name">Denver</span>
+            <span class="preset-val">526 mmHg</span>
+          </button>
+          <button class="preset-btn active-preset" data-pressure="760" onclick="setPresetPressure(760)">
+            <span class="preset-name">Sea Level</span>
+            <span class="preset-val">760 mmHg</span>
+          </button>
+          <button class="preset-btn" data-pressure="1520" onclick="setPresetPressure(1520)">
+            <span class="preset-name">Pressure Cooker</span>
+            <span class="preset-val">1520 mmHg</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Substance Panel -->
+      <div class="controls-panel">
+        <h3 class="border-substance">Substances</h3>
+        <div class="dropdown-container" id="dropdownContainer">
+          <button class="dropdown-trigger" id="dropdownTrigger">
+            Select substances...
+          </button>
+          <div class="dropdown-menu" id="dropdownMenu"></div>
+        </div>
+        <div class="substance-pills" id="substancePills"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar" id="statsBar"></div>
+
+  <div class="thought-prompt">
+    <strong>Stop and Think</strong>
+    At sea level, water boils at 100 degrees C. Use the slider to set the pressure to Denver's altitude (526 mmHg). What happens to water's boiling point? Why would this matter if you were trying to boil pasta in Denver?
+  </div>
+</section>
+
+<!-- ====== UNDERSTANDING ====== -->
+<section>
+  <h2>Understanding the Relationships</h2>
+  <p>
+    The graph above is built from a single principle: a substance boils when its <span class="key-term" title="The pressure exerted by the vapor of a liquid in equilibrium with its liquid phase at a given temperature.">vapor pressure</span> equals the <span class="key-term" title="The total pressure exerted by the atmosphere above the liquid.">atmospheric pressure</span> above it. Each curve shows how a substance's vapor pressure rises with temperature. Where the curve crosses the horizontal pressure line is that substance's boiling point at the current atmospheric pressure.
+  </p>
+
+  <div class="legend-grid">
+    <div class="legend-card card-imf">
+      <h4>IMF Strength and Vapor Pressure</h4>
+      <p><strong>Stronger intermolecular forces</strong> hold molecules more tightly in the liquid phase. Fewer molecules escape into the gas phase at any given temperature, producing a <strong>lower vapor pressure</strong>. On the graph, substances with stronger IMFs have curves that sit lower and farther to the right.</p>
+    </div>
+    <div class="legend-card card-temp">
+      <h4>Temperature and Vapor Pressure</h4>
+      <p>As temperature increases, molecules gain kinetic energy and more of them have enough energy to overcome IMFs and enter the gas phase. Vapor pressure increases <strong>exponentially</strong> with temperature, which is why the curves are steep rather than straight lines.</p>
+    </div>
+    <div class="legend-card card-bp">
+      <h4>Boiling Point Definition</h4>
+      <p>The boiling point is the temperature at which <strong>vapor pressure equals atmospheric pressure</strong>. The dashed green line on the graph represents the current atmospheric pressure. Where it intersects each curve marks that substance's boiling point at the current conditions.</p>
+    </div>
+    <div class="legend-card card-press">
+      <h4>External Pressure and Boiling Point</h4>
+      <p><strong>Lower atmospheric pressure</strong> (high altitude) means molecules need less energy to escape, producing a <strong>lower boiling point</strong>. <strong>Higher pressure</strong> (pressure cooker) requires more energy, producing a <strong>higher boiling point</strong>. The substance itself does not change; only the threshold it must reach changes.</p>
+    </div>
+  </div>
+
+  <div class="thought-prompt">
+    <strong>Challenge Question</strong>
+    Compare water and ethanol. Both exhibit hydrogen bonding, yet water has a significantly higher boiling point. What structural difference between the two molecules accounts for water having stronger intermolecular forces and therefore a lower vapor pressure at any given temperature?
+  </div>
+</section>
+
+<!-- ====== SECTION 3: CONCEPT CHALLENGES ====== -->
+<section>
+  <h2>Test Your Understanding</h2>
+  <p>
+    Each challenge below requires you to use the interactive graph. You will not be able to answer correctly by guessing &mdash; the tool is your lab bench. Scroll up, manipulate the controls, then come back and commit your answers.
+  </p>
+
+  <!-- CHALLENGE 1: BOILING POINT RANKING -->
+  <div class="quick-check challenge-card" id="ch1">
+    <div class="qc-header">
+      <span class="qc-badge ch-badge">Challenge 1</span>
+      <h3>Boiling Point Lineup</h3>
+    </div>
+    <div class="ch-task">
+      <div class="ch-task-label">Your Mission</div>
+      Without enabling any substances yet, predict the boiling point order at 760 mmHg (sea level). Click the substances below from <strong>lowest boiling point</strong> (boils first) to <strong>highest</strong> (boils last). Then check your ranking against the tool.
+    </div>
+
+    <div class="rank-pool" id="rank-pool">
+      <div class="rank-chip" data-key="water" onclick="pickRank(this)"><span class="rank-dot" style="background:var(--water);"></span>Water</div>
+      <div class="rank-chip" data-key="ethanol" onclick="pickRank(this)"><span class="rank-dot" style="background:var(--ethanol);"></span>Ethanol</div>
+      <div class="rank-chip" data-key="acetone" onclick="pickRank(this)"><span class="rank-dot" style="background:var(--acetone);"></span>Acetone</div>
+      <div class="rank-chip" data-key="ether" onclick="pickRank(this)"><span class="rank-dot" style="background:var(--ether);"></span>Diethyl Ether</div>
+      <div class="rank-chip" data-key="methanol" onclick="pickRank(this)"><span class="rank-dot" style="background:var(--methanol);"></span>Methanol</div>
+      <div class="rank-chip" data-key="hexane" onclick="pickRank(this)"><span class="rank-dot" style="background:var(--hexane);"></span>Hexane</div>
+      <div class="rank-chip" data-key="dcm" onclick="pickRank(this)"><span class="rank-dot" style="background:var(--dcm);"></span>Dichloromethane</div>
+      <div class="rank-chip" data-key="chloroform" onclick="pickRank(this)"><span class="rank-dot" style="background:var(--chloroform);"></span>Chloroform</div>
+    </div>
+
+    <div class="rank-slots" id="rank-slots">
+      <div class="rank-slot" data-pos="1"><span class="rank-num">1</span><span class="rank-label">Lowest BP</span><span class="rank-placed" id="rank-s1"></span></div>
+      <div class="rank-slot" data-pos="2"><span class="rank-num">2</span><span class="rank-label"></span><span class="rank-placed" id="rank-s2"></span></div>
+      <div class="rank-slot" data-pos="3"><span class="rank-num">3</span><span class="rank-label"></span><span class="rank-placed" id="rank-s3"></span></div>
+      <div class="rank-slot" data-pos="4"><span class="rank-num">4</span><span class="rank-label"></span><span class="rank-placed" id="rank-s4"></span></div>
+      <div class="rank-slot" data-pos="5"><span class="rank-num">5</span><span class="rank-label"></span><span class="rank-placed" id="rank-s5"></span></div>
+      <div class="rank-slot" data-pos="6"><span class="rank-num">6</span><span class="rank-label"></span><span class="rank-placed" id="rank-s6"></span></div>
+      <div class="rank-slot" data-pos="7"><span class="rank-num">7</span><span class="rank-label"></span><span class="rank-placed" id="rank-s7"></span></div>
+      <div class="rank-slot" data-pos="8"><span class="rank-num">8</span><span class="rank-label">Highest BP</span><span class="rank-placed" id="rank-s8"></span></div>
+    </div>
+
+    <div class="rank-controls">
+      <button class="ch-btn ch-btn-secondary" id="rank-undo-btn" onclick="undoRank()" disabled>Undo Last</button>
+      <button class="ch-btn ch-btn-secondary" id="rank-reset-btn" onclick="resetRank()">Reset</button>
+      <button class="ch-btn ch-btn-primary" id="rank-check-btn" onclick="checkRank()" disabled>Check My Ranking</button>
+    </div>
+    <div class="rank-score" id="rank-score"></div>
+    <div class="qc-feedback-inline" id="rank-fb"></div>
+  </div>
+
+  <!-- CHALLENGE 2: PREDICT-OBSERVE-EXPLAIN -->
+  <div class="quick-check challenge-card" id="ch2">
+    <div class="qc-header">
+      <span class="qc-badge ch-badge">Challenge 2</span>
+      <h3>The Counterintuitive Pair</h3>
+    </div>
+    <div class="ch-task">
+      <div class="ch-task-label">The Setup</div>
+      Acetone is a <strong>polar</strong> molecule (dipole-dipole forces). Hexane is completely <strong>nonpolar</strong> (London dispersion only). General chemistry teaches that dipole-dipole forces are stronger than London dispersion forces.
+    </div>
+
+    <div class="poe-step" id="poe-predict">
+      <div class="ch-task-label">Step 1: Commit Your Prediction</div>
+      <p style="margin-bottom:0.6rem;">Based on the IMF hierarchy alone, which substance do you <em>expect</em> to have the higher boiling point? <strong>You must commit before the next step unlocks.</strong></p>
+      <div class="poe-options" id="poe-options">
+        <div class="poe-choice" onclick="commitPrediction('acetone')">
+          <span class="poe-icon">A</span>
+          <div><strong>Acetone</strong><br><span class="poe-sub">Dipole-dipole &gt; London dispersion</span></div>
+        </div>
+        <div class="poe-choice" onclick="commitPrediction('hexane')">
+          <span class="poe-icon">H</span>
+          <div><strong>Hexane</strong><br><span class="poe-sub">Larger molecule, more surface area</span></div>
+        </div>
+        <div class="poe-choice" onclick="commitPrediction('equal')">
+          <span class="poe-icon">=</span>
+          <div><strong>About equal</strong><br><span class="poe-sub">Effects cancel out</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="poe-step poe-locked" id="poe-observe">
+      <div class="ch-task-label">Step 2: Check the Graph</div>
+      <p>Now enable <strong>only acetone and hexane</strong> in the interactive at 760 mmHg. Read their boiling points from the stats bar.</p>
+      <div class="poe-reveal-box" id="poe-reveal-box">
+        <div class="poe-reveal-row">
+          <span>Your prediction:</span>
+          <strong id="poe-user-pick">--</strong>
+        </div>
+        <div class="poe-reveal-row">
+          <span>Acetone BP:</span>
+          <strong>56.5 &deg;C</strong>
+        </div>
+        <div class="poe-reveal-row">
+          <span>Hexane BP:</span>
+          <strong>68.7 &deg;C</strong>
+        </div>
+        <div class="poe-reveal-row poe-answer-row">
+          <span>Actual winner:</span>
+          <strong>Hexane boils 12 &deg;C higher</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="poe-step poe-locked" id="poe-explain">
+      <div class="ch-task-label">Step 3: Explain the Surprise</div>
+      <p>Why does hexane (London forces only) boil higher than acetone (dipole-dipole)?</p>
+      <div class="qc-options" style="margin-top:0.65rem;">
+        <div class="qc-option" onclick="checkMC('poe-explain','a')"><span class="qc-letter">A</span><span>London forces in hexane (C<sub>6</sub>H<sub>14</sub>, MW 86) accumulate over its large surface area, exceeding the total dipole-dipole attraction in smaller acetone (C<sub>3</sub>H<sub>6</sub>O, MW 58). IMF <em>type</em> alone does not determine boiling point &mdash; molecular size matters.</span></div>
+        <div class="qc-option" onclick="checkMC('poe-explain','b')"><span class="qc-letter">B</span><span>Hexane is denser than acetone, and denser liquids always boil at higher temperatures</span></div>
+        <div class="qc-option" onclick="checkMC('poe-explain','c')"><span class="qc-letter">C</span><span>The IMF hierarchy is wrong. London dispersion is actually the strongest type of intermolecular force.</span></div>
+      </div>
+      <div class="qc-feedback-inline" id="poe-explain-fb"></div>
+    </div>
+  </div>
+
+  <!-- CHALLENGE 3: PRESSURE HUNT -->
+  <div class="quick-check challenge-card" id="ch3">
+    <div class="qc-header">
+      <span class="qc-badge ch-badge">Challenge 3</span>
+      <h3>Pressure Hunt</h3>
+    </div>
+    <div class="ch-scenario">
+      A pharmaceutical chemist is extracting a heat-sensitive compound dissolved in ethanol. The compound degrades above 65 &deg;C, so the chemist needs to boil off the ethanol at <strong>exactly 65 &deg;C</strong> using a vacuum pump to lower the pressure.
+    </div>
+
+    <div class="ch-task" style="margin-top:0.75rem;">
+      <div class="ch-task-label">Your Mission</div>
+      Enable <strong>ethanol</strong> in the interactive. Slowly adjust the pressure slider until ethanol's boiling point (shown in the stats bar) reads as close to 65 &deg;C as possible. Record the pressure you found.
+    </div>
+
+    <div class="hunt-input-row">
+      <label class="hunt-label" for="hunt-answer">Required vacuum pressure:</label>
+      <div class="hunt-field">
+        <input type="number" class="hunt-input" id="hunt-answer" placeholder="---" min="100" max="2000">
+        <span class="hunt-unit">mmHg</span>
+      </div>
+    </div>
+
+    <button class="ch-btn ch-btn-primary" id="hunt-check-btn" onclick="checkHunt()">Check My Pressure</button>
+    <div class="qc-feedback-inline" id="hunt-fb"></div>
+  </div>
+
+  <!-- CHALLENGE 4: MYSTERY SUBSTANCE -->
+  <div class="quick-check challenge-card" id="ch4">
+    <div class="qc-header">
+      <span class="qc-badge ch-badge">Challenge 4</span>
+      <h3>Mystery Substance</h3>
+    </div>
+    <div class="ch-scenario">
+      A lab technician records that an unknown solvent boils at approximately <strong>51 &deg;C</strong> in a vacuum chamber set to <strong>526 mmHg</strong>. Your job: identify the substance using the interactive tool.
+    </div>
+
+    <div class="ch-task" style="margin-top:0.75rem;">
+      <div class="ch-task-label">How to Investigate</div>
+      Set the pressure to 526 mmHg (Denver preset). Enable substances one at a time and read each boiling point from the stats bar. Which substance boils closest to 51 &deg;C at this pressure?
+    </div>
+
+    <div class="mystery-lineup" id="mystery-lineup">
+      <div class="mystery-suspect" data-key="water" onclick="pickSuspect(this)">
+        <span class="mystery-dot" style="background:var(--water);"></span>Water
+      </div>
+      <div class="mystery-suspect" data-key="ethanol" onclick="pickSuspect(this)">
+        <span class="mystery-dot" style="background:var(--ethanol);"></span>Ethanol
+      </div>
+      <div class="mystery-suspect" data-key="acetone" onclick="pickSuspect(this)">
+        <span class="mystery-dot" style="background:var(--acetone);"></span>Acetone
+      </div>
+      <div class="mystery-suspect" data-key="methanol" onclick="pickSuspect(this)">
+        <span class="mystery-dot" style="background:var(--methanol);"></span>Methanol
+      </div>
+      <div class="mystery-suspect" data-key="hexane" onclick="pickSuspect(this)">
+        <span class="mystery-dot" style="background:var(--hexane);"></span>Hexane
+      </div>
+      <div class="mystery-suspect" data-key="dcm" onclick="pickSuspect(this)">
+        <span class="mystery-dot" style="background:var(--dcm);"></span>DCM
+      </div>
+      <div class="mystery-suspect" data-key="chloroform" onclick="pickSuspect(this)">
+        <span class="mystery-dot" style="background:var(--chloroform);"></span>Chloroform
+      </div>
+      <div class="mystery-suspect" data-key="ether" onclick="pickSuspect(this)">
+        <span class="mystery-dot" style="background:var(--ether);"></span>Diethyl Ether
+      </div>
+    </div>
+    <button class="ch-btn ch-btn-primary" id="mystery-check-btn" onclick="checkMystery()" disabled>Lock In My Answer</button>
+    <div class="qc-feedback-inline" id="mystery-fb"></div>
+  </div>
+
+  <!-- CHALLENGE 5: IMF MATCHING -->
+  <div class="quick-check challenge-card" id="ch5">
+    <div class="qc-header">
+      <span class="qc-badge ch-badge">Challenge 5</span>
+      <h3>IMF Classification</h3>
+    </div>
+    <div class="ch-task">
+      <div class="ch-task-label">Your Mission</div>
+      Enable all eight substances in the interactive at 760 mmHg. For each substance below, select the <strong>dominant intermolecular force</strong> that explains its position on the graph. Use the curve positions, boiling points, and the IMF labels in the substance dropdown to guide your answers.
+    </div>
+
+    <div class="match-grid">
+      <div class="match-term">Water (H<sub>2</sub>O) &mdash; BP 100.0 &deg;C</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-1" data-answer="hbond">
+        <option value="">Choose IMF...</option>
+        <option value="london">London dispersion</option>
+        <option value="dipole">Dipole-dipole</option>
+        <option value="hbond">Hydrogen bonding</option>
+      </select>
+
+      <div class="match-term">Diethyl Ether (C<sub>4</sub>H<sub>10</sub>O) &mdash; BP 34.6 &deg;C</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-2" data-answer="dipole">
+        <option value="">Choose IMF...</option>
+        <option value="london">London dispersion</option>
+        <option value="dipole">Dipole-dipole</option>
+        <option value="hbond">Hydrogen bonding</option>
+      </select>
+
+      <div class="match-term">Hexane (C<sub>6</sub>H<sub>14</sub>) &mdash; BP 68.7 &deg;C</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-3" data-answer="london">
+        <option value="">Choose IMF...</option>
+        <option value="london">London dispersion</option>
+        <option value="dipole">Dipole-dipole</option>
+        <option value="hbond">Hydrogen bonding</option>
+      </select>
+
+      <div class="match-term">Ethanol (C<sub>2</sub>H<sub>5</sub>OH) &mdash; BP 78.4 &deg;C</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-4" data-answer="hbond">
+        <option value="">Choose IMF...</option>
+        <option value="london">London dispersion</option>
+        <option value="dipole">Dipole-dipole</option>
+        <option value="hbond">Hydrogen bonding</option>
+      </select>
+
+      <div class="match-term">Acetone (C<sub>3</sub>H<sub>6</sub>O) &mdash; BP 56.5 &deg;C</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-5" data-answer="dipole">
+        <option value="">Choose IMF...</option>
+        <option value="london">London dispersion</option>
+        <option value="dipole">Dipole-dipole</option>
+        <option value="hbond">Hydrogen bonding</option>
+      </select>
+
+      <div class="match-term">Chloroform (CHCl<sub>3</sub>) &mdash; BP 61.2 &deg;C</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-6" data-answer="dipole">
+        <option value="">Choose IMF...</option>
+        <option value="london">London dispersion</option>
+        <option value="dipole">Dipole-dipole</option>
+        <option value="hbond">Hydrogen bonding</option>
+      </select>
+    </div>
+
+    <button class="match-check-btn" id="match-check-btn" onclick="checkMatching()">Check My Answers</button>
+    <div class="match-result" id="match-result"></div>
+    <div class="qc-feedback-inline" id="match-feedback" style="margin-top:0.75rem;"></div>
+  </div>
+
+  <div class="thought-prompt">
+    <strong>Going Further</strong>
+    Imagine you are designing a perfume. You want a fragrance that evaporates easily from skin at body temperature (~37 &deg;C) but does not evaporate too quickly from the bottle at room temperature (~22 &deg;C). Based on the vapor pressure curves, which substance on the graph has properties closest to this ideal? What IMF characteristics would you look for in a perfume molecule?
+  </div>
+</section>
+
+</div>
+
+<footer>
+  Interactive Thermochemistry Module &middot; Vapor Pressure and Boiling Points
+</footer>
+
+<script>
+  /* ==============================
+     SUBSTANCE DATA (Antoine Equation)
+     log10(P_mmHg) = A - B / (C + T_celsius)
+     ============================== */
+  var substances = {
+    ether: {
+      name: 'Diethyl Ether', formula: 'C\u2084H\u2081\u2080O',
+      color: '#C53030', lightBg: '#FFF5F5', normalBP: 34.6, dipole: 1.15,
+      A: 6.92032, B: 1064.07, C: 228.800,
+      imf: 'Weak dipole-dipole', imfShort: 'Weak dipole-dipole',
+      visible: true
+    },
+    dichloromethane: {
+      name: 'Dichloromethane', formula: 'CH\u2082Cl\u2082',
+      color: '#0D9488', lightBg: '#D1FAE5', normalBP: 39.6, dipole: 1.60,
+      A: 7.40916, B: 1325.938, C: 252.615,
+      imf: 'Dipole-dipole', imfShort: 'Dipole-dipole',
+      visible: false
+    },
+    acetone: {
+      name: 'Acetone', formula: 'C\u2083H\u2086O',
+      color: '#B7791F', lightBg: '#FEFCBF', normalBP: 56.5, dipole: 2.88,
+      A: 7.11714, B: 1210.595, C: 229.664,
+      imf: 'Dipole-dipole', imfShort: 'Dipole-dipole',
+      visible: true
+    },
+    chloroform: {
+      name: 'Chloroform', formula: 'CHCl\u2083',
+      color: '#059669', lightBg: '#ECFDF5', normalBP: 61.2, dipole: 1.01,
+      A: 6.95465, B: 1170.966, C: 226.232,
+      imf: 'Dipole-dipole', imfShort: 'Dipole-dipole',
+      visible: false
+    },
+    methanol: {
+      name: 'Methanol', formula: 'CH\u2083OH',
+      color: '#6B46C1', lightBg: '#F3E8FF', normalBP: 64.7, dipole: 1.70,
+      A: 8.08097, B: 1582.271, C: 239.726,
+      imf: 'Hydrogen bonding', imfShort: 'H-bonding',
+      visible: false
+    },
+    hexane: {
+      name: 'Hexane', formula: 'C\u2086H\u2081\u2084',
+      color: '#64748B', lightBg: '#F1F5F9', normalBP: 68.7, dipole: 0.0,
+      A: 6.87601, B: 1171.17, C: 224.41,
+      imf: 'London dispersion only', imfShort: 'London only',
+      visible: false
+    },
+    ethanol: {
+      name: 'Ethanol', formula: 'C\u2082H\u2085OH',
+      color: '#C05621', lightBg: '#FFF0EB', normalBP: 78.4, dipole: 1.69,
+      A: 8.04494, B: 1554.3, C: 222.65,
+      imf: 'Hydrogen bonding', imfShort: 'H-bonding',
+      visible: true
+    },
+    water: {
+      name: 'Water', formula: 'H\u2082O',
+      color: '#2B6CB0', lightBg: '#EBF4FF', normalBP: 100.0, dipole: 1.85,
+      A: 8.07131, B: 1730.63, C: 233.426,
+      imf: 'Hydrogen bonding', imfShort: 'H-bonding',
+      visible: true
+    }
+  };
+
+  var currentPressure = 760;
+  var canvas = document.getElementById('graphCanvas');
+  var ctx = canvas.getContext('2d');
+
+  /* ==============================
+     ANTOINE CALCULATIONS
+     ============================== */
+  function calculateVaporPressure(substance, tempC) {
+    var logP = substance.A - (substance.B / (tempC + substance.C));
+    return Math.pow(10, logP);
+  }
+
+  function calculateTemperature(substance, pressureMMHg) {
+    var logP = Math.log10(pressureMMHg);
+    return (substance.B / (substance.A - logP)) - substance.C;
+  }
+
+  /* ==============================
+     MULTI-SELECT DROPDOWN
+     ============================== */
+  var dropdownTrigger = document.getElementById('dropdownTrigger');
+  var dropdownMenu = document.getElementById('dropdownMenu');
+  var dropdownContainer = document.getElementById('dropdownContainer');
+  var dropdownOpen = false;
+
+  function buildDropdown() {
+    dropdownMenu.innerHTML = '';
+    var keys = Object.keys(substances);
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var s = substances[key];
+      var item = document.createElement('label');
+      item.className = 'dropdown-item';
+      item.dataset.key = key;
+
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = s.visible;
+      cb.dataset.key = key;
+
+      var dot = document.createElement('span');
+      dot.className = 'color-dot';
+      dot.style.backgroundColor = s.color;
+
+      var info = document.createElement('div');
+      info.className = 'dropdown-item-info';
+      info.innerHTML =
+        '<div class="dropdown-item-name">' + s.name + '</div>' +
+        '<div class="dropdown-item-meta">' + s.formula + ' | ' + s.imfShort + '</div>';
+
+      item.appendChild(cb);
+      item.appendChild(dot);
+      item.appendChild(info);
+      dropdownMenu.appendChild(item);
+
+      (function(k, checkbox) {
+        checkbox.addEventListener('change', function(e) {
+          e.stopPropagation();
+          substances[k].visible = checkbox.checked;
+          updateAll();
+        });
+      })(key, cb);
+    }
+  }
+
+  function updateTriggerLabel() {
+    var count = 0;
+    var keys = Object.keys(substances);
+    for (var i = 0; i < keys.length; i++) {
+      if (substances[keys[i]].visible) count++;
+    }
+    if (count === 0) {
+      dropdownTrigger.innerHTML = 'Select substances...';
+    } else {
+      dropdownTrigger.innerHTML = count + ' substance' + (count > 1 ? 's' : '') +
+        ' selected <span class="count-badge">' + count + '</span>';
+    }
+  }
+
+  dropdownTrigger.addEventListener('click', function(e) {
+    e.stopPropagation();
+    dropdownOpen = !dropdownOpen;
+    dropdownMenu.classList.toggle('show', dropdownOpen);
+    dropdownTrigger.classList.toggle('open', dropdownOpen);
+    dropdownContainer.classList.toggle('open', dropdownOpen);
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!dropdownContainer.contains(e.target)) {
+      dropdownOpen = false;
+      dropdownMenu.classList.remove('show');
+      dropdownTrigger.classList.remove('open');
+      dropdownContainer.classList.remove('open');
+    }
+  });
+
+  /* ==============================
+     SUBSTANCE PILLS
+     ============================== */
+  function updatePills() {
+    var container = document.getElementById('substancePills');
+    container.innerHTML = '';
+    var keys = Object.keys(substances);
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var s = substances[key];
+      if (!s.visible) continue;
+
+      var bp = calculateTemperature(s, currentPressure);
+      var bpText = (bp >= -50 && bp <= 250 && !isNaN(bp) && isFinite(bp))
+        ? bp.toFixed(1) + '\u00B0C'
+        : '> range';
+
+      var pill = document.createElement('span');
+      pill.className = 'substance-pill';
+      pill.style.borderColor = s.color;
+      pill.style.backgroundColor = s.lightBg;
+      pill.style.color = s.color;
+
+      pill.innerHTML =
+        '<span class="pill-dot" style="background:' + s.color + '"></span>' +
+        '<span class="pill-name">' + s.name + '</span>' +
+        '<span class="pill-bp">BP: ' + bpText + '</span>' +
+        '<span class="pill-remove" data-key="' + key + '">&times;</span>';
+
+      container.appendChild(pill);
+    }
+
+    var removes = container.querySelectorAll('.pill-remove');
+    for (var j = 0; j < removes.length; j++) {
+      (function(btn) {
+        btn.addEventListener('click', function() {
+          var k = btn.dataset.key;
+          substances[k].visible = false;
+          var cb = dropdownMenu.querySelector('input[data-key="' + k + '"]');
+          if (cb) cb.checked = false;
+          updateAll();
+        });
+      })(removes[j]);
+    }
+  }
+
+  /* ==============================
+     STATS BAR
+     ============================== */
+  function updateStatsBar() {
+    var bar = document.getElementById('statsBar');
+    bar.innerHTML = '';
+    var keys = Object.keys(substances);
+    var hasVisible = false;
+    for (var i = 0; i < keys.length; i++) {
+      var s = substances[keys[i]];
+      if (!s.visible) continue;
+      hasVisible = true;
+
+      var bp = calculateTemperature(s, currentPressure);
+      var bpText = (bp >= -50 && bp <= 250 && !isNaN(bp) && isFinite(bp))
+        ? bp.toFixed(1) + '\u00B0C'
+        : 'outside range';
+
+      var item = document.createElement('div');
+      item.className = 'stats-bar-item';
+      item.style.borderTop = '3px solid ' + s.color;
+      item.innerHTML =
+        '<span class="stats-bar-label" style="color:' + s.color + ' !important;">' + s.name + '</span>' +
+        '<span class="stats-bar-value">BP: ' + bpText + '</span>';
+      bar.appendChild(item);
+    }
+    if (!hasVisible) {
+      bar.innerHTML = '<div class="stats-bar-item" style="flex:1;"><span class="stats-bar-label">No substances selected</span><span class="stats-bar-value">Select substances from the sidebar</span></div>';
+    }
+  }
+
+  /* ==============================
+     CENTRAL UPDATE FUNCTION
+     ============================== */
+  function updateAll() {
+    updateTriggerLabel();
+    updatePills();
+    updateStatsBar();
+    drawGraph();
+  }
+
+  /* ==============================
+     PRESSURE CONTROLS
+     ============================== */
+  var pressureSlider = document.getElementById('pressureSlider');
+  pressureSlider.addEventListener('input', function(e) {
+    currentPressure = parseInt(e.target.value);
+    updatePressureDisplay();
+    updatePresetHighlight();
+    updatePills();
+    updateStatsBar();
+    drawGraph();
+  });
+
+  function updatePressureDisplay() {
+    document.getElementById('pressureValue').textContent = currentPressure + ' mmHg';
+    var atm = (currentPressure / 760).toFixed(2);
+    var label = atm + ' atm';
+    if (currentPressure === 760) label = 'Sea Level (1 atm)';
+    else if (currentPressure === 526) label = 'Denver Altitude';
+    else if (currentPressure === 1520) label = 'Pressure Cooker (2 atm)';
+    else if (currentPressure === 400) label = 'Mt. Everest Summit';
+    document.getElementById('pressureLabel').textContent = label;
+  }
+
+  function setPresetPressure(pressure) {
+    currentPressure = pressure;
+    pressureSlider.value = pressure;
+    updatePressureDisplay();
+    updatePresetHighlight();
+    updatePills();
+    updateStatsBar();
+    drawGraph();
+  }
+
+  function updatePresetHighlight() {
+    var btns = document.querySelectorAll('.preset-btn');
+    for (var i = 0; i < btns.length; i++) {
+      var p = parseInt(btns[i].dataset.pressure);
+      if (p === currentPressure) {
+        btns[i].classList.add('active-preset');
+      } else {
+        btns[i].classList.remove('active-preset');
+      }
+    }
+  }
+
+  /* ==============================
+     GRAPH DRAWING
+     ============================== */
+  function resizeCanvas() {
+    var rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * window.devicePixelRatio;
+    canvas.height = rect.height * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    drawGraph();
+  }
+
+  function drawGraph() {
+    var rect = canvas.getBoundingClientRect();
+    var width = rect.width;
+    var height = rect.height;
+    ctx.clearRect(0, 0, width, height);
+
+    var margin = { top: 40, right: 80, bottom: 60, left: 80 };
+    var graphWidth = width - margin.left - margin.right;
+    var graphHeight = height - margin.top - margin.bottom;
+
+    var tempMin = 0, tempMax = 140;
+    var pressureMin = 0, pressureMax = 2000;
+
+    function xScale(temp) { return margin.left + (temp - tempMin) / (tempMax - tempMin) * graphWidth; }
+    function yScale(pressure) { return margin.top + graphHeight - (pressure - pressureMin) / (pressureMax - pressureMin) * graphHeight; }
+
+    // Grid
+    ctx.strokeStyle = '#E2E8F0';
+    ctx.lineWidth = 1;
+    for (var temp = 0; temp <= 140; temp += 20) {
+      ctx.beginPath();
+      ctx.moveTo(xScale(temp), margin.top);
+      ctx.lineTo(xScale(temp), margin.top + graphHeight);
+      ctx.stroke();
+    }
+    for (var pr = 0; pr <= 2000; pr += 200) {
+      ctx.beginPath();
+      ctx.moveTo(margin.left, yScale(pr));
+      ctx.lineTo(margin.left + graphWidth, yScale(pr));
+      ctx.stroke();
+    }
+
+    // Axes
+    ctx.strokeStyle = '#1A202C';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(margin.left, margin.top);
+    ctx.lineTo(margin.left, margin.top + graphHeight);
+    ctx.lineTo(margin.left + graphWidth, margin.top + graphHeight);
+    ctx.stroke();
+
+    // X labels
+    ctx.fillStyle = '#334155';
+    ctx.font = '600 13px Source Sans 3, sans-serif';
+    ctx.textAlign = 'center';
+    for (var t = 0; t <= 140; t += 20) {
+      ctx.fillText(t, xScale(t), margin.top + graphHeight + 22);
+    }
+    ctx.font = '700 14px Source Sans 3, sans-serif';
+    ctx.fillText('Temperature (\u00B0C)', margin.left + graphWidth / 2, margin.top + graphHeight + 48);
+
+    // Y labels
+    ctx.textAlign = 'right';
+    ctx.font = '600 13px Source Sans 3, sans-serif';
+    for (var p = 0; p <= 2000; p += 200) {
+      ctx.fillText(p, margin.left - 10, yScale(p) + 5);
+    }
+    ctx.save();
+    ctx.translate(18, margin.top + graphHeight / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.font = '700 14px Source Sans 3, sans-serif';
+    ctx.fillText('Vapor Pressure (mmHg)', 0, 0);
+    ctx.restore();
+
+    // Atmospheric pressure line
+    var pressureLineY = yScale(currentPressure);
+    ctx.strokeStyle = '#2F855A';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([10, 5]);
+    ctx.beginPath();
+    ctx.moveTo(margin.left, pressureLineY);
+    ctx.lineTo(margin.left + graphWidth, pressureLineY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#2F855A';
+    ctx.font = '700 11px Source Sans 3, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(currentPressure + ' mmHg', margin.left + graphWidth + 8, pressureLineY + 4);
+
+    // Draw curves
+    var keys = Object.keys(substances);
+    for (var si = 0; si < keys.length; si++) {
+      var substance = substances[keys[si]];
+      if (!substance.visible) continue;
+
+      ctx.strokeStyle = substance.color;
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      var firstPoint = true;
+      for (var temp = tempMin; temp <= tempMax; temp += 0.5) {
+        var vp = calculateVaporPressure(substance, temp);
+        if (isNaN(vp) || !isFinite(vp) || vp > pressureMax || vp < pressureMin) continue;
+        var x = xScale(temp);
+        var y = yScale(vp);
+        if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; }
+        else { ctx.lineTo(x, y); }
+      }
+      ctx.stroke();
+
+      // Curve label
+      var labelTemp;
+      if (substance.normalBP < 50) labelTemp = 60;
+      else if (substance.normalBP < 65) labelTemp = 75;
+      else if (substance.normalBP < 75) labelTemp = 80;
+      else if (substance.normalBP < 85) labelTemp = 90;
+      else labelTemp = 110;
+
+      if (labelTemp <= tempMax && labelTemp >= tempMin) {
+        var labelPressure = calculateVaporPressure(substance, labelTemp);
+        if (labelPressure <= pressureMax && labelPressure >= pressureMin) {
+          var labelX = xScale(labelTemp);
+          var labelY = yScale(labelPressure);
+          ctx.fillStyle = 'rgba(255,255,255,0.92)';
+          ctx.font = '700 12px Source Sans 3, sans-serif';
+          var textW = ctx.measureText(substance.name).width;
+          ctx.fillRect(labelX - textW / 2 - 6, labelY - 26, textW + 12, 32);
+          ctx.fillStyle = substance.color;
+          ctx.textAlign = 'center';
+          ctx.fillText(substance.name, labelX, labelY - 9);
+          ctx.font = '500 11px Source Sans 3, sans-serif';
+          ctx.fillText(substance.formula, labelX, labelY + 4);
+        }
+      }
+
+      // Boiling point marker
+      var bp = calculateTemperature(substance, currentPressure);
+      if (bp >= tempMin && bp <= tempMax && !isNaN(bp) && isFinite(bp)) {
+        var bpX = xScale(bp);
+        var bpY = pressureLineY;
+
+        ctx.fillStyle = substance.color;
+        ctx.beginPath();
+        ctx.arc(bpX, bpY, 7, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Dashed drop line
+        ctx.strokeStyle = substance.color;
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(bpX, bpY);
+        ctx.lineTo(bpX, margin.top + graphHeight);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // BP temperature label
+        ctx.fillStyle = substance.color;
+        ctx.font = '700 12px Source Sans 3, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(bp.toFixed(1) + '\u00B0C', bpX, margin.top + graphHeight + 38);
+      }
+    }
+  }
+
+  /* ==============================
+     IFRAME AUTO-RESIZE
+     ============================== */
+  function postHeight() {
+    var h = document.documentElement.scrollHeight;
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'resize', height: h }, '*');
+    }
+  }
+  window.addEventListener('load', function() {
+    postHeight();
+    setTimeout(postHeight, 500);
+    setTimeout(postHeight, 2000);
+  });
+  window.addEventListener('resize', function() {
+    postHeight();
+    resizeCanvas();
+  });
+  if (typeof MutationObserver !== 'undefined') {
+    var resizeObs = new MutationObserver(function() { setTimeout(postHeight, 100); });
+    resizeObs.observe(document.body, { childList: true, subtree: true, attributes: true });
+  }
+
+  /* ==============================
+     QUICK CHECK: MULTIPLE CHOICE
+     ============================== */
+  /* ==============================
+     CHALLENGE 1: BOILING POINT RANKING
+     ============================== */
+  var rankOrder = [];
+  var correctOrder = ['ether','dcm','acetone','chloroform','methanol','hexane','ethanol','water'];
+  var rankNames = {
+    'water':'Water','ethanol':'Ethanol','acetone':'Acetone','ether':'Diethyl Ether',
+    'methanol':'Methanol','hexane':'Hexane','dcm':'Dichloromethane','chloroform':'Chloroform'
+  };
+
+  function pickRank(el) {
+    if (el.classList.contains('used') || rankOrder.length >= 8) return;
+    var key = el.dataset.key;
+    el.classList.add('used');
+    rankOrder.push(key);
+    var pos = rankOrder.length;
+    document.getElementById('rank-s' + pos).textContent = rankNames[key];
+    document.querySelector('.rank-slot[data-pos="' + pos + '"]').classList.add('filled');
+    document.getElementById('rank-undo-btn').disabled = false;
+    if (rankOrder.length === 8) document.getElementById('rank-check-btn').disabled = false;
+  }
+
+  function undoRank() {
+    if (rankOrder.length === 0) return;
+    document.getElementById('rank-check-btn').disabled = true;
+    var last = rankOrder.pop();
+    var pos = rankOrder.length + 1;
+    document.getElementById('rank-s' + pos).textContent = '';
+    document.querySelector('.rank-slot[data-pos="' + pos + '"]').classList.remove('filled');
+    var chips = document.querySelectorAll('.rank-chip');
+    for (var i = 0; i < chips.length; i++) {
+      if (chips[i].dataset.key === last) chips[i].classList.remove('used');
+    }
+    if (rankOrder.length === 0) document.getElementById('rank-undo-btn').disabled = true;
+  }
+
+  function resetRank() {
+    rankOrder = [];
+    var chips = document.querySelectorAll('.rank-chip');
+    for (var i = 0; i < chips.length; i++) chips[i].classList.remove('used');
+    for (var j = 1; j <= 8; j++) {
+      document.getElementById('rank-s' + j).textContent = '';
+      var slot = document.querySelector('.rank-slot[data-pos="' + j + '"]');
+      slot.classList.remove('filled','rank-correct','rank-wrong');
+      slot.querySelector('.rank-num').style = '';
+    }
+    document.getElementById('rank-undo-btn').disabled = true;
+    document.getElementById('rank-check-btn').disabled = true;
+    document.getElementById('rank-check-btn').textContent = 'Check My Ranking';
+    document.getElementById('rank-score').className = 'rank-score';
+    document.getElementById('rank-score').textContent = '';
+    document.getElementById('rank-fb').className = 'qc-feedback-inline';
+  }
+
+  function checkRank() {
+    var btn = document.getElementById('rank-check-btn');
+    btn.disabled = true;
+    document.getElementById('rank-undo-btn').disabled = true;
+    var chips = document.querySelectorAll('.rank-chip');
+    for (var c = 0; c < chips.length; c++) chips[c].style.pointerEvents = 'none';
+
+    var score = 0;
+    for (var i = 0; i < 8; i++) {
+      var slot = document.querySelector('.rank-slot[data-pos="' + (i+1) + '"]');
+      if (rankOrder[i] === correctOrder[i]) {
+        slot.classList.add('rank-correct');
+        score++;
+      } else {
+        slot.classList.add('rank-wrong');
+        var placed = document.getElementById('rank-s' + (i+1));
+        placed.innerHTML = rankNames[rankOrder[i]] + ' <span style="font-size:0.78rem;color:#64748B;font-weight:400;">(actual: ' + rankNames[correctOrder[i]] + ')</span>';
+      }
+    }
+
+    var scoreEl = document.getElementById('rank-score');
+    scoreEl.textContent = score + ' / 8 in the correct position';
+    scoreEl.style.color = score >= 6 ? '#2F855A' : score >= 4 ? '#B7791F' : '#C53030';
+    scoreEl.className = 'rank-score show';
+
+    var fb = document.getElementById('rank-fb');
+    if (score === 8) {
+      fb.className = 'qc-feedback-inline correct show';
+      fb.textContent = 'Perfect ranking! You correctly identified that weaker IMFs lead to lower boiling points, and that molecular size matters as much as IMF type. Notice how hexane (London only) sits above acetone and chloroform (both dipole-dipole) because of its larger surface area.';
+    } else if (score >= 5) {
+      fb.className = 'qc-feedback-inline correct show';
+      fb.textContent = 'Strong work! Most students trip on the hexane-acetone-chloroform cluster in the middle. London forces in large molecules like hexane can exceed dipole-dipole forces in smaller molecules. Enable all 8 substances in the graph to see the actual order.';
+    } else {
+      fb.className = 'qc-feedback-inline incorrect show';
+      fb.textContent = 'The middle of the ranking is tricky. A common mistake is assuming IMF type alone determines boiling point. Enable all 8 substances in the interactive at 760 mmHg and compare your ranking to the graph. Pay special attention to where hexane (London only, MW 86) falls relative to acetone and chloroform (both dipole-dipole, MW 58 and 119).';
+    }
+  }
+
+  /* ==============================
+     CHALLENGE 2: PREDICT-OBSERVE-EXPLAIN
+     ============================== */
+  function commitPrediction(choice) {
+    var options = document.querySelectorAll('.poe-choice');
+    for (var i = 0; i < options.length; i++) {
+      options[i].classList.remove('selected');
+      options[i].classList.add('locked');
+    }
+    var labels = { 'acetone': 'Acetone (dipole-dipole wins)', 'hexane': 'Hexane (size wins)', 'equal': 'About equal' };
+    event.currentTarget.classList.add('selected');
+
+    document.getElementById('poe-user-pick').textContent = labels[choice] || choice;
+
+    var observe = document.getElementById('poe-observe');
+    observe.classList.remove('poe-locked');
+    observe.classList.add('poe-unlocked');
+
+    setTimeout(function() {
+      var explain = document.getElementById('poe-explain');
+      explain.classList.remove('poe-locked');
+      explain.classList.add('poe-unlocked');
+    }, 800);
+  }
+
+  /* ==============================
+     CHALLENGE 3: PRESSURE HUNT
+     ============================== */
+  function checkHunt() {
+    var input = document.getElementById('hunt-answer');
+    var val = parseFloat(input.value);
+    var fb = document.getElementById('hunt-fb');
+    var btn = document.getElementById('hunt-check-btn');
+
+    if (isNaN(val) || val < 100 || val > 2000) {
+      fb.className = 'qc-feedback-inline incorrect show';
+      fb.textContent = 'Please enter a pressure between 100 and 2000 mmHg. Use the interactive slider to find where ethanol\'s boiling point reaches 65 degrees C.';
+      return;
+    }
+
+    btn.disabled = true;
+    input.disabled = true;
+    // Ethanol at 65 degrees C: Antoine gives ~438 mmHg
+    var target = 438;
+    var tolerance = 25;
+
+    if (Math.abs(val - target) <= tolerance) {
+      input.classList.add('hunt-correct');
+      fb.className = 'qc-feedback-inline correct show';
+      fb.textContent = 'Excellent! The answer is approximately 438 mmHg. At this reduced pressure, ethanol\'s vapor pressure equals the external pressure at 65 degrees C, allowing it to boil without exceeding the compound\'s degradation temperature. This technique, called vacuum distillation, is widely used in pharmaceutical and chemical manufacturing.';
+    } else if (Math.abs(val - target) <= 60) {
+      input.classList.add('hunt-wrong');
+      fb.className = 'qc-feedback-inline incorrect show';
+      fb.textContent = 'Close, but not quite. The target is approximately 438 mmHg. Try moving the slider more slowly and watching the stats bar update. The boiling point changes rapidly with pressure in this range.';
+      btn.disabled = false;
+      input.disabled = false;
+    } else {
+      input.classList.add('hunt-wrong');
+      fb.className = 'qc-feedback-inline incorrect show';
+      fb.textContent = 'That\'s off by a significant margin. The target is approximately 438 mmHg. Make sure you have ethanol enabled and are reading its boiling point from the stats bar as you move the pressure slider. You need to lower the pressure below sea level (760 mmHg) to reduce the boiling point.';
+      btn.disabled = false;
+      input.disabled = false;
+    }
+  }
+
+  /* ==============================
+     CHALLENGE 4: MYSTERY SUBSTANCE
+     ============================== */
+  var mysteryPick = null;
+
+  function pickSuspect(el) {
+    if (el.classList.contains('locked')) return;
+    var suspects = document.querySelectorAll('.mystery-suspect');
+    for (var i = 0; i < suspects.length; i++) suspects[i].classList.remove('picked');
+    el.classList.add('picked');
+    mysteryPick = el.dataset.key;
+    document.getElementById('mystery-check-btn').disabled = false;
+  }
+
+  function checkMystery() {
+    var btn = document.getElementById('mystery-check-btn');
+    btn.disabled = true;
+    var suspects = document.querySelectorAll('.mystery-suspect');
+    for (var i = 0; i < suspects.length; i++) suspects[i].classList.add('locked');
+
+    // At 526 mmHg, chloroform BP is approximately 51 degrees C
+    var answer = 'chloroform';
+    var fb = document.getElementById('mystery-fb');
+
+    for (var j = 0; j < suspects.length; j++) {
+      if (suspects[j].dataset.key === answer && mysteryPick !== answer) {
+        suspects[j].classList.add('suspect-reveal');
+      }
+    }
+
+    if (mysteryPick === answer) {
+      document.querySelector('.mystery-suspect.picked').classList.add('suspect-correct');
+      fb.className = 'qc-feedback-inline correct show';
+      fb.textContent = 'Correct! At 526 mmHg, chloroform (CHCl3) boils at approximately 51 degrees C. Its dipole-dipole forces place it in the middle of the boiling point range. Acetone was close (~47 degrees C at this pressure) but chloroform is the best match. This kind of boiling point identification at known pressures is used in analytical chemistry to help confirm the identity of unknown solvents.';
+    } else {
+      document.querySelector('.mystery-suspect.picked').classList.add('suspect-wrong');
+      fb.className = 'qc-feedback-inline incorrect show';
+      fb.textContent = 'Not quite. The mystery substance is chloroform (CHCl3), which boils at approximately 51 degrees C at 526 mmHg. Set the Denver preset and enable each substance to check: acetone is close (~47 degrees C) but chloroform matches best. Hexane comes in at ~58 degrees C, methanol at ~55 degrees C.';
+    }
+  }
+
+  /* ==============================
+     MULTIPLE CHOICE (shared)
+     ============================== */
+  var mcAnswers = {
+    'poe-explain': {
+      correct: 'a',
+      feedback: 'London dispersion forces depend on polarizability, which scales with molecular size and surface area. Hexane (C6H14, MW 86) has a large, elongated electron cloud that generates strong cumulative London forces exceeding acetone\'s dipole-dipole attraction (C3H6O, MW 58). This is why the IMF type hierarchy (London < dipole-dipole < H-bonding) is only a starting point. You must also consider molecular size.',
+      wrongFeedback: 'Density does not determine boiling point, and the IMF hierarchy is not wrong. Think about what makes London forces stronger in some molecules than others. How does the size of the electron cloud in hexane compare to acetone?'
+    }
+  };
+
+  function checkMC(questionId, picked) {
+    var q = document.getElementById(questionId);
+    if (q.dataset.locked === 'true') return;
+    q.dataset.locked = 'true';
+
+    var info = mcAnswers[questionId];
+    var options = q.querySelectorAll('.qc-option');
+    var letters = ['a', 'b', 'c', 'd', 'e'];
+    var fb = document.getElementById(questionId + '-fb');
+
+    for (var i = 0; i < options.length; i++) {
+      options[i].classList.add('locked');
+      if (letters[i] === picked && picked === info.correct) {
+        options[i].classList.add('correct-pick');
+      } else if (letters[i] === picked && picked !== info.correct) {
+        options[i].classList.add('wrong-pick');
+      }
+      if (letters[i] === info.correct && picked !== info.correct) {
+        options[i].classList.add('reveal-correct');
+      }
+    }
+
+    if (picked === info.correct) {
+      fb.className = 'qc-feedback-inline correct show';
+      fb.textContent = info.feedback;
+    } else {
+      fb.className = 'qc-feedback-inline incorrect show';
+      fb.textContent = info.wrongFeedback;
+    }
+  }
+
+  /* ==============================
+     CHALLENGE 5: IMF MATCHING
+     ============================== */
+  function checkMatching() {
+    var btn = document.getElementById('match-check-btn');
+    btn.disabled = true;
+
+    var total = 6;
+    var correct = 0;
+
+    for (var i = 1; i <= total; i++) {
+      var sel = document.getElementById('match-' + i);
+      sel.disabled = true;
+      if (sel.value === sel.dataset.answer) {
+        sel.classList.add('match-correct');
+        correct++;
+      } else {
+        sel.classList.add('match-wrong');
+      }
+    }
+
+    var result = document.getElementById('match-result');
+    var fb = document.getElementById('match-feedback');
+
+    if (correct === total) {
+      result.className = 'match-result correct show';
+      result.textContent = correct + ' / ' + total + ' correct!';
+      fb.className = 'qc-feedback-inline correct show';
+      fb.textContent = 'You matched every substance correctly. Water and ethanol both exhibit hydrogen bonding (O-H groups), which is why their curves sit farthest to the right. Hexane is the only purely nonpolar substance (London dispersion only), yet its large surface area gives it a higher BP than smaller dipole-dipole molecules like acetone. Diethyl ether has an oxygen but no O-H bond, so it cannot hydrogen bond and relies on weaker dipole-dipole interactions, explaining its very low boiling point despite containing oxygen.';
+    } else {
+      result.className = 'match-result incorrect show';
+      result.textContent = correct + ' / ' + total + ' correct. Incorrect answers are highlighted in red.';
+      fb.className = 'qc-feedback-inline incorrect show';
+      fb.textContent = 'Review the substance sidebar in the interactive for each IMF type. Key distinctions: hydrogen bonding requires an O-H, N-H, or F-H bond (water, ethanol, methanol). Diethyl ether has oxygen but no O-H bond, so it is dipole-dipole only. Hexane is nonpolar with zero dipole moment, making London dispersion its only IMF. Chloroform and acetone are polar but lack H-bond donors, so they are dipole-dipole.';
+    }
+  }
+
+  /* ==============================
+     INITIALIZE
+     ============================== */
+  buildDropdown();
+  updateTriggerLabel();
+  updatePills();
+  updateStatsBar();
+  resizeCanvas();
+</script>
+</body>
+</html>
