@@ -1,0 +1,2353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
+<base target="_parent">
+<title>Heat Flow and Enthalpy - Interactive Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --exo-warm: #D94F30;
+    --exo-glow: #F4845F;
+    --exo-light: #FFF0EB;
+    --endo-cool: #2B6CB0;
+    --endo-glow: #63B3ED;
+    --endo-light: #EBF4FF;
+    --slate-900: #1A202C;
+    --slate-700: #334155;
+    --slate-500: #64748B;
+    --slate-300: #CBD5E1;
+    --slate-100: #F1F5F9;
+    --parchment: #FAFAF7;
+    --success: #2F855A;
+    --success-light: #F0FFF4;
+    --gold: #B7791F;
+    --gold-light: #FEFCBF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    background-color: #FAFAF7 !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    font-family: 'Source Sans 3', 'Segoe UI', Roboto, -apple-system, sans-serif;
+    background-color: #FAFAF7 !important;
+    color: #1A202C !important;
+    line-height: 1.7;
+    font-size: 17px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Force light backgrounds everywhere to override dark-mode injection */
+  html, body, .container, section, .activity-box, .scenario-card,
+  .concept-card, .thought-prompt, .equation-box, .scoreboard, footer,
+  .quick-check, .qc-option, .wb-chip, .match-select {
+    color-scheme: light !important;
+  }
+
+  /* ---- HEADER ---- */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, var(--exo-warm) 0%, var(--slate-900) 50%, var(--endo-cool) 100%);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 60%, rgba(249,115,22,0.25) 0%, transparent 50%),
+      radial-gradient(circle at 80% 40%, rgba(99,179,237,0.25) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    color: #fff !important;
+    position: relative;
+    letter-spacing: -0.5px;
+  }
+  .hero .subtitle {
+    color: rgba(255,255,255,0.8) !important;
+    font-size: 1.15rem;
+    margin-top: 0.75rem;
+    font-weight: 300;
+    position: relative;
+  }
+  .hero .duality-bar {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+    position: relative;
+  }
+  .duality-bar span {
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.35rem 1.2rem;
+    border-radius: 4px;
+  }
+  .duality-bar .exo-tag { background: rgba(217,79,48,0.35); color: #FEB2B2; }
+  .duality-bar .endo-tag { background: rgba(43,108,176,0.35); color: #BEE3F8; }
+
+  /* ---- LAYOUT ---- */
+  .container { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; background-color: #FAFAF7; }
+
+  section {
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--slate-300);
+    background-color: #FAFAF7;
+  }
+  section:last-of-type { border-bottom: none; }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.9rem;
+    margin-bottom: 0.75rem;
+    color: var(--slate-900);
+  }
+  h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.35rem;
+    margin: 1rem 0 0.5rem;
+    color: var(--slate-700);
+  }
+
+  p + p { margin-top: 0.75rem; }
+
+  .key-term {
+    font-weight: 700;
+    border-bottom: 2px solid var(--gold);
+    cursor: help;
+  }
+
+  /* ---- CONCEPT CARDS ---- */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  @media (max-width: 640px) { .concept-grid { grid-template-columns: 1fr; } }
+
+  .concept-card {
+    border-radius: 10px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .concept-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .concept-card.exo {
+    background: var(--exo-light);
+    border: 1px solid rgba(217,79,48,0.2);
+  }
+  .concept-card.exo::before { background: var(--exo-warm); }
+  .concept-card.endo {
+    background: var(--endo-light);
+    border: 1px solid rgba(43,108,176,0.2);
+  }
+  .concept-card.endo::before { background: var(--endo-cool); }
+
+  .concept-card h3 { 
+    margin-top: 0; 
+    font-size: 1.15rem;
+  }
+  .concept-card .arrow-symbol {
+    font-size: 0.95rem;
+    display: block;
+    margin: 0.35rem 0;
+    font-weight: 400;
+  }
+  .concept-card.exo .arrow-symbol { color: var(--exo-warm); }
+  .concept-card.endo .arrow-symbol { color: var(--endo-cool); }
+  .concept-card .sign-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+  .concept-card .sign {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 50%;
+  }
+  .concept-card.exo .sign { background: var(--exo-warm); color: #fff; }
+  .concept-card.endo .sign { background: var(--endo-cool); color: #fff; }
+
+  /* ---- SYSTEM DIAGRAM ---- */
+  .system-diagram-wrap {
+    margin: 1.5rem 0;
+    display: flex;
+    justify-content: center;
+  }
+  .system-diagram {
+    position: relative;
+    width: 420px;
+    max-width: 100%;
+    height: 320px;
+  }
+  .sd-surroundings {
+    position: absolute;
+    inset: 0;
+    border: 2px dashed var(--slate-500);
+    border-radius: 16px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 0.75rem 1rem;
+  }
+  .sd-surroundings span {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--slate-500);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .sd-system {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 3px solid var(--slate-900);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    z-index: 2;
+  }
+  .sd-system .label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+  }
+  .sd-system .sub { font-size: 0.82rem; color: var(--slate-500); margin-top: 2px; }
+
+  .sd-arrow {
+    position: absolute;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .sd-arrow svg { flex-shrink: 0; }
+  .sd-arrow.exo-arrow {
+    top: 42%;
+    right: 20px;
+    color: var(--exo-warm);
+  }
+  .sd-arrow.endo-arrow {
+    top: 58%;
+    left: 20px;
+    color: var(--endo-cool);
+  }
+  .sd-toggle-group {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .sd-toggle {
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    border: 2px solid var(--slate-300);
+    background: #fff;
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.25s;
+  }
+  .sd-toggle:hover { border-color: var(--slate-500); }
+  .sd-toggle#toggle-exo { 
+    border-color: var(--exo-warm);
+    color: var(--exo-warm);
+  }
+  .sd-toggle#toggle-endo { 
+    border-color: var(--endo-cool);
+    color: var(--endo-cool);
+  }
+  .sd-toggle.active-exo { 
+    border-color: var(--exo-warm); 
+    background: var(--exo-light); 
+    color: var(--exo-warm);
+    font-weight: 700;
+  }
+  .sd-toggle.active-endo { 
+    border-color: var(--endo-cool); 
+    background: var(--endo-light); 
+    color: var(--endo-cool);
+    font-weight: 700;
+  }
+
+  /* ---- INTERACTIVE ACTIVITY ---- */
+  .activity-box {
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .activity-box .activity-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .activity-box .activity-header .badge {
+    background: var(--gold);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+  }
+  .activity-box .activity-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+  }
+
+  .scenario-card {
+    background: var(--slate-100);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--slate-300);
+    transition: border-color 0.4s, background 0.4s;
+  }
+  .scenario-card.correct-exo {
+    border-left-color: var(--exo-warm);
+    background: var(--exo-light);
+  }
+  .scenario-card.correct-endo {
+    border-left-color: var(--endo-cool);
+    background: var(--endo-light);
+  }
+  .scenario-card.incorrect {
+    border-left-color: #C53030;
+    background: #FFF5F5;
+  }
+
+  .scenario-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+  }
+  .scenario-context {
+    font-size: 0.92rem;
+    color: var(--slate-500);
+    margin-bottom: 0.75rem;
+  }
+  .scenario-prompt {
+    font-weight: 600;
+    font-size: 0.92rem;
+    margin-bottom: 0.75rem;
+    color: var(--slate-700);
+  }
+
+  .choice-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .choice-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    border: 2px solid var(--slate-300);
+    background: #fff;
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .choice-btn:hover:not(:disabled) {
+    border-color: var(--slate-700);
+    transform: translateY(-1px);
+  }
+  .choice-btn:disabled { cursor: default; opacity: 0.7; }
+  .choice-btn.selected-correct-exo { border-color: var(--exo-warm); background: var(--exo-light); color: var(--exo-warm); }
+  .choice-btn.selected-correct-endo { border-color: var(--endo-cool); background: var(--endo-light); color: var(--endo-cool); }
+  .choice-btn.selected-wrong { border-color: #C53030; background: #FFF5F5; color: #C53030; }
+
+  .feedback {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    display: none;
+  }
+  .feedback.show { display: block; animation: fadeSlideIn 0.35s ease-out; }
+  .feedback.correct {
+    background: var(--success-light) !important;
+    border: 1px solid rgba(47,133,90,0.3);
+    color: #2F855A !important;
+  }
+  .feedback.incorrect {
+    background: #FFF5F5 !important;
+    border: 1px solid rgba(197,48,48,0.3);
+    color: #C53030 !important;
+  }
+
+  /* ---- SCOREBOARD ---- */
+  .scoreboard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--slate-100);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+  }
+  .score-display { font-size: 1.1rem; }
+  .score-num { font-family: 'DM Serif Display', serif; font-size: 1.4rem; }
+  .reset-btn {
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    border: 2px solid var(--slate-300);
+    background: #fff;
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--slate-700); }
+
+  /* ---- THOUGHT PROMPT ---- */
+  .thought-prompt {
+    background: var(--gold-light);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    font-size: 0.95rem;
+  }
+  .thought-prompt strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+  }
+
+  /* ---- ENTHALPY DIAGRAM ---- */
+  .enthalpy-diagram-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+  .enthalpy-mini {
+    width: 320px;
+    max-width: 45%;
+    position: relative;
+  }
+  .enthalpy-mini .title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .enthalpy-mini canvas {
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* ---- EQUATION BOX ---- */
+  .equation-box {
+    text-align: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.35rem;
+    padding: 1.25rem;
+    background: #fff;
+    border: 1px solid var(--slate-300);
+    border-radius: 8px;
+    margin: 1.25rem 0;
+    letter-spacing: 0.5px;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    font-size: 0.85rem;
+    color: var(--slate-500);
+    border-top: 1px solid var(--slate-300);
+    background-color: #FAFAF7;
+  }
+
+  /* ---- QUICK CHECK ---- */
+  .quick-check {
+    background: #fff;
+    border: 2px solid var(--slate-300);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .qc-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .qc-header .qc-badge {
+    background: #5B6ABF;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 0.25rem 0.7rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .qc-header h3 {
+    margin: 0 !important;
+    font-size: 1.15rem;
+    color: #1A202C !important;
+  }
+  .qc-question {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--slate-100);
+  }
+  .qc-question:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .qc-question-text {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    color: #1A202C !important;
+  }
+  .qc-options { display: flex; flex-direction: column; gap: 0.5rem; }
+  .qc-option {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.6rem 1rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.92rem;
+    transition: all 0.2s;
+    color: #1A202C !important;
+    line-height: 1.5;
+  }
+  .qc-option:hover:not(.locked) {
+    border-color: #5B6ABF;
+    background: #F0F0FF;
+  }
+  .qc-option .qc-letter {
+    flex-shrink: 0;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--slate-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--slate-500) !important;
+    transition: all 0.2s;
+  }
+  .qc-option.correct-pick {
+    border-color: var(--success) !important;
+    background: var(--success-light) !important;
+  }
+  .qc-option.correct-pick .qc-letter {
+    background: var(--success) !important;
+    color: #fff !important;
+  }
+  .qc-option.wrong-pick {
+    border-color: #C53030 !important;
+    background: #FFF5F5 !important;
+  }
+  .qc-option.wrong-pick .qc-letter {
+    background: #C53030 !important;
+    color: #fff !important;
+  }
+  .qc-option.reveal-correct {
+    border-color: var(--success) !important;
+    border-style: dashed;
+    background: var(--success-light) !important;
+  }
+  .qc-option.reveal-correct .qc-letter {
+    background: var(--success) !important;
+    color: #fff !important;
+  }
+  .qc-feedback-inline {
+    margin-top: 0.6rem;
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    display: none;
+    animation: fadeSlideIn 0.3s ease-out;
+  }
+  .qc-feedback-inline.show { display: block; }
+  .qc-feedback-inline.correct {
+    background: var(--success-light) !important;
+    color: #2F855A !important;
+  }
+  .qc-feedback-inline.incorrect {
+    background: #FFF5F5 !important;
+    color: #C53030 !important;
+  }
+
+  /* ---- WORD BANK (Sort/Categorize) ---- */
+  .wb-instruction {
+    font-size: 0.92rem;
+    color: var(--slate-500) !important;
+    margin-bottom: 1rem;
+  }
+  .wb-bank {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-height: 2.8rem;
+    padding: 0.75rem;
+    background: var(--slate-100);
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    border: 2px dashed var(--slate-300);
+    transition: min-height 0.3s;
+  }
+  .wb-chip {
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    border: 2px solid var(--slate-300);
+    background: #fff;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: grab;
+    user-select: none;
+    transition: all 0.2s;
+    color: #1A202C !important;
+  }
+  .wb-chip:hover { border-color: #5B6ABF; transform: translateY(-1px); }
+  .wb-chip.placed { opacity: 0.35; cursor: default; pointer-events: none; }
+  .wb-chip.correct-chip { border-color: var(--success) !important; background: var(--success-light) !important; cursor: default; }
+  .wb-chip.wrong-chip { border-color: #C53030 !important; background: #FFF5F5 !important; }
+
+  .wb-zones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 500px) { .wb-zones { grid-template-columns: 1fr; } }
+  .wb-zone {
+    border: 2px dashed var(--slate-300);
+    border-radius: 10px;
+    padding: 1rem;
+    min-height: 120px;
+    transition: all 0.2s;
+    background: #FAFAF7;
+  }
+  .wb-zone.drag-over { border-color: #5B6ABF; background: #F0F0FF; }
+  .wb-zone-label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.6rem;
+    text-align: center;
+  }
+  .wb-zone-label.system-label { color: var(--slate-900) !important; }
+  .wb-zone-label.surr-label { color: var(--slate-500) !important; }
+  .wb-zone-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    min-height: 2rem;
+  }
+  .wb-check-btn {
+    display: block;
+    margin: 1rem auto 0;
+    padding: 0.55rem 2rem;
+    border-radius: 8px;
+    border: 2px solid #5B6ABF;
+    background: #5B6ABF;
+    color: #fff !important;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .wb-check-btn:hover { background: #4A5899; }
+  .wb-check-btn:disabled { opacity: 0.5; cursor: default; }
+  .wb-result {
+    text-align: center;
+    margin-top: 0.75rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+    display: none;
+  }
+  .wb-result.show { display: block; animation: fadeSlideIn 0.3s ease-out; }
+  .wb-result.correct { color: #2F855A !important; }
+  .wb-result.incorrect { color: #C53030 !important; }
+
+  /* ---- CHALLENGE SPECIFIC ---- */
+  .student-quote {
+    background: var(--slate-100);
+    border-left: 3px solid var(--slate-500);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin: 0.75rem 0 1rem;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--slate-700) !important;
+    line-height: 1.6;
+  }
+  .ch-step {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed var(--slate-300);
+    animation: fadeSlideIn 0.35s ease-out;
+  }
+  .ch-step:first-of-type {
+    margin-top: 0.5rem;
+    padding-top: 0;
+    border-top: none;
+  }
+  .qc-option.multi-selected {
+    border-color: #5B6ABF !important;
+    background: #F0F0FF !important;
+  }
+  .qc-option.multi-selected .qc-letter {
+    background: #5B6ABF !important;
+    color: #fff !important;
+  }
+
+  /* ---- MATCHING ---- */
+  .match-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.6rem 1rem;
+    align-items: center;
+  }
+  @media (max-width: 500px) { .match-grid { gap: 0.5rem 0.5rem; } }
+  .match-term {
+    padding: 0.6rem 1rem;
+    background: var(--slate-100);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: right;
+    color: #1A202C !important;
+  }
+  .match-arrow {
+    color: var(--slate-300) !important;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  .match-select {
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--slate-300);
+    border-radius: 8px;
+    background: #fff;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: #1A202C !important;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+  .match-select:focus { border-color: #5B6ABF; outline: none; }
+  .match-select.match-correct { border-color: var(--success) !important; background-color: var(--success-light) !important; }
+  .match-select.match-wrong { border-color: #C53030 !important; background-color: #FFF5F5 !important; }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---- DARK MODE OVERRIDE ---- */
+  @media (prefers-color-scheme: dark) {
+    html, body {
+      background-color: #FAFAF7 !important;
+      color: #1A202C !important;
+    }
+    .container, section, footer,
+    .activity-box, .concept-card, .scenario-card,
+    .thought-prompt, .equation-box, .scoreboard,
+    .choice-btn, .sd-toggle, .reset-btn,
+    .quick-check, .qc-option, .wb-chip, .wb-zone,
+    .match-select, .match-term, .wb-bank,
+    .student-quote, .ch-step {
+      background-color: inherit;
+      color: inherit;
+    }
+    h2, h3, p, span, div, button, .scenario-title, .scenario-context, .scenario-prompt {
+      color: inherit !important;
+    }
+  }
+
+  /* Belt-and-suspenders: force key text colors */
+  h2 { color: #1A202C !important; }
+  p { color: #1A202C !important; }
+  .scenario-context { color: #64748B !important; }
+  .thought-prompt { color: #1A202C !important; }
+  .concept-card p { color: #334155 !important; }
+  
+  /* ---- DIGITAL PEN CONTROLS ---- */
+  .pen-controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border: 3px solid var(--slate-700);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    min-width: 200px;
+    transition: all 0.3s ease;
+  }
+  
+  .pen-controls.collapsed {
+    padding: 0.5rem;
+    min-width: auto;
+  }
+  
+  .pen-controls.collapsed .pen-controls-content {
+    display: none;
+  }
+  
+  .pen-controls-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--slate-300);
+  }
+  
+  .pen-controls.collapsed .pen-controls-header {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  
+  .pen-controls-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--slate-900);
+  }
+  
+  .pen-toggle-btn {
+    background: var(--slate-300);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    margin-bottom: 0.75rem;
+    width: 100%;
+  }
+  
+  .pen-toggle-btn.active {
+    background: var(--exo-warm);
+    color: white;
+  }
+  
+  .pen-tool-group {
+    margin-bottom: 0.75rem;
+  }
+  
+  .pen-tool-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--slate-700);
+    margin-bottom: 0.35rem;
+  }
+  
+  .pen-tool-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+  }
+  
+  .pen-tool-btn {
+    padding: 0.4rem;
+    background: white;
+    border: 2px solid var(--slate-300);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .pen-tool-btn:hover {
+    border-color: var(--slate-500);
+  }
+  
+  .pen-tool-btn.active {
+    background: var(--endo-cool);
+    color: white;
+    border-color: var(--endo-cool);
+  }
+  
+  .pen-color-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .pen-color-btn {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 2px solid var(--slate-300);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .pen-color-btn:hover {
+    transform: scale(1.1);
+  }
+  
+  .pen-color-btn.active {
+    border-color: var(--slate-900);
+    border-width: 3px;
+    transform: scale(1.1);
+  }
+  
+  .pen-action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  
+  .pen-action-btn {
+    padding: 0.4rem;
+    background: white;
+    border: 2px solid var(--slate-300);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .pen-action-btn:hover {
+    background: var(--slate-100);
+  }
+  
+  .pen-action-btn.danger {
+    color: var(--exo-warm);
+    border-color: var(--exo-warm);
+  }
+  
+  .pen-action-btn.danger:hover {
+    background: var(--exo-light);
+  }
+  
+  .collapse-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    font-size: 1.2rem;
+    color: var(--slate-700);
+    line-height: 1;
+  }
+  
+  .collapse-btn:hover {
+    color: var(--slate-900);
+  }
+</style>
+</head>
+<body>
+
+<!-- Digital Pen Controls -->
+<div class="pen-controls collapsed" id="penControls">
+  <div class="pen-controls-header">
+    <span class="pen-controls-title">✏️ Annotations</span>
+    <button class="collapse-btn" onclick="togglePenControls()" title="Expand/Collapse">
+      <span id="collapseIcon">▼</span>
+    </button>
+  </div>
+  
+  <div class="pen-controls-content">
+    <button class="pen-toggle-btn" id="penToggle" onclick="togglePen()">
+      Enable Annotation Mode
+    </button>
+    
+    <div class="pen-tool-group">
+      <label>Tool:</label>
+      <div class="pen-tool-buttons">
+        <button class="pen-tool-btn active" data-tool="pen" onclick="selectTool('pen')">
+          ✏️ Pen
+        </button>
+        <button class="pen-tool-btn" data-tool="highlighter" onclick="selectTool('highlighter')">
+          🖍️ Highlight
+        </button>
+        <button class="pen-tool-btn" data-tool="eraser" onclick="selectTool('eraser')">
+          🧹 Eraser
+        </button>
+      </div>
+    </div>
+    
+    <div class="pen-tool-group">
+      <label>Color:</label>
+      <div class="pen-color-grid">
+        <button class="pen-color-btn active" style="background: #FF0000;" data-color="#FF0000" onclick="selectColor('#FF0000')"></button>
+        <button class="pen-color-btn" style="background: #0000FF;" data-color="#0000FF" onclick="selectColor('#0000FF')"></button>
+        <button class="pen-color-btn" style="background: #00AA00;" data-color="#00AA00" onclick="selectColor('#00AA00')"></button>
+        <button class="pen-color-btn" style="background: #FFA500;" data-color="#FFA500" onclick="selectColor('#FFA500')"></button>
+        <button class="pen-color-btn" style="background: #FF00FF;" data-color="#FF00FF" onclick="selectColor('#FF00FF')"></button>
+        <button class="pen-color-btn" style="background: #00FFFF;" data-color="#00FFFF" onclick="selectColor('#00FFFF')"></button>
+        <button class="pen-color-btn" style="background: #FFFF00;" data-color="#FFFF00" onclick="selectColor('#FFFF00')"></button>
+        <button class="pen-color-btn" style="background: #000000;" data-color="#000000" onclick="selectColor('#000000')"></button>
+      </div>
+    </div>
+    
+    <div class="pen-action-buttons">
+      <button class="pen-action-btn" onclick="digitalPen.undo()">↶ Undo Last</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== HERO ====== -->
+<div class="hero">
+  <h1>Heat, Heat Flow, and Enthalpy</h1>
+  <p class="subtitle">Where does energy go during a chemical or physical process?</p>
+  <div class="duality-bar">
+    <span class="exo-tag">Exothermic</span>
+    <span class="endo-tag">Endothermic</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ====== SECTION 1: WHAT IS HEAT? ====== -->
+<section id="sec-heat">
+  <h2>What Is Heat?</h2>
+  <p>
+    In thermochemistry, <span class="key-term" title="The transfer of thermal energy between objects or regions at different temperatures.">heat (q)</span> is not a substance or a thing an object "has." Heat is <em>energy in transit</em>&mdash;it is the transfer of thermal energy between a system and its surroundings that occurs because of a temperature difference between them. When you touch a hot mug, the warmth you feel is thermal energy flowing from the mug (higher temperature) to your hand (lower temperature). Energy always flows spontaneously from higher temperature to lower temperature, never the reverse, unless work is done on the system.
+  </p>
+  <p>
+    This distinction matters: an object possesses internal energy, but it does not "contain" heat. Heat exists only during the act of transfer. Once the transfer is complete, what remains is a change in the internal energy of each object involved.
+  </p>
+
+  <div class="thought-prompt">
+    <strong>Stop and Think</strong>
+    If you leave an ice cube on a kitchen counter, the ice melts. Identify where energy is coming from and where it is going. Which object is losing thermal energy, and which is gaining it?
+  </div>
+
+  <!-- Quick Check 1 -->
+  <div class="quick-check" id="qc1">
+    <div class="qc-header">
+      <span class="qc-badge">Quick Check</span>
+      <h3>Test Your Understanding of Heat</h3>
+    </div>
+
+    <div class="qc-question" id="qc1-q1">
+      <div class="qc-question-text">1. Which statement best describes heat in a thermochemical context?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('qc1-q1','a')">
+          <span class="qc-letter">A</span>
+          <span>A substance contained inside hot objects</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('qc1-q1','b')">
+          <span class="qc-letter">B</span>
+          <span>The transfer of thermal energy between objects at different temperatures</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('qc1-q1','c')">
+          <span class="qc-letter">C</span>
+          <span>A measure of how fast molecules are moving</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('qc1-q1','d')">
+          <span class="qc-letter">D</span>
+          <span>The same thing as temperature, measured in Joules</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="qc1-q1-fb"></div>
+    </div>
+
+    <div class="qc-question" id="qc1-q2">
+      <div class="qc-question-text">2. A metal spoon is placed into a cup of hot soup. What happens to the thermal energy?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('qc1-q2','a')">
+          <span class="qc-letter">A</span>
+          <span>Energy flows from the spoon to the soup until both are the same temperature</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('qc1-q2','b')">
+          <span class="qc-letter">B</span>
+          <span>Energy flows from the soup to the spoon until both are the same temperature</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('qc1-q2','c')">
+          <span class="qc-letter">C</span>
+          <span>Energy flows in both directions equally at all times</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('qc1-q2','d')">
+          <span class="qc-letter">D</span>
+          <span>No energy is transferred because the spoon is a solid</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="qc1-q2-fb"></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ====== SECTION 2: SYSTEM & SURROUNDINGS ====== -->
+<section id="sec-system">
+  <h2>Defining the System</h2>
+  <p>
+    Before you can describe the direction of heat flow, you need clear boundaries. In thermochemistry, the <span class="key-term" title="The specific part of the universe being studied.">system</span> is the specific part of the universe you are studying&mdash;the reactants and products of a reaction, the dissolving salt, or the ice cube. Everything else&mdash;the beaker, the air in the room, your hand, the bench&mdash;is the <span class="key-term" title="Everything outside the system that can exchange energy with it.">surroundings</span>.
+  </p>
+  <p>
+    Together, the system plus the surroundings constitute the universe for thermodynamic bookkeeping. Energy is conserved: any energy lost by the system is gained by the surroundings, and vice versa. This principle is formalized in the <span class="key-term" title="Energy cannot be created or destroyed, only transferred or converted from one form to another.">First Law of Thermodynamics</span>, which states that <strong>energy cannot be created or destroyed</strong>&mdash;it can only be transferred between the system and surroundings or converted from one form to another.
+  </p>
+
+  <div class="system-diagram-wrap">
+    <div>
+      <div class="system-diagram">
+        <div class="sd-surroundings"><span>Surroundings</span></div>
+        <div class="sd-system">
+          <span class="label">System</span>
+          <span class="sub">(reaction, process)</span>
+        </div>
+        <div class="sd-arrow exo-arrow" id="arrow-exo" style="opacity:0.15;">
+          <span>q &lt; 0</span>
+          <svg width="48" height="20" viewBox="0 0 48 20"><path d="M0 10 H38 L30 3 M38 10 L30 17" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="sd-arrow endo-arrow" id="arrow-endo" style="opacity:0.15;">
+          <svg width="48" height="20" viewBox="0 0 48 20"><path d="M0 10 H38 L30 3 M38 10 L30 17" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>q &gt; 0</span>
+        </div>
+      </div>
+      <div class="sd-toggle-group">
+        <button class="sd-toggle" id="toggle-exo" onclick="toggleDiagram('exo')">Show Exothermic</button>
+        <button class="sd-toggle" id="toggle-endo" onclick="toggleDiagram('endo')">Show Endothermic</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="thought-prompt">
+    <strong>Stop and Think</strong>
+    When you dissolve ammonium nitrate in water and the solution feels cold, which direction did heat flow? Did the system (the dissolving process) absorb or release energy?
+  </div>
+
+  <!-- Quick Check 2: Word Bank Sort -->
+  <div class="quick-check" id="qc2">
+    <div class="qc-header">
+      <span class="qc-badge">Quick Check</span>
+      <h3>Sort: System or Surroundings?</h3>
+    </div>
+    <p class="wb-instruction">
+      <strong>Scenario:</strong> A student dissolves table salt (NaCl) in water inside a glass beaker on a lab bench. Drag each item into the correct category, or tap an item then tap a zone to place it.
+    </p>
+    <div class="wb-bank" id="wb-bank">
+      <div class="wb-chip" draggable="true" data-item="nacl" data-correct="system">NaCl (the salt)</div>
+      <div class="wb-chip" draggable="true" data-item="water" data-correct="system">H&#8322;O (the water)</div>
+      <div class="wb-chip" draggable="true" data-item="ions" data-correct="system">Dissolved Na&#8314; and Cl&#8315; ions</div>
+      <div class="wb-chip" draggable="true" data-item="beaker" data-correct="surroundings">Glass beaker</div>
+      <div class="wb-chip" draggable="true" data-item="bench" data-correct="surroundings">Lab bench</div>
+      <div class="wb-chip" draggable="true" data-item="air" data-correct="surroundings">Air in the room</div>
+      <div class="wb-chip" draggable="true" data-item="therm" data-correct="surroundings">Thermometer</div>
+    </div>
+
+    <div class="wb-zones">
+      <div class="wb-zone" id="zone-system">
+        <div class="wb-zone-label system-label">System</div>
+        <div class="wb-zone-items" id="zone-system-items"></div>
+      </div>
+      <div class="wb-zone" id="zone-surroundings">
+        <div class="wb-zone-label surr-label">Surroundings</div>
+        <div class="wb-zone-items" id="zone-surroundings-items"></div>
+      </div>
+    </div>
+
+    <button class="wb-check-btn" id="wb-check-btn" onclick="checkWordBank()">Check My Answers</button>
+    <div class="wb-result" id="wb-result"></div>
+    <div class="qc-feedback-inline" id="wb-feedback" style="margin-top:0.75rem;"></div>
+  </div>
+
+</section>
+
+<!-- ====== SECTION 3: ENTHALPY ====== -->
+<section id="sec-enthalpy">
+  <h2>Enthalpy: Tracking Heat at Constant Pressure</h2>
+  <p>
+    Most chemistry happens in open beakers and flasks&mdash;at constant atmospheric pressure. Under these conditions, the heat exchanged between the system and surroundings equals the change in a thermodynamic state function called <span class="key-term" title="A thermodynamic quantity equal to the internal energy plus the product of pressure and volume, H = U + PV.">enthalpy (H)</span>. We cannot measure absolute enthalpy, but we can measure the <em>change</em> in enthalpy for a process:
+  </p>
+
+  <div class="equation-box">
+    &Delta;H = H<sub>products</sub> &minus; H<sub>reactants</sub> = q<sub>p</sub>
+  </div>
+
+  <p>
+    Because enthalpy is a state function, &Delta;H depends only on the initial and final states, not on the path taken. The subscript <em>p</em> on q reminds us this equality holds at constant pressure. The sign of &Delta;H tells the full story of the direction of heat flow from the system's perspective.
+  </p>
+
+  <div class="concept-grid">
+    <div class="concept-card exo">
+      <h3>Exothermic</h3>
+      <span class="arrow-symbol">System &rarr; Surroundings</span>
+      <p>The system <strong>releases</strong> heat to the surroundings. Products are at a lower enthalpy than reactants.</p>
+      <div class="sign-area">
+        <div class="sign">&minus;</div>
+        <p style="margin-top:0.5rem; font-size:1.15rem; font-weight:600; color:var(--slate-700) !important;">&Delta;H &lt; 0</p>
+      </div>
+    </div>
+    <div class="concept-card endo">
+      <h3>Endothermic</h3>
+      <span class="arrow-symbol">Surroundings &rarr; System</span>
+      <p>The system <strong>absorbs</strong> heat from the surroundings. Products are at a higher enthalpy than reactants.</p>
+      <div class="sign-area">
+        <div class="sign">+</div>
+        <p style="margin-top:0.5rem; font-size:1.15rem; font-weight:600; color:var(--slate-700) !important;">&Delta;H &gt; 0</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enthalpy level diagrams -->
+  <h3>Enthalpy Level Diagrams</h3>
+  <p>These diagrams visualize the relative enthalpy of reactants and products. The vertical axis represents enthalpy (H). The arrow shows the direction and magnitude of &Delta;H.</p>
+  <div class="enthalpy-diagram-wrap">
+    <div class="enthalpy-mini">
+      <div class="title" style="color:var(--exo-warm);">Exothermic</div>
+      <canvas id="canvas-exo" width="320" height="260"></canvas>
+    </div>
+    <div class="enthalpy-mini">
+      <div class="title" style="color:var(--endo-cool);">Endothermic</div>
+      <canvas id="canvas-endo" width="320" height="260"></canvas>
+    </div>
+  </div>
+
+  <!-- Quick Check 3: Matching -->
+  <div class="quick-check" id="qc3">
+    <div class="qc-header">
+      <span class="qc-badge">Quick Check</span>
+      <h3>Match Each Property</h3>
+    </div>
+    <p class="wb-instruction">For each description, select whether it applies to an exothermic or endothermic process.</p>
+
+    <div class="match-grid">
+      <div class="match-term">&Delta;H &lt; 0</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-1" data-answer="exo">
+        <option value="">Choose...</option>
+        <option value="exo">Exothermic</option>
+        <option value="endo">Endothermic</option>
+      </select>
+
+      <div class="match-term">System absorbs heat</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-2" data-answer="endo">
+        <option value="">Choose...</option>
+        <option value="exo">Exothermic</option>
+        <option value="endo">Endothermic</option>
+      </select>
+
+      <div class="match-term">Products at lower enthalpy than reactants</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-3" data-answer="exo">
+        <option value="">Choose...</option>
+        <option value="exo">Exothermic</option>
+        <option value="endo">Endothermic</option>
+      </select>
+
+      <div class="match-term">Surroundings feel colder</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-4" data-answer="endo">
+        <option value="">Choose...</option>
+        <option value="exo">Exothermic</option>
+        <option value="endo">Endothermic</option>
+      </select>
+
+      <div class="match-term">Heat flows from system to surroundings</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-5" data-answer="exo">
+        <option value="">Choose...</option>
+        <option value="exo">Exothermic</option>
+        <option value="endo">Endothermic</option>
+      </select>
+
+      <div class="match-term">&Delta;H &gt; 0</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select" id="match-6" data-answer="endo">
+        <option value="">Choose...</option>
+        <option value="exo">Exothermic</option>
+        <option value="endo">Endothermic</option>
+      </select>
+    </div>
+
+    <button class="wb-check-btn" id="match-check-btn" onclick="checkMatching()">Check My Answers</button>
+    <div class="wb-result" id="match-result"></div>
+    <div class="qc-feedback-inline" id="match-feedback" style="margin-top:0.75rem;"></div>
+  </div>
+
+</section>
+
+<!-- ====== SECTION 4: INTEGRATIVE CHALLENGES ====== -->
+<section id="sec-activity">
+  <h2>Putting It All Together</h2>
+  <p>
+    Each challenge below asks you to integrate what you have learned: identifying the system, reasoning about energy transfer, connecting observations to the sign of &Delta;H, and spotting common mistakes. No two questions work the same way.
+  </p>
+
+  <div class="activity-box">
+    <div class="activity-header">
+      <span class="badge">Activity</span>
+      <h3>Integrative Challenges</h3>
+    </div>
+
+    <div class="scoreboard">
+      <div class="score-display">Score: <span class="score-num" id="score">0</span> / <span id="total">5</span></div>
+      <button class="reset-btn" onclick="resetChallenges()">Reset All</button>
+    </div>
+
+    <!-- ---- CHALLENGE 1: Multi-step scenario ---- -->
+    <div class="scenario-card" id="ch1">
+      <div class="scenario-title">Challenge 1: Campfire Analysis</div>
+      <div class="scenario-context">You are roasting marshmallows. Wood burns in the fire pit, and you can feel the heat on your face from several feet away.</div>
+
+      <div class="ch-step" id="ch1-s1">
+        <div class="scenario-prompt">Step 1: What is the system in this scenario?</div>
+        <div class="qc-options">
+          <div class="qc-option" onclick="checkStep('ch1','s1','a')"><span class="qc-letter">A</span><span>You, the marshmallow, and the air</span></div>
+          <div class="qc-option" onclick="checkStep('ch1','s1','b')"><span class="qc-letter">B</span><span>The combustion reaction (wood + O&#8322;)</span></div>
+          <div class="qc-option" onclick="checkStep('ch1','s1','c')"><span class="qc-letter">C</span><span>The fire pit and everything inside it</span></div>
+        </div>
+        <div class="qc-feedback-inline" id="ch1-s1-fb"></div>
+      </div>
+
+      <div class="ch-step" id="ch1-s2" style="display:none;">
+        <div class="scenario-prompt">Step 2: You feel warmth on your face. You are part of the surroundings. What does that sensation tell you about the direction of heat flow?</div>
+        <div class="qc-options">
+          <div class="qc-option" onclick="checkStep('ch1','s2','a')"><span class="qc-letter">A</span><span>The surroundings are transferring energy into the system</span></div>
+          <div class="qc-option" onclick="checkStep('ch1','s2','b')"><span class="qc-letter">B</span><span>The system is transferring energy to the surroundings</span></div>
+        </div>
+        <div class="qc-feedback-inline" id="ch1-s2-fb"></div>
+      </div>
+
+      <div class="ch-step" id="ch1-s3" style="display:none;">
+        <div class="scenario-prompt">Step 3: Based on your reasoning, what is the sign of &Delta;H for the combustion of wood?</div>
+        <div class="qc-options">
+          <div class="qc-option" onclick="checkStep('ch1','s3','a')"><span class="qc-letter">A</span><span>&Delta;H &gt; 0 (positive)</span></div>
+          <div class="qc-option" onclick="checkStep('ch1','s3','b')"><span class="qc-letter">B</span><span>&Delta;H &lt; 0 (negative)</span></div>
+        </div>
+        <div class="qc-feedback-inline" id="ch1-s3-fb"></div>
+      </div>
+    </div>
+
+    <!-- ---- CHALLENGE 2: Spot the Error ---- -->
+    <div class="scenario-card" id="ch2">
+      <div class="scenario-title">Challenge 2: Spot the Mistake</div>
+      <div class="scenario-context">A student writes the following on their homework:</div>
+      <div class="student-quote">
+        "When I squeeze a cold pack, it gets cold. The surroundings (the cold pack pouch) are losing energy, so the process is exothermic. &Delta;H is negative because the temperature went down."
+      </div>
+      <div class="scenario-prompt">What is the fundamental error in this student's reasoning?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkChallenge('ch2','a')"><span class="qc-letter">A</span><span>The student identified the wrong system. The cold pack pouch is actually the system.</span></div>
+        <div class="qc-option" onclick="checkChallenge('ch2','b')"><span class="qc-letter">B</span><span>The student confused the surroundings cooling down with the system releasing energy. The system (dissolving NH&#8324;NO&#8323;) is absorbing heat, making it endothermic (&Delta;H &gt; 0).</span></div>
+        <div class="qc-option" onclick="checkChallenge('ch2','c')"><span class="qc-letter">C</span><span>The student is wrong because cold packs use a physical change, not a chemical one, so &Delta;H does not apply.</span></div>
+      </div>
+      <div class="qc-feedback-inline" id="ch2-fb"></div>
+    </div>
+
+    <!-- ---- CHALLENGE 3: Predict the Observation ---- -->
+    <div class="scenario-card" id="ch3">
+      <div class="scenario-title">Challenge 3: Predict What You Would Feel</div>
+      <div class="scenario-context">You apply a generous amount of rubbing alcohol (isopropanol) to your forearm and wait. The system is the liquid alcohol evaporating; your skin is the surroundings. Evaporation is endothermic.</div>
+      <div class="scenario-prompt">Given that this process is endothermic, what would your forearm feel, and why?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkChallenge('ch3','a')"><span class="qc-letter">A</span><span>Warm, because the evaporating alcohol releases heat into your skin</span></div>
+        <div class="qc-option" onclick="checkChallenge('ch3','b')"><span class="qc-letter">B</span><span>Cool, because the evaporating alcohol absorbs heat from your skin</span></div>
+        <div class="qc-option" onclick="checkChallenge('ch3','c')"><span class="qc-letter">C</span><span>No temperature change, because phase changes do not involve heat transfer</span></div>
+      </div>
+      <div class="qc-feedback-inline" id="ch3-fb"></div>
+    </div>
+
+    <!-- ---- CHALLENGE 4: Reverse Reasoning ---- -->
+    <div class="scenario-card" id="ch4">
+      <div class="scenario-title">Challenge 4: Work Backward from the Enthalpy Diagram</div>
+      <div class="scenario-context">An enthalpy diagram for a process shows the products sitting at a <strong>higher</strong> enthalpy level than the reactants.</div>
+      <div class="scenario-prompt">Select <strong>every</strong> statement that must be true for this process. (Select all that apply, then check.)</div>
+      <div class="qc-options">
+        <div class="qc-option ch4-multi" onclick="toggleMulti(this)" data-key="a" data-correct="true"><span class="qc-letter">A</span><span>&Delta;H is positive</span></div>
+        <div class="qc-option ch4-multi" onclick="toggleMulti(this)" data-key="b" data-correct="false"><span class="qc-letter">B</span><span>The system releases energy to the surroundings</span></div>
+        <div class="qc-option ch4-multi" onclick="toggleMulti(this)" data-key="c" data-correct="true"><span class="qc-letter">C</span><span>The process is endothermic</span></div>
+        <div class="qc-option ch4-multi" onclick="toggleMulti(this)" data-key="d" data-correct="false"><span class="qc-letter">D</span><span>The surroundings increase in temperature</span></div>
+        <div class="qc-option ch4-multi" onclick="toggleMulti(this)" data-key="e" data-correct="true"><span class="qc-letter">E</span><span>Heat flows from surroundings into the system</span></div>
+      </div>
+      <button class="wb-check-btn" id="ch4-btn" onclick="checkMultiSelect()" style="margin-top:0.75rem;">Check My Selections</button>
+      <div class="qc-feedback-inline" id="ch4-fb"></div>
+    </div>
+
+    <!-- ---- CHALLENGE 5: Reverse Processes ---- -->
+    <div class="scenario-card" id="ch5">
+      <div class="scenario-title">Challenge 5: Connecting Reverse Processes</div>
+      <div class="scenario-context">Freezing water is exothermic (&Delta;H &lt; 0). A student claims: "Melting must also be exothermic, because it involves the same substance and the same amount of energy."</div>
+      <div class="scenario-prompt">Which response best corrects the student?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkChallenge('ch5','a')"><span class="qc-letter">A</span><span>The student is correct. Both involve water, so both have the same sign of &Delta;H.</span></div>
+        <div class="qc-option" onclick="checkChallenge('ch5','b')"><span class="qc-letter">B</span><span>The magnitude is the same, but the sign flips. Melting is the reverse of freezing, so it is endothermic (&Delta;H &gt; 0). The system absorbs the same amount of energy that freezing released.</span></div>
+        <div class="qc-option" onclick="checkChallenge('ch5','c')"><span class="qc-letter">C</span><span>Melting requires more energy than freezing releases because ice is more stable than liquid water.</span></div>
+      </div>
+      <div class="qc-feedback-inline" id="ch5-fb"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ====== SECTION 5: SYNTHESIS ====== -->
+<section id="sec-synthesis">
+  <h2>Connecting the Ideas</h2>
+  <p>
+    Notice the through-line across everything you worked through: heat is energy in transit, the system boundary determines the sign convention, and enthalpy gives us a measurable way to quantify heat flow at constant pressure. Each challenge asked you to integrate these ideas in a different way&mdash;identifying the system, reasoning from observation to sign, catching perspective errors, reading enthalpy diagrams, and connecting reverse processes.
+  </p>
+  <p>
+    The most common source of errors in thermochemistry is <em>perspective confusion</em>: conflating what the surroundings experience with what the system does. If the surroundings feel hot (like air near a campfire), the system released energy&mdash;that is exothermic. If the surroundings feel cold (like the beaker during ammonium nitrate dissolving), the system absorbed energy&mdash;that is endothermic. The sensory experience belongs to the surroundings; the sign of &Delta;H always belongs to the system.
+  </p>
+  <div class="thought-prompt">
+    <strong>Challenge Question</strong>
+    Condensation of water vapor on the outside of a cold glass is exothermic (&Delta;H &lt; 0). Evaporation of that same water is endothermic (&Delta;H &gt; 0). How does the First Law of Thermodynamics guarantee that these two values are equal in magnitude but opposite in sign?
+  </div>
+</section>
+
+</div><!-- end container -->
+
+<footer>
+  Interactive Thermochemistry Module &middot; Heat, Heat Flow, and Enthalpy
+</footer>
+
+<script>
+  /* ==============================
+     QUICK CHECK 1: MULTIPLE CHOICE
+     ============================== */
+  var mcAnswers = {
+    'qc1-q1': {
+      correct: 'b',
+      feedback: 'Heat is defined as the transfer of thermal energy between objects at different temperatures. It is not a substance, not the same as temperature, and not a measure of molecular speed (that relates to kinetic energy and temperature).',
+      wrongFeedback: 'Not quite. Remember: heat is not something an object "has." It describes energy moving between objects because of a temperature difference.'
+    },
+    'qc1-q2': {
+      correct: 'b',
+      feedback: 'The soup is at a higher temperature than the spoon, so thermal energy flows spontaneously from the soup (higher T) to the spoon (lower T) until thermal equilibrium is reached.',
+      wrongFeedback: 'Think about which object is hotter. Energy flows spontaneously from higher temperature to lower temperature. The soup is hotter than the spoon.'
+    }
+  };
+
+  function checkMC(questionId, picked) {
+    var q = document.getElementById(questionId);
+    if (q.dataset.locked === 'true') return;
+    q.dataset.locked = 'true';
+
+    var info = mcAnswers[questionId];
+    var options = q.querySelectorAll('.qc-option');
+    var letters = ['a', 'b', 'c', 'd'];
+    var fb = document.getElementById(questionId + '-fb');
+
+    options.forEach(function(opt, i) {
+      opt.classList.add('locked');
+      if (letters[i] === picked && picked === info.correct) {
+        opt.classList.add('correct-pick');
+      } else if (letters[i] === picked && picked !== info.correct) {
+        opt.classList.add('wrong-pick');
+      }
+      if (letters[i] === info.correct && picked !== info.correct) {
+        opt.classList.add('reveal-correct');
+      }
+    });
+
+    if (picked === info.correct) {
+      fb.className = 'qc-feedback-inline correct show';
+      fb.textContent = info.feedback;
+    } else {
+      fb.className = 'qc-feedback-inline incorrect show';
+      fb.textContent = info.wrongFeedback;
+    }
+  }
+
+  /* ==============================
+     QUICK CHECK 2: WORD BANK SORT
+     ============================== */
+  var wbSelected = null;
+
+  function initWordBank() {
+    var chips = document.querySelectorAll('#wb-bank .wb-chip');
+    var zones = document.querySelectorAll('.wb-zone');
+
+    // Click-to-select, click-zone-to-place (mobile-friendly)
+    chips.forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        if (chip.classList.contains('placed')) return;
+        if (wbSelected === chip) {
+          chip.style.outline = '';
+          wbSelected = null;
+          return;
+        }
+        if (wbSelected) wbSelected.style.outline = '';
+        wbSelected = chip;
+        chip.style.outline = '2px solid #5B6ABF';
+      });
+
+      // Drag events
+      chip.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('text/plain', chip.dataset.item);
+      });
+    });
+
+    zones.forEach(function(zone) {
+      zone.addEventListener('click', function() {
+        if (!wbSelected) return;
+        var items = zone.querySelector('.wb-zone-items');
+        var clone = wbSelected.cloneNode(true);
+        clone.draggable = false;
+        clone.style.outline = '';
+        clone.style.cursor = 'pointer';
+        clone.addEventListener('click', function() {
+          if (clone.classList.contains('correct-chip') || clone.classList.contains('wrong-chip')) return;
+          // return chip to bank
+          var orig = document.querySelector('#wb-bank .wb-chip[data-item="' + clone.dataset.item + '"]');
+          if (orig) { orig.classList.remove('placed'); orig.style.outline = ''; }
+          clone.remove();
+        });
+        items.appendChild(clone);
+        wbSelected.classList.add('placed');
+        wbSelected.style.outline = '';
+        wbSelected = null;
+      });
+
+      // Drag events
+      zone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        zone.classList.add('drag-over');
+      });
+      zone.addEventListener('dragleave', function() {
+        zone.classList.remove('drag-over');
+      });
+      zone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        var itemId = e.dataTransfer.getData('text/plain');
+        var orig = document.querySelector('#wb-bank .wb-chip[data-item="' + itemId + '"]');
+        if (!orig || orig.classList.contains('placed')) return;
+        var items = zone.querySelector('.wb-zone-items');
+        var clone = orig.cloneNode(true);
+        clone.draggable = false;
+        clone.style.cursor = 'pointer';
+        clone.addEventListener('click', function() {
+          if (clone.classList.contains('correct-chip') || clone.classList.contains('wrong-chip')) return;
+          orig.classList.remove('placed');
+          orig.style.outline = '';
+          clone.remove();
+        });
+        items.appendChild(clone);
+        orig.classList.add('placed');
+        orig.style.outline = '';
+        if (wbSelected === orig) wbSelected = null;
+      });
+    });
+  }
+
+  function checkWordBank() {
+    var btn = document.getElementById('wb-check-btn');
+    btn.disabled = true;
+
+    var sysItems = document.querySelectorAll('#zone-system-items .wb-chip');
+    var surrItems = document.querySelectorAll('#zone-surroundings-items .wb-chip');
+    var allPlaced = [];
+    var correctCount = 0;
+    var totalItems = 7;
+
+    sysItems.forEach(function(c) {
+      allPlaced.push(c);
+      if (c.dataset.correct === 'system') { c.classList.add('correct-chip'); correctCount++; }
+      else { c.classList.add('wrong-chip'); }
+    });
+    surrItems.forEach(function(c) {
+      allPlaced.push(c);
+      if (c.dataset.correct === 'surroundings') { c.classList.add('correct-chip'); correctCount++; }
+      else { c.classList.add('wrong-chip'); }
+    });
+
+    var result = document.getElementById('wb-result');
+    var fb = document.getElementById('wb-feedback');
+
+    if (allPlaced.length < totalItems) {
+      result.className = 'wb-result incorrect show';
+      result.textContent = 'Place all ' + totalItems + ' items before checking.';
+      btn.disabled = false;
+      return;
+    }
+
+    if (correctCount === totalItems) {
+      result.className = 'wb-result correct show';
+      result.textContent = correctCount + ' / ' + totalItems + ' correct!';
+      fb.className = 'qc-feedback-inline correct show';
+      fb.textContent = 'The system includes everything directly involved in the dissolving process: the salt, the water, and the resulting ions. Everything else (beaker, bench, air, thermometer) is part of the surroundings that can exchange energy with the system.';
+    } else {
+      result.className = 'wb-result incorrect show';
+      result.textContent = correctCount + ' / ' + totalItems + ' correct. Review the items marked in red.';
+      fb.className = 'qc-feedback-inline incorrect show';
+      fb.textContent = 'The system is the dissolving process itself: the NaCl, the H\u2082O it dissolves in, and the resulting ions (Na\u207A, Cl\u207B). The beaker, bench, air, and thermometer are not participating in the chemical process; they are the surroundings.';
+    }
+  }
+
+  /* ==============================
+     QUICK CHECK 3: MATCHING
+     ============================== */
+  function checkMatching() {
+    var btn = document.getElementById('match-check-btn');
+    btn.disabled = true;
+
+    var total = 6;
+    var correct = 0;
+
+    for (var i = 1; i <= total; i++) {
+      var sel = document.getElementById('match-' + i);
+      sel.disabled = true;
+      if (sel.value === sel.dataset.answer) {
+        sel.classList.add('match-correct');
+        correct++;
+      } else {
+        sel.classList.add('match-wrong');
+      }
+    }
+
+    var result = document.getElementById('match-result');
+    var fb = document.getElementById('match-feedback');
+
+    if (correct === total) {
+      result.className = 'wb-result correct show';
+      result.textContent = correct + ' / ' + total + ' correct!';
+      fb.className = 'qc-feedback-inline correct show';
+      fb.textContent = 'You matched every property correctly. Remember the pattern: exothermic means the system loses heat (Delta H < 0, surroundings warm up), and endothermic means the system gains heat (Delta H > 0, surroundings cool down).';
+    } else {
+      result.className = 'wb-result incorrect show';
+      result.textContent = correct + ' / ' + total + ' correct. Incorrect answers are highlighted in red.';
+      fb.className = 'qc-feedback-inline incorrect show';
+      fb.textContent = 'Review the concept cards above. Key rule: the sign of Delta H is always from the system\'s perspective. If the system releases heat, Delta H < 0 (exothermic). If the system absorbs heat, Delta H > 0 (endothermic). The surroundings experience the opposite temperature change.';
+    }
+  }
+
+  /* ==============================
+     SYSTEM DIAGRAM TOGGLE
+     ============================== */
+  let diagramState = null;
+
+  function toggleDiagram(type) {
+    const arrowExo = document.getElementById('arrow-exo');
+    const arrowEndo = document.getElementById('arrow-endo');
+    const btnExo = document.getElementById('toggle-exo');
+    const btnEndo = document.getElementById('toggle-endo');
+
+    if (diagramState === type) {
+      diagramState = null;
+      arrowExo.style.opacity = '0.15';
+      arrowEndo.style.opacity = '0.15';
+      btnExo.className = 'sd-toggle';
+      btnEndo.className = 'sd-toggle';
+      return;
+    }
+
+    diagramState = type;
+    if (type === 'exo') {
+      arrowExo.style.opacity = '1';
+      arrowEndo.style.opacity = '0.15';
+      btnExo.className = 'sd-toggle active-exo';
+      btnEndo.className = 'sd-toggle';
+    } else {
+      arrowExo.style.opacity = '0.15';
+      arrowEndo.style.opacity = '1';
+      btnExo.className = 'sd-toggle';
+      btnEndo.className = 'sd-toggle active-endo';
+    }
+  }
+
+  /* ==============================
+     ENTHALPY DIAGRAMS (Canvas)
+     ============================== */
+  function drawEnthalpyDiagram(canvasId, type) {
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // axis - darker and thicker
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(50, 20);
+    ctx.lineTo(50, h - 20);
+    ctx.stroke();
+
+    // axis label - darker
+    ctx.save();
+    ctx.translate(18, h / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.font = '700 16px Source Sans 3';
+    ctx.fillStyle = '#334155';
+    ctx.textAlign = 'center';
+    ctx.fillText('Enthalpy (H)', 0, 0);
+    ctx.restore();
+
+    // axis arrow - thicker
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(50, 20);
+    ctx.lineTo(44, 32);
+    ctx.moveTo(50, 20);
+    ctx.lineTo(56, 32);
+    ctx.stroke();
+
+    const isExo = type === 'exo';
+    const reactY = isExo ? 70 : 190;
+    const prodY = isExo ? 190 : 70;
+    const color = isExo ? '#D94F30' : '#2B6CB0';
+
+    // reactant line - darker and thicker
+    ctx.strokeStyle = '#1E293B';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(75, reactY);
+    ctx.lineTo(160, reactY);
+    ctx.stroke();
+
+    // product line - darker and thicker
+    ctx.strokeStyle = '#1E293B';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(190, prodY);
+    ctx.lineTo(285, prodY);
+    ctx.stroke();
+
+    // labels - darker and bolder
+    ctx.font = '700 16px Source Sans 3';
+    ctx.fillStyle = '#1E293B';
+    ctx.textAlign = 'center';
+    ctx.fillText('Reactants', 118, reactY - 14);
+    ctx.fillText('Products', 238, prodY - 14);
+
+    // delta H arrow - thicker
+    const arrowX = 175;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 4;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(arrowX, reactY);
+    ctx.lineTo(arrowX, prodY);
+    ctx.stroke();
+
+    // arrowhead - larger and bolder
+    const tipY = prodY;
+    const dir = prodY < reactY ? -1 : 1;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(arrowX, tipY);
+    ctx.lineTo(arrowX - 8, tipY - dir * 16);
+    ctx.moveTo(arrowX, tipY);
+    ctx.lineTo(arrowX + 8, tipY - dir * 16);
+    ctx.stroke();
+
+    // delta H label using Greek symbol - bolder
+    ctx.font = '700 19px Source Sans 3';
+    ctx.fillStyle = color;
+    ctx.textAlign = 'left';
+    ctx.fillText('ΔH ' + (isExo ? '< 0' : '> 0'), arrowX + 12, (reactY + prodY) / 2 + 6);
+
+    // bottom note - darker and more prominent
+    ctx.font = '600 14px Source Sans 3';
+    ctx.fillStyle = '#475569';
+    ctx.textAlign = 'center';
+    ctx.fillText(isExo ? 'Energy released' : 'Energy absorbed', w / 2 + 15, h - 8);
+  }
+
+  drawEnthalpyDiagram('canvas-exo', 'exo');
+  drawEnthalpyDiagram('canvas-endo', 'endo');
+
+  /* ==============================
+     INTEGRATIVE CHALLENGES
+     ============================== */
+  var challengeScore = 0;
+
+  // Challenge 1: Multi-step campfire
+  var ch1Answers = {
+    s1: { correct: 'b', feedback: 'The system is the chemical reaction itself: the combustion of wood reacting with O\u2082. You, the marshmallow, and the air are all part of the surroundings.', wrongFeedback: 'Remember, the system is the process you are studying. Here, that is the combustion reaction (wood + O\u2082 \u2192 CO\u2082 + H\u2082O). Everything else, including you, is the surroundings.' },
+    s2: { correct: 'b', feedback: 'Your face warms up because the system (the reaction) is transferring energy outward to you (the surroundings). Energy flows from the system to the surroundings.', wrongFeedback: 'You feel warmth, which means energy is arriving at you (the surroundings). That energy must be coming from the system. The system transfers energy to the surroundings.' },
+    s3: { correct: 'b', feedback: 'When the system releases energy to the surroundings, \u0394H is negative. Combustion is exothermic. You built that conclusion step by step: identify the system, observe the surroundings warming, conclude energy left the system, assign \u0394H < 0.', wrongFeedback: 'You established that the system releases energy outward. When energy leaves the system, \u0394H is negative (the products sit at lower enthalpy than the reactants). This process is exothermic.' }
+  };
+  var ch1Progress = 0;
+  var ch1Scored = false;
+
+  function checkStep(challenge, step, picked) {
+    if (challenge !== 'ch1') return;
+    var stepEl = document.getElementById('ch1-' + step);
+    if (stepEl.dataset.locked === 'true') return;
+    stepEl.dataset.locked = 'true';
+
+    var info = ch1Answers[step];
+    var options = stepEl.querySelectorAll('.qc-option');
+    var letters = ['a', 'b', 'c'];
+    var fb = document.getElementById('ch1-' + step + '-fb');
+    var isCorrect = picked === info.correct;
+
+    options.forEach(function(opt, i) {
+      opt.classList.add('locked');
+      if (letters[i] === picked && isCorrect) opt.classList.add('correct-pick');
+      else if (letters[i] === picked && !isCorrect) opt.classList.add('wrong-pick');
+      if (letters[i] === info.correct && !isCorrect) opt.classList.add('reveal-correct');
+    });
+
+    fb.className = 'qc-feedback-inline ' + (isCorrect ? 'correct' : 'incorrect') + ' show';
+    fb.textContent = isCorrect ? info.feedback : info.wrongFeedback;
+
+    if (isCorrect) ch1Progress++;
+
+    // reveal next step
+    var nextStep = step === 's1' ? 's2' : (step === 's2' ? 's3' : null);
+    if (nextStep) {
+      setTimeout(function() {
+        document.getElementById('ch1-' + nextStep).style.display = 'block';
+        document.getElementById('ch1-' + nextStep).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 600);
+    }
+
+    // Score after final step
+    if (step === 's3' && !ch1Scored) {
+      ch1Scored = true;
+      if (ch1Progress === 3) {
+        challengeScore++;
+        document.getElementById('score').textContent = challengeScore;
+        document.getElementById('ch1').classList.add('correct-exo');
+      } else {
+        document.getElementById('ch1').classList.add('incorrect');
+      }
+    }
+  }
+
+  // Challenges 2, 3, 5: Single-select
+  var challengeAnswers = {
+    ch2: {
+      correct: 'a',
+      feedback: 'Correct! The student\'s fundamental mistake was misidentifying the system. The cold pack pouch (containing the dissolving NH₄NO₃) IS the system, not the surroundings. Your hand, the air around it, etc. are the surroundings. Since the system (dissolving process) absorbs heat from the surroundings, it\'s endothermic with ΔH > 0. The student confused what they felt (surroundings cooling) with what the system was doing.',
+      wrongFeedback: 'The core error is about identifying the system correctly. The student labeled "the cold pack pouch" as the surroundings, but that pouch (where the dissolving reaction occurs) is actually the system. Your hand and the air around it are the surroundings. Once you correctly identify the system, you can see it\'s absorbing heat (endothermic, ΔH > 0), not releasing it.'
+    },
+    ch3: {
+      correct: 'b',
+      feedback: 'Endothermic means the system absorbs energy from the surroundings. Your skin (surroundings) loses thermal energy to the evaporating alcohol (system), so your forearm feels cool. This is the same principle behind sweating: evaporation absorbs heat from your skin surface.',
+      wrongFeedback: 'If the process is endothermic, the system absorbs heat from the surroundings. Your skin is the surroundings, so it loses thermal energy and feels cool. The evaporating alcohol pulls energy from your skin to overcome intermolecular forces during the liquid-to-gas transition.'
+    },
+    ch5: {
+      correct: 'b',
+      feedback: 'Because enthalpy is a state function, a forward process and its reverse have the same magnitude of \u0394H but opposite signs. Freezing releases energy (\u0394H < 0); melting absorbs the same amount of energy (\u0394H > 0). The student was right about the magnitude but wrong about the sign. Reverse processes always flip the sign.',
+      wrongFeedback: 'Melting is the exact reverse of freezing. Because enthalpy is a state function, the magnitude of \u0394H is the same, but the sign reverses. Freezing releases heat (\u0394H < 0), so melting must absorb the same amount of heat (\u0394H > 0). The student confused "same energy" with "same sign."'
+    }
+  };
+
+  function checkChallenge(chId, picked) {
+    var card = document.getElementById(chId);
+    if (card.dataset.locked === 'true') return;
+    card.dataset.locked = 'true';
+
+    var info = challengeAnswers[chId];
+    var options = card.querySelectorAll('.qc-option:not(.ch4-multi)');
+    var letters = ['a', 'b', 'c'];
+    var fb = document.getElementById(chId + '-fb');
+    var isCorrect = picked === info.correct;
+
+    options.forEach(function(opt, i) {
+      opt.classList.add('locked');
+      if (letters[i] === picked && isCorrect) opt.classList.add('correct-pick');
+      else if (letters[i] === picked && !isCorrect) opt.classList.add('wrong-pick');
+      if (letters[i] === info.correct && !isCorrect) opt.classList.add('reveal-correct');
+    });
+
+    fb.className = 'qc-feedback-inline ' + (isCorrect ? 'correct' : 'incorrect') + ' show';
+    fb.textContent = isCorrect ? info.feedback : info.wrongFeedback;
+
+    if (isCorrect) {
+      challengeScore++;
+      document.getElementById('score').textContent = challengeScore;
+      card.classList.add(chId === 'ch3' ? 'correct-endo' : (chId === 'ch5' ? 'correct-endo' : 'correct-endo'));
+      // color based on answer type
+      if (chId === 'ch2') card.classList.add('correct-endo');
+    } else {
+      card.classList.add('incorrect');
+    }
+  }
+
+  // Challenge 4: Multi-select
+  function toggleMulti(el) {
+    if (el.classList.contains('locked')) return;
+    el.classList.toggle('multi-selected');
+  }
+
+  function checkMultiSelect() {
+    var btn = document.getElementById('ch4-btn');
+    btn.disabled = true;
+
+    var options = document.querySelectorAll('.ch4-multi');
+    var allCorrect = true;
+
+    options.forEach(function(opt) {
+      opt.classList.add('locked');
+      var isSelected = opt.classList.contains('multi-selected');
+      var shouldBeSelected = opt.dataset.correct === 'true';
+
+      opt.classList.remove('multi-selected');
+      if (isSelected && shouldBeSelected) {
+        opt.classList.add('correct-pick');
+      } else if (isSelected && !shouldBeSelected) {
+        opt.classList.add('wrong-pick');
+        allCorrect = false;
+      } else if (!isSelected && shouldBeSelected) {
+        opt.classList.add('reveal-correct');
+        allCorrect = false;
+      }
+    });
+
+    var fb = document.getElementById('ch4-fb');
+    var card = document.getElementById('ch4');
+
+    if (allCorrect) {
+      challengeScore++;
+      document.getElementById('score').textContent = challengeScore;
+      fb.className = 'qc-feedback-inline correct show';
+      fb.textContent = 'All correct. When products are at higher enthalpy than reactants: \u0394H is positive, the process is endothermic, and heat flows from surroundings into the system. The surroundings lose thermal energy and cool down (they do not increase in temperature). The system does not release energy; it absorbs it.';
+      card.classList.add('correct-endo');
+    } else {
+      fb.className = 'qc-feedback-inline incorrect show';
+      fb.textContent = 'Not quite. Products at higher enthalpy means the system gained energy: \u0394H > 0 (A), the process is endothermic (C), and heat flows from surroundings into the system (E). The system absorbs energy, so the surroundings cool down, not warm up, and the system does not release energy. Correct answers are outlined in green.';
+      card.classList.add('incorrect');
+    }
+  }
+
+  // Reset
+  function resetChallenges() {
+    challengeScore = 0;
+    ch1Progress = 0;
+    ch1Scored = false;
+    document.getElementById('score').textContent = '0';
+
+    // Reset all challenge cards
+    var cards = document.querySelectorAll('#sec-activity .scenario-card');
+    cards.forEach(function(card) {
+      card.dataset.locked = '';
+      card.className = 'scenario-card';
+    });
+
+    // Reset all options
+    var options = document.querySelectorAll('#sec-activity .qc-option');
+    options.forEach(function(opt) {
+      opt.className = opt.classList.contains('ch4-multi') ? 'qc-option ch4-multi' : 'qc-option';
+    });
+
+    // Reset all feedback
+    var fbs = document.querySelectorAll('#sec-activity .qc-feedback-inline');
+    fbs.forEach(function(fb) { fb.className = 'qc-feedback-inline'; fb.textContent = ''; });
+
+    // Reset ch1 steps
+    var steps = document.querySelectorAll('.ch-step');
+    steps.forEach(function(s, i) {
+      s.dataset.locked = '';
+      if (i > 0) s.style.display = 'none';
+    });
+
+    // Reset ch4 button
+    document.getElementById('ch4-btn').disabled = false;
+  }
+
+  // Initialize
+  initWordBank();
+
+  /* ==============================
+     IFRAME AUTO-RESIZE
+     Sends height to parent for Google Sites / Canvas iframe resizing.
+     ============================== */
+  function postHeight() {
+    var height = document.documentElement.scrollHeight;
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'resize', height: height }, '*');
+    }
+  }
+  // Post height on load and on any interaction that may change layout
+  window.addEventListener('load', function() {
+    postHeight();
+    setTimeout(postHeight, 500);
+    setTimeout(postHeight, 2000);
+  });
+  window.addEventListener('resize', postHeight);
+  // Observe DOM changes to catch expanding feedback, revealed steps, etc.
+  if (typeof MutationObserver !== 'undefined') {
+    var resizeObserver = new MutationObserver(function() {
+      setTimeout(postHeight, 100);
+    });
+    resizeObserver.observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
+  }
+</script>
+
+<script>
+/**
+ * Digital Pen - Annotation Library
+ */
+class DigitalPen {
+  constructor(options = {}) {
+    this.canvas = null;
+    this.ctx = null;
+    this.isDrawing = false;
+    this.isEnabled = false;
+    this.currentTool = 'pen';
+    this.currentColor = options.defaultColor || '#FF0000';
+    this.penSize = options.penSize || 2;
+    this.highlighterSize = options.highlighterSize || 20;
+    this.eraserSize = options.eraserSize || 30;
+    this.paths = [];
+    this.currentPath = null;
+    
+    this.init();
+  }
+  
+  init() {
+    this.canvas = document.createElement('canvas');
+    this.canvas.id = 'digital-pen-canvas';
+    this.canvas.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      display: none;
+    `;
+    document.body.appendChild(this.canvas);
+    
+    this.ctx = this.canvas.getContext('2d');
+    this.setupCanvas();
+    
+    window.addEventListener('resize', () => this.setupCanvas());
+    window.addEventListener('scroll', () => this.updateCanvasPosition());
+    
+    this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
+    this.canvas.addEventListener('mousemove', (e) => this.draw(e));
+    this.canvas.addEventListener('mouseup', () => this.stopDrawing());
+    this.canvas.addEventListener('mouseout', () => this.stopDrawing());
+    
+    this.canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      this.startDrawing(e.touches[0]);
+    });
+    this.canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      this.draw(e.touches[0]);
+    });
+    this.canvas.addEventListener('touchend', () => this.stopDrawing());
+  }
+  
+  setupCanvas() {
+    const scrollHeight = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight
+    );
+    const scrollWidth = Math.max(
+      document.body.scrollWidth,
+      document.documentElement.scrollWidth
+    );
+    
+    this.canvas.width = scrollWidth;
+    this.canvas.height = scrollHeight;
+    this.canvas.style.width = scrollWidth + 'px';
+    this.canvas.style.height = scrollHeight + 'px';
+    
+    this.redrawAll();
+  }
+  
+  updateCanvasPosition() {
+    // Canvas covers entire document
+  }
+  
+  enable() {
+    this.isEnabled = true;
+    this.canvas.style.display = 'block';
+    this.canvas.style.pointerEvents = 'auto';
+    this.updateCursor();
+    // Recalculate canvas size when enabling
+    this.setupCanvas();
+  }
+  
+  disable() {
+    this.isEnabled = false;
+    this.canvas.style.pointerEvents = 'none';
+    document.body.style.cursor = 'default';
+  }
+  
+  setTool(tool) {
+    this.currentTool = tool;
+    this.updateCursor();
+  }
+  
+  updateCursor() {
+    if (!this.isEnabled) return;
+    
+    if (this.currentTool === 'eraser') {
+      document.body.style.cursor = 'pointer';
+    } else {
+      document.body.style.cursor = 'crosshair';
+    }
+  }
+  
+  setColor(color) {
+    this.currentColor = color;
+  }
+  
+  getCoordinates(e) {
+    // Canvas is absolutely positioned at document top-left
+    // and matches document size, so coordinates are simple
+    return {
+      x: e.clientX + (window.pageXOffset || document.documentElement.scrollLeft),
+      y: e.clientY + (window.pageYOffset || document.documentElement.scrollTop)
+    };
+  }
+  
+  startDrawing(e) {
+    if (!this.isEnabled) return;
+    
+    this.isDrawing = true;
+    const coords = this.getCoordinates(e);
+    
+    let size;
+    if (this.currentTool === 'pen') {
+      size = this.penSize;
+    } else if (this.currentTool === 'highlighter') {
+      size = this.highlighterSize;
+    } else if (this.currentTool === 'eraser') {
+      size = this.eraserSize;
+    }
+    
+    this.currentPath = {
+      tool: this.currentTool,
+      color: this.currentColor,
+      size: size,
+      points: [coords]
+    };
+  }
+  
+  draw(e) {
+    if (!this.isDrawing || !this.isEnabled) return;
+    
+    const coords = this.getCoordinates(e);
+    this.currentPath.points.push(coords);
+    
+    // Set up drawing context based on tool
+    if (this.currentPath.tool === 'eraser') {
+      this.ctx.globalCompositeOperation = 'destination-out';
+      this.ctx.strokeStyle = 'rgba(0,0,0,1)';
+      this.ctx.lineWidth = this.currentPath.size;
+      this.ctx.globalAlpha = 1.0;
+    } else {
+      this.ctx.globalCompositeOperation = 'source-over';
+      this.ctx.strokeStyle = this.currentPath.color;
+      this.ctx.lineWidth = this.currentPath.size;
+      
+      if (this.currentPath.tool === 'highlighter') {
+        this.ctx.globalAlpha = 0.3;
+      } else {
+        this.ctx.globalAlpha = 1.0;
+      }
+    }
+    
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+    
+    const points = this.currentPath.points;
+    const len = points.length;
+    
+    if (len >= 2) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(points[len - 2].x, points[len - 2].y);
+      this.ctx.lineTo(points[len - 1].x, points[len - 1].y);
+      this.ctx.stroke();
+    }
+    
+    // Reset composite operation
+    this.ctx.globalCompositeOperation = 'source-over';
+  }
+  
+  stopDrawing() {
+    if (this.isDrawing && this.currentPath) {
+      this.paths.push(this.currentPath);
+      this.currentPath = null;
+    }
+    this.isDrawing = false;
+  }
+  
+  redrawAll() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    this.paths.forEach(path => {
+      // Set up drawing context based on tool
+      if (path.tool === 'eraser') {
+        this.ctx.globalCompositeOperation = 'destination-out';
+        this.ctx.strokeStyle = 'rgba(0,0,0,1)';
+        this.ctx.globalAlpha = 1.0;
+      } else {
+        this.ctx.globalCompositeOperation = 'source-over';
+        this.ctx.strokeStyle = path.color;
+        
+        if (path.tool === 'highlighter') {
+          this.ctx.globalAlpha = 0.3;
+        } else {
+          this.ctx.globalAlpha = 1.0;
+        }
+      }
+      
+      this.ctx.lineWidth = path.size;
+      this.ctx.lineCap = 'round';
+      this.ctx.lineJoin = 'round';
+      
+      if (path.points.length > 1) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(path.points[0].x, path.points[0].y);
+        
+        for (let i = 1; i < path.points.length; i++) {
+          this.ctx.lineTo(path.points[i].x, path.points[i].y);
+        }
+        this.ctx.stroke();
+      }
+    });
+    
+    // Reset to defaults
+    this.ctx.globalAlpha = 1.0;
+    this.ctx.globalCompositeOperation = 'source-over';
+  }
+  
+  undo() {
+    if (this.paths.length > 0) {
+      this.paths.pop();
+      this.redrawAll();
+    }
+  }
+  
+  clear() {
+    this.paths = [];
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+}
+
+// Initialize digital pen after DOM is fully loaded
+let digitalPen;
+let isPenEnabled = false;
+
+window.addEventListener('DOMContentLoaded', function() {
+  digitalPen = new DigitalPen({
+    defaultColor: '#FF0000',
+    penSize: 2,
+    highlighterSize: 20,
+    eraserSize: 30
+  });
+});
+
+function togglePen() {
+  if (!digitalPen) return;
+  
+  isPenEnabled = !isPenEnabled;
+  const toggleBtn = document.getElementById('penToggle');
+  
+  if (isPenEnabled) {
+    digitalPen.enable();
+    toggleBtn.classList.add('active');
+    toggleBtn.textContent = 'Disable Annotation Mode';
+  } else {
+    digitalPen.disable();
+    toggleBtn.classList.remove('active');
+    toggleBtn.textContent = 'Enable Annotation Mode';
+  }
+}
+
+function selectTool(tool) {
+  if (!digitalPen) return;
+  digitalPen.setTool(tool);
+  
+  document.querySelectorAll('.pen-tool-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+}
+
+function selectColor(color) {
+  if (!digitalPen) return;
+  digitalPen.setColor(color);
+  
+  document.querySelectorAll('.pen-color-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  document.querySelector(`[data-color="${color}"]`).classList.add('active');
+}
+
+function clearAnnotations() {
+  if (!digitalPen) return;
+  if (confirm('Clear all annotations? This cannot be undone.')) {
+    digitalPen.clear();
+  }
+}
+
+function togglePenControls() {
+  const controls = document.getElementById('penControls');
+  const icon = document.getElementById('collapseIcon');
+  
+  controls.classList.toggle('collapsed');
+  icon.textContent = controls.classList.contains('collapsed') ? '▼' : '▲';
+}
+</script>
+</body>
+</html>
