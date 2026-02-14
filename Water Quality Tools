@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Quality Lab Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.3);
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            padding: 18px 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #4a5568;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .tab:hover {
+            background: #e2e8f0;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+        
+        .content {
+            padding: 20px 25px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .info-box {
+            background: #e6f7ff;
+            border-left: 3px solid #1890ff;
+            padding: 12px 14px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            line-height: 1.4;
+            color: #1a1a1a;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .substance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .substance-card {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .substance-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.15);
+        }
+        
+        .substance-card.selected {
+            border-color: #667eea;
+            background: #eef2ff;
+        }
+        
+        .substance-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .substance-formula {
+            font-size: 14px;
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 8px;
+        }
+        
+        .substance-detail {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #cbd5e0;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .substance-card.selected .substance-detail {
+            display: block;
+        }
+        
+        .form-section {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 6px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 15px;
+            border: 2px solid #cbd5e0;
+            border-radius: 6px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .input-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+            align-items: end;
+        }
+        
+        .unit-label {
+            background: #e2e8f0;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 14px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 10px;
+        }
+        
+        .calculate-btn:hover {
+            background: #b91c1c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            padding: 20px;
+            color: white;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .result-box.show {
+            display: block;
+        }
+        
+        .result-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .result-value {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .result-text {
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0.95;
+        }
+        
+        .warning-box {
+            background: #fee2e2;
+            border-left: 3px solid #dc2626;
+            padding: 12px 14px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #991b1b;
+        }
+        
+        .success-box {
+            background: #d1fae5;
+            border-left: 3px solid #10b981;
+            padding: 12px 14px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #065f46;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 600px) {
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1 0 50%;
+            }
+            
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Water Quality Lab Calculator</h1>
+            <p>Food Bank Well Water Analysis</p>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab(1)">Part 1: Substances</div>
+            <div class="tab" onclick="showTab(2)">Part 2: PPM</div>
+            <div class="tab" onclick="showTab(3)">Part 3: Filtration</div>
+            <div class="tab" onclick="showTab(4)">Part 4: Dilution</div>
+        </div>
+        
+        <div class="content">
+            <!-- Part 1: Substance Information -->
+            <div class="tab-content active" id="tab1">
+                <div class="info-box">
+                    <strong>Lab Context:</strong> You're testing water from the food bank's well. Click on each substance below to learn what it represents in contaminated water.
+                </div>
+                
+                <div class="section-title">Test Substances (10g each)</div>
+                
+                <div class="substance-grid">
+                    <div class="substance-card" onclick="toggleSubstance(this)">
+                        <div class="substance-name">Salt</div>
+                        <div class="substance-formula">NaCl (Table Salt)</div>
+                        <div class="substance-detail">
+                            <strong>Represents:</strong> Dissolved minerals from fertilizer runoff<br>
+                            <strong>Type:</strong> Polar ionic compound<br>
+                            <strong>Behavior:</strong> Dissolves completely in water - invisible when dissolved<br>
+                            <strong>Why it matters:</strong> High salt levels make water unsafe to drink
+                        </div>
+                    </div>
+                    
+                    <div class="substance-card" onclick="toggleSubstance(this)">
+                        <div class="substance-name">Sugar</div>
+                        <div class="substance-formula">Granulated Sugar</div>
+                        <div class="substance-detail">
+                            <strong>Represents:</strong> Dissolved organic matter<br>
+                            <strong>Type:</strong> Polar molecule<br>
+                            <strong>Behavior:</strong> Dissolves completely in water - invisible when dissolved<br>
+                            <strong>Why it matters:</strong> Organic contamination supports harmful bacteria growth
+                        </div>
+                    </div>
+                    
+                    <div class="substance-card" onclick="toggleSubstance(this)">
+                        <div class="substance-name">Vegetable Oil</div>
+                        <div class="substance-formula">Cooking Oil</div>
+                        <div class="substance-detail">
+                            <strong>Represents:</strong> Pesticide residues<br>
+                            <strong>Type:</strong> Nonpolar molecule<br>
+                            <strong>Behavior:</strong> Does NOT dissolve - floats on water surface as droplets<br>
+                            <strong>Why it matters:</strong> Pesticides are toxic and don't wash out easily
+                        </div>
+                    </div>
+                    
+                    <div class="substance-card" onclick="toggleSubstance(this)">
+                        <div class="substance-name">Flour</div>
+                        <div class="substance-formula">All-Purpose Flour</div>
+                        <div class="substance-detail">
+                            <strong>Represents:</strong> Soil sediment particles<br>
+                            <strong>Type:</strong> Suspension (particles)<br>
+                            <strong>Behavior:</strong> Does NOT dissolve - makes water cloudy, eventually settles to bottom<br>
+                            <strong>Why it matters:</strong> Sediment carries other pollutants and clogs pipes
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Part 2: PPM Calculator -->
+            <div class="tab-content" id="tab2">
+                <div class="info-box">
+                    <strong>Goal:</strong> Calculate the concentration of contaminants in your test water sample in parts per million (ppm).<br>
+                    <strong>Minimum Required:</strong> You must fill in fields 1 (empty cup), 2 (with water), and 6 (final mass) to calculate.
+                </div>
+                
+                <div class="form-section">
+                    <div class="section-title">Measurements</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">1. Mass of empty cup (g):</label>
+                        <input type="number" class="form-input" id="empty-cup" placeholder="Example: 50" step="0.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">2. Mass with water added (g):</label>
+                        <input type="number" class="form-input" id="cup-water" placeholder="Example: 450" step="0.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">3. Mass after adding salt (g):</label>
+                        <input type="number" class="form-input" id="after-salt" placeholder="Example: 460 (optional)" step="0.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">4. Mass after adding sugar (g):</label>
+                        <input type="number" class="form-input" id="after-sugar" placeholder="Example: 470 (optional)" step="0.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">5. Mass after adding oil (g):</label>
+                        <input type="number" class="form-input" id="after-oil" placeholder="Example: 480 (optional)" step="0.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">6. Final mass after adding flour (g):</label>
+                        <input type="number" class="form-input" id="final-mass" placeholder="Example: 490" step="0.1">
+                    </div>
+                    
+                    <button class="calculate-btn" onclick="calculatePPM()">Calculate Concentration (ppm)</button>
+                    <button class="calculate-btn" onclick="alert('JavaScript is working! Fill in fields 1, 2, and 6 at minimum.')" style="background: #10b981; margin-top: 10px;">Test Button (Click to Verify JavaScript Works)</button>
+                </div>
+                
+                <div class="result-box" id="ppm-result">
+                    <div class="result-title">Concentration Results</div>
+                    <div class="result-value" id="ppm-value">0 ppm</div>
+                    <div class="result-text" id="ppm-details"></div>
+                </div>
+            </div>
+            
+            <!-- Part 3: Filtration Effectiveness -->
+            <div class="tab-content" id="tab3">
+                <div class="info-box">
+                    <strong>Goal:</strong> Determine how effective coffee filter is at removing contaminants.
+                </div>
+                
+                <div class="form-section">
+                    <div class="section-title">Filtration Measurements</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">1. Mass of dry filter BEFORE filtering (g):</label>
+                        <input type="number" class="form-input" id="filter-before" placeholder="0" step="0.01">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">2. Volume of test water filtered (mL):</label>
+                        <input type="number" class="form-input" id="volume-filtered" placeholder="100" value="100" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">3. Mass of filter AFTER drying (g):</label>
+                        <input type="number" class="form-input" id="filter-after" placeholder="0" step="0.01">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">4. Which substances were removed? (Check all that apply)</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="removed-salt"> Salt
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="removed-sugar"> Sugar
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="removed-oil"> Oil
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="removed-flour"> Flour
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="calculate-btn" onclick="calculateFiltration()">Calculate % Effectiveness</button>
+                </div>
+                
+                <div class="result-box" id="filtration-result">
+                    <div class="result-title">Filtration Results</div>
+                    <div class="result-value" id="filtration-value">0%</div>
+                    <div class="result-text" id="filtration-details"></div>
+                </div>
+            </div>
+            
+            <!-- Part 4: Dilution Calculator -->
+            <div class="tab-content" id="tab4">
+                <div class="info-box">
+                    <strong>Question:</strong> Could the food bank dilute contaminated well water with bottled water to make it safe?
+                </div>
+                
+                <div class="form-section">
+                    <div class="section-title">Dilution Calculation (M₁V₁ = M₂V₂)</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">M₁ - Original concentration (ppm):</label>
+                        <input type="number" class="form-input" id="m1" placeholder="100000" value="100000" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">V₁ - Original volume of test water (g or mL):</label>
+                        <input type="number" class="form-input" id="v1" placeholder="400" value="400" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">M₂ - Target safe concentration (EPA limit is 500 ppm):</label>
+                        <input type="number" class="form-input" id="m2" placeholder="500" value="500" step="1">
+                    </div>
+                    
+                    <button class="calculate-btn" onclick="calculateDilution()">Calculate Dilution Needed</button>
+                </div>
+                
+                <div class="result-box" id="dilution-result">
+                    <div class="result-title">Dilution Results</div>
+                    <div class="result-text" id="dilution-details"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabNum) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById('tab' + tabNum).classList.add('active');
+            document.querySelectorAll('.tab')[tabNum - 1].classList.add('active');
+        }
+        
+        function toggleSubstance(card) {
+            card.classList.toggle('selected');
+        }
+        
+        function calculatePPM() {
+            // Get input values
+            const emptyCup = parseFloat(document.getElementById('empty-cup').value);
+            const cupWater = parseFloat(document.getElementById('cup-water').value);
+            const finalMass = parseFloat(document.getElementById('final-mass').value);
+            
+            // Check if any fields are empty or invalid
+            if (isNaN(emptyCup) || isNaN(cupWater) || isNaN(finalMass)) {
+                alert('Please fill in all three mass measurements with valid numbers');
+                return;
+            }
+            
+            if (emptyCup <= 0 || cupWater <= 0 || finalMass <= 0) {
+                alert('Please enter positive values for all measurements');
+                return;
+            }
+            
+            // Validation checks
+            if (cupWater <= emptyCup) {
+                alert('Error: Mass with water should be greater than empty cup mass. Check your measurements!');
+                return;
+            }
+            
+            if (finalMass <= cupWater) {
+                alert('Error: Final mass should be greater than mass with water (you added substances!). Check your measurements!');
+                return;
+            }
+            
+            // Calculate masses
+            const waterMass = cupWater - emptyCup;
+            const totalSubstances = finalMass - cupWater;
+            
+            // Check if total substances is reasonable (should be around 40g)
+            if (totalSubstances < 30 || totalSubstances > 50) {
+                const proceed = confirm(`Warning: Total substances added = ${totalSubstances.toFixed(1)}g. Expected about 40g (10g each of 4 substances). Continue anyway?`);
+                if (!proceed) return;
+            }
+            
+            // Calculate PPM: (mass of contaminants / mass of water) × 1,000,000
+            const ppm = (totalSubstances / waterMass) * 1000000;
+            
+            // Display results
+            document.getElementById('ppm-value').textContent = ppm.toFixed(0) + ' ppm';
+            
+            let details = `
+                <strong>Calculation:</strong><br>
+                • Water mass: ${waterMass.toFixed(1)}g<br>
+                • Total contaminants: ${totalSubstances.toFixed(1)}g<br>
+                • PPM = (${totalSubstances.toFixed(1)} ÷ ${waterMass.toFixed(1)}) × 1,000,000 = ${ppm.toFixed(0)} ppm<br><br>
+            `;
+            
+            if (ppm > 500) {
+                const factor = (ppm / 500).toFixed(0);
+                details += `<div class="warning-box"><strong>⚠️ UNSAFE:</strong> This is ${factor}× over the EPA safe limit of 500 ppm!</div>`;
+            } else {
+                details += `<div class="success-box"><strong>✓ SAFE:</strong> This is below the EPA safe limit of 500 ppm.</div>`;
+            }
+            
+            document.getElementById('ppm-details').innerHTML = details;
+            document.getElementById('ppm-result').classList.add('show');
+        }
+        
+        function calculateFiltration() {
+            const filterBefore = parseFloat(document.getElementById('filter-before').value) || 0;
+            const filterAfter = parseFloat(document.getElementById('filter-after').value) || 0;
+            const volumeFiltered = parseFloat(document.getElementById('volume-filtered').value) || 100;
+            
+            if (filterBefore === 0 || filterAfter === 0) {
+                alert('Please enter filter mass measurements');
+                return;
+            }
+            
+            // Validation check
+            if (filterAfter < filterBefore) {
+                alert('Error: Filter mass after should be greater than or equal to before (material was trapped!). Check your measurements!');
+                return;
+            }
+            
+            // Calculate trapped mass
+            const trapped = filterAfter - filterBefore;
+            
+            // Expected contaminants in filtered volume (10g per 100mL based on original recipe)
+            const expected = (volumeFiltered / 100) * 10;
+            
+            // Calculate percentage removed
+            const percentRemoved = (trapped / expected) * 100;
+            
+            // Prevent impossible percentages
+            if (percentRemoved > 100) {
+                alert(`Warning: Calculated ${percentRemoved.toFixed(0)}% removed, which is over 100%. This suggests a measurement error. Please check your filter masses.`);
+            }
+            
+            // Get checked substances
+            const removedSalt = document.getElementById('removed-salt').checked;
+            const removedSugar = document.getElementById('removed-sugar').checked;
+            const removedOil = document.getElementById('removed-oil').checked;
+            const removedFlour = document.getElementById('removed-flour').checked;
+            
+            // Display results
+            document.getElementById('filtration-value').textContent = Math.min(percentRemoved, 100).toFixed(1) + '%';
+            
+            let details = `
+                <strong>Calculation:</strong><br>
+                • Mass trapped on filter: ${trapped.toFixed(2)}g<br>
+                • Expected contaminants in ${volumeFiltered}mL: ${expected.toFixed(1)}g<br>
+                • % Removed = (${trapped.toFixed(2)} ÷ ${expected.toFixed(1)}) × 100 = ${Math.min(percentRemoved, 100).toFixed(1)}%<br><br>
+                
+                <strong>Substances Removed:</strong><br>
+                ${removedSalt ? '✓ Salt' : '✗ Salt (passed through)'}<br>
+                ${removedSugar ? '✓ Sugar' : '✗ Sugar (passed through)'}<br>
+                ${removedOil ? '✓ Oil' : '✗ Oil (passed through)'}<br>
+                ${removedFlour ? '✓ Flour' : '✗ Flour (passed through)'}<br><br>
+            `;
+            
+            const cappedPercent = Math.min(percentRemoved, 100);
+            
+            if (cappedPercent < 30) {
+                details += `<div class="warning-box"><strong>Interpretation:</strong> Filtration is NOT very effective (${cappedPercent.toFixed(0)}% removed). Dissolved substances like salt and sugar pass right through!</div>`;
+            } else if (cappedPercent < 70) {
+                details += `<div class="warning-box"><strong>Interpretation:</strong> Filtration is somewhat effective (${cappedPercent.toFixed(0)}% removed), but many contaminants still pass through.</div>`;
+            } else {
+                details += `<div class="success-box"><strong>Interpretation:</strong> Filtration is effective (${cappedPercent.toFixed(0)}% removed) for particles, but dissolved substances still pass through.</div>`;
+            }
+            
+            document.getElementById('filtration-details').innerHTML = details;
+            document.getElementById('filtration-result').classList.add('show');
+        }
+        
+        function calculateDilution() {
+            const m1 = parseFloat(document.getElementById('m1').value) || 0;
+            const v1 = parseFloat(document.getElementById('v1').value) || 0;
+            const m2 = parseFloat(document.getElementById('m2').value) || 0;
+            
+            if (m1 === 0 || v1 === 0 || m2 === 0) {
+                alert('Please enter all values');
+                return;
+            }
+            
+            // Validation checks
+            if (m2 >= m1) {
+                alert('Error: Target concentration (M₂) must be less than original concentration (M₁) for dilution!');
+                return;
+            }
+            
+            if (m2 < 0 || m1 < 0 || v1 < 0) {
+                alert('Error: All values must be positive!');
+                return;
+            }
+            
+            // Calculate V2 using M1V1 = M2V2
+            // V2 = (M1 × V1) / M2
+            const v2 = (m1 * v1) / m2;
+            const cleanWaterNeeded = v2 - v1;
+            
+            // Convert to gallons (1 gallon ≈ 3785g)
+            const gallons = cleanWaterNeeded / 3785;
+            
+            // Calculate for 500 meals/day
+            const mealsPerDay = 500;
+            const waterPerMeal = v1; // grams
+            const dailyTotalWater = mealsPerDay * waterPerMeal;
+            const dailyTotalDiluted = mealsPerDay * v2;
+            const dailyCleanWater = dailyTotalDiluted - dailyTotalWater;
+            const dailyGallons = dailyCleanWater / 3785;
+            
+            // Estimate cost ($4.00 per gallon for bulk bottled water)
+            const costPerGallon = 4.00;
+            const dailyCost = dailyGallons * costPerGallon;
+            
+            // Display results
+            let details = `
+                <strong>Using Dilution Formula: M₁V₁ = M₂V₂</strong><br><br>
+                
+                <strong>Given:</strong><br>
+                • M₁ (current concentration) = ${m1.toLocaleString()} ppm<br>
+                • V₁ (current volume) = ${v1}g<br>
+                • M₂ (target safe level) = ${m2} ppm<br><br>
+                
+                <strong>Solve for V₂ (final volume needed):</strong><br>
+                • V₂ = (M₁ × V₁) ÷ M₂<br>
+                • V₂ = (${m1.toLocaleString()} × ${v1}) ÷ ${m2}<br>
+                • V₂ = ${v2.toLocaleString()}g total<br><br>
+                
+                <strong>Clean water needed:</strong><br>
+                • ${v2.toLocaleString()}g - ${v1}g = ${cleanWaterNeeded.toLocaleString()}g<br>
+                • That's <span style="font-size: 24px; font-weight: 700;">${gallons.toFixed(1)} gallons</span> of clean water!<br><br>
+                
+                <div class="warning-box">
+                    <strong>For Food Bank Operations (500 meals/day):</strong><br>
+                    • Daily contaminated water: ${(dailyTotalWater/3785).toFixed(1)} gallons<br>
+                    • Daily clean water needed: <strong>${dailyGallons.toFixed(0).toLocaleString()} gallons</strong><br>
+                    • Cost per gallon (bulk bottled water): $${costPerGallon.toFixed(2)}<br>
+                    • Estimated daily cost: <strong>$${dailyCost.toFixed(0).toLocaleString()}</strong><br>
+                    • Annual cost: <strong>$${(dailyCost * 365).toFixed(0).toLocaleString()}</strong><br><br>
+                    
+                    <strong>Conclusion:</strong> Dilution is NOT practical or affordable! The food bank would need ${gallons.toFixed(0)} gallons of clean water just to make ${(v1/453.6).toFixed(2)} cups of safe water. A treatment system or new well is needed.
+                </div>
+            `;
+            
+            document.getElementById('dilution-details').innerHTML = details;
+            document.getElementById('dilution-result').classList.add('show');
+        }
+    </script>
+</body>
+</html>
