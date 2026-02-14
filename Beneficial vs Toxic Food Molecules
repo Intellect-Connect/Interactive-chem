@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Chemistry Molecules - Interactive Selector</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.3);
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            padding: 18px 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 20px 25px;
+        }
+        
+        .info-box {
+            background: #e6f7ff;
+            border-left: 3px solid #1890ff;
+            padding: 12px 14px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            line-height: 1.4;
+            color: #1a1a1a;
+        }
+        
+        .selectors-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+        
+        .selector-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 18px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .selector-section.beneficial {
+            border-top: 4px solid #10b981;
+        }
+        
+        .selector-section.toxic {
+            border-top: 4px solid #ef4444;
+        }
+        
+        .selector-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .selector-title.beneficial {
+            color: #059669;
+        }
+        
+        .selector-title.toxic {
+            color: #dc2626;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 20px;
+        }
+        
+        .molecule-card {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .molecule-card.show {
+            display: block;
+        }
+        
+        .molecule-card.beneficial {
+            border-top: 4px solid #10b981;
+        }
+        
+        .molecule-card.toxic {
+            border-top: 4px solid #ef4444;
+        }
+        
+        .molecule-header {
+            background: white;
+            padding: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .molecule-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+        
+        .molecule-formula {
+            font-size: 18px;
+            color: #667eea;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .molecule-use {
+            font-size: 13px;
+            color: #4a5568;
+            margin-top: 6px;
+            font-style: italic;
+        }
+        
+        .geometry-info {
+            background: #fff7ed;
+            padding: 12px;
+            text-align: center;
+            font-size: 12px;
+            color: #92400e;
+            font-weight: 600;
+            line-height: 1.4;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .properties-grid {
+            padding: 15px;
+            display: grid;
+            gap: 10px;
+        }
+        
+        .property-row {
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            gap: 10px;
+            align-items: start;
+        }
+        
+        .property-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #4a5568;
+            padding: 8px 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+        }
+        
+        .property-value {
+            font-size: 13px;
+            color: #1a1a1a;
+            padding: 8px 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #e2e8f0;
+            line-height: 1.4;
+        }
+        
+        .hazard-badge {
+            display: inline-block;
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .safe-badge {
+            display: inline-block;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+            font-size: 16px;
+        }
+        
+        @media (max-width: 900px) {
+            .selectors-grid,
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .property-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Food Chemistry Molecules: Interactive Selector</h1>
+            <p>Compare molecular properties and biological effects</p>
+        </div>
+        
+        <div class="content">
+            <div class="info-box">
+                <strong>Instructions:</strong> Pick one good molecule and one toxic molecule from the menus below to compare them side-by-side.<br><br>
+                <strong>Look at "Molecular Mimicry":</strong> This shows which safe molecules the toxic ones copy! When a toxic molecule has a similar size and shape to a safe molecule, it can trick body proteins into grabbing it. Example: CO (28 g/mol, linear) tricks blood proteins because it looks like O₂ (32 g/mol, linear). The proteins can't tell the difference!
+            </div>
+            
+            <!-- Selectors -->
+            <div class="selectors-grid">
+                <div class="selector-section beneficial">
+                    <div class="selector-title beneficial">Select Beneficial Molecule:</div>
+                    <select class="form-select" id="beneficial-select" onchange="updateDisplay()">
+                        <option value="">-- Choose a molecule --</option>
+                        <option value="water">Water (H₂O)</option>
+                        <option value="co2">Carbon Dioxide (CO₂)</option>
+                        <option value="ammonia">Ammonia (NH₃)</option>
+                        <option value="methane">Methane (CH₄)</option>
+                        <option value="h2o2">Hydrogen Peroxide (H₂O₂)</option>
+                    </select>
+                </div>
+                
+                <div class="selector-section toxic">
+                    <div class="selector-title toxic">Select Toxic Contaminant:</div>
+                    <select class="form-select" id="toxic-select" onchange="updateDisplay()">
+                        <option value="">-- Choose a molecule --</option>
+                        <option value="formaldehyde">Formaldehyde (CH₂O)</option>
+                        <option value="co">Carbon Monoxide (CO)</option>
+                        <option value="methanol">Methanol (CH₃OH)</option>
+                        <option value="h2s">Hydrogen Sulfide (H₂S)</option>
+                        <option value="so2">Sulfur Dioxide (SO₂)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Comparison Display -->
+            <div class="comparison-grid" id="comparison-grid">
+                <div class="empty-state">
+                    Select molecules from the dropdowns above to view their properties
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const molecules = {
+            water: {
+                name: "Water",
+                formula: "H₂O",
+                use: "Essential for life; universal solvent",
+                geometry: "Bent Shape • 4 Electron Domains (2 bonding, 2 lone pairs) • Bond Angle: 104.5° (compressed from 109.5° by lone pairs)",
+                size: "18.02 g/mol • Very small molecule (one of the smallest)",
+                mimicry: "Not a mimic; this is what other molecules copy",
+                solubility: "Infinite (miscible with itself)",
+                polarity: "Highly polar",
+                polarityBadge: "δ+ and δ-",
+                reactivity: "Moderate; helps break down food molecules in the body",
+                accumulation: "Throughout entire body - makes up 60% of your body weight (in all organs, blood, and cells)",
+                biological: "Needed for all life; allows chemical reactions to happen in the body. Bent shape and polarity allow it to connect with many other molecules",
+                biologicalBadge: "SAFE",
+                type: "beneficial"
+            },
+            co2: {
+                name: "Carbon Dioxide",
+                formula: "CO₂",
+                use: "Fermentation gas in bread/beer; carbonation",
+                geometry: "Linear Shape • 2 Electron Domains (2 double bonds, 0 lone pairs) • Bond Angle: 180° (ideal)",
+                size: "44.01 g/mol • Small molecule (about 2× heavier than water)",
+                mimicry: "Does not mimic other molecules",
+                solubility: "1.45 g/L at 25°C (slightly soluble)",
+                polarity: "Nonpolar (symmetrical)",
+                polarityBadge: null,
+                reactivity: "Low; dissolves in water to make carbonated water (weak acid)",
+                accumulation: "Does not build up; quickly breathed out through lungs",
+                biological: "Made when we breathe; too much causes suffocation. Linear, nonpolar shape passes easily through cell walls. Does not build up in body tissues because it doesn't stick to anything",
+                biologicalBadge: "SAFE (normal levels)",
+                type: "beneficial"
+            },
+            ammonia: {
+                name: "Ammonia",
+                formula: "NH₃",
+                use: "Produced by protein breakdown; food sanitizer",
+                geometry: "Trigonal Pyramidal • 4 Electron Domains (3 bonding, 1 lone pair) • Bond Angle: 107° (compressed from 109.5° by lone pair)",
+                size: "17.03 g/mol • Very small molecule (slightly smaller than water)",
+                mimicry: "Does not mimic other molecules",
+                solubility: "531 g/L at 20°C (highly soluble)",
+                polarity: "Polar (pyramidal geometry)",
+                polarityBadge: null,
+                reactivity: "Moderate; acts as a base (accepts H⁺ ions) in water",
+                accumulation: "Builds up in blood, kidneys, and brain",
+                biological: "Source of nitrogen for the body; poisonous in large amounts. Pyramid shape and polarity make it dissolve easily in water. Can enter the brain causing damage to nerve cells",
+                biologicalBadge: "SAFE (low doses)",
+                type: "beneficial"
+            },
+            methane: {
+                name: "Methane",
+                formula: "CH₄",
+                use: "Natural gas used in cooking; heating",
+                geometry: "Tetrahedral • 4 Electron Domains (4 bonding, 0 lone pairs) • Bond Angle: 109.5° (ideal)",
+                size: "16.04 g/mol • Very small molecule (lightest of all these molecules)",
+                mimicry: "Does not mimic other molecules",
+                solubility: "0.023 g/L at 25°C (poorly soluble)",
+                polarity: "Nonpolar (symmetrical)",
+                polarityBadge: null,
+                reactivity: "Low; combustible fuel",
+                accumulation: "Can dissolve slightly in fatty tissue, but does not build up significantly",
+                biological: "Pushes oxygen out of air; not poisonous by itself. Symmetrical pyramid shape makes it nonpolar and unable to attach to body receptors",
+                biologicalBadge: "SAFE (with ventilation)",
+                type: "beneficial"
+            },
+            h2o2: {
+                name: "Hydrogen Peroxide",
+                formula: "H₂O₂",
+                use: "Food sanitizer; bleaching agent",
+                geometry: "Bent at Each O • 4 Electron Domains per O (2 bonding, 2 lone pairs) • H-O-O Angle: ~95° (compressed from 109.5° by lone pairs)",
+                size: "34.01 g/mol • Small molecule (about 2× heavier than water)",
+                mimicry: "Does not mimic other molecules",
+                solubility: "Miscible with water (infinite)",
+                polarity: "Polar (O-O bond with H)",
+                polarityBadge: null,
+                reactivity: "High; strong bleaching agent (removes electrons from other molecules)",
+                accumulation: "Broken down quickly by body enzymes; does not build up anywhere",
+                biological: "Kills germs at low amounts; burns skin at high amounts. Bent shape and polarity make it dissolve in water. Body has an enzyme (catalase) that quickly breaks it down",
+                biologicalBadge: "SAFE (3% solution)",
+                type: "beneficial"
+            },
+            formaldehyde: {
+                name: "Formaldehyde",
+                formula: "CH₂O",
+                use: "Illegal seafood preservative; industrial chemical",
+                geometry: "Trigonal Planar at C • 3 Electron Domains (3 bonding, 0 lone pairs) • Bond Angle: 120° (ideal)",
+                size: "30.03 g/mol • Small molecule (slightly larger than water)",
+                mimicry: "Similar size to water (18 g/mol) but FLAT shape allows it to slide into DNA",
+                solubility: "400 g/L at 20°C (highly soluble)",
+                polarity: "Polar (C=O bond)",
+                polarityBadge: null,
+                reactivity: "High; attaches permanently to proteins and DNA",
+                accumulation: "Builds up in organs with lots of water (eyes, breathing passages, blood)",
+                biological: "Causes cancer; damages proteins and DNA. Flat shape fits into DNA spiral causing mutations",
+                biologicalBadge: "TOXIC",
+                type: "toxic"
+            },
+            co: {
+                name: "Carbon Monoxide",
+                formula: "CO",
+                use: "Deadly gas from incomplete combustion",
+                geometry: "Linear • 2 Electron Domains (triple bond) • Bond Angle: 180° (ideal)",
+                size: "28.01 g/mol • Very small molecule (similar size to N₂ and O₂ in air)",
+                mimicry: "MIMICS O₂ (oxygen, 32 g/mol) - same linear shape and similar size tricks blood proteins!",
+                solubility: "0.027 g/L at 25°C (poorly soluble)",
+                polarity: "Weakly polar (small dipole)",
+                polarityBadge: null,
+                reactivity: "Moderate; sticks very tightly to blood proteins",
+                accumulation: "Sticks to blood proteins that carry oxygen; does not build up in organs",
+                biological: "Very poisonous; stops oxygen from getting to cells; deadly at >0.1% in air. Linear shape looks like O₂, tricks blood proteins into grabbing it 200× more strongly than oxygen",
+                biologicalBadge: "DEADLY",
+                type: "toxic"
+            },
+            methanol: {
+                name: "Methanol",
+                formula: "CH₃OH",
+                use: "Toxic alcohol contaminant (vs. safe ethanol)",
+                geometry: "Tetrahedral at C • 4 Electron Domains at C (4 bonding, 0 lone pairs) • Bond Angle: 109.5° (ideal)",
+                size: "32.04 g/mol • Small molecule (slightly larger than water)",
+                mimicry: "MIMICS ethanol/drinking alcohol (46 g/mol) - similar shape tricks the same body enzyme!",
+                solubility: "Miscible with water (infinite)",
+                polarity: "Polar (O-H bond)",
+                polarityBadge: null,
+                reactivity: "Moderate; body enzymes change it into formaldehyde",
+                accumulation: "Builds up in organs with lots of water (eyes, brain, kidneys)",
+                biological: "Body converts it to toxic formaldehyde; causes blindness and death. Shape similar to ethanol (drinking alcohol) tricks the same enzyme",
+                biologicalBadge: "TOXIC",
+                type: "toxic"
+            },
+            h2s: {
+                name: "Hydrogen Sulfide",
+                formula: "H₂S",
+                use: "Rotten egg smell; produced by food spoilage",
+                geometry: "Bent Shape • 4 Electron Domains (2 bonding, 2 lone pairs) • Bond Angle: 92° (highly compressed from 109.5° by lone pairs; S is larger than O)",
+                size: "34.08 g/mol • Small molecule (same weight as H₂O₂)",
+                mimicry: "MIMICS water (18 g/mol) - same bent shape allows it to pass through cell walls like water does!",
+                solubility: "3.9 g/L at 20°C (moderately soluble)",
+                polarity: "Polar (bent geometry)",
+                polarityBadge: null,
+                reactivity: "High; strong reducing agent (gives electrons to other molecules); eats away at metals",
+                accumulation: "Dissolves in blood and wet surfaces in breathing passages",
+                biological: "Stops cells from making energy; quickly deadly at >500 ppm. Bent shape similar to H₂O lets it pass through cell walls. Attaches to energy-producing proteins stopping them from working",
+                biologicalBadge: "DEADLY",
+                type: "toxic"
+            },
+            so2: {
+                name: "Sulfur Dioxide",
+                formula: "SO₂",
+                use: "Preservative in dried fruits; wine production",
+                geometry: "Bent Shape • 3 Electron Domains (2 bonding, 1 lone pair) • Bond Angle: 119° (compressed from 120° by lone pair)",
+                size: "64.07 g/mol • Medium-sized molecule (heaviest in this list)",
+                mimicry: "Does not mimic a specific molecule, but dissolves easily in watery tissues",
+                solubility: "94 g/L at 25°C (highly soluble)",
+                polarity: "Polar (bent geometry)",
+                polarityBadge: null,
+                reactivity: "High; dissolves in water to make acid",
+                accumulation: "Builds up in wet tissues of breathing system (lungs, throat)",
+                biological: "Irritates breathing passages; triggers asthma attacks; causes allergic reactions. Bent shape and polarity make it dissolve easily in water. Forms acid causing swelling",
+                biologicalBadge: "IRRITANT/ALLERGEN",
+                type: "toxic"
+            }
+        };
+        
+        function createMoleculeCard(moleculeKey, molecule) {
+            const badgeClass = molecule.type === 'beneficial' ? 'safe-badge' : 'hazard-badge';
+            const polarityBadge = molecule.polarityBadge ? `<span class="safe-badge">${molecule.polarityBadge}</span>` : '';
+            
+            return `
+                <div class="molecule-card ${molecule.type} show">
+                    <div class="molecule-header">
+                        <div class="molecule-name">${molecule.name}</div>
+                        <div class="molecule-formula">${molecule.formula}</div>
+                        <div class="molecule-use">${molecule.use}</div>
+                    </div>
+                    <div class="geometry-info">
+                        ${molecule.geometry}
+                    </div>
+                    <div class="properties-grid">
+                        <div class="property-row">
+                            <div class="property-label">Molar Mass</div>
+                            <div class="property-value">${molecule.size}</div>
+                        </div>
+                        <div class="property-row">
+                            <div class="property-label">Molecular Mimicry</div>
+                            <div class="property-value">${molecule.mimicry}</div>
+                        </div>
+                        <div class="property-row">
+                            <div class="property-label">Solubility</div>
+                            <div class="property-value">${molecule.solubility}</div>
+                        </div>
+                        <div class="property-row">
+                            <div class="property-label">Polarity</div>
+                            <div class="property-value">${molecule.polarity} ${polarityBadge}</div>
+                        </div>
+                        <div class="property-row">
+                            <div class="property-label">Reactivity</div>
+                            <div class="property-value">${molecule.reactivity}</div>
+                        </div>
+                        <div class="property-row">
+                            <div class="property-label">Tissue Accumulation</div>
+                            <div class="property-value">${molecule.accumulation}</div>
+                        </div>
+                        <div class="property-row">
+                            <div class="property-label">Biological Effect</div>
+                            <div class="property-value">${molecule.biological} <span class="${badgeClass}">${molecule.biologicalBadge}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function updateDisplay() {
+            const beneficialKey = document.getElementById('beneficial-select').value;
+            const toxicKey = document.getElementById('toxic-select').value;
+            const grid = document.getElementById('comparison-grid');
+            
+            // If nothing is selected, show empty state
+            if (!beneficialKey && !toxicKey) {
+                grid.innerHTML = '<div class="empty-state">Select molecules from the dropdowns above to view their properties</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            // Add beneficial molecule card if selected
+            if (beneficialKey) {
+                html += createMoleculeCard(beneficialKey, molecules[beneficialKey]);
+            } else {
+                // Add placeholder for missing beneficial molecule
+                html += `<div class="molecule-card" style="display: flex; align-items: center; justify-content: center; padding: 40px; text-align: center; color: #718096; background: #f8f9fa; border: 2px dashed #cbd5e0; border-radius: 10px;">Select a beneficial molecule to compare</div>`;
+            }
+            
+            // Add toxic molecule card if selected
+            if (toxicKey) {
+                html += createMoleculeCard(toxicKey, molecules[toxicKey]);
+            } else {
+                // Add placeholder for missing toxic molecule
+                html += `<div class="molecule-card" style="display: flex; align-items: center; justify-content: center; padding: 40px; text-align: center; color: #718096; background: #f8f9fa; border: 2px dashed #cbd5e0; border-radius: 10px;">Select a toxic molecule to compare</div>`;
+            }
+            
+            grid.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
