@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bracket City Food Bank Inventory - CHEM 100</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 10px;
+            line-height: 1.4;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1em;
+            opacity: 0.95;
+        }
+
+        .crisis-banner {
+            background: #d32f2f;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.95em;
+            border-bottom: 3px solid #b71c1c;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            padding: 12px;
+            background: #f5f5f5;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-left: 3px solid #667eea;
+        }
+
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 0.85em;
+            margin-top: 3px;
+        }
+
+        .controls {
+            padding: 12px;
+            background: #fafafa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 7px 14px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 0;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 0.9em;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            font-size: 0.9em;
+        }
+
+        th:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        th::after {
+            content: ' ⇅';
+            opacity: 0.5;
+            font-size: 0.8em;
+        }
+
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr {
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .risk-low {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .risk-arsenic, .risk-lead, .risk-cadmium, .risk-mercury, .risk-cadmium\/lead, .risk-arsenic\/lead {
+            background: #ffccbc;
+            color: #d84315;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .type-fortified {
+            background: #e1f5fe;
+            color: #0277bd;
+        }
+
+        .type-wholefood {
+            background: #f1f8e9;
+            color: #558b2f;
+        }
+
+        .type-highrisk {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+
+        .vulnerable-warning {
+            color: #d32f2f;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .compound-info {
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+            max-width: 300px;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: center;
+            color: #666;
+            border-top: 2px solid #e0e0e0;
+            font-size: 0.85em;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            padding: 12px;
+            background: #fafafa;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85em;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            table {
+                font-size: 0.8em;
+            }
+            
+            th, td {
+                padding: 6px 4px;
+            }
+
+            .compound-info {
+                max-width: 150px;
+                font-size: 0.75em;
+            }
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+            .controls, .filter-buttons {
+                display: none;
+            }
+            .table-container {
+                max-height: none;
+                overflow: visible;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏙️ Bracket City Food Bank Inventory</h1>
+            <p>CHEM 100 Food Safety Investigation Database</p>
+        </div>
+
+        <!-- Crisis Banner -->
+        <div class="crisis-banner">
+            ACTIVE INVESTIGATION: 52 Items Under Analysis | 5,000 Residents Depending on Your Chemical Knowledge
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="number" id="total-items">52</div>
+                <div class="label">Total Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="fortified-count">20</div>
+                <div class="label">Fortified Foods</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="whole-count">26</div>
+                <div class="label">Whole Foods</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="risk-count">6</div>
+                <div class="label">High Risk Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="contamination-count">13</div>
+                <div class="label">Contamination Flags</div>
+            </div>
+        </div>
+
+        <!-- Search and Filter Controls -->
+        <div class="controls">
+            <input 
+                type="text" 
+                class="search-bar" 
+                id="searchBar" 
+                placeholder="Search by food name, compound, element, or contamination risk..."
+            >
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All Items</button>
+                <button class="filter-btn" data-filter="fortified">Fortified Foods</button>
+                <button class="filter-btn" data-filter="whole">Whole Foods</button>
+                <button class="filter-btn" data-filter="highrisk">High Risk (Baby Food)</button>
+                <button class="filter-btn" data-filter="contamination">Has Contamination Risk</button>
+                <button class="filter-btn" data-filter="arsenic">Arsenic</button>
+                <button class="filter-btn" data-filter="lead">Lead</button>
+                <button class="filter-btn" data-filter="mercury">Mercury</button>
+                <button class="filter-btn" data-filter="cadmium">Cadmium</button>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="table-container">
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th data-sort="item">#</th>
+                        <th data-sort="name">Food Name</th>
+                        <th data-sort="category">Category</th>
+                        <th data-sort="type">Type</th>
+                        <th data-sort="iron">Fe (mg)</th>
+                        <th data-sort="calcium">Ca (mg)</th>
+                        <th data-sort="compounds">Key Compounds</th>
+                        <th data-sort="risk">Risk</th>
+                        <th data-sort="vulnerable">Vulnerable Pop.</th>
+                        <th data-sort="shelf">Shelf (mo)</th>
+                        <th data-sort="cost">Cost</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryBody">
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+            <div id="noResults" class="no-results" style="display: none;">
+                No items match your search criteria. Try different filters or search terms.
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item">
+                <span class="type-badge type-fortified">Fortified</span>
+                <span>Nutrients added during processing</span>
+            </div>
+            <div class="legend-item">
+                <span class="type-badge type-wholefood">Whole Food</span>
+                <span>Natural nutrients only</span>
+            </div>
+            <div class="legend-item">
+                <span class="type-badge type-highrisk">High Risk</span>
+                <span>Baby food requiring special testing</span>
+            </div>
+            <div class="legend-item">
+                <span class="risk-badge risk-low">Low Risk</span>
+                <span>No contamination detected</span>
+            </div>
+            <div class="legend-item">
+                <span class="risk-badge risk-arsenic">As/Pb/Hg/Cd</span>
+                <span>Contamination flagged</span>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Lab Connections:</strong></p>
+            <p>Lab 1: Use density to detect dilution fraud | Lab 2: Analyze elements and nutritional content | Lab 3: Investigate molecular structures of contaminants</p>
+            <p style="margin-top: 8px;">Updated: Week 3 | Dr. Sarah Chen, Bracket City Health Director</p>
+        </div>
+    </div>
+
+    <script>
+        // Inventory Data
+        const inventoryData = [
+            {item: 1, name: "General Mills Cheerios", category: "Fortified Cereal", type: "Fortified", iron: 8.99, calcium: 89.9, compounds: "Reduced Iron, Calcium Carbonate, Zinc Oxide", shelf: 12, cost: 0.32, risk: "Low", vulnerable: "None"},
+            {item: 2, name: "Kellogg's Corn Flakes", category: "Fortified Cereal", type: "Fortified", iron: 12.2, calcium: 2, compounds: "Ferrous Sulfate, Salt", shelf: 12, cost: 0.28, risk: "Low", vulnerable: "None"},
+            {item: 3, name: "Post Raisin Bran", category: "Fortified Cereal", type: "Fortified", iron: 16.2, calcium: 29, compounds: "Ferrous Orthophosphate, Zinc Oxide", shelf: 9, cost: 0.45, risk: "Low", vulnerable: "None"},
+            {item: 4, name: "Quaker Instant Oatmeal", category: "Fortified Cereal", type: "Fortified", iron: 7.2, calcium: 150, compounds: "Ferric Orthophosphate, Calcium Carbonate", shelf: 18, cost: 0.40, risk: "Low", vulnerable: "None"},
+            {item: 5, name: "Wonder Bread", category: "Fortified Grain", type: "Fortified", iron: 2.7, calcium: 120, compounds: "Ferrous Sulfate, Calcium Propionate", shelf: 0.3, cost: 0.22, risk: "Low", vulnerable: "None"},
+            {item: 6, name: "Nature's Own Whole Wheat", category: "Fortified Grain", type: "Fortified", iron: 1.8, calcium: 40, compounds: "Ferrous Sulfate", shelf: 0.3, cost: 0.35, risk: "Low", vulnerable: "None"},
+            {item: 7, name: "Enriched White Rice", category: "Fortified Grain", type: "Fortified", iron: 2.8, calcium: 16, compounds: "Ferric Orthophosphate", shelf: 24, cost: 0.15, risk: "Arsenic", vulnerable: "Infants/Children"},
+            {item: 8, name: "Kellogg's Special K Protein", category: "Fortified Cereal", type: "Fortified", iron: 18, calcium: 200, compounds: "Ferrous Fumarate, Zinc Oxide, Calcium Carbonate", shelf: 12, cost: 0.55, risk: "Low", vulnerable: "None"},
+            {item: 9, name: "Cheerios Multi-Grain", category: "Fortified Cereal", type: "Fortified", iron: 9, calcium: 100, compounds: "Ferrous Fumarate, Calcium Carbonate, Zinc Oxide", shelf: 12, cost: 0.38, risk: "Low", vulnerable: "None"},
+            {item: 10, name: "Cream of Wheat", category: "Fortified Cereal", type: "Fortified", iron: 11, calcium: 150, compounds: "Ferric Orthophosphate, Calcium Carbonate", shelf: 24, cost: 0.25, risk: "Low", vulnerable: "None"},
+            {item: 11, name: "Barilla Pasta", category: "Fortified Grain", type: "Fortified", iron: 2.1, calcium: 10, compounds: "Ferrous Sulfate", shelf: 24, cost: 0.30, risk: "Low", vulnerable: "None"},
+            {item: 12, name: "General Mills Total", category: "Fortified Cereal", type: "Fortified", iron: 18, calcium: 1000, compounds: "Ferric Orthophosphate, Calcium Carbonate, Zinc Oxide", shelf: 12, cost: 0.62, risk: "Low", vulnerable: "None"},
+            {item: 13, name: "Silk Almond Milk", category: "Fortified Beverage", type: "Fortified", iron: 0.7, calcium: 450, compounds: "Calcium Carbonate, Tricalcium Phosphate", shelf: 6, cost: 0.45, risk: "Low", vulnerable: "None"},
+            {item: 14, name: "Oatly Oat Milk", category: "Fortified Beverage", type: "Fortified", iron: 0.6, calcium: 350, compounds: "Calcium Carbonate, Dicalcium Phosphate", shelf: 0.3, cost: 0.50, risk: "Low", vulnerable: "None"},
+            {item: 15, name: "Gatorade Orange", category: "Fortified Beverage", type: "Fortified", iron: 0, calcium: 0, compounds: "Sodium Chloride, Monopotassium Phosphate", shelf: 9, cost: 0.75, risk: "Low", vulnerable: "None"},
+            {item: 16, name: "Powerade Fruit Punch", category: "Fortified Beverage", type: "Fortified", iron: 0, calcium: 0, compounds: "Salt, Potassium Citrate", shelf: 9, cost: 0.65, risk: "Low", vulnerable: "None"},
+            {item: 17, name: "Ensure Original", category: "Fortified Beverage", type: "Fortified", iron: 4.5, calcium: 300, compounds: "Ferrous Sulfate, Calcium Phosphate, Magnesium Chloride, Zinc Sulfate", shelf: 15, cost: 2.50, risk: "Low", vulnerable: "None"},
+            {item: 18, name: "Tropicana OJ Calcium", category: "Fortified Beverage", type: "Fortified", iron: 0.5, calcium: 350, compounds: "Calcium Hydroxide, Tricalcium Phosphate", shelf: 0.2, cost: 0.60, risk: "Low", vulnerable: "None"},
+            {item: 19, name: "V8 Vegetable Juice", category: "Fortified Beverage", type: "Whole Food", iron: 0.7, calcium: 30, compounds: "Natural minerals from vegetables", shelf: 0.2, cost: 0.55, risk: "Low", vulnerable: "None"},
+            {item: 20, name: "Soylent Complete", category: "Fortified Beverage", type: "Fortified", iron: 8, calcium: 500, compounds: "Calcium Carbonate, Ferrous Fumarate, Magnesium Phosphate, Zinc Gluconate, Potassium Iodide", shelf: 12, cost: 3.00, risk: "Low", vulnerable: "None"},
+            {item: 21, name: "Bananas", category: "Produce", type: "Whole Food", iron: 0.3, calcium: 5, compounds: "Natural", shelf: 0.2, cost: 0.15, risk: "Low", vulnerable: "None"},
+            {item: 22, name: "Spinach", category: "Produce", type: "Whole Food", iron: 2.7, calcium: 99, compounds: "Natural", shelf: 0.1, cost: 0.40, risk: "Cadmium", vulnerable: "Children"},
+            {item: 23, name: "Carrots", category: "Produce", type: "Whole Food", iron: 0.3, calcium: 33, compounds: "Natural", shelf: 1, cost: 0.25, risk: "Lead", vulnerable: "Children"},
+            {item: 24, name: "Broccoli", category: "Produce", type: "Whole Food", iron: 0.7, calcium: 47, compounds: "Natural", shelf: 0.3, cost: 0.50, risk: "Low", vulnerable: "None"},
+            {item: 25, name: "Sweet Potatoes", category: "Produce", type: "Whole Food", iron: 0.6, calcium: 30, compounds: "Natural", shelf: 0.8, cost: 0.30, risk: "Lead", vulnerable: "Children"},
+            {item: 26, name: "Tomatoes", category: "Produce", type: "Whole Food", iron: 0.3, calcium: 10, compounds: "Natural", shelf: 0.3, cost: 0.35, risk: "Low", vulnerable: "None"},
+            {item: 27, name: "Apples", category: "Produce", type: "Whole Food", iron: 0.1, calcium: 6, compounds: "Natural", shelf: 1.5, cost: 0.40, risk: "Low", vulnerable: "None"},
+            {item: 28, name: "Oranges", category: "Produce", type: "Whole Food", iron: 0.1, calcium: 40, compounds: "Natural", shelf: 0.8, cost: 0.45, risk: "Low", vulnerable: "None"},
+            {item: 29, name: "Kale", category: "Produce", type: "Whole Food", iron: 1.5, calcium: 150, compounds: "Natural", shelf: 0.2, cost: 0.60, risk: "Cadmium", vulnerable: "Children"},
+            {item: 30, name: "Green Beans", category: "Produce", type: "Whole Food", iron: 1.0, calcium: 37, compounds: "Natural", shelf: 0.2, cost: 0.45, risk: "Low", vulnerable: "None"},
+            {item: 31, name: "Canned Tuna", category: "Protein", type: "Whole Food", iron: 0.8, calcium: 11, compounds: "Tuna, water, salt", shelf: 48, cost: 0.85, risk: "Mercury", vulnerable: "Pregnant/Children"},
+            {item: 32, name: "Canned Salmon", category: "Protein", type: "Whole Food", iron: 0.7, calcium: 277, compounds: "Salmon, water, salt", shelf: 48, cost: 1.20, risk: "Low", vulnerable: "None"},
+            {item: 33, name: "Chicken Breast", category: "Protein", type: "Whole Food", iron: 0.5, calcium: 11, compounds: "Natural", shelf: 0.1, cost: 1.50, risk: "Low", vulnerable: "None"},
+            {item: 34, name: "Ground Beef", category: "Protein", type: "Whole Food", iron: 2.1, calcium: 18, compounds: "Natural", shelf: 0.1, cost: 2.00, risk: "Low", vulnerable: "None"},
+            {item: 35, name: "Eggs", category: "Protein", type: "Whole Food", iron: 1.8, calcium: 56, compounds: "Natural", shelf: 1, cost: 0.60, risk: "Low", vulnerable: "None"},
+            {item: 36, name: "Peanut Butter", category: "Protein", type: "Whole Food", iron: 0.6, calcium: 17, compounds: "Peanuts, salt, sugar", shelf: 9, cost: 0.25, risk: "Low", vulnerable: "None"},
+            {item: 37, name: "Black Beans", category: "Protein", type: "Whole Food", iron: 2.1, calcium: 35, compounds: "Black beans, water, salt", shelf: 48, cost: 0.40, risk: "Low", vulnerable: "None"},
+            {item: 38, name: "Chickpeas", category: "Protein", type: "Whole Food", iron: 2.9, calcium: 49, compounds: "Chickpeas, water, salt", shelf: 48, cost: 0.45, risk: "Low", vulnerable: "None"},
+            {item: 39, name: "Tofu", category: "Protein", type: "Whole Food", iron: 5.4, calcium: 350, compounds: "Soybeans, water, calcium sulfate", shelf: 0.3, cost: 0.80, risk: "Low", vulnerable: "None"},
+            {item: 40, name: "Almonds", category: "Protein", type: "Whole Food", iron: 1.1, calcium: 75, compounds: "Natural", shelf: 12, cost: 0.70, risk: "Low", vulnerable: "None"},
+            {item: 41, name: "Whole Milk", category: "Dairy", type: "Whole Food", iron: 0, calcium: 276, compounds: "Natural (Vitamin D added)", shelf: 0.2, cost: 0.50, risk: "Low", vulnerable: "None"},
+            {item: 42, name: "Cheddar Cheese", category: "Dairy", type: "Whole Food", iron: 0.2, calcium: 204, compounds: "Natural", shelf: 1, cost: 0.80, risk: "Low", vulnerable: "None"},
+            {item: 43, name: "Greek Yogurt", category: "Dairy", type: "Whole Food", iron: 0.1, calcium: 187, compounds: "Natural", shelf: 0.4, cost: 1.10, risk: "Low", vulnerable: "None"},
+            {item: 44, name: "Cottage Cheese", category: "Dairy", type: "Whole Food", iron: 0.2, calcium: 125, compounds: "Natural", shelf: 0.3, cost: 0.75, risk: "Low", vulnerable: "None"},
+            {item: 45, name: "Butter", category: "Dairy", type: "Whole Food", iron: 0, calcium: 3, compounds: "Natural", shelf: 3, cost: 0.30, risk: "Low", vulnerable: "None"},
+            {item: 46, name: "Gerber Rice Cereal", category: "Baby Food", type: "High Risk", iron: 7, calcium: 90, compounds: "Electrolytic Iron, Calcium Carbonate, Zinc Sulfate", shelf: 12, cost: 0.35, risk: "Arsenic", vulnerable: "Infants 4-12mo"},
+            {item: 47, name: "Beech-Nut Carrots", category: "Baby Food", type: "High Risk", iron: 0.3, calcium: 26, compounds: "Carrots, water", shelf: 24, cost: 0.90, risk: "Lead", vulnerable: "Infants 4-12mo"},
+            {item: 48, name: "Earth's Best Biscuits", category: "Baby Food", type: "High Risk", iron: 1.2, calcium: 20, compounds: "Whole grain wheat flour", shelf: 12, cost: 0.45, risk: "Cadmium/Lead", vulnerable: "Infants 6-12mo"},
+            {item: 49, name: "Happy Baby Puffs", category: "Baby Food", type: "High Risk", iron: 1.4, calcium: 50, compounds: "Rice flour, sweet potato powder", shelf: 12, cost: 0.55, risk: "Arsenic/Lead", vulnerable: "Infants 6-12mo"},
+            {item: 50, name: "Baby Spinach Puree", category: "Baby Food", type: "High Risk", iron: 0.8, calcium: 30, compounds: "Spinach, water", shelf: 18, cost: 0.85, risk: "Cadmium", vulnerable: "Infants 4-12mo"},
+            {item: 51, name: "Canned Tuna (Toddler)", category: "Baby Food", type: "High Risk", iron: 0.7, calcium: 9, compounds: "Tuna, water, salt", shelf: 48, cost: 0.72, risk: "Mercury", vulnerable: "Pregnant/Children <6"},
+            {item: 52, name: "Apple Juice", category: "Baby Food", type: "High Risk", iron: 0.3, calcium: 17, compounds: "Apples, water", shelf: 0.3, cost: 0.40, risk: "Arsenic", vulnerable: "Children <6"}
+        ];
+
+        // State
+        let currentFilter = 'all';
+        let currentSort = null;
+        let sortAscending = true;
+
+        // Initialize
+        function init() {
+            renderTable(inventoryData);
+            updateStats();
+            setupEventListeners();
+        }
+
+        // Render Table
+        function renderTable(data) {
+            const tbody = document.getElementById('inventoryBody');
+            const noResults = document.getElementById('noResults');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td><strong>${item.item}</strong></td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.category}</td>
+                    <td><span class="type-badge type-${item.type.toLowerCase().replace(' ', '')}">${item.type}</span></td>
+                    <td>${item.iron}</td>
+                    <td>${item.calcium}</td>
+                    <td class="compound-info">${item.compounds}</td>
+                    <td><span class="risk-badge risk-${item.risk.toLowerCase().replace('/', '\\/')}">${item.risk}</span></td>
+                    <td>${item.vulnerable !== 'None' ? '<span class="vulnerable-warning">' + item.vulnerable + '</span>' : 'None'}</td>
+                    <td>${item.shelf}</td>
+                    <td>$${item.cost.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Update Statistics
+        function updateStats() {
+            const fortified = inventoryData.filter(item => item.type === 'Fortified').length;
+            const whole = inventoryData.filter(item => item.type === 'Whole Food').length;
+            const highRisk = inventoryData.filter(item => item.type === 'High Risk').length;
+            const contamination = inventoryData.filter(item => item.risk !== 'Low').length;
+            
+            document.getElementById('total-items').textContent = inventoryData.length;
+            document.getElementById('fortified-count').textContent = fortified;
+            document.getElementById('whole-count').textContent = whole;
+            document.getElementById('risk-count').textContent = highRisk;
+            document.getElementById('contamination-count').textContent = contamination;
+        }
+
+        // Filter Data
+        function filterData() {
+            const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+            
+            let filtered = inventoryData.filter(item => {
+                const matchesSearch = 
+                    item.name.toLowerCase().includes(searchTerm) ||
+                    item.category.toLowerCase().includes(searchTerm) ||
+                    item.compounds.toLowerCase().includes(searchTerm) ||
+                    item.risk.toLowerCase().includes(searchTerm) ||
+                    item.vulnerable.toLowerCase().includes(searchTerm);
+                
+                const matchesFilter = 
+                    currentFilter === 'all' ||
+                    (currentFilter === 'fortified' && item.type === 'Fortified') ||
+                    (currentFilter === 'whole' && item.type === 'Whole Food') ||
+                    (currentFilter === 'highrisk' && item.type === 'High Risk') ||
+                    (currentFilter === 'contamination' && item.risk !== 'Low') ||
+                    (currentFilter === 'arsenic' && item.risk.toLowerCase().includes('arsenic')) ||
+                    (currentFilter === 'lead' && item.risk.toLowerCase().includes('lead')) ||
+                    (currentFilter === 'mercury' && item.risk.toLowerCase().includes('mercury')) ||
+                    (currentFilter === 'cadmium' && item.risk.toLowerCase().includes('cadmium'));
+                
+                return matchesSearch && matchesFilter;
+            });
+            
+            renderTable(filtered);
+        }
+
+        // Sort Data
+        function sortData(column) {
+            const sortedData = [...inventoryData].sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+                
+                // Handle numeric values
+                if (typeof valA === 'number' && typeof valB === 'number') {
+                    return sortAscending ? valA - valB : valB - valA;
+                }
+                
+                // Handle string values
+                valA = String(valA).toLowerCase();
+                valB = String(valB).toLowerCase();
+                
+                if (valA < valB) return sortAscending ? -1 : 1;
+                if (valA > valB) return sortAscending ? 1 : -1;
+                return 0;
+            });
+            
+            sortAscending = currentSort === column ? !sortAscending : true;
+            currentSort = column;
+            
+            renderTable(sortedData);
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Search
+            document.getElementById('searchBar').addEventListener('input', filterData);
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    filterData();
+                });
+            });
+            
+            // Sort
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', function() {
+                    sortData(this.dataset.sort);
+                });
+            });
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
