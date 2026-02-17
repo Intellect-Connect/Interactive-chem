@@ -195,9 +195,9 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
         <div class="eq-col-select">
           <select class="eq-sel" id="eq-solid">
             <option value="">-- select --</option>
-            <option value="mcat">q = mc&Delta;T</option>
-            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
-            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
+            <option value="mcat">q = mc(s)ΔT</option>
+            <option value="hfus">q = mΔH(fus)</option>
+            <option value="hvap">q = mΔH(vap)</option>
           </select>
         </div>
       </div>
@@ -210,9 +210,9 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
         <div class="eq-col-select">
           <select class="eq-sel" id="eq-melting">
             <option value="">-- select --</option>
-            <option value="mcat">q = mc&Delta;T</option>
-            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
-            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
+            <option value="mcat">q = mc(s)ΔT</option>
+            <option value="hfus">q = mΔH(fus)</option>
+            <option value="hvap">q = mΔH(vap)</option>
           </select>
         </div>
       </div>
@@ -225,9 +225,9 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
         <div class="eq-col-select">
           <select class="eq-sel" id="eq-liquid">
             <option value="">-- select --</option>
-            <option value="mcat">q = mc&Delta;T</option>
-            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
-            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
+            <option value="mcat">q = mc(l)ΔT</option>
+            <option value="hfus">q = mΔH(fus)</option>
+            <option value="hvap">q = mΔH(vap)</option>
           </select>
         </div>
       </div>
@@ -240,9 +240,9 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
         <div class="eq-col-select">
           <select class="eq-sel" id="eq-vaporizing">
             <option value="">-- select --</option>
-            <option value="mcat">q = mc&Delta;T</option>
-            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
-            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
+            <option value="mcat">q = mc(g)ΔT</option>
+            <option value="hfus">q = mΔH(fus)</option>
+            <option value="hvap">q = mΔH(vap)</option>
           </select>
         </div>
       </div>
@@ -255,9 +255,9 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
         <div class="eq-col-select">
           <select class="eq-sel" id="eq-gas">
             <option value="">-- select --</option>
-            <option value="mcat">q = mc&Delta;T</option>
-            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
-            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
+            <option value="mcat">q = mc(g)ΔT</option>
+            <option value="hfus">q = mΔH(fus)</option>
+            <option value="hvap">q = mΔH(vap)</option>
           </select>
         </div>
       </div>
@@ -365,7 +365,7 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
 var SUBS={
   water:{name:'Water',formula:'H\u2082O',mp:0,bp:100,st:-50,et:160,hf:334.0,hv:2260.0,cs:2.09,cl:4.18,cg:2.01,
     imft:'Hydrogen bonding (O\u2013H\u00b7\u00b7\u00b7O)',
-    imfn:'Water forms up to 4 hydrogen bonds per molecule. This accounts for its anomalously high bp (100\u00b0C) and \u0394H\u1d65\u1d43\u1d56 (2260 J/g) relative to its small molar mass (18 g/mol). Dipole\u2013dipole and London dispersion forces are also present but weaker.',
+    imfn:'Water forms up to 4 hydrogen bonds per molecule. This accounts for its anomalously high bp (100\u00b0C) and \u0394H(vap) (2260 J/g) relative to its small molar mass (18 g/mol). Dipole\u2013dipole and London dispersion forces are also present but weaker.',
     rpc:'Liquid (0\u00b0C < 25\u00b0C < 100\u00b0C)',rpcol:'#2B6CB0'},
   cl2:{name:'Chlorine',formula:'Cl\u2082',mp:-101,bp:-34,st:-250,et:50,hf:90.3,hv:288.0,cs:0.48,cl:0.96,cg:0.48,
     imft:'London dispersion forces only',
@@ -601,9 +601,12 @@ function onCanvasClick(e){
   var mx=e.clientX-rect.left,my=e.clientY-rect.top;
   var s=SUBS[curKey],sg=segs(s),p=pa();
   if(mx<p.x||mx>p.x+p.w||my<p.y||my>p.y+p.h)return;
-  // Snap to the temperature value at this x position
+  // Find segment purely by x-position (heat coordinate), ignore y-position
   var coords=frPx(s.st,s.et,mx,my);
-  var seg=segAt(sg,coords.heat);
+  var seg=null;
+  for(var i=0;i<sg.length;i++){
+    if(coords.heat>=sg[i].h0&&coords.heat<=sg[i].h1){seg=sg[i];break;}
+  }
   if(!seg)return;
   var T;
   if(seg.type==='flat'){
@@ -613,7 +616,6 @@ function onCanvasClick(e){
     T=seg.t0+frac*(seg.t1-seg.t0);
     T=Math.round(T*10)/10;
   }
-  // Clamp to curve bounds
   T=Math.max(s.st,Math.min(s.et,T));
 
   if(selT1===null){
@@ -625,7 +627,6 @@ function onCanvasClick(e){
     setDispTemp('disp-ti',Math.min(selT1,selT2));
     setDispTemp('disp-tf',Math.max(selT1,selT2));
   } else {
-    // Third click resets
     clearSel();
     return;
   }
@@ -719,11 +720,11 @@ function upProps(key){
     '<div class="pr"><div class="pl">Boiling Point</div><div class="pv bp">'+s.bp+' \u00b0C</div></div>'+
     '<div class="pr"><div class="pl">Enthalpy of Fusion (&Delta;H<sub>fus</sub>)</div><div class="pv hf">'+s.hf.toFixed(1)+' J/g</div></div>'+
     '<div class="pr"><div class="pl">Enthalpy of Vaporization (&Delta;H<sub>vap</sub>)</div><div class="pv hv">'+s.hv.toFixed(0)+' J/g</div></div>'+
-    '<div class="pr"><div class="pl">Intermolecular / Bonding Forces</div><div class="pv" style="font-size:.79rem;text-align:right;max-width:180px;line-height:1.35">'+s.imft+'</div></div>'+
+    '<div class="pr"><div class="pl">Strongest IMF</div><div class="pv" style="font-size:.79rem;text-align:right;max-width:180px;line-height:1.35">'+s.imft+'</div></div>'+
     '<div class="pr"><div class="pl">Phase at 25 \u00b0C</div><div class="pv" style="font-size:.79rem;text-align:right;max-width:180px;line-height:1.35;color:'+s.rpcol+'">'+s.rpc+'</div></div>'+
-    '<div class="pr"><div class="pl">c<sub>p</sub> Solid</div><div class="pv">'+s.cs+' J/g\u00b7\u00b0C</div></div>'+
-    '<div class="pr"><div class="pl">c<sub>p</sub> Liquid</div><div class="pv">'+s.cl+' J/g\u00b7\u00b0C</div></div>'+
-    '<div class="pr"><div class="pl">c<sub>p</sub> Gas</div><div class="pv">'+s.cg+' J/g\u00b7\u00b0C</div></div>'+
+    '<div class="pr"><div class="pl">c<sub>s</sub> (Solid)</div><div class="pv">'+s.cs+' J/g\u00b7\u00b0C</div></div>'+
+    '<div class="pr"><div class="pl">c<sub>l</sub> (Liquid)</div><div class="pv">'+s.cl+' J/g\u00b7\u00b0C</div></div>'+
+    '<div class="pr"><div class="pl">c<sub>g</sub> (Gas)</div><div class="pv">'+s.cg+' J/g\u00b7\u00b0C</div></div>'+
     '<div class="imfn"><strong>IMF &amp; Bonding Context:</strong> '+s.imfn+'</div>';
 }
 
@@ -735,12 +736,12 @@ var EQ_FEEDBACK={
     why:'Temperature is changing in this region, so we use q\u202f=\u202fmc\u0394T, where m\u202f=\u202fmass (g), c\u202f=\u202fspecific heat capacity (J/g\u00b7\u00b0C), and \u0394T\u202f=\u202fchange in temperature (\u00b0C).'
   },
   hfus:{
-    label:'q = m\u0394H\u2099\u1d64\u2095',
-    why:'Temperature is constant at the melting point. All energy overcomes intermolecular forces to convert solid \u2192 liquid. Use q\u202f=\u202fm\u0394H\u2099\u1d64\u2095, where \u0394H\u2099\u1d64\u2095 is the enthalpy of fusion (J/g).'
+    label:'q = m\u0394H<sub>fus</sub>',
+    why:'Temperature is constant at the melting point. All energy overcomes intermolecular forces to convert solid \u2192 liquid. Use q\u202f=\u202fm\u0394H<sub>fus</sub>, where \u0394H<sub>fus</sub> is the enthalpy of fusion (J/g).'
   },
   hvap:{
-    label:'q = m\u0394H\u1d65\u1d43\u1d56',
-    why:'Temperature is constant at the boiling point. All energy fully breaks remaining IMF to convert liquid \u2192 gas. Use q\u202f=\u202fm\u0394H\u1d65\u1d43\u1d56, where \u0394H\u1d65\u1d43\u1d56 is the enthalpy of vaporization (J/g).'
+    label:'q = m\u0394H<sub>vap</sub>',
+    why:'Temperature is constant at the boiling point. All energy fully breaks remaining IMF to convert liquid \u2192 gas. Use q\u202f=\u202fm\u0394H<sub>vap</sub>, where \u0394H<sub>vap</sub> is the enthalpy of vaporization (J/g).'
   }
 };
 
@@ -762,11 +763,11 @@ function checkEqs(){
     var chosen=EQ_FEEDBACK[val];
     var answer=EQ_FEEDBACK[EQ_ANSWERS[r]];
     if(correct){
-      fb.textContent='Correct. '+answer.why;
+      fb.innerHTML='Correct. '+answer.why;
       fb.className='eq-fb show ok';
       score++;
     } else {
-      fb.textContent='Not quite. The correct equation is '+answer.label+'. '+answer.why;
+      fb.innerHTML='Not quite. The correct equation is '+answer.label+'. '+answer.why;
       fb.className='eq-fb show bad';
     }
   });
@@ -784,7 +785,7 @@ function resetEqs(){
     var sel=document.getElementById('eq-'+r);
     var fb=document.getElementById('fb-'+r);
     sel.value='';sel.classList.remove('ok','bad');
-    fb.className='eq-fb';fb.textContent='';
+    fb.className='eq-fb';fb.innerHTML='';
   });
   var sc=document.getElementById('eq-score');
   sc.style.display='none';sc.textContent='';
@@ -848,12 +849,12 @@ function calcHeat(){
     var dT=segHi-segLo;
     var q=m*reg.c*dT;
     totalQ+=q;
-    var cpSub=reg.name==='solid'?'<sub>p,s</sub>':reg.name==='liquid'?'<sub>p,l</sub>':'<sub>p,g</sub>';
+    var cSub=reg.name==='solid'?'<sub>s</sub>':reg.name==='liquid'?'<sub>l</sub>':'<sub>g</sub>';
     steps.push({
       cls:reg.name,
       label:reg.label+' ('+segLo.toFixed(1)+'\u00b0C \u2192 '+segHi.toFixed(1)+'\u00b0C)',
-      eq:'q = m \u00d7 c'+cpSub+' \u00d7 \u0394T',
-      substitution:'q = '+m.toFixed(2)+' g \u00d7 '+reg.c+' J/g\u00b7\u00b0C &nbsp;(c'+cpSub+') \u00d7 '+dT.toFixed(1)+'\u00b0C',
+      eq:'q = m \u00d7 c'+cSub+' \u00d7 \u0394T',
+      substitution:'q = '+m.toFixed(2)+' g \u00d7 '+reg.c+' J/g\u00b7\u00b0C &nbsp;(c'+cSub+') \u00d7 '+dT.toFixed(1)+'\u00b0C',
       result:q
     });
   });
