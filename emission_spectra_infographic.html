@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emission Spectra – Atomic Fingerprints</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0a0c10;
+    --panel:     #10141c;
+    --border:    #1e2535;
+    --accent:    #c8a96e;
+    --text-hi:   #eef0f5;
+    --text-mid:  #8a90a2;
+    --text-lo:   #454c5e;
+    --mono:      'Space Mono', monospace;
+    --sans:      'DM Sans', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text-hi);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px 60px;
+  }
+
+  .page {
+    width: 900px;
+    max-width: 100%;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 36px;
+  }
+
+  .header-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .header h1 {
+    font-family: var(--mono);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.15;
+    color: var(--text-hi);
+  }
+
+  .header h1 span { color: var(--accent); }
+
+  .wavelength-bar {
+    height: 8px;
+    width: 260px;
+    border-radius: 4px;
+    background: linear-gradient(to right,
+      #7b00ff 400px, #5500ff 420px, #3f00ff 440px,
+      #0044ff 460px, #0088ff 480px, #00aaff 490px,
+      #00cccc 500px, #00cc55 530px, #88cc00 560px,
+      #cccc00 580px, #ffaa00 600px, #ff6600 620px,
+      #ff3300 650px, #cc0000 680px, #880000 700px);
+    background-size: 300px 100%;
+    margin-bottom: 6px;
+  }
+
+  .wavelength-ticks {
+    display: flex;
+    justify-content: space-between;
+    width: 260px;
+  }
+
+  .wavelength-ticks span {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-lo);
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--text-lo);
+    margin-bottom: 14px;
+  }
+
+  /* ── SPECTRUM CARD ── */
+  .spectrum-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .element-name {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-hi);
+    letter-spacing: .04em;
+  }
+
+  .element-symbol {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -.02em;
+    line-height: 1;
+  }
+
+  .card-meta {
+    font-size: 11px;
+    color: var(--text-mid);
+    margin-top: 2px;
+  }
+
+  /* ── SPECTRUM DISPLAY ── */
+  .spectrum-wrapper {
+    padding: 18px 20px 14px;
+  }
+
+  /* The scale axis */
+  .axis-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .axis-row span {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-lo);
+  }
+
+  .spectrum-display {
+    position: relative;
+    height: 48px;
+    background: #000;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #1a1f2e;
+  }
+
+  /* faint continuous spectrum hint */
+  .spectrum-display::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right,
+      rgba(80,0,180,.07) 0%,
+      rgba(0,80,255,.07) 15%,
+      rgba(0,180,200,.07) 30%,
+      rgba(0,200,80,.07) 45%,
+      rgba(180,200,0,.07) 55%,
+      rgba(255,140,0,.07) 65%,
+      rgba(220,40,0,.07) 80%,
+      rgba(120,0,0,.07) 100%
+    );
+  }
+
+  .spectral-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    transform: translateX(-50%);
+    border-radius: 1px;
+  }
+
+  .line-label {
+    position: absolute;
+    bottom: -20px;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-mid);
+    white-space: nowrap;
+  }
+
+  .spectrum-display-outer {
+    margin-bottom: 28px;
+  }
+
+  /* Lines summary */
+  .lines-summary {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 10px 0 0;
+  }
+
+  .line-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-mid);
+  }
+
+  .line-chip-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── UNKNOWN SECTION ── */
+  .unknown-card {
+    background: #0e1320;
+    border: 1.5px solid #2a3550;
+    border-radius: 8px;
+    margin-top: 32px;
+    overflow: hidden;
+  }
+
+  .unknown-header {
+    background: #131927;
+    padding: 14px 20px;
+    border-bottom: 1px solid #1e2a40;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .unknown-title {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .unknown-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #0a0c10;
+    background: var(--accent);
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  .unknown-instruction {
+    font-size: 12px;
+    color: var(--text-mid);
+    padding: 10px 20px 0;
+    line-height: 1.5;
+  }
+
+  .unknown-instruction strong { color: var(--text-hi); }
+
+  .answer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .answer-box {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+
+  .answer-box-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--text-lo);
+    margin-bottom: 10px;
+  }
+
+  .answer-line {
+    border: none;
+    border-bottom: 1px solid #1e2535;
+    display: block;
+    width: 100%;
+    height: 24px;
+    margin-bottom: 10px;
+    background: transparent;
+  }
+
+  .answer-box p {
+    font-size: 11px;
+    color: var(--text-lo);
+    line-height: 1.5;
+  }
+
+  /* ── FOOTER NOTE ── */
+  .footnote {
+    margin-top: 36px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .footnote p {
+    font-size: 10px;
+    color: var(--text-lo);
+    max-width: 540px;
+    line-height: 1.6;
+  }
+
+  .footnote .course-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-lo);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="header-eyebrow">CHEM 103 &nbsp;|&nbsp; Module 3 Reference</div>
+      <h1>Atomic <span>Fingerprints</span><br>Emission Spectra of the Elements</h1>
+    </div>
+    <div>
+      <div class="wavelength-bar"></div>
+      <div class="wavelength-ticks">
+        <span>400 nm</span>
+        <span>550 nm</span>
+        <span>700 nm</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KNOWN SPECTRA -->
+  <div class="section-label">Known Reference Spectra — Visible Range (400 – 700 nm)</div>
+
+  <!-- HYDROGEN -->
+  <div class="spectrum-card">
+    <div class="card-header">
+      <div>
+        <div class="element-name">Hydrogen</div>
+        <div class="card-meta">Z = 1 &nbsp;·&nbsp; Balmer series (n → 2 transitions) &nbsp;·&nbsp; Most abundant element in the universe</div>
+      </div>
+      <div class="element-symbol">H</div>
+    </div>
+    <div class="spectrum-wrapper">
+      <div class="axis-row">
+        <span>400</span><span>450</span><span>500</span><span>550</span><span>600</span><span>650</span><span>700 nm</span>
+      </div>
+      <div class="spectrum-display-outer">
+        <div class="spectrum-display" id="h-spectrum">
+          <!-- 410 nm violet -->
+          <div class="spectral-line" style="left:3.3%;background:rgba(148,0,211,1);box-shadow:0 0 6px 2px rgba(148,0,211,.8);"></div>
+          <div class="line-label" style="left:3.3%;">410</div>
+          <!-- 434 nm violet-blue -->
+          <div class="spectral-line" style="left:11.3%;background:rgba(100,0,255,1);box-shadow:0 0 6px 2px rgba(100,0,255,.8);"></div>
+          <div class="line-label" style="left:11.3%;">434</div>
+          <!-- 486 nm cyan-blue -->
+          <div class="spectral-line" style="left:28.7%;background:rgba(0,170,255,1);box-shadow:0 0 8px 3px rgba(0,170,255,.8);"></div>
+          <div class="line-label" style="left:28.7%;">486</div>
+          <!-- 656 nm red -->
+          <div class="spectral-line" style="left:85.3%;background:rgba(255,50,30,1);box-shadow:0 0 10px 4px rgba(255,50,30,.9);width:3px;"></div>
+          <div class="line-label" style="left:85.3%;">656</div>
+        </div>
+      </div>
+      <div class="lines-summary">
+        <div class="line-chip"><div class="line-chip-swatch" style="background:#9400d3;"></div>410 nm — violet (n=6→2)</div>
+        <div class="line-chip"><div class="line-chip-swatch" style="background:#6400ff;"></div>434 nm — violet (n=5→2)</div>
+        <div class="line-chip"><div class="line-chip-swatch" style="background:#00aaff;"></div>486 nm — blue-green (n=4→2)</div>
+        <div class="line-chip"><div class="line-chip-swatch" style="background:#ff3220;"></div>656 nm — red (n=3→2) — brightest</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HELIUM -->
+  <div class="spectrum-card">
+    <div class="card-header">
+      <div>
+        <div class="element-name">Helium</div>
+        <div class="card-meta">Z = 2 &nbsp;·&nbsp; Noble gas &nbsp;·&nbsp; First identified in the Sun's spectrum before found on Earth</div>
+      </div>
+      <div class="element-symbol">He</div>
+    </div>
+    <div class="spectrum-wrapper">
+      <div class="axis-row">
+        <span>400</span><span>450</span><span>500</span><span>550</span><span>600</span><span>650</span><span>700 nm</span>
+      </div>
+      <div class="spectrum-display-outer">
+        <div class="spectrum-display">
+          <!-- 447 nm blue -->
+          <div class="spectral-line" style="left:15.7%;background:rgba(60,100,255,1);box-shadow:0 0 7px 2px rgba(60,100,255,.8);"></div>
+          <div class="line-label" style="left:15.7%;">447</div>
+          <!-- 492 nm blue-green -->
+          <div class="spectral-line" style="left:30.7%;background:rgba(0,190,220,1);box-shadow:0 0 6px 2px rgba(0,190,220,.8);"></div>
+          <div class="line-label" style="left:30.7%;">492</div>
+          <!-- 588 nm yellow -->
+          <div class="spectral-line" style="left:62.7%;background:rgba(255,200,0,1);box-shadow:0 0 9px 3px rgba(255,200,0,.8);width:3px;"></div>
+          <div class="line-label" style="left:62.7%;">588</div>
+          <!-- 668 nm red -->
+          <div class="spectral-line" style="left:89.3%;background:rgba(220,50,20,1);box-shadow:0 0 7px 2px rgba(220,50,20,.8);"></div>
+          <div class="line-label" style="left:89.3%;">668</div>
+        </div>
+      </div>
+      <div class="lines-summary">
+        <div class="line-chip"><div class="line-chip-swatch" style="background:#3c64ff;"></div>447 nm — blue</div>
+        <div class="line-chip"><div class="line-chip-swatch" style="background:#00bedc;"></div>492 nm — blue-green</div>
+        <div class="line-chip"><div class="line-chip-swatch" style="background:#ffc800;"></div>588 nm — yellow — brightest</div>
+        <div class="line-chip"><div class="line-chip-swatch" style="background:#dc3214;"></div>668 nm — red</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SODIUM -->
+  <div class="spectrum-card">
+    <div class="card-header">
+      <div>
+        <div class="element-name">Sodium</div>
+        <div class="card-meta">Z = 11 &nbsp;·&nbsp; Alkali metal &nbsp;·&nbsp; Famous yellow "doublet" — the signature of sodium flame tests</div>
+      </div>
+      <div class="element-symbol">Na</div>
+    </div>
+    <div class="spectrum-wrapper">
+      <div class="axis-row">
+        <span>400</span><span>450</span><span>500</span><span>550</span><span>600</span><span>650</span><span>700 nm</span>
+      </div>
+      <div class="spectrum-display-outer">
+        <div class="spectrum-display">
+          <!-- 589 nm yellow doublet (shown as one dominant line) -->
+          <div class="spectral-line" style="left:63%;background:rgba(255,210,0,1);box-shadow:0 0 14px 6px rgba(255,210,0,.95);width:4px;"></div>
+          <div class="line-label" style="left:63%;">589</div>
+          <!-- 568 nm green-yellow (weaker) -->
+          <div class="spectral-line" style="left:56.7%;background:rgba(200,230,0,.7);box-shadow:0 0 5px 1px rgba(200,230,0,.5);"></div>
+          <div class="line-label" style="left:56.7%;">568</div>
+          <!-- 615 nm orange (weaker) -->
+          <div class="spectral-line" style="left:71.7%;background:rgba(255,130,0,.65);box-shadow:0 0 5px 1px rgba(255,130,0,.5);"></div>
+          <div class="line-label" style="left:71.7%;">615</div>
+        </div>
+      </div>
+      <div class="lines-summary">
+        <div class="line-chip"><div class="line-chip-swatch" style="background:#c8e600;opacity:.8;"></div>568 nm — yellow-green (weak)</div>
+        <div class="line-chip"><div class="line-chip-swatch" style="background:#ffd200;"></div>589 nm — yellow — dominant doublet</div>
+        <div class="line-chip"><div class="line-chip-swatch" style="background:#ff8200;opacity:.8;"></div>615 nm — orange (weak)</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- UNKNOWN MIXED GAS -->
+  <div class="unknown-card">
+    <div class="unknown-header">
+      <div>
+        <div class="unknown-title">Unknown Mixed Gas — Sample X</div>
+        <div style="font-size:11px;color:#6a7898;margin-top:4px;">The spectroscope reveals the following emission lines at precise wavelengths</div>
+      </div>
+      <div class="unknown-badge">Identify</div>
+    </div>
+
+    <div class="unknown-instruction">
+      <strong>Directions:</strong> Examine the emission lines detected in Sample X below. Compare the position and color of each line to the known reference spectra above. Each line belongs to one of the three elements. Use the evidence to identify which gases are present in the mixture.
+    </div>
+
+    <!-- Unknown spectrum display -->
+    <div style="padding: 16px 20px 4px;">
+      <div class="axis-row">
+        <span>400</span><span>450</span><span>500</span><span>550</span><span>600</span><span>650</span><span>700 nm</span>
+      </div>
+      <div class="spectrum-display-outer">
+        <div class="spectrum-display">
+          <!-- From HYDROGEN: 410, 486, 656 -->
+          <div class="spectral-line" style="left:3.3%;background:rgba(148,0,211,1);box-shadow:0 0 6px 2px rgba(148,0,211,.8);"></div>
+          <div class="line-label" style="left:3.3%;">410</div>
+
+          <div class="spectral-line" style="left:28.7%;background:rgba(0,170,255,1);box-shadow:0 0 8px 3px rgba(0,170,255,.8);"></div>
+          <div class="line-label" style="left:28.7%;">486</div>
+
+          <div class="spectral-line" style="left:85.3%;background:rgba(255,50,30,1);box-shadow:0 0 10px 4px rgba(255,50,30,.9);width:3px;"></div>
+          <div class="line-label" style="left:85.3%;">656</div>
+
+          <!-- From SODIUM: 589, 568, 615 -->
+          <div class="spectral-line" style="left:56.7%;background:rgba(200,230,0,.7);box-shadow:0 0 5px 1px rgba(200,230,0,.5);"></div>
+          <div class="line-label" style="left:56.7%;">568</div>
+
+          <div class="spectral-line" style="left:63%;background:rgba(255,210,0,1);box-shadow:0 0 14px 6px rgba(255,210,0,.95);width:4px;"></div>
+          <div class="line-label" style="left:63%;">589</div>
+
+          <div class="spectral-line" style="left:71.7%;background:rgba(255,130,0,.65);box-shadow:0 0 5px 1px rgba(255,130,0,.5);"></div>
+          <div class="line-label" style="left:71.7%;">615</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detected lines table -->
+    <div style="padding: 4px 20px 16px;">
+      <table style="width:100%;border-collapse:collapse;font-family:'Space Mono',monospace;font-size:10px;">
+        <thead>
+          <tr style="border-bottom:1px solid #1e2a40;">
+            <th style="text-align:left;padding:6px 10px;color:#454c5e;font-weight:400;letter-spacing:.1em;">WAVELENGTH</th>
+            <th style="text-align:left;padding:6px 10px;color:#454c5e;font-weight:400;letter-spacing:.1em;">COLOR OBSERVED</th>
+            <th style="text-align:left;padding:6px 10px;color:#454c5e;font-weight:400;letter-spacing:.1em;">MATCHES ELEMENT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #111620;">
+            <td style="padding:7px 10px;color:#8a90a2;">410 nm</td>
+            <td style="padding:7px 10px;"><span style="color:#9400d3;">&#9632;</span> violet</td>
+            <td style="padding:7px 10px;color:#1e2a40;">____________</td>
+          </tr>
+          <tr style="border-bottom:1px solid #111620;">
+            <td style="padding:7px 10px;color:#8a90a2;">486 nm</td>
+            <td style="padding:7px 10px;"><span style="color:#00aaff;">&#9632;</span> blue</td>
+            <td style="padding:7px 10px;color:#1e2a40;">____________</td>
+          </tr>
+          <tr style="border-bottom:1px solid #111620;">
+            <td style="padding:7px 10px;color:#8a90a2;">568 nm</td>
+            <td style="padding:7px 10px;"><span style="color:#c8e600;">&#9632;</span> yellow-green</td>
+            <td style="padding:7px 10px;color:#1e2a40;">____________</td>
+          </tr>
+          <tr style="border-bottom:1px solid #111620;">
+            <td style="padding:7px 10px;color:#8a90a2;">589 nm</td>
+            <td style="padding:7px 10px;"><span style="color:#ffd200;">&#9632;</span> yellow (bright)</td>
+            <td style="padding:7px 10px;color:#1e2a40;">____________</td>
+          </tr>
+          <tr style="border-bottom:1px solid #111620;">
+            <td style="padding:7px 10px;color:#8a90a2;">615 nm</td>
+            <td style="padding:7px 10px;"><span style="color:#ff8200;">&#9632;</span> orange</td>
+            <td style="padding:7px 10px;color:#1e2a40;">____________</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px;color:#8a90a2;">656 nm</td>
+            <td style="padding:7px 10px;"><span style="color:#ff3220;">&#9632;</span> red (bright)</td>
+            <td style="padding:7px 10px;color:#1e2a40;">____________</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Answer boxes -->
+    <div class="answer-grid">
+      <div class="answer-box">
+        <div class="answer-box-label">Gas Component 1 — Identity</div>
+        <div class="answer-line"></div>
+        <p>Which lines from the reference spectra above match? List their wavelengths as evidence.</p>
+        <div class="answer-line" style="margin-top:10px;"></div>
+        <div class="answer-line"></div>
+      </div>
+      <div class="answer-box">
+        <div class="answer-box-label">Gas Component 2 — Identity</div>
+        <div class="answer-line"></div>
+        <p>Which lines from the reference spectra above match? List their wavelengths as evidence.</p>
+        <div class="answer-line" style="margin-top:10px;"></div>
+        <div class="answer-line"></div>
+      </div>
+    </div>
+
+    <!-- Reasoning box -->
+    <div style="padding: 0 20px 20px;">
+      <div class="answer-box" style="background:#080a0f;">
+        <div class="answer-box-label">Explain your reasoning — why is this considered a "mixed" spectrum?</div>
+        <div class="answer-line"></div>
+        <div class="answer-line"></div>
+        <div class="answer-line"></div>
+      </div>
+    </div>
+
+  </div><!-- end unknown-card -->
+
+  <!-- FOOTNOTE -->
+  <div class="footnote">
+    <p>All wavelengths are scientifically accurate values for visible-range emission lines. Relative line brightness is represented by glow intensity. The 434 nm hydrogen line has been omitted from Sample X to require careful line-by-line comparison rather than simple counting.</p>
+    <div class="course-tag">CHEM 103 &nbsp;|&nbsp; Module 3<br>Atomic Structure &amp; Light</div>
+  </div>
+
+</div><!-- end page -->
+</body>
+</html>
