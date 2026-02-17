@@ -601,18 +601,23 @@ function onCanvasClick(e){
   var mx=e.clientX-rect.left,my=e.clientY-rect.top;
   var s=SUBS[curKey],sg=segs(s),p=pa();
   if(mx<p.x||mx>p.x+p.w||my<p.y||my>p.y+p.h)return;
-  // Find segment purely by x-position (heat coordinate), ignore y-position
-  var coords=frPx(s.st,s.et,mx,my);
+  
+  // Find heat coordinate from x-position
+  var heat=((mx-p.x)/p.w)*30;
+  
+  // Find which segment contains this heat value
   var seg=null;
   for(var i=0;i<sg.length;i++){
-    if(coords.heat>=sg[i].h0&&coords.heat<=sg[i].h1){seg=sg[i];break;}
+    if(heat>=sg[i].h0&&heat<=sg[i].h1){seg=sg[i];break;}
   }
   if(!seg)return;
+  
+  // Calculate what temperature the CURVE has at this heat value
   var T;
   if(seg.type==='flat'){
     T=seg.t0;
   } else {
-    var frac=(coords.heat-seg.h0)/(seg.h1-seg.h0);
+    var frac=(heat-seg.h0)/(seg.h1-seg.h0);
     T=seg.t0+frac*(seg.t1-seg.t0);
     T=Math.round(T*10)/10;
   }
@@ -892,11 +897,29 @@ function onMM(e,ctx){
   var my=(e.clientY-rect.top);
   var s=SUBS[curKey],sg=segs(s),p=pa(),tt=document.getElementById('tt'),badge=document.getElementById('pb');
   if(mx<p.x||mx>p.x+p.w||my<p.y||my>p.y+p.h){tt.style.display='none';return;}
-  var coords=frPx(s.st,s.et,mx,my),seg=segAt(sg,coords.heat);
+  
+  // Find heat coordinate from x-position
+  var heat=((mx-p.x)/p.w)*30;
+  
+  // Find which segment contains this heat value
+  var seg=null;
+  for(var i=0;i<sg.length;i++){
+    if(heat>=sg[i].h0&&heat<=sg[i].h1){seg=sg[i];break;}
+  }
   if(!seg){tt.style.display='none';return;}
+  
+  // Calculate what temperature the CURVE has at this heat value
   var curT;
-  if(seg.type==='flat'){curT=seg.t0;}
-  else{var fr=(coords.heat-seg.h0)/(seg.h1-seg.h0);curT=seg.t0+fr*(seg.t1-seg.t0);}
+  if(seg.type==='flat'){
+    // Plateau: constant temperature
+    curT=seg.t0;
+  } else {
+    // Sloped segment: interpolate temperature based on heat position within segment
+    var frac=(heat-seg.h0)/(seg.h1-seg.h0);
+    curT=seg.t0+frac*(seg.t1-seg.t0);
+    curT=Math.round(curT*10)/10;
+  }
+  
   document.getElementById('ttt').textContent=curT.toFixed(1);
   document.getElementById('ttr').textContent=SNMS[seg.name];
   tt.style.display='block';
