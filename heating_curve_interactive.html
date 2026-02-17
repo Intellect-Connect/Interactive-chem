@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heating Curves Interactive</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:#0D7377;--teal-light:#E0F5F5;--teal-dark:#094D52;
+  --gold:#B7791F;--gold-light:#FEFCBF;
+  --exo:#D94F30;--exo-light:#FFF0EB;
+  --endo:#2B6CB0;--endo-light:#EBF4FF;
+  --solid:#5A38A3;--solid-light:#F3E8FF;
+  --melt:#B7791F;--melt-light:#FEFCBF;
+  --vap:#2F855A;--vap-light:#F0FFF4;
+  --s9:#1A202C;--s7:#334155;--s5:#64748B;--s4:#94A3B8;
+  --s3:#CBD5E1;--s2:#E2E8F0;--s1:#F1F5F9;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;line-height:1.7;min-width:1100px;}
+.hero{background:linear-gradient(135deg,var(--teal-dark) 0%,var(--s9) 50%,var(--endo) 100%);padding:3rem 2rem 2.5rem;text-align:center;color:white}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.5rem;margin-bottom:.5rem}
+.hero p{font-size:1.1rem;opacity:.88;max-width:700px;margin:0 auto}
+.container{max-width:1500px;margin:0 auto;padding:1.5rem 1rem;}
+.workspace{display:flex;flex-direction:row;gap:1.5rem;margin-top:2rem;align-items:flex-start;}
+.graph-panel{background:white;border:3px solid var(--teal);border-radius:12px;padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;}
+.graph-panel h2{font-family:'DM Serif Display',serif;color:var(--teal);font-size:1.5rem;text-align:center}
+.graph-wrap{position:relative;width:100%}
+#hc{display:block;width:100%;height:auto;border:2px solid var(--s2);border-radius:8px;background:#FAFCFF;cursor:crosshair}
+/* TOOLTIP */
+.legend{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;padding:.65rem 0;border-top:1px solid var(--s2)}
+.li{display:flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600}
+.ld{width:12px;height:12px;border-radius:3px}
+.ld.solid{background:var(--solid)}.ld.melting{background:var(--melt)}
+.ld.liquid{background:var(--endo)}.ld.vaporizing{background:var(--vap)}.ld.gas{background:var(--exo)}
+/* EQUATION MATCHING TASK */
+.eq-task{background:var(--s1);border-radius:10px;padding:1rem 1.25rem;border-left:4px solid var(--teal)}
+.eq-task h3{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--teal-dark);margin-bottom:.4rem}
+.eq-task p{font-size:.88rem;color:var(--s7);margin-bottom:.85rem;line-height:1.5}
+.eq-table{display:flex;flex-direction:column;gap:0;border:2px solid var(--s3);border-radius:8px;overflow:hidden}
+.eq-header{display:flex;background:var(--s9);color:white;padding:.5rem .75rem;font-size:.8rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+.eq-col-region{flex:1;display:flex;align-items:center;gap:.5rem}
+.eq-col-select{width:220px;flex-shrink:0}
+.eq-row{display:flex;align-items:center;padding:.6rem .75rem;gap:.5rem;border-top:1px solid var(--s2);background:white;transition:background .15s}
+.eq-row:hover{background:var(--s1)}
+.solid-row{border-left:4px solid var(--solid)}
+.melting-row{border-left:4px solid var(--melt)}
+.liquid-row{border-left:4px solid var(--endo)}
+.vaporizing-row{border-left:4px solid var(--vap)}
+.gas-row{border-left:4px solid var(--exo)}
+.eq-dot{display:inline-block;width:11px;height:11px;border-radius:3px;flex-shrink:0;margin-right:.35rem}
+.solid-dot{background:var(--solid)}.melting-dot{background:var(--melt)}
+.liquid-dot{background:var(--endo)}.vaporizing-dot{background:var(--vap)}.gas-dot{background:var(--exo)}
+.eq-col-region{font-size:.88rem;font-weight:600;color:var(--s9);flex:1}
+.eq-sel{width:100%;padding:.38rem .55rem;border:2px solid var(--s3);border-radius:6px;font-family:inherit;font-size:.85rem;background:white;cursor:pointer;transition:border-color .2s}
+.eq-sel:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,115,119,.1)}
+.eq-sel.ok{border-color:var(--vap);background:var(--vap-light);color:var(--vap)}
+.eq-sel.bad{border-color:var(--exo);background:var(--exo-light);color:var(--exo)}
+.eq-fb{font-size:.82rem;font-weight:600;padding:0 .75rem;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s}
+.eq-fb.show{max-height:80px;padding:.4rem .75rem .5rem}
+.eq-fb.ok{color:var(--vap);background:var(--vap-light)}
+.eq-fb.bad{color:var(--exo);background:var(--exo-light)}
+.eq-actions{display:flex;gap:.6rem;margin-top:.85rem}
+.eq-check-btn{flex:2;padding:.55rem;background:var(--teal);color:white;border:none;border-radius:7px;font-family:inherit;font-weight:700;font-size:.9rem;cursor:pointer;transition:background .2s}
+.eq-check-btn:hover{background:var(--teal-dark)}
+.eq-reset-btn{flex:1;padding:.55rem;background:white;color:var(--s7);border:2px solid var(--s3);border-radius:7px;font-family:inherit;font-weight:600;font-size:.88rem;cursor:pointer;transition:all .2s}
+.eq-reset-btn:hover{border-color:var(--s5);color:var(--s9)}
+.eq-score{margin-top:.65rem;text-align:center;font-weight:700;font-size:.95rem;display:none}
+.eq-score.perfect{color:var(--vap)}.eq-score.partial{color:var(--gold)}.eq-score.zero{color:var(--exo)}
+.fb{font-size:.82rem;font-weight:600;margin-top:.45rem;padding:.35rem .6rem;border-radius:5px;display:none}
+.fb.show{display:block}
+.fb.ok{color:var(--vap);background:var(--vap-light)}
+.fb.bad{color:var(--exo);background:var(--exo-light)}
+.fb.info{color:var(--teal-dark);background:var(--teal-light)}
+.qs{display:flex;flex-direction:column;gap:.75rem}
+.qs h3{font-family:'DM Serif Display',serif;color:var(--teal-dark);font-size:1.1rem;border-bottom:2px solid var(--teal-light);padding-bottom:.4rem}
+.qc{background:var(--s1);border:2px solid var(--s3);border-radius:8px;padding:.85rem 1rem;transition:border-color .2s}
+.qc:hover{border-color:var(--teal)}
+.qt{font-size:.9rem;font-weight:600;color:var(--s9);margin-bottom:.5rem;line-height:1.5}
+.ar{display:flex;align-items:center;gap:.6rem}
+.ai{flex:1;padding:.4rem .7rem;border:2px solid var(--s3);border-radius:6px;font-family:inherit;font-size:.88rem;background:white;transition:border-color .2s}
+.ai:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,115,119,.1)}
+.ai.ok{border-color:var(--vap);background:var(--vap-light)}
+.ai.bad{border-color:var(--exo);background:var(--exo-light)}
+.ck{padding:.4rem .8rem;background:var(--teal);color:white;border:none;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer;font-family:inherit;transition:background .2s;white-space:nowrap}
+.ck:hover{background:var(--teal-dark)}
+.qfb{font-size:.82rem;font-weight:600;margin-top:.4rem;padding:.35rem .6rem;border-radius:5px;display:none;line-height:1.45}
+.qfb.show{display:block}
+.qfb.ok{color:var(--vap);background:var(--vap-light)}
+.qfb.bad{color:var(--exo);background:var(--exo-light)}
+/* RIGHT */
+.rp{display:flex;flex-direction:column;gap:1rem;}
+.card{background:white;border-radius:12px;padding:1rem 1rem 1.25rem;position:relative}
+.card.tc{border:3px solid var(--teal)}.card.gc{border:3px solid var(--gold)}.card.bc{border:3px solid var(--endo)}
+.plbl{position:absolute;top:-11px;left:12px;padding:.2rem .7rem;border-radius:4px;font-size:.7rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:white}
+.plbl.t{background:var(--teal)}.plbl.g{background:var(--gold)}.plbl.b{background:var(--endo)}
+.card h3{font-family:'DM Serif Display',serif;font-size:1.05rem;margin-bottom:.85rem;text-align:center;margin-top:.25rem}
+.card.tc h3{color:var(--teal-dark)}.card.gc h3{color:var(--gold)}.card.bc h3{color:var(--endo)}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.sbtn{padding:.7rem .5rem;border:2.5px solid var(--s3);border-radius:9px;background:var(--s1);cursor:pointer;text-align:center;transition:all .2s;font-family:inherit}
+.sbtn:hover{border-color:var(--teal);background:var(--teal-light)}
+.sbtn.active{border-color:var(--teal);background:var(--teal-light);box-shadow:0 0 0 3px rgba(13,115,119,.15)}
+.sf{font-size:1.05rem;font-weight:700;color:var(--s9);display:block}
+.sn{font-size:.72rem;color:var(--s5);font-weight:500;display:block;margin-top:.1rem}
+.pi{margin-top:.65rem;text-align:center;display:none}
+.pi .hint{font-size:.76rem;color:var(--s4);margin-bottom:.3rem}
+.pbadge{display:inline-block;padding:.3rem 1rem;border-radius:20px;font-weight:700;font-size:.82rem;min-width:140px;border:2px solid var(--s3);color:var(--s5);background:var(--s1);transition:all .2s}
+.pr{display:flex;justify-content:space-between;align-items:flex-start;padding:.42rem 0;border-bottom:1px solid var(--s2);gap:.5rem}
+.pr:last-child{border-bottom:none}
+.pl{font-size:.82rem;color:var(--s7);flex:1;line-height:1.4}
+.pv{font-size:.88rem;font-weight:700;color:var(--s9);text-align:right;flex-shrink:0}
+.pv.mp{color:var(--gold)}.pv.bp{color:var(--exo)}.pv.hf{color:var(--endo)}.pv.hv{color:var(--vap)}
+.imfn{margin-top:.6rem;padding:.55rem .7rem;background:var(--s1);border-radius:7px;font-size:.8rem;color:var(--s7);line-height:1.45;border-left:3px solid var(--endo)}
+.pp{text-align:center;padding:1.5rem;color:var(--s4);font-style:italic;font-size:.88rem}
+/* CALCULATOR PANEL */
+.calc-intro{font-size:.82rem;color:var(--s7);margin-bottom:.85rem;line-height:1.5}
+.calc-inputs{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem}
+.calc-row{display:flex;align-items:center;gap:.5rem}
+.calc-lbl{font-size:.82rem;font-weight:600;color:var(--s7);width:90px;flex-shrink:0;line-height:1.3}
+.calc-inp{flex:1;padding:.38rem .6rem;border:2px solid var(--s3);border-radius:6px;font-family:inherit;font-size:.88rem;background:white;transition:border-color .2s}
+.calc-inp:focus{outline:none;border-color:var(--endo);box-shadow:0 0 0 3px rgba(43,108,176,.1)}
+.calc-display{flex:1;padding:.38rem .6rem;border:2px solid var(--s3);border-radius:6px;font-size:.88rem;font-weight:600;background:var(--s1);color:var(--s5);min-height:2rem;display:flex;align-items:center}
+.calc-display.set{background:var(--endo-light);border-color:var(--endo);color:var(--endo)}
+/* calc output */
+#calc-out{display:flex;flex-direction:column;gap:.4rem}
+.calc-step{border-radius:7px;border-left:4px solid transparent;padding:.48rem .65rem;font-size:.8rem;line-height:1.45}
+.calc-step.solid{background:var(--solid-light);border-color:var(--solid)}
+.calc-step.melting{background:var(--melt-light);border-color:var(--melt)}
+.calc-step.liquid{background:var(--endo-light);border-color:var(--endo)}
+.calc-step.vaporizing{background:var(--vap-light);border-color:var(--vap)}
+.calc-step.gas{background:var(--exo-light);border-color:var(--exo)}
+.calc-step-title{font-weight:700;font-size:.82rem;margin-bottom:.18rem}
+.calc-step-title.solid{color:var(--solid)}.calc-step-title.melting{color:var(--melt)}
+.calc-step-title.liquid{color:var(--endo)}.calc-step-title.vaporizing{color:var(--vap)}
+.calc-step-title.gas{color:var(--exo)}
+.calc-formula{font-family:monospace;font-size:.8rem;color:var(--s7);margin:.12rem 0}
+.calc-result{font-weight:700;color:var(--s9);font-size:.83rem}
+.calc-total{background:var(--s9);color:white;border-radius:8px;padding:.65rem .75rem;text-align:center;font-weight:700;font-size:.95rem;margin-top:.3rem}
+.calc-total span{color:#81E6D9;font-size:1.1rem}
+.calc-err{background:var(--exo-light);color:var(--exo);border:2px solid var(--exo);border-radius:7px;padding:.5rem .7rem;font-size:.83rem;font-weight:600}
+.rbtn{width:100%;padding:.65rem;background:white;border:2px solid var(--teal);color:var(--teal);border-radius:8px;font-family:inherit;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s}
+.rbtn:hover{background:var(--teal-light)}
+.tt{position:absolute;background:rgba(26,32,44,.92);color:white;padding:.42rem .7rem;border-radius:7px;font-size:.8rem;pointer-events:none;display:none;z-index:200;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.tt span{font-weight:700;color:#81E6D9}
+/* SELECTION BAR - removed */
+.calc-btn-row{display:flex;gap:.5rem;margin-bottom:.75rem}
+.calc-btn{flex:1;padding:.55rem;background:var(--endo);color:white;border:none;border-radius:7px;font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;transition:background .2s}
+.calc-btn:hover{background:#1e4e8c}
+.calc-clr-btn{flex:0 0 auto;padding:.55rem .7rem;background:white;color:var(--s7);border:2px solid var(--s3);border-radius:7px;font-family:inherit;font-weight:600;font-size:.82rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.calc-clr-btn:hover{border-color:var(--s5);color:var(--s9);background:var(--s1)}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Heating Curves</h1>
+  <p>Explore how temperature responds to continuous heat input as substances transition between phases &mdash; and connect each region to kinetic energy and intermolecular forces.</p>
+</div>
+
+<div class="container">
+<div class="workspace" style="display:flex;flex-direction:row;gap:1rem;margin-top:1.5rem;align-items:flex-start;">
+
+<!-- LEFT PANEL -->
+<div class="graph-panel" style="flex:1 1 0;min-width:0;">
+  <h2 id="gtitle">Select a Substance to Display its Heating Curve</h2>
+
+  <div class="graph-wrap" id="gw">
+    <canvas id="hc" width="860" height="480"></canvas>
+    <div class="tt" id="tt">T: <span id="ttt">--</span>&deg;C &nbsp;|&nbsp; <span id="ttr">--</span></div>
+  </div>
+
+  <div class="legend">
+    <div class="li"><div class="ld solid"></div>Solid heating</div>
+    <div class="li"><div class="ld melting"></div>Melting plateau</div>
+    <div class="li"><div class="ld liquid"></div>Liquid heating</div>
+    <div class="li"><div class="ld vaporizing"></div>Vaporizing plateau</div>
+    <div class="li"><div class="ld gas"></div>Gas heating</div>
+  </div>
+
+  <div class="eq-task">
+    <h3>Match the Heat Equation to Each Region</h3>
+    <p>For each region of the heating curve, select the correct equation used to calculate the heat involved. Then click <strong>Check Equations</strong>.</p>
+
+    <div class="eq-table">
+      <div class="eq-header">
+        <div class="eq-col-region">Region</div>
+        <div class="eq-col-select">Your Equation</div>
+      </div>
+
+      <div class="eq-row solid-row">
+        <div class="eq-col-region">
+          <span class="eq-dot solid-dot"></span>Solid Heating
+        </div>
+        <div class="eq-col-select">
+          <select class="eq-sel" id="eq-solid">
+            <option value="">-- select --</option>
+            <option value="mcat">q = mc&Delta;T</option>
+            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
+            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
+          </select>
+        </div>
+      </div>
+      <div class="eq-fb" id="fb-solid"></div>
+
+      <div class="eq-row melting-row">
+        <div class="eq-col-region">
+          <span class="eq-dot melting-dot"></span>Melting Plateau
+        </div>
+        <div class="eq-col-select">
+          <select class="eq-sel" id="eq-melting">
+            <option value="">-- select --</option>
+            <option value="mcat">q = mc&Delta;T</option>
+            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
+            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
+          </select>
+        </div>
+      </div>
+      <div class="eq-fb" id="fb-melting"></div>
+
+      <div class="eq-row liquid-row">
+        <div class="eq-col-region">
+          <span class="eq-dot liquid-dot"></span>Liquid Heating
+        </div>
+        <div class="eq-col-select">
+          <select class="eq-sel" id="eq-liquid">
+            <option value="">-- select --</option>
+            <option value="mcat">q = mc&Delta;T</option>
+            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
+            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
+          </select>
+        </div>
+      </div>
+      <div class="eq-fb" id="fb-liquid"></div>
+
+      <div class="eq-row vaporizing-row">
+        <div class="eq-col-region">
+          <span class="eq-dot vaporizing-dot"></span>Vaporizing Plateau
+        </div>
+        <div class="eq-col-select">
+          <select class="eq-sel" id="eq-vaporizing">
+            <option value="">-- select --</option>
+            <option value="mcat">q = mc&Delta;T</option>
+            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
+            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
+          </select>
+        </div>
+      </div>
+      <div class="eq-fb" id="fb-vaporizing"></div>
+
+      <div class="eq-row gas-row">
+        <div class="eq-col-region">
+          <span class="eq-dot gas-dot"></span>Gas Heating
+        </div>
+        <div class="eq-col-select">
+          <select class="eq-sel" id="eq-gas">
+            <option value="">-- select --</option>
+            <option value="mcat">q = mc&Delta;T</option>
+            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
+            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
+          </select>
+        </div>
+      </div>
+      <div class="eq-fb" id="fb-gas"></div>
+    </div>
+
+    <div class="eq-actions">
+      <button class="eq-check-btn" onclick="checkEqs()">Check Equations</button>
+      <button class="eq-reset-btn" onclick="resetEqs()">Reset</button>
+    </div>
+    <div class="eq-score" id="eq-score"></div>
+  </div>
+
+  <div class="qs">
+    <h3>Analysis Questions</h3>
+
+    <div class="qc"><div class="qt">1. What is the melting point of the selected substance? (&deg;C)</div>
+      <div class="ar"><input class="ai" id="q1i" type="text" placeholder="e.g. 0"><button class="ck" onclick="chk(1)">Check</button></div>
+      <div class="qfb" id="q1f"></div></div>
+
+    <div class="qc"><div class="qt">2. What is the boiling point of the selected substance? (&deg;C)</div>
+      <div class="ar"><input class="ai" id="q2i" type="text" placeholder="e.g. 100"><button class="ck" onclick="chk(2)">Check</button></div>
+      <div class="qfb" id="q2f"></div></div>
+
+    <div class="qc"><div class="qt">3. During the melting plateau, temperature remains constant even though heat is continuously added. Explain why using intermolecular force theory.</div>
+      <div class="ar"><input class="ai" id="q3i" type="text" placeholder="What is the added energy doing?"><button class="ck" onclick="chk(3)">Check</button></div>
+      <div class="qfb" id="q3f"></div></div>
+
+    <div class="qc"><div class="qt">4. In the liquid heating region, what happens to the average kinetic energy of particles as heat is added? How does this connect to the temperature increase?</div>
+      <div class="ar"><input class="ai" id="q4i" type="text" placeholder="Consider particle motion and temperature at a molecular level..."><button class="ck" onclick="chk(4)">Check</button></div>
+      <div class="qfb" id="q4f"></div></div>
+
+    <div class="qc"><div class="qt">5. A steeper slope in a heating region indicates a lower specific heat capacity for that phase. Explain what this means in terms of heat required per &deg;C of temperature change.</div>
+      <div class="ar"><input class="ai" id="q5i" type="text" placeholder="Hint: slope = &Delta;T / heat added ..."><button class="ck" onclick="chk(5)">Check</button></div>
+      <div class="qfb" id="q5f"></div></div>
+
+    <div class="qc"><div class="qt">6. Using the boiling point data for all four substances, rank them from weakest to strongest intermolecular forces and explain why boiling point reflects IMF strength.</div>
+      <div class="ar"><input class="ai" id="q6i" type="text" placeholder="Compare all four boiling points..."><button class="ck" onclick="chk(6)">Check</button></div>
+      <div class="qfb" id="q6f"></div></div>
+
+    <div class="qc"><div class="qt">7. The enthalpy of vaporization (&Delta;H<sub>vap</sub>) is always larger than the enthalpy of fusion (&Delta;H<sub>fus</sub>) for the same substance. Explain why using IMF theory.</div>
+      <div class="ar"><input class="ai" id="q7i" type="text" placeholder="Compare what happens to IMF during melting vs. vaporizing..."><button class="ck" onclick="chk(7)">Check</button></div>
+      <div class="qfb" id="q7f"></div></div>
+  </div>
+</div>
+
+<!-- RIGHT SIDEBAR -->
+<div class="rp" style="width:360px;min-width:360px;flex-shrink:0;flex-grow:0;display:flex;flex-direction:column;gap:1rem;">
+
+  <div class="card tc">
+    <div class="plbl t">PANEL 1</div>
+    <h3>Select a Substance</h3>
+    <div class="sgrid">
+      <button class="sbtn" id="bw" onclick="load('water')"><span class="sf">H<sub>2</sub>O</span><span class="sn">Water</span></button>
+      <button class="sbtn" id="bc" onclick="load('cl2')"><span class="sf">Cl<sub>2</sub></span><span class="sn">Chlorine</span></button>
+      <button class="sbtn" id="bn" onclick="load('nacl')"><span class="sf">NaCl</span><span class="sn">Sodium Chloride</span></button>
+      <button class="sbtn" id="bg" onclick="load('so2')"><span class="sf">SO<sub>2</sub></span><span class="sn">Sulfur Dioxide</span></button>
+    </div>
+    <div class="pi" id="pi">
+      <div class="hint">Hover over the curve to identify the phase</div>
+      <div class="pbadge" id="pb">Hover over curve</div>
+    </div>
+  </div>
+
+  <div class="card bc">
+    <div class="plbl b">PANEL 2</div>
+    <h3>Total Heat Calculator</h3>
+    <p class="calc-intro">Click the curve to set a temperature range, enter a mass, then calculate.</p>
+
+    <div class="calc-inputs">
+      <div class="calc-row">
+        <label class="calc-lbl" for="calc-mass">Mass (g)</label>
+        <input class="calc-inp" id="calc-mass" type="number" min="0.1" step="0.1" placeholder="e.g. 50">
+      </div>
+      <div class="calc-row">
+        <label class="calc-lbl">T<sub>start</sub></label>
+        <div class="calc-display" id="disp-ti">&#8212; click curve</div>
+      </div>
+      <div class="calc-row">
+        <label class="calc-lbl">T<sub>end</sub></label>
+        <div class="calc-display" id="disp-tf">&#8212; click curve</div>
+      </div>
+    </div>
+
+    <div class="calc-btn-row">
+      <button class="calc-btn" onclick="calcHeat()">Calculate Total Heat</button>
+      <button class="calc-clr-btn" id="sel-clear" onclick="clearSel()">Clear Selection</button>
+    </div>
+    <div id="calc-out"></div>
+  </div>
+
+  <div class="card gc">
+    <div class="plbl g">PANEL 3</div>
+    <h3>Physical Properties</h3>
+    <div id="props"><div class="pp">Select a substance above to view its physical properties and enthalpies.</div></div>
+  </div>
+
+  <button class="rbtn" onclick="resetAll()">Reset All Answers</button>
+</div>
+
+</div><!-- end workspace -->
+</div><!-- end container -->
+
+<script>
+var SUBS={
+  water:{name:'Water',formula:'H\u2082O',mp:0,bp:100,st:-50,et:160,hf:334.0,hv:2260.0,cs:2.09,cl:4.18,cg:2.01,
+    imft:'Hydrogen bonding (O\u2013H\u00b7\u00b7\u00b7O)',
+    imfn:'Water forms up to 4 hydrogen bonds per molecule. This accounts for its anomalously high bp (100\u00b0C) and \u0394H\u1d65\u1d43\u1d56 (2260 J/g) relative to its small molar mass (18 g/mol). Dipole\u2013dipole and London dispersion forces are also present but weaker.',
+    rpc:'Liquid (0\u00b0C < 25\u00b0C < 100\u00b0C)',rpcol:'#2B6CB0'},
+  cl2:{name:'Chlorine',formula:'Cl\u2082',mp:-101,bp:-34,st:-250,et:50,hf:90.3,hv:288.0,cs:0.48,cl:0.96,cg:0.48,
+    imft:'London dispersion forces only',
+    imfn:'Cl\u2082 is a nonpolar diatomic molecule with no permanent dipole and no H-bond capacity. Only weak instantaneous London forces act between molecules, giving a bp of \u221234\u00b0C and low \u0394H\u1d65\u1d43\u1d56 (288 J/g). At 25\u00b0C, Cl\u2082 is a yellow-green gas.',
+    rpc:'Gas (25\u00b0C > \u221234\u00b0C boiling point)',rpcol:'#D94F30'},
+  nacl:{name:'Sodium Chloride',formula:'NaCl',mp:801,bp:1413,st:600,et:1500,hf:519.0,hv:3280.0,cs:0.87,cl:1.07,cg:0.50,
+    imft:'Ionic interactions (Na\u207a\u2013Cl\u207b crystal lattice)',
+    imfn:'Na\u207a and Cl\u207b ions are held by strong Coulombic forces in a FCC lattice (lattice energy \u2248 \u2212787 kJ/mol). This explains the very high mp (801\u00b0C) and bp (1413\u00b0C). At 25\u00b0C, NaCl is a white crystalline solid.',
+    rpc:'Solid (25\u00b0C << 801\u00b0C melting point)',rpcol:'#5A38A3'},
+  so2:{name:'Sulfur Dioxide',formula:'SO\u2082',mp:-72,bp:-10,st:-160,et:60,hf:115.0,hv:389.0,cs:0.96,cl:1.38,cg:0.64,
+    imft:'Dipole\u2013dipole forces (bent geometry, \u03bc\u202f=\u202f1.63\u202fD)',
+    imfn:'SO\u2082 has a bent molecular geometry (like water) due to one lone pair on sulfur, giving a net dipole moment of 1.63\u202fD. It cannot form hydrogen bonds because H is not bonded to N, O, or F within the molecule. Permanent dipole\u2013dipole attractions account for its bp of \u221210\u00b0C\u2014significantly higher than Cl\u2082 (\u221234\u00b0C, London only) despite similar molar mass, and much lower than H\u2082O (100\u00b0C, H-bonding). At 25\u00b0C, SO\u2082 is a colorless, pungent gas.',
+    rpc:'Gas (25\u00b0C > \u221210\u00b0C boiling point)',rpcol:'#D94F30'}
+};
+
+var SCOL={solid:'#5A38A3',melting:'#B7791F',liquid:'#2B6CB0',vaporizing:'#2F855A',gas:'#D94F30'};
+var SNMS={solid:'Solid Heating',melting:'Melting Plateau',liquid:'Liquid Heating',vaporizing:'Vaporizing Plateau',gas:'Gas Heating'};
+var SIDX={solid:0,melting:1,liquid:2,vaporizing:3,gas:4};
+var BSTYLE={
+  solid:{bg:'#F3E8FF',c:'#5A38A3',b:'#5A38A3'},
+  melting:{bg:'#FEFCBF',c:'#B7791F',b:'#B7791F'},
+  liquid:{bg:'#EBF4FF',c:'#2B6CB0',b:'#2B6CB0'},
+  vaporizing:{bg:'#F0FFF4',c:'#2F855A',b:'#2F855A'},
+  gas:{bg:'#FFF0EB',c:'#D94F30',b:'#D94F30'}
+};
+
+var ck=null,curKey=null,DPR=1;
+var selT1=null,selT2=null,selX1=null;
+
+window.addEventListener('load',function(){
+  ck=document.getElementById('hc');
+  DPR=window.devicePixelRatio||1;
+  var cssW=ck.offsetWidth||860;
+  var cssH=480;
+  ck.width=cssW*DPR;
+  ck.height=cssH*DPR;
+  ck.style.width=cssW+'px';
+  ck.style.height=cssH+'px';
+  var ctx=ck.getContext('2d');
+  ctx.scale(DPR,DPR);
+  drawEmpty(ctx);
+  ck.addEventListener('mousemove',function(e){onMM(e,ctx)});
+  ck.addEventListener('mouseleave',function(){document.getElementById('tt').style.display='none'});
+  ck.addEventListener('click',function(e){onCanvasClick(e)});
+});
+window.addEventListener('resize',function(){
+  if(!ck)return;
+  DPR=window.devicePixelRatio||1;
+  var cssW=ck.offsetWidth||860;
+  var cssH=480;
+  ck.width=cssW*DPR;
+  ck.height=cssH*DPR;
+  ck.style.width=cssW+'px';
+  ck.style.height=cssH+'px';
+  var ctx=ck.getContext('2d');
+  ctx.scale(DPR,DPR);
+  if(curKey)drawCurve(curKey);
+  else drawEmpty(ctx);
+});
+
+// All drawing uses CSS pixels — DPR scaling handled by ctx.scale above
+function mg(){return{L:100,R:30,T:40,B:72}}
+function pa(){
+  var m=mg();
+  var cssW=ck.style.width?parseInt(ck.style.width):ck.offsetWidth||860;
+  var cssH=ck.style.height?parseInt(ck.style.height):480;
+  return{x:m.L,y:m.T,w:cssW-m.L-m.R,h:cssH-m.T-m.B};
+}
+function segs(s){
+  var e1=(s.mp-s.st)*s.cs,e2=s.hf,e3=(s.bp-s.mp)*s.cl,e4=s.hv,e5=(s.et-s.bp)*s.cg;
+  var tot=e1+e2+e3+e4+e5,k=30/tot;
+  var sv=[e1,e2,e3,e4,e5].map(function(e){return e*k});
+  var h0=[0,sv[0],sv[0]+sv[1],sv[0]+sv[1]+sv[2],sv[0]+sv[1]+sv[2]+sv[3]];
+  var ts=[[s.st,s.mp],[s.mp,s.mp],[s.mp,s.bp],[s.bp,s.bp],[s.bp,s.et]];
+  var tp=['slope','flat','slope','flat','slope'];
+  var nm=['solid','melting','liquid','vaporizing','gas'];
+  return nm.map(function(n,i){return{name:n,type:tp[i],h0:h0[i],h1:h0[i]+sv[i],t0:ts[i][0],t1:ts[i][1]}});
+}
+function toPx(tmi,tma,heat,temp){
+  var p=pa();
+  return{x:p.x+(heat/30)*p.w, y:p.y+p.h-((temp-tmi)/(tma-tmi))*p.h};
+}
+function frPx(tmi,tma,px,py){
+  var p=pa();
+  return{heat:((px-p.x)/p.w)*30, temp:tmi+((p.y+p.h-py)/p.h)*(tma-tmi)};
+}
+function segAt(sg,heat){
+  for(var i=0;i<sg.length;i++){if(heat>=sg[i].h0-0.3&&heat<=sg[i].h1+0.3)return sg[i];}
+  return null;
+}
+
+function drawEmpty(ctx){
+  var cssW=parseInt(ck.style.width)||860,cssH=parseInt(ck.style.height)||480;
+  var p=pa();
+  ctx.clearRect(0,0,cssW,cssH);
+  ctx.fillStyle='#FAFCFF';ctx.fillRect(0,0,cssW,cssH);
+  ctx.fillStyle='#CBD5E1';ctx.font='600 16px Source Sans 3,sans-serif';ctx.textAlign='center';
+  ctx.fillText('Select a substance from the control panel to display its heating curve.',p.x+p.w/2,p.y+p.h/2);
+}
+
+function drawCurve(key){
+  var s=SUBS[key],sg=segs(s),tmi=s.st,tma=s.et,p=pa();
+  var ctx=ck.getContext('2d');
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(DPR,DPR);
+  var cssW=parseInt(ck.style.width)||860,cssH=parseInt(ck.style.height)||480;
+  ctx.clearRect(0,0,cssW,cssH);
+  ctx.fillStyle='#FAFCFF';ctx.fillRect(0,0,cssW,cssH);
+  drawGrid(ctx,tmi,tma,p);
+  // Shade selected range before drawing the curve line on top
+  if(selT1!==null&&selT2!==null){
+    drawShade(ctx,s,sg,tmi,tma,p,Math.min(selT1,selT2),Math.max(selT1,selT2));
+  }
+  sg.forEach(function(seg){
+    var p0=toPx(tmi,tma,seg.h0,seg.t0),p1=toPx(tmi,tma,seg.h1,seg.t1);
+    ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);
+    ctx.strokeStyle=SCOL[seg.name];ctx.lineWidth=4.5;ctx.lineJoin='round';ctx.lineCap='round';ctx.setLineDash([]);ctx.stroke();
+  });
+  drawDash(ctx,tmi,tma,s.mp,'MP','#B7791F',p);
+  drawDash(ctx,tmi,tma,s.bp,'BP','#D94F30',p);
+  drawAxes(ctx,tmi,tma,p,s);
+  // Draw selection markers on top of everything
+  if(selT1!==null) drawMarker(ctx,s,sg,tmi,tma,p,selT1,'#2B6CB0',selT2===null?'T\u2081':'T\u2081: '+selT1.toFixed(1)+'\u00b0C');
+  if(selT2!==null) drawMarker(ctx,s,sg,tmi,tma,p,selT2,'#22543D','T\u2082: '+selT2.toFixed(1)+'\u00b0C');
+}
+
+// Find the point on the curve at a given temperature
+function tempToPt(s,sg,tmi,tma,T){
+  for(var i=0;i<sg.length;i++){
+    var seg=sg[i];
+    var lo=Math.min(seg.t0,seg.t1),hi=Math.max(seg.t0,seg.t1);
+    // Plateau: t0===t1
+    if(seg.t0===seg.t1){
+      if(Math.abs(T-seg.t0)<0.001){
+        // Place at midpoint of plateau
+        var hMid=(seg.h0+seg.h1)/2;
+        return toPx(tmi,tma,hMid,T);
+      }
+    } else {
+      if(T>=lo-0.001&&T<=hi+0.001){
+        var frac=(T-seg.t0)/(seg.t1-seg.t0);
+        var h=seg.h0+frac*(seg.h1-seg.h0);
+        return toPx(tmi,tma,h,T);
+      }
+    }
+  }
+  return null;
+}
+
+function drawMarker(ctx,s,sg,tmi,tma,p,T,col,lbl){
+  var pt=tempToPt(s,sg,tmi,tma,T);
+  if(!pt)return;
+  // Vertical dashed guide line from axis to point
+  ctx.save();
+  ctx.beginPath();ctx.setLineDash([4,3]);
+  ctx.moveTo(pt.x,p.y+p.h);ctx.lineTo(pt.x,pt.y);
+  ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.globalAlpha=0.7;ctx.stroke();
+  ctx.restore();
+  // Horizontal dashed guide from y-axis to point
+  ctx.save();
+  ctx.beginPath();ctx.setLineDash([4,3]);
+  ctx.moveTo(p.x,pt.y);ctx.lineTo(pt.x,pt.y);
+  ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.globalAlpha=0.7;ctx.stroke();
+  ctx.restore();
+  // Filled circle on curve
+  ctx.beginPath();ctx.arc(pt.x,pt.y,7,0,Math.PI*2);
+  ctx.fillStyle=col;ctx.globalAlpha=1;ctx.fill();
+  ctx.beginPath();ctx.arc(pt.x,pt.y,7,0,Math.PI*2);
+  ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke();
+  // Label
+  ctx.font='700 13px Source Sans 3,sans-serif';
+  ctx.fillStyle=col;ctx.textAlign='left';ctx.globalAlpha=1;
+  var lx=pt.x+12,ly=pt.y-6;
+  // Keep label inside plot
+  var tw=ctx.measureText(lbl).width;
+  if(lx+tw>p.x+p.w-8)lx=pt.x-tw-12;
+  if(ly<p.y+16)ly=pt.y+18;
+  // White backing for legibility
+  ctx.fillStyle='white';
+  ctx.fillRect(lx-3,ly-13,tw+6,18);
+  ctx.fillStyle=col;
+  ctx.fillText(lbl,lx,ly);
+}
+
+function drawShade(ctx,s,sg,tmi,tma,p,tLo,tHi){
+  // Build the curve path between tLo and tHi, shade below it per-segment
+  ctx.save();
+  for(var i=0;i<sg.length;i++){
+    var seg=sg[i];
+    var sLo=Math.min(seg.t0,seg.t1),sHi=Math.max(seg.t0,seg.t1);
+    // For plateaus, lo===hi — treat range as a horizontal band
+    if(seg.t0===seg.t1){sLo=seg.t0-0.001;sHi=seg.t0+0.001;}
+    // Find overlap
+    var oLo=Math.max(tLo,sLo),oHi=Math.min(tHi,sHi);
+    if(oHi<=oLo)continue;
+
+    var pt0,pt1;
+    if(seg.t0===seg.t1){
+      // Plateau: shade the portion of the horizontal segment between h0 and h1
+      pt0=toPx(tmi,tma,seg.h0,seg.t0);
+      pt1=toPx(tmi,tma,seg.h1,seg.t1);
+    } else {
+      var f0=(oLo-seg.t0)/(seg.t1-seg.t0);
+      var f1=(oHi-seg.t0)/(seg.t1-seg.t0);
+      var h0=seg.h0+f0*(seg.h1-seg.h0);
+      var h1=seg.h0+f1*(seg.h1-seg.h0);
+      pt0=toPx(tmi,tma,h0,oLo);
+      pt1=toPx(tmi,tma,h1,oHi);
+    }
+
+    // Polygon: curve top, right down to baseline, left back along baseline
+    ctx.beginPath();
+    ctx.moveTo(pt0.x,pt0.y);
+    ctx.lineTo(pt1.x,pt1.y);
+    ctx.lineTo(pt1.x,p.y+p.h);
+    ctx.lineTo(pt0.x,p.y+p.h);
+    ctx.closePath();
+    ctx.fillStyle=SCOL[seg.name];
+    ctx.globalAlpha=0.18;
+    ctx.fill();
+    // Outline the top edge more strongly
+    ctx.beginPath();
+    ctx.moveTo(pt0.x,pt0.y);ctx.lineTo(pt1.x,pt1.y);
+    ctx.strokeStyle=SCOL[seg.name];ctx.lineWidth=2;ctx.globalAlpha=0.45;
+    ctx.setLineDash([]);ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function onCanvasClick(e){
+  if(!curKey)return;
+  var rect=ck.getBoundingClientRect();
+  var mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  var s=SUBS[curKey],sg=segs(s),p=pa();
+  if(mx<p.x||mx>p.x+p.w||my<p.y||my>p.y+p.h)return;
+  // Snap to the temperature value at this x position
+  var coords=frPx(s.st,s.et,mx,my);
+  var seg=segAt(sg,coords.heat);
+  if(!seg)return;
+  var T;
+  if(seg.type==='flat'){
+    T=seg.t0;
+  } else {
+    var frac=(coords.heat-seg.h0)/(seg.h1-seg.h0);
+    T=seg.t0+frac*(seg.t1-seg.t0);
+    T=Math.round(T*10)/10;
+  }
+  // Clamp to curve bounds
+  T=Math.max(s.st,Math.min(s.et,T));
+
+  if(selT1===null){
+    selT1=T;
+    selX1=mx;
+  } else if(selT2===null){
+    if(Math.abs(mx-selX1)<6){return;}
+    selT2=T;
+    setDispTemp('disp-ti',Math.min(selT1,selT2));
+    setDispTemp('disp-tf',Math.max(selT1,selT2));
+  } else {
+    // Third click resets
+    clearSel();
+    return;
+  }
+  drawCurve(curKey);
+}
+
+function setDispTemp(id,val){
+  var el=document.getElementById(id);
+  el.textContent=val.toFixed(1)+'\u00b0C';
+  el.classList.add('set');
+}
+
+function clearSel(){
+  selT1=null;selT2=null;selX1=null;
+  var d1=document.getElementById('disp-ti'),d2=document.getElementById('disp-tf');
+  d1.textContent='\u2014 click curve';d1.classList.remove('set');
+  d2.textContent='\u2014 click curve';d2.classList.remove('set');
+  document.getElementById('calc-out').innerHTML='';
+  if(curKey)drawCurve(curKey);
+}
+
+function drawGrid(ctx,tmi,tma,p){
+  ctx.strokeStyle='#E8EDF4';ctx.lineWidth=0.8;
+  for(var i=0;i<=6;i++){
+    var t=tmi+(i/6)*(tma-tmi),py=p.y+p.h-((t-tmi)/(tma-tmi))*p.h;
+    ctx.beginPath();ctx.moveTo(p.x,py);ctx.lineTo(p.x+p.w,py);ctx.stroke();
+  }
+  for(var h=0;h<=30;h+=5){
+    var px=p.x+(h/30)*p.w;
+    ctx.beginPath();ctx.moveTo(px,p.y);ctx.lineTo(px,p.y+p.h);ctx.stroke();
+  }
+}
+
+function drawDash(ctx,tmi,tma,temp,lbl,col,p){
+  var pt=toPx(tmi,tma,0,temp);
+  if(pt.y<p.y||pt.y>p.y+p.h)return;
+  ctx.save();ctx.beginPath();ctx.setLineDash([5,4]);
+  ctx.moveTo(p.x,pt.y);ctx.lineTo(p.x+p.w,pt.y);
+  ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.globalAlpha=0.45;ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle=col;ctx.font='700 15px Source Sans 3,sans-serif';ctx.textAlign='left';
+  ctx.fillText(lbl+': '+temp+'\u00b0C',p.x+p.w-115,pt.y-6);
+}
+
+function drawAxes(ctx,tmi,tma,p,s){
+  ctx.strokeStyle='#334155';ctx.lineWidth=2;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x,p.y+p.h);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(p.x,p.y+p.h);ctx.lineTo(p.x+p.w,p.y+p.h);ctx.stroke();
+  ctx.fillStyle='#334155';ctx.textAlign='right';
+  for(var i=0;i<=6;i++){
+    var t=tmi+(i/6)*(tma-tmi),py=p.y+p.h-((t-tmi)/(tma-tmi))*p.h;
+    ctx.beginPath();ctx.moveTo(p.x-7,py);ctx.lineTo(p.x,py);ctx.lineWidth=1.5;ctx.stroke();
+    ctx.font='700 16px Source Sans 3,sans-serif';ctx.fillText(Math.round(t),p.x-11,py+6);
+  }
+  ctx.textAlign='center';
+  for(var h=0;h<=30;h+=5){
+    var px=p.x+(h/30)*p.w;
+    ctx.beginPath();ctx.moveTo(px,p.y+p.h);ctx.lineTo(px,p.y+p.h+7);ctx.lineWidth=1.5;ctx.stroke();
+    ctx.font='700 16px Source Sans 3,sans-serif';ctx.fillText(h,px,p.y+p.h+26);
+  }
+  ctx.font='600 16px Source Sans 3,sans-serif';ctx.fillStyle='#1A202C';ctx.textAlign='center';
+  ctx.fillText('Heat Added (proportional energy units)',p.x+p.w/2,p.y+p.h+58);
+  ctx.save();ctx.translate(20,p.y+p.h/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Temperature (\u00b0C)',0,0);ctx.restore();
+  ctx.font='700 18px DM Serif Display,serif';ctx.fillStyle='#0D7377';ctx.textAlign='center';
+  ctx.fillText('Heating Curve \u2014 '+s.formula+' ('+s.name+')',p.x+p.w/2,p.y-18);
+}
+
+function load(key){
+  curKey=key;
+  clearSel();
+  document.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('active')});
+  var idMap={water:'bw',cl2:'bc',nacl:'bn',so2:'bg'};
+  document.getElementById(idMap[key]).classList.add('active');
+  document.getElementById('gtitle').textContent='Heating Curve: '+SUBS[key].formula+' ('+SUBS[key].name+')';
+  drawCurve(key);
+  upProps(key);
+  document.getElementById('pi').style.display='block';
+  for(var i=1;i<=7;i++){
+    var inp=document.getElementById('q'+i+'i'),fb=document.getElementById('q'+i+'f');
+    if(inp){inp.value='';inp.classList.remove('ok','bad');}
+    if(fb){fb.textContent='';fb.className='qfb';}
+  }
+}
+
+function upProps(key){
+  var s=SUBS[key];
+  document.getElementById('props').innerHTML=
+    '<div class="pr"><div class="pl">Formula</div><div class="pv">'+s.formula+'</div></div>'+
+    '<div class="pr"><div class="pl">Melting Point</div><div class="pv mp">'+s.mp+' \u00b0C</div></div>'+
+    '<div class="pr"><div class="pl">Boiling Point</div><div class="pv bp">'+s.bp+' \u00b0C</div></div>'+
+    '<div class="pr"><div class="pl">Enthalpy of Fusion (&Delta;H<sub>fus</sub>)</div><div class="pv hf">'+s.hf.toFixed(1)+' J/g</div></div>'+
+    '<div class="pr"><div class="pl">Enthalpy of Vaporization (&Delta;H<sub>vap</sub>)</div><div class="pv hv">'+s.hv.toFixed(0)+' J/g</div></div>'+
+    '<div class="pr"><div class="pl">Intermolecular / Bonding Forces</div><div class="pv" style="font-size:.79rem;text-align:right;max-width:180px;line-height:1.35">'+s.imft+'</div></div>'+
+    '<div class="pr"><div class="pl">Phase at 25 \u00b0C</div><div class="pv" style="font-size:.79rem;text-align:right;max-width:180px;line-height:1.35;color:'+s.rpcol+'">'+s.rpc+'</div></div>'+
+    '<div class="pr"><div class="pl">c<sub>p</sub> Solid</div><div class="pv">'+s.cs+' J/g\u00b7\u00b0C</div></div>'+
+    '<div class="pr"><div class="pl">c<sub>p</sub> Liquid</div><div class="pv">'+s.cl+' J/g\u00b7\u00b0C</div></div>'+
+    '<div class="pr"><div class="pl">c<sub>p</sub> Gas</div><div class="pv">'+s.cg+' J/g\u00b7\u00b0C</div></div>'+
+    '<div class="imfn"><strong>IMF &amp; Bonding Context:</strong> '+s.imfn+'</div>';
+}
+
+// EQUATION MATCHING
+var EQ_ANSWERS={solid:'mcat',melting:'hfus',liquid:'mcat',vaporizing:'hvap',gas:'mcat'};
+var EQ_FEEDBACK={
+  mcat:{
+    label:'q = mc\u0394T',
+    why:'Temperature is changing in this region, so we use q\u202f=\u202fmc\u0394T, where m\u202f=\u202fmass (g), c\u202f=\u202fspecific heat capacity (J/g\u00b7\u00b0C), and \u0394T\u202f=\u202fchange in temperature (\u00b0C).'
+  },
+  hfus:{
+    label:'q = m\u0394H\u2099\u1d64\u2095',
+    why:'Temperature is constant at the melting point. All energy overcomes intermolecular forces to convert solid \u2192 liquid. Use q\u202f=\u202fm\u0394H\u2099\u1d64\u2095, where \u0394H\u2099\u1d64\u2095 is the enthalpy of fusion (J/g).'
+  },
+  hvap:{
+    label:'q = m\u0394H\u1d65\u1d43\u1d56',
+    why:'Temperature is constant at the boiling point. All energy fully breaks remaining IMF to convert liquid \u2192 gas. Use q\u202f=\u202fm\u0394H\u1d65\u1d43\u1d56, where \u0394H\u1d65\u1d43\u1d56 is the enthalpy of vaporization (J/g).'
+  }
+};
+
+function checkEqs(){
+  var regions=['solid','melting','liquid','vaporizing','gas'];
+  var score=0;
+  regions.forEach(function(r){
+    var sel=document.getElementById('eq-'+r);
+    var fb=document.getElementById('fb-'+r);
+    var val=sel.value;
+    if(!val){
+      sel.classList.remove('ok','bad');
+      fb.className='eq-fb';fb.textContent='';
+      return;
+    }
+    var correct=val===EQ_ANSWERS[r];
+    sel.classList.remove('ok','bad');
+    sel.classList.add(correct?'ok':'bad');
+    var chosen=EQ_FEEDBACK[val];
+    var answer=EQ_FEEDBACK[EQ_ANSWERS[r]];
+    if(correct){
+      fb.textContent='Correct. '+answer.why;
+      fb.className='eq-fb show ok';
+      score++;
+    } else {
+      fb.textContent='Not quite. The correct equation is '+answer.label+'. '+answer.why;
+      fb.className='eq-fb show bad';
+    }
+  });
+  var filled=regions.filter(function(r){return document.getElementById('eq-'+r).value!=='';}).length;
+  var sc=document.getElementById('eq-score');
+  if(filled===0){sc.style.display='none';return;}
+  sc.style.display='block';
+  if(score===5){sc.textContent='5 / 5 \u2014 All correct!';sc.className='eq-score perfect';}
+  else if(score>=3){sc.textContent=score+' / '+filled+' correct \u2014 review the feedback above.';sc.className='eq-score partial';}
+  else{sc.textContent=score+' / '+filled+' correct \u2014 review the feedback above.';sc.className='eq-score zero';}
+}
+
+function resetEqs(){
+  ['solid','melting','liquid','vaporizing','gas'].forEach(function(r){
+    var sel=document.getElementById('eq-'+r);
+    var fb=document.getElementById('fb-'+r);
+    sel.value='';sel.classList.remove('ok','bad');
+    fb.className='eq-fb';fb.textContent='';
+  });
+  var sc=document.getElementById('eq-score');
+  sc.style.display='none';sc.textContent='';
+}
+
+function calcHeat(){
+  var out=document.getElementById('calc-out');
+  out.innerHTML='';
+  if(!curKey){
+    out.innerHTML='<div class="calc-err">Select a substance first.</div>';return;
+  }
+  if(selT1===null||selT2===null){
+    out.innerHTML='<div class="calc-err">Click the curve twice to set a temperature range first.</div>';return;
+  }
+  var m=parseFloat(document.getElementById('calc-mass').value);
+  if(isNaN(m)||m<=0){out.innerHTML='<div class="calc-err">Enter a valid mass greater than 0 g.</div>';return;}
+
+  var ti=Math.min(selT1,selT2),tf=Math.max(selT1,selT2);
+  var sign=(selT1>selT2)?-1:1; // cooling if T1 > T2
+  var t0=ti,t1=tf;
+  var s=SUBS[curKey];
+
+  // Define the 5 segments with their heat equations
+  var steps=[];
+  var regions=[
+    {name:'solid',   label:'Solid Heating',      type:'mcat', c:s.cs,   t0:s.st, t1:s.mp},
+    {name:'melting', label:'Melting Plateau',     type:'hfus', dh:s.hf,  t0:s.mp, t1:s.mp},
+    {name:'liquid',  label:'Liquid Heating',      type:'mcat', c:s.cl,   t0:s.mp, t1:s.bp},
+    {name:'vap',     label:'Vaporizing Plateau',  type:'hvap', dh:s.hv,  t0:s.bp, t1:s.bp},
+    {name:'gas',     label:'Gas Heating',         type:'mcat', c:s.cg,   t0:s.bp, t1:s.et}
+  ];
+
+  var totalQ=0;
+  regions.forEach(function(reg){
+    // Find overlap between user range [t0,t1] and this region
+    var rLo=Math.min(reg.t0,reg.t1);
+    var rHi=Math.max(reg.t0,reg.t1);
+
+    // For plateaus (t0===t1), treat as a point — include if range crosses it
+    if(reg.t0===reg.t1){
+      if(t0<=reg.t0&&t1>=reg.t0){
+        var q=m*reg.dh;
+        totalQ+=q;
+        var isFus=reg.type==='hfus';
+        var dhLabel=isFus?'\u0394H<sub>fus</sub>':'\u0394H<sub>vap</sub>';
+        steps.push({
+          cls:reg.name==='vap'?'vaporizing':reg.name,
+          label:reg.label,
+          eq:'q = m \u00d7 '+dhLabel,
+          substitution:'q = '+m.toFixed(2)+' g \u00d7 '+reg.dh+' J/g &nbsp;('+dhLabel+' = '+reg.dh+' J/g)',
+          result:q
+        });
+      }
+      return;
+    }
+
+    // Heating segment — find overlap
+    var segLo=Math.max(rLo,t0);
+    var segHi=Math.min(rHi,t1);
+    if(segHi<=segLo)return;
+    var dT=segHi-segLo;
+    var q=m*reg.c*dT;
+    totalQ+=q;
+    var cpSub=reg.name==='solid'?'<sub>p,s</sub>':reg.name==='liquid'?'<sub>p,l</sub>':'<sub>p,g</sub>';
+    steps.push({
+      cls:reg.name,
+      label:reg.label+' ('+segLo.toFixed(1)+'\u00b0C \u2192 '+segHi.toFixed(1)+'\u00b0C)',
+      eq:'q = m \u00d7 c'+cpSub+' \u00d7 \u0394T',
+      substitution:'q = '+m.toFixed(2)+' g \u00d7 '+reg.c+' J/g\u00b7\u00b0C &nbsp;(c'+cpSub+') \u00d7 '+dT.toFixed(1)+'\u00b0C',
+      result:q
+    });
+  });
+
+  if(steps.length===0){
+    out.innerHTML='<div class="calc-err">No heat regions found for this range. Check that your temperatures fall within the substance\'s curve bounds.</div>';return;
+  }
+
+  // Apply direction sign — cooling is negative
+  var dirNote=sign===-1?' (cooling \u2014 q is negative for each step)':'';
+  steps.forEach(function(step){
+    var q=sign*step.result;
+    var div=document.createElement('div');
+    div.className='calc-step '+step.cls;
+    div.innerHTML=
+      '<div class="calc-step-title '+step.cls+'">'+step.label+'</div>'+
+      '<div class="calc-formula">'+step.eq+'</div>'+
+      '<div class="calc-formula">'+step.substitution+'</div>'+
+      '<div class="calc-result">q = '+(q>=0?'+':'')+q.toFixed(1)+' J</div>';
+    out.appendChild(div);
+  });
+
+  // Total
+  var total=sign*totalQ;
+  var tot=document.createElement('div');
+  tot.className='calc-total';
+  tot.innerHTML='q<sub>total</sub> = <span>'+(total>=0?'+':'')+total.toFixed(1)+' J</span>'+(Math.abs(total)>=1000?' = <span>'+((total/1000).toFixed(3))+' kJ</span>':'')+dirNote;
+  out.appendChild(tot);
+}
+
+function onMM(e,ctx){
+  if(!curKey)return;
+  var rect=ck.getBoundingClientRect();
+  var mx=(e.clientX-rect.left);
+  var my=(e.clientY-rect.top);
+  var s=SUBS[curKey],sg=segs(s),p=pa(),tt=document.getElementById('tt'),badge=document.getElementById('pb');
+  if(mx<p.x||mx>p.x+p.w||my<p.y||my>p.y+p.h){tt.style.display='none';return;}
+  var coords=frPx(s.st,s.et,mx,my),seg=segAt(sg,coords.heat);
+  if(!seg){tt.style.display='none';return;}
+  var curT;
+  if(seg.type==='flat'){curT=seg.t0;}
+  else{var fr=(coords.heat-seg.h0)/(seg.h1-seg.h0);curT=seg.t0+fr*(seg.t1-seg.t0);}
+  document.getElementById('ttt').textContent=curT.toFixed(1);
+  document.getElementById('ttr').textContent=SNMS[seg.name];
+  tt.style.display='block';
+  tt.style.left=(e.clientX-rect.left+14)+'px';
+  tt.style.top=(e.clientY-rect.top-40)+'px';
+  var st=BSTYLE[seg.name];
+  badge.textContent=SNMS[seg.name];
+  badge.style.background=st.bg;badge.style.color=st.c;badge.style.borderColor=st.b;
+}
+
+var QR={
+  1:{tp:'temp',key:'mp'},
+  2:{tp:'temp',key:'bp'},
+  3:{tp:'kw',kw:['intermolecular','force','potential','break','overcome','phase change','latent','imf'],
+     m:'Heat energy overcomes (breaks) intermolecular forces during the phase change, converting to potential energy rather than kinetic energy. Since temperature measures average KE, and KE does not change during a plateau, temperature remains constant at the melting point.'},
+  4:{tp:'kw',kw:['kinetic energy','increase','rises','faster','higher','greater'],
+     m:'Average KE increases as heat is added. Temperature is a direct measure of average translational KE (KE_avg = 3/2 k\u1d2eT). As particles move faster, temperature rises proportionally.'},
+  5:{tp:'kw',kw:['lower','less heat','small','lower specific heat','less energy','low c'],
+     m:'A steeper slope means less heat is needed to raise temperature 1\u00b0C. This indicates a lower specific heat capacity (c\u209a). Gas phases typically have low c\u209a and steep slopes; liquid phases have larger c\u209a and shallower slopes.'},
+  6:{tp:'kw',kw:['nacl','sodium chloride','ionic','1413','highest boiling','strongest','so2','sulfur dioxide','dipole'],
+     m:'NaCl has the highest boiling point (1413\u00b0C, ionic forces), followed by H\u2082O (100\u00b0C, H-bonding), SO\u2082 (\u221210\u00b0C, dipole\u2013dipole), and Cl\u2082 (\u221234\u00b0C, London dispersion only). Higher bp reflects stronger IMF that must be overcome to fully separate particles into the gas phase.'},
+  7:{tp:'kw',kw:['partial','fully','completely','all','still in contact','not fully broken','remain','close'],
+     m:'During melting, IMF are only partially disrupted \u2014 particles gain translational freedom but remain in close contact (many IMF still intact). During vaporization, ALL remaining IMF must be completely overcome so particles become fully independent gas molecules. Complete disruption always requires more energy than partial disruption, so \u0394H\u1d65\u1d43\u1d56 >> \u0394H\u1d41\u1d58\u02e2 always.'}
+};
+
+function chk(n){
+  if(!curKey){alert('Please select a substance first.');return;}
+  var s=SUBS[curKey],rule=QR[n];
+  var inp=document.getElementById('q'+n+'i'),fb=document.getElementById('q'+n+'f');
+  var ans=inp.value.trim().toLowerCase();
+  if(!ans){fb.textContent='Please enter an answer.';fb.className='qfb show bad';return;}
+  var ok=false;
+  if(rule.tp==='temp'){
+    var exp=s[rule.key],pv=parseFloat(ans.replace(/[^\d.\-]/g,''));
+    ok=!isNaN(pv)&&Math.abs(pv-exp)<=2;
+    fb.textContent=ok
+      ?'Correct! The '+(rule.key==='mp'?'melting':'boiling')+' point of '+s.formula+' is '+exp+'\u00b0C. Observe the dashed reference line on the graph.'
+      :'Not quite. The '+(rule.key==='mp'?'melting':'boiling')+' point of '+s.formula+' is '+exp+'\u00b0C. Look at the temperature at which the flat plateau '+(rule.key==='mp'?'begins':'ends')+'.';
+  } else {
+    ok=rule.kw.some(function(k){return ans.includes(k)});
+    fb.textContent=(ok?'Good reasoning! Model answer: ':'Review your response. Model answer: ')+rule.m;
+  }
+  inp.classList.remove('ok','bad');inp.classList.add(ok?'ok':'bad');
+  fb.className='qfb show '+(ok?'ok':'bad');
+}
+
+function resetAll(){
+  clearSel();
+  resetEqs();
+  document.getElementById('calc-mass').value='';
+  document.getElementById('calc-out').innerHTML='';
+  for(var i=1;i<=7;i++){
+    var inp=document.getElementById('q'+i+'i'),fb=document.getElementById('q'+i+'f');
+    if(inp){inp.value='';inp.classList.remove('ok','bad');}
+    if(fb){fb.textContent='';fb.className='qfb';}
+  }
+  if(curKey)drawCurve(curKey);
+}
+</script>
+</body>
+</html>
