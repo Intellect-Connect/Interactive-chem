@@ -23,7 +23,7 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
 .hero h1{font-family:'DM Serif Display',serif;font-size:2.5rem;margin-bottom:.5rem}
 .hero p{font-size:1.1rem;opacity:.88;max-width:700px;margin:0 auto}
 .container{max-width:1500px;margin:0 auto;padding:1.5rem 1rem;}
-.workspace{display:flex;flex-direction:row;gap:1.5rem;margin-top:2rem;align-items:flex-start;}
+.workspace{display:grid;grid-template-columns:1fr 360px;gap:1rem;margin-top:1.5rem;align-items:start;}
 .graph-panel{background:white;border:3px solid var(--teal);border-radius:12px;padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;}
 .graph-panel h2{font-family:'DM Serif Display',serif;color:var(--teal);font-size:1.5rem;text-align:center}
 .graph-wrap{position:relative;width:100%}
@@ -73,7 +73,41 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
 .fb.ok{color:var(--vap);background:var(--vap-light)}
 .fb.bad{color:var(--exo);background:var(--exo-light)}
 .fb.info{color:var(--teal-dark);background:var(--teal-light)}
-.qs{display:flex;flex-direction:column;gap:.75rem}
+.qs{display:flex;flex-direction:column;gap:1.25rem;}
+.qs h3{font-size:1.4rem;text-align:center;margin-bottom:.5rem;color:var(--s9)}
+
+/* FULL-WIDTH CONCEPT QUESTIONS WRAPPER */
+.concept-questions-fullwidth{
+  width:100%;
+  margin:2rem 0;
+  padding:2rem;
+  background:white;
+  border-top:3px solid var(--teal);
+  border-bottom:3px solid var(--teal);
+}
+.concept-questions-fullwidth .qs{
+  max-width:82.5%;
+  margin:0 auto;
+  padding:2rem 0;
+}
+.qc-question{background:#fff;border:2px solid #CBD5E1;border-radius:10px;padding:1.25rem;transition:all .2s}
+.qc-question-text{font-weight:600;font-size:1.05rem;color:#1A202C;margin-bottom:1rem;line-height:1.6}
+.qc-options{display:flex;flex-direction:column;gap:.6rem}
+.qc-option{display:flex;align-items:flex-start;gap:.75rem;padding:.85rem 1rem;background:#F1F5F9;border:2px solid #E2E8F0;border-radius:8px;cursor:pointer;transition:all .2s;min-height:52px}
+.qc-option:hover:not(.locked){background:#EBF4FF;border-color:#2B6CB0;transform:translateX(2px)}
+.qc-letter{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#CBD5E1;color:#1A202C;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;transition:all .2s}
+.qc-option span:last-child{flex:1;line-height:1.5;color:#334155;font-size:.98rem}
+.qc-option.locked{cursor:not-allowed}
+.qc-option.correct-pick{background:#F0FFF4;border-color:#2F855A}
+.qc-option.correct-pick .qc-letter{background:#2F855A;color:#fff}
+.qc-option.wrong-pick{background:#FFF0EB;border-color:#D94F30}
+.qc-option.wrong-pick .qc-letter{background:#D94F30;color:#fff}
+.qc-option.reveal-correct{background:#F0FFF4;border-color:#2F855A;opacity:.7}
+.qc-option.reveal-correct .qc-letter{background:#2F855A;color:#fff}
+.qc-feedback-inline{margin-top:.85rem;padding:.85rem 1rem;border-radius:6px;font-size:.95rem;line-height:1.6;display:none}
+.qc-feedback-inline.show{display:block}
+.qc-feedback-inline.correct{background:#F0FFF4;color:#22543D;border-left:4px solid #2F855A}
+.qc-feedback-inline.incorrect{background:#FFF0EB;color:#742A2A;border-left:4px solid #D94F30}
 .qs h3{font-family:'DM Serif Display',serif;color:var(--teal-dark);font-size:1.1rem;border-bottom:2px solid var(--teal-light);padding-bottom:.4rem}
 .qc{background:var(--s1);border:2px solid var(--s3);border-radius:8px;padding:.85rem 1rem;transition:border-color .2s}
 .qc:hover{border-color:var(--teal)}
@@ -84,9 +118,9 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
 .ai.ok{border-color:var(--vap);background:var(--vap-light)}
 .ai.bad{border-color:var(--exo);background:var(--exo-light)}
 .ck{padding:.4rem .8rem;background:var(--teal);color:white;border:none;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer;font-family:inherit;transition:background .2s;white-space:nowrap}
-.ck:hover{background:var(--teal-dark)}
+
 .qfb{font-size:.82rem;font-weight:600;margin-top:.4rem;padding:.35rem .6rem;border-radius:5px;display:none;line-height:1.45}
-.qfb.show{display:block}
+
 .qfb.ok{color:var(--vap);background:var(--vap-light)}
 .qfb.bad{color:var(--exo);background:var(--exo-light)}
 /* RIGHT */
@@ -195,9 +229,9 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
         <div class="eq-col-select">
           <select class="eq-sel" id="eq-solid">
             <option value="">-- select --</option>
-            <option value="mcat">q = mc(s)ΔT</option>
-            <option value="hfus">q = mΔH(fus)</option>
-            <option value="hvap">q = mΔH(vap)</option>
+            <option value="mcat">q = mc&Delta;T</option>
+            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
+            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
           </select>
         </div>
       </div>
@@ -210,9 +244,9 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
         <div class="eq-col-select">
           <select class="eq-sel" id="eq-melting">
             <option value="">-- select --</option>
-            <option value="mcat">q = mc(s)ΔT</option>
-            <option value="hfus">q = mΔH(fus)</option>
-            <option value="hvap">q = mΔH(vap)</option>
+            <option value="mcat">q = mc&Delta;T</option>
+            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
+            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
           </select>
         </div>
       </div>
@@ -225,9 +259,9 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
         <div class="eq-col-select">
           <select class="eq-sel" id="eq-liquid">
             <option value="">-- select --</option>
-            <option value="mcat">q = mc(l)ΔT</option>
-            <option value="hfus">q = mΔH(fus)</option>
-            <option value="hvap">q = mΔH(vap)</option>
+            <option value="mcat">q = mc&Delta;T</option>
+            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
+            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
           </select>
         </div>
       </div>
@@ -240,9 +274,9 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
         <div class="eq-col-select">
           <select class="eq-sel" id="eq-vaporizing">
             <option value="">-- select --</option>
-            <option value="mcat">q = mc(g)ΔT</option>
-            <option value="hfus">q = mΔH(fus)</option>
-            <option value="hvap">q = mΔH(vap)</option>
+            <option value="mcat">q = mc&Delta;T</option>
+            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
+            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
           </select>
         </div>
       </div>
@@ -255,9 +289,9 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
         <div class="eq-col-select">
           <select class="eq-sel" id="eq-gas">
             <option value="">-- select --</option>
-            <option value="mcat">q = mc(g)ΔT</option>
-            <option value="hfus">q = mΔH(fus)</option>
-            <option value="hvap">q = mΔH(vap)</option>
+            <option value="mcat">q = mc&Delta;T</option>
+            <option value="hfus">q = m&Delta;H<sub>fus</sub></option>
+            <option value="hvap">q = m&Delta;H<sub>vap</sub></option>
           </select>
         </div>
       </div>
@@ -271,37 +305,7 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
     <div class="eq-score" id="eq-score"></div>
   </div>
 
-  <div class="qs">
-    <h3>Analysis Questions</h3>
 
-    <div class="qc"><div class="qt">1. What is the melting point of the selected substance? (&deg;C)</div>
-      <div class="ar"><input class="ai" id="q1i" type="text" placeholder="e.g. 0"><button class="ck" onclick="chk(1)">Check</button></div>
-      <div class="qfb" id="q1f"></div></div>
-
-    <div class="qc"><div class="qt">2. What is the boiling point of the selected substance? (&deg;C)</div>
-      <div class="ar"><input class="ai" id="q2i" type="text" placeholder="e.g. 100"><button class="ck" onclick="chk(2)">Check</button></div>
-      <div class="qfb" id="q2f"></div></div>
-
-    <div class="qc"><div class="qt">3. During the melting plateau, temperature remains constant even though heat is continuously added. Explain why using intermolecular force theory.</div>
-      <div class="ar"><input class="ai" id="q3i" type="text" placeholder="What is the added energy doing?"><button class="ck" onclick="chk(3)">Check</button></div>
-      <div class="qfb" id="q3f"></div></div>
-
-    <div class="qc"><div class="qt">4. In the liquid heating region, what happens to the average kinetic energy of particles as heat is added? How does this connect to the temperature increase?</div>
-      <div class="ar"><input class="ai" id="q4i" type="text" placeholder="Consider particle motion and temperature at a molecular level..."><button class="ck" onclick="chk(4)">Check</button></div>
-      <div class="qfb" id="q4f"></div></div>
-
-    <div class="qc"><div class="qt">5. A steeper slope in a heating region indicates a lower specific heat capacity for that phase. Explain what this means in terms of heat required per &deg;C of temperature change.</div>
-      <div class="ar"><input class="ai" id="q5i" type="text" placeholder="Hint: slope = &Delta;T / heat added ..."><button class="ck" onclick="chk(5)">Check</button></div>
-      <div class="qfb" id="q5f"></div></div>
-
-    <div class="qc"><div class="qt">6. Using the boiling point data for all four substances, rank them from weakest to strongest intermolecular forces and explain why boiling point reflects IMF strength.</div>
-      <div class="ar"><input class="ai" id="q6i" type="text" placeholder="Compare all four boiling points..."><button class="ck" onclick="chk(6)">Check</button></div>
-      <div class="qfb" id="q6f"></div></div>
-
-    <div class="qc"><div class="qt">7. The enthalpy of vaporization (&Delta;H<sub>vap</sub>) is always larger than the enthalpy of fusion (&Delta;H<sub>fus</sub>) for the same substance. Explain why using IMF theory.</div>
-      <div class="ar"><input class="ai" id="q7i" type="text" placeholder="Compare what happens to IMF during melting vs. vaporizing..."><button class="ck" onclick="chk(7)">Check</button></div>
-      <div class="qfb" id="q7f"></div></div>
-  </div>
 </div>
 
 <!-- RIGHT SIDEBAR -->
@@ -359,13 +363,192 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
 </div>
 
 </div><!-- end workspace -->
+
+<!-- FULL-WIDTH CONCEPT QUESTIONS SECTION -->
+<div class="concept-questions-fullwidth">
+  <div class="qs">
+    <h3>Concept Check Questions</h3>
+    <p style="color: var(--slate-700); margin-bottom: 1.5rem; font-size: 0.95rem;">Answer these questions to test your understanding of heating curves and phase transitions. Click your answer choice to check if you're correct.</p>
+
+    <!-- Q1: Plateau Temperature -->
+    <div class="qc-question" id="q1">
+      <div class="qc-question-text">1. During a phase transition (horizontal plateau), the temperature remains constant because:</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q1','a')">
+          <span class="qc-letter">A</span>
+          <span>No heat is being added to the substance</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q1','b')">
+          <span class="qc-letter">B</span>
+          <span>The added energy is used to overcome intermolecular forces, not increase kinetic energy</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q1','c')">
+          <span class="qc-letter">C</span>
+          <span>The substance loses heat at the same rate it gains heat</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q1','d')">
+          <span class="qc-letter">D</span>
+          <span>Intermolecular forces prevent the temperature from changing</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q1-fb"></div>
+    </div>
+
+    <!-- Q2: Slope Interpretation -->
+    <div class="qc-question" id="q2">
+      <div class="qc-question-text">2. A steeper slope in a heating region (where temperature increases) indicates that the substance:</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q2','a')">
+          <span class="qc-letter">A</span>
+          <span>Has a higher specific heat capacity and requires more energy per degree of temperature change</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q2','b')">
+          <span class="qc-letter">B</span>
+          <span>Has a lower specific heat capacity and requires less energy per degree of temperature change</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q2','c')">
+          <span class="qc-letter">C</span>
+          <span>Is undergoing a phase transition</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q2','d')">
+          <span class="qc-letter">D</span>
+          <span>Has stronger intermolecular forces in that phase</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q2-fb"></div>
+    </div>
+
+    <!-- Q3: IMF and Boiling Point -->
+    <div class="qc-question" id="q3">
+      <div class="qc-question-text">3. Sodium chloride (NaCl) has a much higher boiling point (1413°C) than water (100°C) because:</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q3','a')">
+          <span class="qc-letter">A</span>
+          <span>NaCl has a higher molar mass than water</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q3','b')">
+          <span class="qc-letter">B</span>
+          <span>Ionic interactions in NaCl are much stronger than hydrogen bonding in water, requiring more energy to separate particles</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q3','c')">
+          <span class="qc-letter">C</span>
+          <span>NaCl molecules are larger than water molecules</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q3','d')">
+          <span class="qc-letter">D</span>
+          <span>Salt dissolves in water, which raises the boiling point</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q3-fb"></div>
+    </div>
+
+    <!-- Q4: Energy During Vaporization vs Fusion -->
+    <div class="qc-question" id="q4">
+      <div class="qc-question-text">4. Why is the enthalpy of vaporization (ΔH<sub>vap</sub>) always larger than the enthalpy of fusion (ΔH<sub>fus</sub>) for the same substance?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q4','a')">
+          <span class="qc-letter">A</span>
+          <span>Vaporization occurs at a higher temperature than melting</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q4','b')">
+          <span class="qc-letter">B</span>
+          <span>Vaporization requires completely breaking all intermolecular forces, while melting only weakens them partially</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q4','c')">
+          <span class="qc-letter">C</span>
+          <span>Gas molecules move faster than liquid molecules</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q4','d')">
+          <span class="qc-letter">D</span>
+          <span>The gas phase has a higher specific heat capacity than the liquid phase</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q4-fb"></div>
+    </div>
+
+    <!-- Q5: Comparing Different Substances -->
+    <div class="qc-question" id="q5">
+      <div class="qc-question-text">5. Chlorine (Cl₂) has a boiling point of -34°C while sulfur dioxide (SO₂) has a boiling point of -10°C. Both have similar molar masses. This difference is primarily because:</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q5','a')">
+          <span class="qc-letter">A</span>
+          <span>Cl₂ is a larger molecule than SO₂</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q5','b')">
+          <span class="qc-letter">B</span>
+          <span>SO₂ is polar (dipole-dipole forces) while Cl₂ is nonpolar (London dispersion only)</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q5','c')">
+          <span class="qc-letter">C</span>
+          <span>Cl₂ has hydrogen bonding while SO₂ does not</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q5','d')">
+          <span class="qc-letter">D</span>
+          <span>SO₂ has a higher specific heat capacity</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q5-fb"></div>
+    </div>
+
+    <!-- Q6: Temperature vs Kinetic Energy -->
+    <div class="qc-question" id="q6">
+      <div class="qc-question-text">6. In the sloped regions of the heating curve (where temperature increases), the added heat energy primarily goes into:</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q6','a')">
+          <span class="qc-letter">A</span>
+          <span>Breaking intermolecular forces and converting to potential energy</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q6','b')">
+          <span class="qc-letter">B</span>
+          <span>Increasing the kinetic energy of particles (faster molecular motion)</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q6','c')">
+          <span class="qc-letter">C</span>
+          <span>Changing the phase of the substance</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q6','d')">
+          <span class="qc-letter">D</span>
+          <span>Increasing the volume of the substance</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q6-fb"></div>
+    </div>
+
+    <!-- Q7: Practical Application -->
+    <div class="qc-question" id="q7">
+      <div class="qc-question-text">7. You need to calculate the total energy required to convert 50 g of ice at -20°C to steam at 120°C. Which quantities from the heating curve do you need?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q7','a')">
+          <span class="qc-letter">A</span>
+          <span>Only the specific heat capacities for ice, water, and steam</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q7','b')">
+          <span class="qc-letter">B</span>
+          <span>Only ΔH<sub>fus</sub> and ΔH<sub>vap</sub></span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q7','c')">
+          <span class="qc-letter">C</span>
+          <span>The specific heat capacities for all three phases, plus ΔH<sub>fus</sub> and ΔH<sub>vap</sub></span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q7','d')">
+          <span class="qc-letter">D</span>
+          <span>The melting and boiling points only</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q7-fb"></div>
+    </div>
+
+  </div>
+</div>
+
+
 </div><!-- end container -->
 
 <script>
 var SUBS={
   water:{name:'Water',formula:'H\u2082O',mp:0,bp:100,st:-50,et:160,hf:334.0,hv:2260.0,cs:2.09,cl:4.18,cg:2.01,
     imft:'Hydrogen bonding (O\u2013H\u00b7\u00b7\u00b7O)',
-    imfn:'Water forms up to 4 hydrogen bonds per molecule. This accounts for its anomalously high bp (100\u00b0C) and \u0394H(vap) (2260 J/g) relative to its small molar mass (18 g/mol). Dipole\u2013dipole and London dispersion forces are also present but weaker.',
+    imfn:'Water forms up to 4 hydrogen bonds per molecule. This accounts for its anomalously high bp (100\u00b0C) and \u0394H\u1d65\u1d43\u1d56 (2260 J/g) relative to its small molar mass (18 g/mol). Dipole\u2013dipole and London dispersion forces are also present but weaker.',
     rpc:'Liquid (0\u00b0C < 25\u00b0C < 100\u00b0C)',rpcol:'#2B6CB0'},
   cl2:{name:'Chlorine',formula:'Cl\u2082',mp:-101,bp:-34,st:-250,et:50,hf:90.3,hv:288.0,cs:0.48,cl:0.96,cg:0.48,
     imft:'London dispersion forces only',
@@ -426,7 +609,7 @@ window.addEventListener('resize',function(){
   else drawEmpty(ctx);
 });
 
-// All drawing uses CSS pixels — DPR scaling handled by ctx.scale above
+// All drawing uses CSS pixels â€” DPR scaling handled by ctx.scale above
 function mg(){return{L:100,R:30,T:40,B:72}}
 function pa(){
   var m=mg();
@@ -556,7 +739,7 @@ function drawShade(ctx,s,sg,tmi,tma,p,tLo,tHi){
   for(var i=0;i<sg.length;i++){
     var seg=sg[i];
     var sLo=Math.min(seg.t0,seg.t1),sHi=Math.max(seg.t0,seg.t1);
-    // For plateaus, lo===hi — treat range as a horizontal band
+    // For plateaus, lo===hi â€” treat range as a horizontal band
     if(seg.t0===seg.t1){sLo=seg.t0-0.001;sHi=seg.t0+0.001;}
     // Find overlap
     var oLo=Math.max(tLo,sLo),oHi=Math.min(tHi,sHi);
@@ -601,26 +784,19 @@ function onCanvasClick(e){
   var mx=e.clientX-rect.left,my=e.clientY-rect.top;
   var s=SUBS[curKey],sg=segs(s),p=pa();
   if(mx<p.x||mx>p.x+p.w||my<p.y||my>p.y+p.h)return;
-  
-  // Find heat coordinate from x-position
-  var heat=((mx-p.x)/p.w)*30;
-  
-  // Find which segment contains this heat value
-  var seg=null;
-  for(var i=0;i<sg.length;i++){
-    if(heat>=sg[i].h0&&heat<=sg[i].h1){seg=sg[i];break;}
-  }
+  // Snap to the temperature value at this x position
+  var coords=frPx(s.st,s.et,mx,my);
+  var seg=segAt(sg,coords.heat);
   if(!seg)return;
-  
-  // Calculate what temperature the CURVE has at this heat value
   var T;
   if(seg.type==='flat'){
     T=seg.t0;
   } else {
-    var frac=(heat-seg.h0)/(seg.h1-seg.h0);
+    var frac=(coords.heat-seg.h0)/(seg.h1-seg.h0);
     T=seg.t0+frac*(seg.t1-seg.t0);
     T=Math.round(T*10)/10;
   }
+  // Clamp to curve bounds
   T=Math.max(s.st,Math.min(s.et,T));
 
   if(selT1===null){
@@ -632,6 +808,7 @@ function onCanvasClick(e){
     setDispTemp('disp-ti',Math.min(selT1,selT2));
     setDispTemp('disp-tf',Math.max(selT1,selT2));
   } else {
+    // Third click resets
     clearSel();
     return;
   }
@@ -725,11 +902,11 @@ function upProps(key){
     '<div class="pr"><div class="pl">Boiling Point</div><div class="pv bp">'+s.bp+' \u00b0C</div></div>'+
     '<div class="pr"><div class="pl">Enthalpy of Fusion (&Delta;H<sub>fus</sub>)</div><div class="pv hf">'+s.hf.toFixed(1)+' J/g</div></div>'+
     '<div class="pr"><div class="pl">Enthalpy of Vaporization (&Delta;H<sub>vap</sub>)</div><div class="pv hv">'+s.hv.toFixed(0)+' J/g</div></div>'+
-    '<div class="pr"><div class="pl">Strongest IMF</div><div class="pv" style="font-size:.79rem;text-align:right;max-width:180px;line-height:1.35">'+s.imft+'</div></div>'+
+    '<div class="pr"><div class="pl">Intermolecular / Bonding Forces</div><div class="pv" style="font-size:.79rem;text-align:right;max-width:180px;line-height:1.35">'+s.imft+'</div></div>'+
     '<div class="pr"><div class="pl">Phase at 25 \u00b0C</div><div class="pv" style="font-size:.79rem;text-align:right;max-width:180px;line-height:1.35;color:'+s.rpcol+'">'+s.rpc+'</div></div>'+
-    '<div class="pr"><div class="pl">c<sub>s</sub> (Solid)</div><div class="pv">'+s.cs+' J/g\u00b7\u00b0C</div></div>'+
-    '<div class="pr"><div class="pl">c<sub>l</sub> (Liquid)</div><div class="pv">'+s.cl+' J/g\u00b7\u00b0C</div></div>'+
-    '<div class="pr"><div class="pl">c<sub>g</sub> (Gas)</div><div class="pv">'+s.cg+' J/g\u00b7\u00b0C</div></div>'+
+    '<div class="pr"><div class="pl">c<sub>p</sub> Solid</div><div class="pv">'+s.cs+' J/g\u00b7\u00b0C</div></div>'+
+    '<div class="pr"><div class="pl">c<sub>p</sub> Liquid</div><div class="pv">'+s.cl+' J/g\u00b7\u00b0C</div></div>'+
+    '<div class="pr"><div class="pl">c<sub>p</sub> Gas</div><div class="pv">'+s.cg+' J/g\u00b7\u00b0C</div></div>'+
     '<div class="imfn"><strong>IMF &amp; Bonding Context:</strong> '+s.imfn+'</div>';
 }
 
@@ -741,12 +918,12 @@ var EQ_FEEDBACK={
     why:'Temperature is changing in this region, so we use q\u202f=\u202fmc\u0394T, where m\u202f=\u202fmass (g), c\u202f=\u202fspecific heat capacity (J/g\u00b7\u00b0C), and \u0394T\u202f=\u202fchange in temperature (\u00b0C).'
   },
   hfus:{
-    label:'q = m\u0394H<sub>fus</sub>',
-    why:'Temperature is constant at the melting point. All energy overcomes intermolecular forces to convert solid \u2192 liquid. Use q\u202f=\u202fm\u0394H<sub>fus</sub>, where \u0394H<sub>fus</sub> is the enthalpy of fusion (J/g).'
+    label:'q = m\u0394H\u2099\u1d64\u2095',
+    why:'Temperature is constant at the melting point. All energy overcomes intermolecular forces to convert solid \u2192 liquid. Use q\u202f=\u202fm\u0394H\u2099\u1d64\u2095, where \u0394H\u2099\u1d64\u2095 is the enthalpy of fusion (J/g).'
   },
   hvap:{
-    label:'q = m\u0394H<sub>vap</sub>',
-    why:'Temperature is constant at the boiling point. All energy fully breaks remaining IMF to convert liquid \u2192 gas. Use q\u202f=\u202fm\u0394H<sub>vap</sub>, where \u0394H<sub>vap</sub> is the enthalpy of vaporization (J/g).'
+    label:'q = m\u0394H\u1d65\u1d43\u1d56',
+    why:'Temperature is constant at the boiling point. All energy fully breaks remaining IMF to convert liquid \u2192 gas. Use q\u202f=\u202fm\u0394H\u1d65\u1d43\u1d56, where \u0394H\u1d65\u1d43\u1d56 is the enthalpy of vaporization (J/g).'
   }
 };
 
@@ -768,11 +945,11 @@ function checkEqs(){
     var chosen=EQ_FEEDBACK[val];
     var answer=EQ_FEEDBACK[EQ_ANSWERS[r]];
     if(correct){
-      fb.innerHTML='Correct. '+answer.why;
+      fb.textContent='Correct. '+answer.why;
       fb.className='eq-fb show ok';
       score++;
     } else {
-      fb.innerHTML='Not quite. The correct equation is '+answer.label+'. '+answer.why;
+      fb.textContent='Not quite. The correct equation is '+answer.label+'. '+answer.why;
       fb.className='eq-fb show bad';
     }
   });
@@ -790,7 +967,7 @@ function resetEqs(){
     var sel=document.getElementById('eq-'+r);
     var fb=document.getElementById('fb-'+r);
     sel.value='';sel.classList.remove('ok','bad');
-    fb.className='eq-fb';fb.innerHTML='';
+    fb.className='eq-fb';fb.textContent='';
   });
   var sc=document.getElementById('eq-score');
   sc.style.display='none';sc.textContent='';
@@ -829,7 +1006,7 @@ function calcHeat(){
     var rLo=Math.min(reg.t0,reg.t1);
     var rHi=Math.max(reg.t0,reg.t1);
 
-    // For plateaus (t0===t1), treat as a point — include if range crosses it
+    // For plateaus (t0===t1), treat as a point â€” include if range crosses it
     if(reg.t0===reg.t1){
       if(t0<=reg.t0&&t1>=reg.t0){
         var q=m*reg.dh;
@@ -847,19 +1024,19 @@ function calcHeat(){
       return;
     }
 
-    // Heating segment — find overlap
+    // Heating segment â€” find overlap
     var segLo=Math.max(rLo,t0);
     var segHi=Math.min(rHi,t1);
     if(segHi<=segLo)return;
     var dT=segHi-segLo;
     var q=m*reg.c*dT;
     totalQ+=q;
-    var cSub=reg.name==='solid'?'<sub>s</sub>':reg.name==='liquid'?'<sub>l</sub>':'<sub>g</sub>';
+    var cpSub=reg.name==='solid'?'<sub>p,s</sub>':reg.name==='liquid'?'<sub>p,l</sub>':'<sub>p,g</sub>';
     steps.push({
       cls:reg.name,
       label:reg.label+' ('+segLo.toFixed(1)+'\u00b0C \u2192 '+segHi.toFixed(1)+'\u00b0C)',
-      eq:'q = m \u00d7 c'+cSub+' \u00d7 \u0394T',
-      substitution:'q = '+m.toFixed(2)+' g \u00d7 '+reg.c+' J/g\u00b7\u00b0C &nbsp;(c'+cSub+') \u00d7 '+dT.toFixed(1)+'\u00b0C',
+      eq:'q = m \u00d7 c'+cpSub+' \u00d7 \u0394T',
+      substitution:'q = '+m.toFixed(2)+' g \u00d7 '+reg.c+' J/g\u00b7\u00b0C &nbsp;(c'+cpSub+') \u00d7 '+dT.toFixed(1)+'\u00b0C',
       result:q
     });
   });
@@ -868,7 +1045,7 @@ function calcHeat(){
     out.innerHTML='<div class="calc-err">No heat regions found for this range. Check that your temperatures fall within the substance\'s curve bounds.</div>';return;
   }
 
-  // Apply direction sign — cooling is negative
+  // Apply direction sign â€” cooling is negative
   var dirNote=sign===-1?' (cooling \u2014 q is negative for each step)':'';
   steps.forEach(function(step){
     var q=sign*step.result;
@@ -897,29 +1074,11 @@ function onMM(e,ctx){
   var my=(e.clientY-rect.top);
   var s=SUBS[curKey],sg=segs(s),p=pa(),tt=document.getElementById('tt'),badge=document.getElementById('pb');
   if(mx<p.x||mx>p.x+p.w||my<p.y||my>p.y+p.h){tt.style.display='none';return;}
-  
-  // Find heat coordinate from x-position
-  var heat=((mx-p.x)/p.w)*30;
-  
-  // Find which segment contains this heat value
-  var seg=null;
-  for(var i=0;i<sg.length;i++){
-    if(heat>=sg[i].h0&&heat<=sg[i].h1){seg=sg[i];break;}
-  }
+  var coords=frPx(s.st,s.et,mx,my),seg=segAt(sg,coords.heat);
   if(!seg){tt.style.display='none';return;}
-  
-  // Calculate what temperature the CURVE has at this heat value
   var curT;
-  if(seg.type==='flat'){
-    // Plateau: constant temperature
-    curT=seg.t0;
-  } else {
-    // Sloped segment: interpolate temperature based on heat position within segment
-    var frac=(heat-seg.h0)/(seg.h1-seg.h0);
-    curT=seg.t0+frac*(seg.t1-seg.t0);
-    curT=Math.round(curT*10)/10;
-  }
-  
+  if(seg.type==='flat'){curT=seg.t0;}
+  else{var fr=(coords.heat-seg.h0)/(seg.h1-seg.h0);curT=seg.t0+fr*(seg.t1-seg.t0);}
   document.getElementById('ttt').textContent=curT.toFixed(1);
   document.getElementById('ttr').textContent=SNMS[seg.name];
   tt.style.display='block';
@@ -930,40 +1089,57 @@ function onMM(e,ctx){
   badge.style.background=st.bg;badge.style.color=st.c;badge.style.borderColor=st.b;
 }
 
-var QR={
-  1:{tp:'temp',key:'mp'},
-  2:{tp:'temp',key:'bp'},
-  3:{tp:'kw',kw:['intermolecular','force','potential','break','overcome','phase change','latent','imf'],
-     m:'Heat energy overcomes (breaks) intermolecular forces during the phase change, converting to potential energy rather than kinetic energy. Since temperature measures average KE, and KE does not change during a plateau, temperature remains constant at the melting point.'},
-  4:{tp:'kw',kw:['kinetic energy','increase','rises','faster','higher','greater'],
-     m:'Average KE increases as heat is added. Temperature is a direct measure of average translational KE (KE_avg = 3/2 k\u1d2eT). As particles move faster, temperature rises proportionally.'},
-  5:{tp:'kw',kw:['lower','less heat','small','lower specific heat','less energy','low c'],
-     m:'A steeper slope means less heat is needed to raise temperature 1\u00b0C. This indicates a lower specific heat capacity (c\u209a). Gas phases typically have low c\u209a and steep slopes; liquid phases have larger c\u209a and shallower slopes.'},
-  6:{tp:'kw',kw:['nacl','sodium chloride','ionic','1413','highest boiling','strongest','so2','sulfur dioxide','dipole'],
-     m:'NaCl has the highest boiling point (1413\u00b0C, ionic forces), followed by H\u2082O (100\u00b0C, H-bonding), SO\u2082 (\u221210\u00b0C, dipole\u2013dipole), and Cl\u2082 (\u221234\u00b0C, London dispersion only). Higher bp reflects stronger IMF that must be overcome to fully separate particles into the gas phase.'},
-  7:{tp:'kw',kw:['partial','fully','completely','all','still in contact','not fully broken','remain','close'],
-     m:'During melting, IMF are only partially disrupted \u2014 particles gain translational freedom but remain in close contact (many IMF still intact). During vaporization, ALL remaining IMF must be completely overcome so particles become fully independent gas molecules. Complete disruption always requires more energy than partial disruption, so \u0394H\u1d65\u1d43\u1d56 >> \u0394H\u1d41\u1d58\u02e2 always.'}
+// Multi-choice question answers and feedback
+var mcAnswers={
+  q1:{correct:'b',
+      feedback:'Correct! During phase transitions, added energy breaks intermolecular forces (increasing potential energy) rather than speeding up molecular motion (kinetic energy). Since temperature measures average kinetic energy, it stays constant.',
+      wrongFeedback:'Not quite. Remember that temperature is a measure of average kinetic energy. During a phase transition, the energy goes into overcoming intermolecular forces (potential energy), not increasing molecular motion.'},
+  q2:{correct:'b',
+      feedback:'Exactly right! A steeper slope means temperature rises more for the same amount of heat added. This happens when specific heat capacity (c) is lower, meaning less energy is needed per degree of temperature change.',
+      wrongFeedback:'Think about what slope represents: ΔT/heat. A steeper slope means a larger temperature change for the same heat, which indicates LESS energy is required per degree (lower c value).'},
+  q3:{correct:'b',
+      feedback:'Perfect! Ionic interactions between Na⁺ and Cl⁻ ions in the crystal lattice are much stronger than hydrogen bonding in water. More energy is needed to separate ions completely into the gas phase, resulting in a much higher boiling point.',
+      wrongFeedback:'The key factor is the strength of the attractive forces. Ionic interactions are much stronger than hydrogen bonding, requiring far more energy to overcome during vaporization.'},
+  q4:{correct:'b',
+      feedback:'Correct! Melting only weakens IMF enough for particles to flow past each other (they remain close together). Vaporization completely separates all particles, requiring total disruption of ALL intermolecular forces. This is why ΔH_vap >> ΔH_fus.',
+      wrongFeedback:'Consider what happens at the molecular level. Melting allows particles to slide past each other but they stay close. Vaporization means particles fly apart completely. Which requires more energy?'},
+  q5:{correct:'b',
+      feedback:'Excellent! SO₂ has a bent molecular geometry creating a permanent dipole moment (μ = 1.63 D), allowing dipole-dipole interactions. Cl₂ is nonpolar and only has weaker London dispersion forces. Stronger IMF → higher boiling point.',
+      wrongFeedback:'Both molecules have similar masses, so we need to compare their intermolecular forces. SO₂ is polar (bent shape) while Cl₂ is nonpolar. Which type of force is stronger?'},
+  q6:{correct:'b',
+      feedback:'Exactly! In sloped regions, particles are staying in the same phase and temperature is rising. This means the average kinetic energy (molecular motion) is increasing. Temperature is directly proportional to average KE.',
+      wrongFeedback:'Remember: in sloped regions, the phase is NOT changing (that only happens on plateaus). The temperature is increasing, which means particle motion is increasing. What type of energy is associated with motion?'},
+  q7:{correct:'c',
+      feedback:'Perfect! You need ALL the thermodynamic data: specific heat values (c_s, c_l, c_g) for the three heating regions, plus ΔH_fus for melting and ΔH_vap for vaporization. The total is the sum of all five steps!',
+      wrongFeedback:'Think about all the different regions on the curve from -20°C to 120°C. You have three sloped regions (heating ice, water, and steam) PLUS two plateaus (melting and vaporizing). Each requires different data.'}
 };
 
-function chk(n){
-  if(!curKey){alert('Please select a substance first.');return;}
-  var s=SUBS[curKey],rule=QR[n];
-  var inp=document.getElementById('q'+n+'i'),fb=document.getElementById('q'+n+'f');
-  var ans=inp.value.trim().toLowerCase();
-  if(!ans){fb.textContent='Please enter an answer.';fb.className='qfb show bad';return;}
-  var ok=false;
-  if(rule.tp==='temp'){
-    var exp=s[rule.key],pv=parseFloat(ans.replace(/[^\d.\-]/g,''));
-    ok=!isNaN(pv)&&Math.abs(pv-exp)<=2;
-    fb.textContent=ok
-      ?'Correct! The '+(rule.key==='mp'?'melting':'boiling')+' point of '+s.formula+' is '+exp+'\u00b0C. Observe the dashed reference line on the graph.'
-      :'Not quite. The '+(rule.key==='mp'?'melting':'boiling')+' point of '+s.formula+' is '+exp+'\u00b0C. Look at the temperature at which the flat plateau '+(rule.key==='mp'?'begins':'ends')+'.';
-  } else {
-    ok=rule.kw.some(function(k){return ans.includes(k)});
-    fb.textContent=(ok?'Good reasoning! Model answer: ':'Review your response. Model answer: ')+rule.m;
-  }
-  inp.classList.remove('ok','bad');inp.classList.add(ok?'ok':'bad');
-  fb.className='qfb show '+(ok?'ok':'bad');
+function checkMC(questionId,picked){
+  var q=document.getElementById(questionId);
+  if(q.dataset.locked==='true')return;
+  q.dataset.locked='true';
+  
+  var info=mcAnswers[questionId];
+  var options=q.querySelectorAll('.qc-option');
+  var letters=['a','b','c','d'];
+  var fb=document.getElementById(questionId+'-fb');
+  
+  var isCorrect=picked===info.correct;
+  
+  options.forEach(function(opt,i){
+    opt.classList.add('locked');
+    if(letters[i]===picked&&isCorrect){
+      opt.classList.add('correct-pick');
+    }else if(letters[i]===picked&&!isCorrect){
+      opt.classList.add('wrong-pick');
+    }
+    if(letters[i]===info.correct&&!isCorrect){
+      opt.classList.add('reveal-correct');
+    }
+  });
+  
+  fb.className='qc-feedback-inline '+(isCorrect?'correct':'incorrect')+' show';
+  fb.textContent=isCorrect?info.feedback:info.wrongFeedback;
 }
 
 function resetAll(){
@@ -971,11 +1147,22 @@ function resetAll(){
   resetEqs();
   document.getElementById('calc-mass').value='';
   document.getElementById('calc-out').innerHTML='';
-  for(var i=1;i<=7;i++){
-    var inp=document.getElementById('q'+i+'i'),fb=document.getElementById('q'+i+'f');
-    if(inp){inp.value='';inp.classList.remove('ok','bad');}
-    if(fb){fb.textContent='';fb.className='qfb';}
-  }
+  
+  // Reset multi-choice questions
+  var questions=document.querySelectorAll('.qc-question');
+  questions.forEach(function(q){
+    q.dataset.locked='false';
+    var options=q.querySelectorAll('.qc-option');
+    options.forEach(function(opt){
+      opt.classList.remove('locked','correct-pick','wrong-pick','reveal-correct');
+    });
+    var fb=q.querySelector('.qc-feedback-inline');
+    if(fb){
+      fb.className='qc-feedback-inline';
+      fb.textContent='';
+    }
+  });
+  
   if(curKey)drawCurve(curKey);
 }
 </script>
