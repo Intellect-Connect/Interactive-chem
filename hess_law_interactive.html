@@ -2,1386 +2,901 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="color-scheme" content="light only">
-<meta name="supported-color-schemes" content="light only">
-<base target="_parent">
-<title>Hess's Law Interactive Explorer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hess's Law Interactive</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --exo-warm: #D94F30;
-    --exo-glow: #F4845F;
-    --exo-light: #FFF0EB;
-    --endo-cool: #2B6CB0;
-    --endo-glow: #63B3ED;
-    --endo-light: #EBF4FF;
-    --slate-900: #1A202C;
-    --slate-700: #334155;
-    --slate-500: #64748B;
-    --slate-300: #CBD5E1;
-    --slate-100: #F1F5F9;
-    --parchment: #FAFAF7;
-    --success: #2F855A;
-    --success-light: #F0FFF4;
-    --gold: #B7791F;
-    --gold-light: #FEFCBF;
-    --purple: #6B46C1;
-    --purple-light: #F3E8FF;
-  }
+:root {
+  --purple: #6B46C1;
+  --purple-light: #F3E8FF;
+  --gold: #B7791F;
+  --gold-light: #FEFCBF;
+  --exo-warm: #D94F30;
+  --exo-light: #FFF0EB;
+  --endo-cool: #2B6CB0;
+  --endo-light: #EBF4FF;
+  --slate-900: #1A202C;
+  --slate-700: #334155;
+  --slate-500: #64748B;
+  --slate-400: #94A3B8;
+  --slate-300: #CBD5E1;
+  --slate-200: #E2E8F0;
+  --slate-100: #F1F5F9;
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html {
-    background-color: #FAFAF7 !important;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: #FAFAF7;
+  color: #1A202C;
+  line-height: 1.7;
+}
 
-  body {
-    font-family: 'Source Sans 3', 'Segoe UI', Roboto, -apple-system, sans-serif;
-    background-color: #FAFAF7 !important;
-    color: #1A202C !important;
-    line-height: 1.7;
-    font-size: 17px;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+.hero {
+  background: linear-gradient(135deg, var(--purple) 0%, var(--slate-900) 50%, var(--endo-cool) 100%);
+  padding: 3rem 2rem 2.5rem;
+  text-align: center;
+  color: white;
+}
 
-  html, body, .container, section, .activity-box, .reaction-card,
-  .concept-card, .equation-display, footer {
-    color-scheme: light !important;
-  }
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
 
-  /* ---- HEADER ---- */
-  .hero {
-    position: relative;
-    background: linear-gradient(135deg, var(--purple) 0%, var(--slate-900) 50%, var(--endo-cool) 100%);
-    padding: 3.5rem 2rem 3rem;
-    text-align: center;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at 20% 60%, rgba(107,70,193,0.25) 0%, transparent 50%),
-      radial-gradient(circle at 80% 40%, rgba(99,179,237,0.25) 0%, transparent 50%);
-    pointer-events: none;
-  }
-  .hero h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2rem, 5vw, 3rem);
-    color: #fff !important;
-    position: relative;
-    letter-spacing: -0.5px;
-  }
-  .hero .subtitle {
-    color: rgba(255,255,255,0.8) !important;
-    font-size: 1.05rem;
-    margin-top: 0.5rem;
-    font-weight: 300;
-    position: relative;
-  }
+.container {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 2rem 2rem;
+}
 
-  /* ---- LAYOUT ---- */
-  .container { max-width: 1400px; margin: 0 auto; padding: 0 1.5rem; background-color: #FAFAF7; }
+/* THREE-PANEL LAYOUT */
+.workspace-container {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  gap: 2rem;
+  margin-top: 2rem;
+  overflow: visible;
+}
 
-  section {
-    padding: 2.5rem 0;
-    border-bottom: 1px solid var(--slate-300);
-    background-color: #FAFAF7;
-  }
-  section:last-of-type { border-bottom: none; }
-  
-  /* Two-column workspace layout with right sidebar */
-  .workspace-layout {
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 1.5rem;
-    margin: 2rem 0;
-    align-items: start;
-  }
-  
-  .right-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    position: sticky;
-    top: 1rem;
-    max-height: calc(100vh - 2rem);
-  }
-  
-  @media (max-width: 1024px) {
-    .workspace-layout {
-      grid-template-columns: 1fr;
-    }
-    .right-sidebar {
-      position: static;
-      max-height: none;
-    }
-  }
+.right-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 1.5rem;
+  overflow: visible;
+}
 
-  h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.75rem;
-    margin-bottom: 1rem;
-    color: var(--slate-900);
-  }
-  h3 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.25rem;
-    margin: 1.25rem 0 0.75rem;
-    color: var(--slate-700);
-  }
+/* LEFT PANEL: WORKSPACE */
+.workspace {
+  background: white;
+  border: 3px solid var(--purple);
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-height: 750px;
+  display: flex;
+  flex-direction: column;
+}
 
-  p + p { margin-top: 0.85rem; }
+.workspace h2 {
+  font-family: 'DM Serif Display', serif;
+  color: var(--purple);
+  font-size: 1.15rem;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
 
-  .key-term {
-    font-weight: 700;
-    border-bottom: 2px solid var(--gold);
-    cursor: help;
-  }
+.reactions-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
 
-  #sec-intro p {
-    margin-bottom: 0.75rem;
-  }
+.reaction-item {
+  background: var(--slate-100);
+  border: 2px solid var(--slate-300);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
 
-  /* ---- CONCEPT CARDS ---- */
-  .concept-card {
-    border-radius: 10px;
-    padding: 1.25rem;
-    position: relative;
-    overflow: hidden;
-    background: var(--slate-100);
-    border: 1px solid var(--slate-300);
-    margin: 1.25rem 0;
-  }
-  .concept-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: var(--purple);
-  }
-  .concept-card.state-function::before { background: var(--gold); }
-  .concept-card.formation::before { background: var(--endo-cool); }
-  .concept-card p {
-    margin-bottom: 0.75rem;
-  }
-  .concept-card p:last-child {
-    margin-bottom: 0;
-  }
+.reaction-item:hover {
+  border-color: var(--purple);
+  box-shadow: 0 2px 8px rgba(107,70,193,0.15);
+}
 
-  /* ---- REACTION LIBRARY (Control Panel - Top Right) ---- */
-  .control-panel {
-    background: white;
-    border: 3px solid var(--slate-400);
-    border-radius: 12px;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    max-height: 45vh;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  
-  .control-panel-header {
-    margin-bottom: 0.75rem;
-    flex-shrink: 0;
-  }
-  
-  .control-panel h3 {
-    margin: 0 0 0.65rem 0;
-    color: var(--slate-900);
-    font-size: 1.1rem;
-    text-align: center;
-  }
-  
-  .category-filter {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  
-  .category-filter label {
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--slate-700);
-  }
-  
-  .category-select {
-    width: 100%;
-    padding: 0.5rem;
-    border: 2px solid var(--slate-300);
-    border-radius: 6px;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    background: white;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .category-select:hover {
-    border-color: var(--purple);
-  }
-  
-  .category-select:focus {
-    outline: none;
-    border-color: var(--purple);
-    box-shadow: 0 0 0 3px rgba(107,70,193,0.1);
-  }
-  
-  .reaction-library {
-    flex: 1;
-    overflow-y: auto;
-    margin-top: 0.5rem;
-  }
-  
-  .reaction-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
+.reaction-item.selected {
+  border-color: var(--purple);
+  background: var(--purple-light);
+  box-shadow: 0 0 0 3px rgba(107,70,193,0.1);
+}
 
-  .reaction-card {
-    background: white;
-    border: 2px solid var(--slate-300);
-    border-radius: 8px;
-    padding: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .reaction-card:hover {
-    border-color: var(--purple);
-    box-shadow: 0 2px 8px rgba(107,70,193,0.15);
-    transform: translateX(-3px);
-  }
-  .reaction-card.selected {
-    border-color: var(--purple);
-    background: var(--purple-light);
-  }
-  .reaction-card .rxn-equation {
-    font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--slate-900);
-    line-height: 1.3;
-    width: 100%;
-  }
-  .reaction-card .rxn-dh {
-    font-weight: 700;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    margin-bottom: 0.35rem;
-  }
-  .reaction-card .rxn-dh.exo { color: var(--exo-warm); }
-  .reaction-card .rxn-dh.endo { color: var(--endo-cool); }
-  .reaction-card .rxn-label {
-    font-size: 0.7rem;
-    color: var(--slate-500);
-    font-weight: 500;
-  }
+.reaction-item.reversed {
+  background: var(--gold-light);
+  border-color: var(--gold);
+}
 
-  /* ---- WORKSPACE ---- */
-  .workspace-panel {
-    background: white;
-    border: 3px solid var(--purple);
-    border-radius: 12px;
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100vh - 8rem);
-  }
-  .workspace-panel h3 {
-    margin-top: 0;
-    color: var(--purple);
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
+.reaction-item.multiplied {
+  background: var(--endo-light);
+  border-color: var(--endo-cool);
+}
 
-  .selected-reactions {
-    flex: 1;
-    min-height: 300px;
-    margin-bottom: 1rem;
-    overflow-y: auto;
-  }
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1.5rem;
-    color: var(--slate-500);
-    font-style: italic;
-    background: var(--slate-100);
-    border-radius: 8px;
-    border: 2px dashed var(--slate-300);
-  }
-  
-  .workspace-footer {
-    border-top: 2px solid var(--slate-200);
-    padding-top: 1rem;
-    margin-top: auto;
-  }
+.reaction-equation {
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
 
-  .selected-rxn-item {
-    background: var(--slate-100);
-    border: 2px solid var(--slate-300);
-    border-radius: 8px;
-    padding: 0.85rem;
-    margin-bottom: 0.75rem;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .selected-rxn-item:hover {
-    border-color: var(--purple);
-    box-shadow: 0 2px 8px rgba(107,70,193,0.1);
-  }
-  .selected-rxn-item.active {
-    border-color: var(--purple);
-    background: var(--purple-light);
-    box-shadow: 0 0 0 3px rgba(107,70,193,0.1);
-  }
-  .selected-rxn-item.reversed {
-    border-color: var(--gold);
-    background: var(--gold-light);
-  }
-  .selected-rxn-item.reversed::before {
-    content: 'REVERSED';
-    position: absolute;
-    top: 0.4rem;
-    right: 0.5rem;
-    background: var(--gold);
-    color: white;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-  .selected-rxn-item.multiplied {
-    border-color: var(--endo-cool);
-    background: var(--endo-light);
-  }
-  .selected-rxn-item.multiplied::after {
-    content: 'MULTIPLIED';
-    position: absolute;
-    top: 0.4rem;
-    right: 0.5rem;
-    background: var(--endo-cool);
-    color: white;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-  .selected-rxn-item.reversed.multiplied::before {
-    right: 6.5rem;
-  }
-  .selected-rxn-item.reversed.multiplied::after {
-    top: 0.4rem;
-    right: 0.5rem;
-  }
+.reaction-dh {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
 
-  .rxn-item-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .rxn-item-equation {
-    font-family: 'Courier New', monospace;
-    font-size: 0.95rem;
-    font-weight: 600;
-    line-height: 1.4;
-    text-align: center;
-    color: var(--slate-900);
-    width: 100%;
-  }
-  .rxn-item-remove {
-    position: absolute;
-    top: 0.4rem;
-    left: 0.5rem;
-    background: var(--exo-warm);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 0.2rem 0.5rem;
-    cursor: pointer;
-    font-size: 0.7rem;
-    font-weight: 600;
-    transition: all 0.2s;
-  }
-  .rxn-item-remove:hover {
-    background: #B03D23;
-  }
+.reaction-dh.exo { color: var(--exo-warm); }
+.reaction-dh.endo { color: var(--endo-cool); }
 
-  .rxn-item-dh {
-    font-weight: 700;
-    font-size: 1rem;
-    text-align: center;
-  }
-  .rxn-item-dh.exo { color: var(--exo-warm); }
-  .rxn-item-dh.endo { color: var(--endo-cool); }
-  
-  /* ---- ADJUSTMENT PANEL (Bottom Right) ---- */
-  .adjustment-panel {
-    background: white;
-    border: 3px solid var(--gold);
-    border-radius: 12px;
-    padding: 1rem;
-    display: none;
-    flex-direction: column;
-    max-height: 45vh;
-    overflow-y: auto;
-  }
-  .adjustment-panel.show {
-    display: flex;
-  }
-  .adjustment-panel h4 {
-    margin: 0 0 0.75rem 0;
-    color: var(--gold);
-    font-size: 1.05rem;
-    font-weight: 700;
-    text-align: center;
-  }
-  .adjustment-panel .selected-rxn-display {
-    font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
-    text-align: center;
-    padding: 0.75rem;
-    background: var(--gold-light);
-    border-radius: 6px;
-    margin-bottom: 1rem;
-    font-weight: 600;
-    color: var(--slate-900);
-    line-height: 1.4;
-  }
+.remove-btn {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: var(--exo-warm);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
 
-  .adjustment-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  
-  .control-group label {
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: var(--slate-700);
-  }
-  
-  .control-select {
-    width: 100%;
-    padding: 0.5rem;
-    border: 2px solid var(--slate-300);
-    border-radius: 6px;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    background: white;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .control-select:hover {
-    border-color: var(--gold);
-  }
-  
-  .control-select:focus {
-    outline: none;
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(183,121,31,0.1);
-  }
-  
-  .adjustment-panel .rxn-item-dh {
-    font-weight: 700;
-    font-size: 1.1rem;
-    text-align: center;
-    padding: 0.75rem;
-    background: white;
-    border-radius: 6px;
-    border: 2px solid var(--slate-200);
-    margin-top: 0.5rem;
-  }
-  .adjustment-panel .rxn-item-dh.exo { 
-    color: var(--exo-warm); 
-    border-color: var(--exo-warm);
-    background: var(--exo-light);
-  }
-  .adjustment-panel .rxn-item-dh.endo { 
-    color: var(--endo-cool); 
-    border-color: var(--endo-cool);
-    background: var(--endo-light);
-  }
-  
-  .adjustment-footer {
-    border-top: 2px solid var(--slate-200);
-    padding-top: 1rem;
-    margin-top: 1rem;
-  }
-  
-  .adjustment-footer .btn-secondary {
-    width: 100%;
-    padding: 0.6rem;
-    font-size: 0.9rem;
-  }
+.remove-btn:hover {
+  background: #B03D23;
+}
 
-  /* ---- RESULT DISPLAY ---- */
-  .result-panel {
-    background: linear-gradient(135deg, var(--purple-light) 0%, var(--slate-100) 100%);
-    border: 3px solid var(--purple);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-  }
-  .result-panel h3 {
-    margin-top: 0;
-    color: var(--purple);
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
+.badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--gold);
+  color: white;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
 
-  .equation-steps {
-    margin: 1rem 0;
-  }
-  .equation-step {
-    font-family: 'Courier New', monospace;
-    padding: 0.65rem;
-    background: white;
-    border-left: 4px solid var(--slate-300);
-    margin-bottom: 0.5rem;
-    border-radius: 4px;
-    line-height: 1.6;
-    font-size: 0.95rem;
-  }
-  .equation-step.cancelled {
-    background: #FEE;
-    border-left-color: var(--exo-warm);
-    text-decoration: line-through;
-    opacity: 0.6;
-  }
-  .equation-step .step-label {
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.75rem;
-    color: var(--slate-500);
-    margin-bottom: 0.25rem;
-    display: block;
-    font-weight: 600;
-  }
+.badge.multiplied-badge {
+  background: var(--endo-cool);
+}
 
-  .sum-divider {
-    border-top: 3px solid var(--slate-900);
-    margin: 1rem 0;
-    position: relative;
-  }
-  .sum-divider::before {
-    content: '+';
-    position: absolute;
-    left: -30px;
-    top: -12px;
-    background: white;
-    padding: 0 8px;
-    font-weight: 700;
-    font-size: 1.2rem;
-  }
+.workspace-footer {
+  border-top: 2px solid var(--slate-200);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
-  .final-equation {
-    background: var(--success-light);
-    border: 3px solid var(--success);
-    border-radius: 8px;
-    padding: 1.25rem;
-    margin-top: 1rem;
-  }
-  .final-equation .label {
-    font-weight: 700;
-    color: var(--success);
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
-  }
-  .final-equation .equation {
-    font-family: 'Courier New', monospace;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: var(--slate-900);
-    margin-bottom: 0.75rem;
-  }
-  .final-equation .total-dh {
-    font-size: 1.3rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    justify-content: center;
-  }
-  .final-equation .total-dh.exo { color: var(--exo-warm); }
-  .final-equation .total-dh.endo { color: var(--endo-cool); }
+.net-equation-panel {
+  background: var(--purple-light);
+  border: 2px solid var(--purple);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: none;
+}
 
-  /* ---- BUTTONS ---- */
-  .btn-primary {
-    background: var(--purple);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.75rem;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .btn-primary:hover {
-    background: #5A38A3;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(107,70,193,0.3);
-  }
-  .btn-primary:disabled {
-    background: var(--slate-300);
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
+.net-equation-panel.show {
+  display: block;
+}
 
-  .btn-secondary {
-    background: white;
-    color: var(--purple);
-    border: 2px solid var(--purple);
-    padding: 0.75rem 1.75rem;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-secondary:hover {
-    background: var(--purple-light);
-  }
+.net-eq-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--purple);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.4rem;
+}
 
-  .btn-group {
-    display: flex;
-    gap: 1rem;
-    margin: 1.25rem 0;
-    flex-wrap: wrap;
-  }
+.net-eq-display {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--slate-900);
+  line-height: 1.5;
+  margin-bottom: 0.3rem;
+  text-align: center;
+}
 
-  /* ---- CHALLENGE MODE ---- */
-  .challenge-card {
-    background: white;
-    border: 3px solid var(--gold);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-  }
-  .challenge-card h3 {
-    margin-top: 0;
-    color: var(--gold);
-  }
-  .challenge-target {
-    background: var(--gold-light);
-    border: 2px solid var(--gold);
-    border-radius: 8px;
-    padding: 1rem;
-    margin: 1rem 0;
-  }
-  .challenge-target .label {
-    font-weight: 700;
-    color: var(--gold);
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-  }
-  .challenge-target .equation {
-    font-family: 'Courier New', monospace;
-    font-size: 1rem;
-    line-height: 1.6;
-    text-align: center;
-    font-weight: 600;
-  }
-  .challenge-target .target-dh {
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin-top: 0.5rem;
-    color: var(--slate-900);
-    text-align: center;
-  }
+.net-dh-display {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 0.3rem;
+  text-align: center;
+}
 
-  .challenge-feedback {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 8px;
-    font-weight: 500;
-    display: none;
-  }
-  .challenge-feedback.show { display: block; }
-  .challenge-feedback.correct {
-    background: var(--success-light);
-    border: 2px solid var(--success);
-    color: var(--success);
-  }
-  .challenge-feedback.incorrect {
-    background: var(--exo-light);
-    border: 2px solid var(--exo-warm);
-    color: var(--exo-warm);
-  }
+.net-dh-display.exo {
+  color: var(--exo-warm);
+}
 
-  /* ---- FOOTER ---- */
-  footer {
-    text-align: center;
-    padding: 2rem 1.5rem;
-    color: var(--slate-500);
-    font-size: 0.9rem;
-    background-color: #FAFAF7;
-  }
+.net-dh-display.endo {
+  color: var(--endo-cool);
+}
 
-  /* ---- RESPONSIVE ---- */
-  @media (max-width: 1024px) {
-    .workspace-layout {
-      grid-template-columns: 1fr;
-    }
-    .control-panel {
-      position: static;
-      max-height: 500px;
-    }
-    .workspace-panel {
-      position: static;
-      max-height: none;
-    }
-  }
-  
-  @media (max-width: 640px) {
-    .hero { padding: 3rem 1.5rem 2.5rem; }
-    .btn-group { flex-direction: column; }
-    .btn-group button { width: 100%; }
-  }
+.workspace-buttons {
+  display: flex;
+  gap: 1rem;
+}
 
-  /* Subscripts and superscripts */
-  sub { font-size: 0.75em; vertical-align: sub; }
-  sup { font-size: 0.75em; vertical-align: super; }
+.btn {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-clear {
+  background: white;
+  border: 2px solid var(--purple);
+  color: var(--purple);
+}
+
+.btn-clear:hover {
+  background: var(--purple-light);
+}
+
+.btn-calculate {
+  background: var(--purple);
+  border: none;
+  color: white;
+}
+
+.btn-calculate:hover {
+  background: #5A38A3;
+}
+
+.btn-calculate:disabled {
+  background: var(--slate-300);
+  cursor: not-allowed;
+}
+
+/* RIGHT SIDEBAR: TWO PANELS */
+
+/* PANEL 1: REACTION LIBRARY */
+.library-panel {
+  background: white;
+  border: 3px solid var(--slate-400);
+  border-radius: 12px;
+  padding: 1rem;
+  padding-top: 1.5rem;
+  max-height: 400px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.library-panel::before {
+  content: 'PANEL 1';
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  background: var(--slate-400);
+  color: white;
+  padding: 0.25rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  z-index: 10;
+}
+
+.library-panel h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.filter-group {
+  margin-bottom: 0.75rem;
+}
+
+.filter-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  color: var(--slate-700);
+}
+
+select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid var(--slate-300);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  background: white;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(107,70,193,0.1);
+}
+
+.reactions-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.library-item {
+  background: white;
+  border: 2px solid var(--slate-300);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.library-item:hover {
+  border-color: var(--purple);
+  transform: translateX(-3px);
+  box-shadow: 0 2px 8px rgba(107,70,193,0.15);
+}
+
+.library-equation {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.library-dh {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.library-dh.exo { color: var(--exo-warm); }
+.library-dh.endo { color: var(--endo-cool); }
+
+.library-label {
+  font-size: 0.7rem;
+  color: var(--slate-500);
+}
+
+/* PANEL 2: ADJUSTMENT PANEL */
+.adjust-panel {
+  background: white;
+  border: 3px solid var(--gold);
+  border-radius: 12px;
+  padding: 1rem;
+  padding-top: 1.5rem;
+  max-height: 56.25vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.panel-badge-gold {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  background: var(--gold);
+  color: white;
+  padding: 0.25rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  z-index: 10;
+}
+
+.adjust-panel.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.adjust-panel h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.05rem;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.current-equation {
+  background: var(--gold-light);
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.adjust-group {
+  margin-bottom: 1rem;
+}
+
+.adjust-group label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  color: var(--slate-700);
+}
+
+.adjust-group select {
+  border-color: var(--slate-300);
+}
+
+.adjust-group select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(183,121,31,0.1);
+}
+
+.adjust-dh {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 6px;
+  border: 2px solid var(--slate-200);
+  margin: 1rem 0;
+}
+
+.adjust-dh.exo {
+  color: var(--exo-warm);
+  background: var(--exo-light);
+  border-color: var(--exo-warm);
+}
+
+.adjust-dh.endo {
+  color: var(--endo-cool);
+  background: var(--endo-light);
+  border-color: var(--endo-cool);
+}
+
+.back-btn {
+  width: 100%;
+  padding: 0.6rem;
+  background: white;
+  border: 2px solid var(--gold);
+  color: var(--gold);
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background: var(--gold-light);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--slate-500);
+  font-style: italic;
+}
+
+/* RESULTS */
+.results {
+  background: white;
+  border: 3px solid var(--purple);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  display: none;
+}
+
+.results.show {
+  display: block;
+}
+
+.results h2 {
+  font-family: 'DM Serif Display', serif;
+  color: var(--purple);
+  margin-bottom: 1rem;
+}
+
+.result-steps {
+  margin: 1rem 0;
+}
+
+.result-step {
+  background: var(--slate-100);
+  padding: 0.75rem;
+  border-left: 4px solid var(--slate-400);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.result-total {
+  background: #F0FFF4;
+  border: 3px solid #2F855A;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.result-total-dh {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+}
+
+.result-total-dh.exo { color: var(--exo-warm); }
+.result-total-dh.endo { color: var(--endo-cool); }
+
+@media (max-width: 1024px) {
+  .workspace-container {
+    grid-template-columns: 1fr;
+  }
+  .right-panels {
+    position: static;
+  }
+  .library-panel, .adjust-panel {
+    max-height: 400px;
+  }
+}
 </style>
 </head>
 <body>
 
 <div class="hero">
   <h1>Hess's Law Interactive Explorer</h1>
-  <p class="subtitle">Manipulate thermochemical equations to discover state function principles</p>
+  <p>Workspace Left • Library & Adjustment Right</p>
 </div>
 
 <div class="container">
-
-<!-- INTRODUCTION -->
-<section id="sec-intro">
-  <h2>Introduction: Energy Is Path-Independent</h2>
-  
-  <p>
-    <span class="key-term">Hess's Law</span> states that the total enthalpy change for a reaction is the same whether it occurs in one step or multiple steps. This works because <strong>enthalpy is a state function</strong>—it depends only on the initial and final states, not on the pathway taken.
-  </p>
-
-  <div class="concept-card state-function">
-    <h3>How to Use This Tool</h3>
-    <p>
-      <strong>1. Select reactions</strong> from the control panel on the right<br>
-      <strong>2. Click on reactions</strong> in your workspace to adjust them<br>
-      <strong>3. Reverse and multiply</strong> using the adjustment panel<br>
-      <strong>4. Calculate</strong> to see the combined thermochemical result
-    </p>
-  </div>
-
-  <h3>Rules for Manipulating Thermochemical Equations</h3>
-  <div class="concept-card">
-    <p><strong>Rule 1: Reversing a Reaction</strong><br>
-    Flips the sign of ΔH. If forward is −50 kJ, reverse is +50 kJ.</p>
+  <div class="workspace-container">
     
-    <p style="margin-top: 0.75rem;"><strong>Rule 2: Multiplying by a Coefficient</strong><br>
-    Multiplies ΔH by that same number and distributes through all species in the equation.</p>
-    
-    <p style="margin-top: 0.75rem;"><strong>Rule 3: Adding Equations</strong><br>
-    Species on both sides cancel. Sum the ΔH values to get the total.</p>
-  </div>
-</section>
-
-<!-- MAIN WORKSPACE AREA -->
-<section id="sec-workspace">
-  <h2>Interactive Workspace</h2>
-  <p style="text-align: center; margin-bottom: 1.5rem;">Select reactions → Click to adjust → Calculate result</p>
-
-  <div class="workspace-layout">
-    <!-- LEFT: Main Workspace -->
-    <div class="workspace-panel">
-      <h3>Your Workspace</h3>
-      <div class="selected-reactions" id="selectedReactions">
+    <!-- LEFT: LARGE WORKSPACE -->
+    <div class="workspace">
+      <h2>Your Workspace</h2>
+      <div class="reactions-list" id="workspace">
         <div class="empty-state">
-          Select reactions from the library →<br>
-          Click reactions here to adjust them
+          Select reactions from the library &rarr;
         </div>
       </div>
-
       <div class="workspace-footer">
-        <div class="btn-group" style="margin: 0;">
-          <button class="btn-secondary" onclick="clearWorkspace()" style="flex: 1;">Clear All</button>
-          <button class="btn-primary" onclick="calculateResult()" id="calculateBtn" disabled style="flex: 1;">
-            Calculate Result
-          </button>
+        <div class="net-equation-panel" id="netEqPanel">
+          <div class="net-eq-label">Net Equation:</div>
+          <div class="net-eq-display" id="netEqDisplay">Add reactions to workspace</div>
+          <div class="net-dh-display" id="netDHDisplay"></div>
+        </div>
+        <div class="workspace-buttons">
+          <button class="btn btn-clear" onclick="clearAll()">Clear All</button>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT: Sidebar with two panels -->
-    <div class="right-sidebar">
-      <!-- TOP: Reaction Library -->
-      <div class="control-panel">
-        <div class="control-panel-header">
-          <h3>Reaction Library</h3>
-          <div class="category-filter">
-            <label for="categorySelect">Filter by Category:</label>
-            <select id="categorySelect" class="category-select" onchange="filterCategory(this.value)">
-              <option value="all">All Reactions</option>
-              <option value="combustion">Combustion</option>
-              <option value="formation">Formation</option>
-              <option value="decomposition">Decomposition</option>
-            </select>
-          </div>
+    <!-- RIGHT: TWO STACKED PANELS -->
+    <div class="right-panels">
+      
+      <!-- PANEL 1: REACTION LIBRARY -->
+      <div class="library-panel">
+        <h3>Reaction Library</h3>
+        <div class="filter-group">
+          <label>Filter by Category:</label>
+          <select id="categoryFilter" onchange="filterReactions()">
+            <option value="all">All Reactions</option>
+            <option value="combustion">Combustion</option>
+            <option value="formation">Formation</option>
+            <option value="decomposition">Decomposition</option>
+          </select>
         </div>
-
-        <div class="reaction-library">
-          <div class="reaction-grid" id="reactionGrid">
-            <!-- Populated by JavaScript -->
-          </div>
-        </div>
+        <div class="reactions-scroll" id="library"></div>
       </div>
 
-      <!-- BOTTOM: Adjustment Panel -->
-      <div class="adjustment-panel" id="adjustmentPanel">
-        <h4>Adjust Selected Reaction</h4>
-        <div class="selected-rxn-display" id="adjustmentDisplay">
-          Select a reaction to adjust
-        </div>
+      <!-- PANEL 2: ADJUSTMENT PANEL -->
+      <div class="adjust-panel disabled" id="adjustPanel">
+        <div class="panel-badge-gold">PANEL 2</div>
+        <h3>Adjust Selected Reaction</h3>
+        <div class="current-equation" id="currentEq">Select a reaction from workspace</div>
         
-        <div class="adjustment-controls">
-          <div class="control-group">
-            <label for="directionSelect">Direction:</label>
-            <select id="directionSelect" class="control-select" onchange="setDirection(this.value)">
-              <option value="forward">→ Forward</option>
-              <option value="reversed">↩ Reversed</option>
-            </select>
-          </div>
-
-          <div class="control-group">
-            <label for="coefficientSelect">Multiply by:</label>
-            <select id="coefficientSelect" class="control-select" onchange="setCoefficient(this.value)">
-              <option value="1">1 (original)</option>
-              <option value="2">2 (double)</option>
-              <option value="3">3 (triple)</option>
-              <option value="0.5">½ (half)</option>
-              <option value="0.333">⅓ (one-third)</option>
-            </select>
-          </div>
-
-          <div class="rxn-item-dh" id="adjustmentDH">
-            ΔH = 0 kJ
-          </div>
+        <div class="adjust-group">
+          <label for="directionSelect">Direction:</label>
+          <select id="directionSelect" onchange="updateDirection()">
+            <option value="forward">&rarr; Forward</option>
+            <option value="reversed">&larr; Reversed</option>
+          </select>
         </div>
 
-        <div class="adjustment-footer">
-          <button class="btn-secondary" onclick="deselectReaction()">
-            ← Back to Workspace
-          </button>
+        <div class="adjust-group">
+          <label for="coeffSelect">Multiply by:</label>
+          <select id="coeffSelect" onchange="updateCoefficient()">
+            <option value="1">1 (original)</option>
+            <option value="2">2 (double)</option>
+            <option value="3">3 (triple)</option>
+            <option value="0.5">½ (half)</option>
+            <option value="0.333">⅓ (one-third)</option>
+          </select>
         </div>
+
+
       </div>
+
     </div>
   </div>
-</section>
-
-<!-- RESULTS -->
-<section id="sec-results" style="display: none;">
-  <h2>Combined Result</h2>
-  
-  <div class="result-panel" id="resultPanel">
-    <h3>
-      <span>Combined Thermochemical Equation</span>
-    </h3>
-
-    <div class="equation-steps" id="equationSteps">
-      <!-- Populated by JavaScript -->
-    </div>
-
-    <div class="sum-divider"></div>
-
-    <div class="final-equation" id="finalEquation">
-      <!-- Populated by JavaScript -->
-    </div>
-
-    <div class="btn-group" style="margin-top: 2rem;">
-      <button class="btn-secondary" onclick="hideResults()">← Modify Reactions</button>
-      <button class="btn-primary" onclick="saveAsExample()">Save This Calculation</button>
-    </div>
-  </div>
-</section>
-
-<!-- CHALLENGE MODE -->
-<section id="sec-challenge">
-  <h2>Challenge Mode: Apply Hess's Law</h2>
-  <p>Can you use the reaction library to calculate the ΔH for these target reactions?</p>
-
-  <div class="challenge-card">
-    <h3>Challenge 1: Formation of Carbon Monoxide</h3>
-    <div class="challenge-target">
-      <div class="label">Target Reaction:</div>
-      <div class="equation">C(s) + ½ O<sub>2</sub>(g) → CO(g)</div>
-      <div class="target-dh">ΔH = ?</div>
-    </div>
-    <p>
-      <strong>Hint:</strong> You'll need the combustion of carbon to CO<sub>2</sub> and the combustion of CO to CO<sub>2</sub>. Remember to reverse one equation!
-    </p>
-    <p style="margin-top: 0.5rem; color: var(--slate-500); font-size: 0.95rem;">
-      Expected answer: ΔH ≈ −110.5 kJ
-    </p>
-    <div class="challenge-feedback" id="challenge1Feedback"></div>
-  </div>
-
-  <div class="challenge-card">
-    <h3>Challenge 2: Formation of Nitrogen Dioxide</h3>
-    <div class="challenge-target">
-      <div class="label">Target Reaction:</div>
-      <div class="equation">N<sub>2</sub>(g) + 2 O<sub>2</sub>(g) → 2 NO<sub>2</sub>(g)</div>
-      <div class="target-dh">ΔH = ?</div>
-    </div>
-    <p>
-      <strong>Hint:</strong> Combine the formation of NO from N<sub>2</sub> and O<sub>2</sub> with the oxidation of NO to NO<sub>2</sub>.
-    </p>
-    <p style="margin-top: 0.5rem; color: var(--slate-500); font-size: 0.95rem;">
-      Expected answer: ΔH ≈ +66.4 kJ (endothermic!)
-    </p>
-    <div class="challenge-feedback" id="challenge2Feedback"></div>
-  </div>
-
-  <div class="challenge-card">
-    <h3>Challenge 3: Combustion of Acetylene</h3>
-    <div class="challenge-target">
-      <div class="label">Target Reaction:</div>
-      <div class="equation">C<sub>2</sub>H<sub>2</sub>(g) + 5/2 O<sub>2</sub>(g) → 2 CO<sub>2</sub>(g) + H<sub>2</sub>O(l)</div>
-      <div class="target-dh">ΔH = ?</div>
-    </div>
-    <p>
-      <strong>Hint:</strong> Start with the formation of C<sub>2</sub>H<sub>2</sub> and the combustion reactions for C and H<sub>2</sub>.
-    </p>
-    <p style="margin-top: 0.5rem; color: var(--slate-500); font-size: 0.95rem;">
-      Expected answer: ΔH ≈ −1299 kJ
-    </p>
-    <div class="challenge-feedback" id="challenge3Feedback"></div>
-  </div>
-</section>
-
-<!-- FORMATION REACTIONS -->
-<section id="sec-formation">
-  <h2>Standard Enthalpies of Formation (ΔH°<sub>f</sub>)</h2>
-  
-  <div class="concept-card formation">
-    <h3>What Is a Formation Reaction?</h3>
-    <p>
-      A <strong>formation reaction</strong> creates exactly <strong>1 mole</strong> of a compound from its <strong>elements in their standard states</strong>.
-    </p>
-    <p style="margin-top: 1rem;">
-      <strong>Example (Valid):</strong><br>
-      H<sub>2</sub>(g) + ½ O<sub>2</sub>(g) → H<sub>2</sub>O(l) &nbsp; ΔH°<sub>f</sub> = −285.8 kJ/mol
-    </p>
-    <p style="margin-top: 1rem;">
-      <strong>Not a Formation Reaction:</strong><br>
-      2 H<sub>2</sub>(g) + O<sub>2</sub>(g) → 2 H<sub>2</sub>O(l) &nbsp; (forms 2 moles, not 1)
-    </p>
-  </div>
-
-  <h3>Using ΔH°<sub>f</sub> to Calculate ΔH°<sub>rxn</sub></h3>
-  <div class="concept-card">
-    <p style="font-size: 1.1rem; font-weight: 600; text-align: center; margin-bottom: 1rem;">
-      ΔH°<sub>rxn</sub> = Σ ΔH°<sub>f</sub>(products) − Σ ΔH°<sub>f</sub>(reactants)
-    </p>
-    <p>
-      This method is often the most practical for calculating reaction enthalpies when ΔH°<sub>f</sub> values are available in tables.
-    </p>
-    <p style="margin-top: 1rem;">
-      <strong>Remember:</strong> Multiply each ΔH°<sub>f</sub> by its coefficient in the balanced equation, and elements in standard states have ΔH°<sub>f</sub> = 0.
-    </p>
-  </div>
-</section>
-
-<footer>
-  <p><strong>Hess's Law Interactive Explorer</strong> • Chemistry Education Tool</p>
-  <p style="margin-top: 0.5rem;">Manipulate reactions to discover the power of state functions</p>
-</footer>
 
 </div>
 
 <script>
-// Reaction database
 const reactions = [
-  // Combustion reactions
-  { id: 'r1', equation: 'C(s) + O₂(g) → CO₂(g)', dH: -393.5, category: 'combustion', label: 'Carbon combustion' },
-  { id: 'r2', equation: 'CO(g) + ½ O₂(g) → CO₂(g)', dH: -283.0, category: 'combustion', label: 'CO combustion' },
-  { id: 'r3', equation: 'H₂(g) + ½ O₂(g) → H₂O(l)', dH: -285.8, category: 'combustion', label: 'Hydrogen combustion' },
-  { id: 'r4', equation: 'H₂(g) + ½ O₂(g) → H₂O(g)', dH: -241.8, category: 'combustion', label: 'Hydrogen combustion (gas)' },
-  { id: 'r5', equation: 'CH₄(g) + 2 O₂(g) → CO₂(g) + 2 H₂O(l)', dH: -890.3, category: 'combustion', label: 'Methane combustion' },
-  { id: 'r6', equation: 'C₃H₈(g) + 5 O₂(g) → 3 CO₂(g) + 4 H₂O(l)', dH: -2220, category: 'combustion', label: 'Propane combustion' },
-  
-  // Formation reactions
-  { id: 'r7', equation: 'N₂(g) + O₂(g) → 2 NO(g)', dH: 180.5, category: 'formation', label: 'NO formation' },
-  { id: 'r8', equation: '2 NO(g) + O₂(g) → 2 NO₂(g)', dH: -114.1, category: 'formation', label: 'NO₂ formation from NO' },
-  { id: 'r9', equation: 'N₂(g) + 3 H₂(g) → 2 NH₃(g)', dH: -92.2, category: 'formation', label: 'Ammonia synthesis (Haber)' },
-  { id: 'r10', equation: '2 C(s) + H₂(g) → C₂H₂(g)', dH: 226.7, category: 'formation', label: 'Acetylene formation' },
-  { id: 'r11', equation: 'S(s) + O₂(g) → SO₂(g)', dH: -296.8, category: 'formation', label: 'SO₂ formation' },
-  
-  // Decomposition and other
-  { id: 'r12', equation: 'CaCO₃(s) → CaO(s) + CO₂(g)', dH: 178.3, category: 'decomposition', label: 'Limestone decomposition' },
-  { id: 'r13', equation: '2 H₂O(l) → 2 H₂(g) + O₂(g)', dH: 571.6, category: 'decomposition', label: 'Water decomposition' },
-  { id: 'r14', equation: 'N₂O₄(g) → 2 NO₂(g)', dH: 57.2, category: 'decomposition', label: 'N₂O₄ decomposition' },
-  { id: 'r15', equation: '4 Fe(s) + 3 O₂(g) → 2 Fe₂O₃(s)', dH: -1648.4, category: 'formation', label: 'Iron rusting' },
+  { id: 'r1', eq: 'C(s) + O<sub>2</sub>(g) → CO<sub>2</sub>(g)', dH: -393.5, cat: 'combustion', label: 'Carbon combustion' },
+  { id: 'r2', eq: 'CO(g) + ½ O<sub>2</sub>(g) → CO<sub>2</sub>(g)', dH: -283.0, cat: 'combustion', label: 'CO combustion' },
+  { id: 'r3', eq: 'H<sub>2</sub>(g) + ½ O<sub>2</sub>(g) → H<sub>2</sub>O(l)', dH: -285.8, cat: 'combustion', label: 'Hydrogen combustion' },
+  { id: 'r4', eq: 'CH<sub>4</sub>(g) + 2 O<sub>2</sub>(g) → CO<sub>2</sub>(g) + 2 H<sub>2</sub>O(l)', dH: -890.3, cat: 'combustion', label: 'Methane combustion' },
+  { id: 'r5', eq: 'C<sub>3</sub>H<sub>8</sub>(g) + 5 O<sub>2</sub>(g) → 3 CO<sub>2</sub>(g) + 4 H<sub>2</sub>O(l)', dH: -2220, cat: 'combustion', label: 'Propane combustion' },
+  { id: 'r6', eq: 'N<sub>2</sub>(g) + O<sub>2</sub>(g) → 2 NO(g)', dH: 180.5, cat: 'formation', label: 'NO formation' },
+  { id: 'r7', eq: '2 NO(g) + O<sub>2</sub>(g) → 2 NO<sub>2</sub>(g)', dH: -114.1, cat: 'formation', label: 'NO<sub>2</sub> formation' },
+  { id: 'r8', eq: 'N<sub>2</sub>(g) + 3 H<sub>2</sub>(g) → 2 NH<sub>3</sub>(g)', dH: -92.2, cat: 'formation', label: 'Ammonia (Haber)' },
+  { id: 'r9', eq: '2 C(s) + H<sub>2</sub>(g) → C<sub>2</sub>H<sub>2</sub>(g)', dH: 226.7, cat: 'formation', label: 'Acetylene formation' },
+  { id: 'r10', eq: 'CaCO<sub>3</sub>(s) → CaO(s) + CO<sub>2</sub>(g)', dH: 178.3, cat: 'decomposition', label: 'Limestone decomp' },
+  { id: 'r11', eq: '2 H<sub>2</sub>O(l) → 2 H<sub>2</sub>(g) + O<sub>2</sub>(g)', dH: 571.6, cat: 'decomposition', label: 'Water decomp' },
+  { id: 'r12', eq: 'N<sub>2</sub>O<sub>4</sub>(g) → 2 NO<sub>2</sub>(g)', dH: 57.2, cat: 'decomposition', label: 'N<sub>2</sub>O<sub>4</sub> decomp' }
 ];
 
-let selectedReactions = [];
-let currentCategory = 'all';
-let activeReactionIndex = null;
 
-// Initialize
+let workspace = [];
+let selectedIdx = null;
+let currentCat = 'all';
+
 function init() {
-  renderReactionGrid();
+  renderLibrary();
 }
 
-function filterCategory(category) {
-  currentCategory = category;
-  renderReactionGrid();
+function filterReactions() {
+  currentCat = document.getElementById('categoryFilter').value;
+  renderLibrary();
 }
 
-function renderReactionGrid() {
-  const grid = document.getElementById('reactionGrid');
-  const filtered = currentCategory === 'all' 
-    ? reactions 
-    : reactions.filter(r => r.category === currentCategory);
-  
-  grid.innerHTML = filtered.map(r => `
-    <div class="reaction-card" onclick="addReaction('${r.id}')">
-      <div class="rxn-equation">${r.equation}</div>
-      <div class="rxn-dh ${r.dH < 0 ? 'exo' : 'endo'}">
-        ΔH = ${r.dH > 0 ? '+' : ''}${r.dH} kJ
-      </div>
-      <div class="rxn-label">${r.label}</div>
+function renderLibrary() {
+  const filtered = currentCat === 'all' ? reactions : reactions.filter(r => r.cat === currentCat);
+  document.getElementById('library').innerHTML = filtered.map(r => `
+    <div class="library-item" onclick="addToWorkspace('${r.id}')">
+      <div class="library-equation">${r.eq}</div>
+      <div class="library-dh ${r.dH < 0 ? 'exo' : 'endo'}">ΔH = ${r.dH > 0 ? '+' : ''}${r.dH} kJ</div>
+      <div class="library-label">${r.label}</div>
     </div>
   `).join('');
 }
 
-function addReaction(reactionId) {
-  const rxn = reactions.find(r => r.id === reactionId);
-  if (!rxn) return;
-  
-  selectedReactions.push({
-    ...rxn,
-    reversed: false,
-    coefficient: 1,
-    uniqueId: Date.now() + Math.random()
-  });
-  
+function addToWorkspace(id) {
+  const rxn = reactions.find(r => r.id === id);
+  workspace.push({ ...rxn, reversed: false, coeff: 1 });
   renderWorkspace();
-  updateCalculateButton();
 }
 
 function renderWorkspace() {
-  const container = document.getElementById('selectedReactions');
-  
-  if (selectedReactions.length === 0) {
-    container.innerHTML = '<div class="empty-state">Select reactions from the library →<br>Click reactions here to adjust them</div>';
-    hideAdjustmentPanel();
+  const ws = document.getElementById('workspace');
+  if (workspace.length === 0) {
+    ws.innerHTML = '<div class="empty-state">Select reactions from the library &rarr;</div>';
+    document.getElementById('netEqPanel').classList.remove('show');
     return;
   }
-  
-  container.innerHTML = selectedReactions.map((rxn, idx) => {
-    const currentDH = rxn.dH * rxn.coefficient * (rxn.reversed ? -1 : 1);
-    
-    // Apply coefficient multiplication first, then reverse if needed
-    let displayEquation = multiplyEquation(rxn.equation, rxn.coefficient);
-    if (rxn.reversed) {
-      displayEquation = reverseEquation(displayEquation);
-    }
-    
-    const isActive = activeReactionIndex === idx;
+
+  ws.innerHTML = workspace.map((r, i) => {
+    let eq = multiplyEq(r.eq, r.coeff);
+    if (r.reversed) eq = reverseEq(eq);
+    const dh = r.dH * r.coeff * (r.reversed ? -1 : 1);
+    const isSelected = selectedIdx === i;
     
     return `
-      <div class="selected-rxn-item ${rxn.reversed ? 'reversed' : ''} ${rxn.coefficient !== 1 ? 'multiplied' : ''} ${isActive ? 'active' : ''}" 
-           onclick="selectReactionForAdjustment(${idx})">
-        <button class="rxn-item-remove" onclick="event.stopPropagation(); removeReaction(${idx})">✕</button>
-        <div class="rxn-item-content">
-          <div class="rxn-item-equation">${displayEquation}</div>
-          <div class="rxn-item-dh ${currentDH < 0 ? 'exo' : 'endo'}">
-            ΔH = ${currentDH > 0 ? '+' : ''}${currentDH.toFixed(1)} kJ
-          </div>
-        </div>
+      <div class="reaction-item ${r.reversed ? 'reversed' : ''} ${r.coeff !== 1 ? 'multiplied' : ''} ${isSelected ? 'selected' : ''}"
+           onclick="selectReaction(${i})">
+        <button class="remove-btn" onclick="event.stopPropagation(); removeReaction(${i})">&times;</button>
+        ${r.reversed ? '<div class="badge">REVERSED</div>' : ''}
+        ${r.coeff !== 1 && !r.reversed ? '<div class="badge multiplied-badge">MULTIPLIED</div>' : ''}
+        <div class="reaction-equation">${eq}</div>
+        <div class="reaction-dh ${dh < 0 ? 'exo' : 'endo'}">ΔH = ${dh > 0 ? '+' : ''}${dh.toFixed(1)} kJ</div>
       </div>
     `;
   }).join('');
+  
+  computeNetEquation();
 }
 
-function selectReactionForAdjustment(idx) {
-  activeReactionIndex = idx;
-  const rxn = selectedReactions[idx];
-  
-  // Show adjustment panel
-  document.getElementById('adjustmentPanel').classList.add('show');
-  
-  // Update adjustment display
-  let displayEquation = multiplyEquation(rxn.equation, rxn.coefficient);
-  if (rxn.reversed) {
-    displayEquation = reverseEquation(displayEquation);
+function computeNetEquation() {
+  if (workspace.length === 0) {
+    document.getElementById('netEqPanel').classList.remove('show');
+    return;
   }
-  document.getElementById('adjustmentDisplay').textContent = displayEquation;
   
-  // Update direction dropdown
-  document.getElementById('directionSelect').value = rxn.reversed ? 'reversed' : 'forward';
+  // Parse all species from all equations
+  let allReactants = {};
+  let allProducts = {};
+  let totalDH = 0;
   
-  // Update coefficient dropdown
-  const coeffValue = rxn.coefficient === 1/3 ? '0.333' : rxn.coefficient.toString();
-  document.getElementById('coefficientSelect').value = coeffValue;
+  workspace.forEach(r => {
+    let eq = multiplyEq(r.eq, r.coeff);
+    if (r.reversed) eq = reverseEq(eq);
+    const dh = r.dH * r.coeff * (r.reversed ? -1 : 1);
+    totalDH += dh;
+    
+    const parts = eq.split('→');
+    if (parts.length !== 2) return;
+    
+    // Parse reactants
+    parseSpecies(parts[0].trim(), allReactants);
+    // Parse products
+    parseSpecies(parts[1].trim(), allProducts);
+  });
   
-  // Update ΔH display
-  const currentDH = rxn.dH * rxn.coefficient * (rxn.reversed ? -1 : 1);
-  const dhEl = document.getElementById('adjustmentDH');
-  dhEl.textContent = `ΔH = ${currentDH > 0 ? '+' : ''}${currentDH.toFixed(1)} kJ`;
-  dhEl.className = 'rxn-item-dh ' + (currentDH < 0 ? 'exo' : 'endo');
+  // Cancel common species
+  for (let species in allReactants) {
+    if (allProducts[species]) {
+      const cancel = Math.min(allReactants[species], allProducts[species]);
+      allReactants[species] -= cancel;
+      allProducts[species] -= cancel;
+      if (allReactants[species] === 0) delete allReactants[species];
+      if (allProducts[species] === 0) delete allProducts[species];
+    }
+  }
   
-  // Update workspace display
+  // Format net equation
+  const reactantStr = formatSpecies(allReactants);
+  const productStr = formatSpecies(allProducts);
+  const netEq = reactantStr && productStr ? `${reactantStr} → ${productStr}` : 'No net reaction';
+  
+  document.getElementById('netEqDisplay').innerHTML = netEq;
+  
+  const dhDisplay = document.getElementById('netDHDisplay');
+  dhDisplay.textContent = `ΔH = ${totalDH > 0 ? '+' : ''}${totalDH.toFixed(1)} kJ`;
+  dhDisplay.className = 'net-dh-display ' + (totalDH < 0 ? 'exo' : 'endo');
+  
+  document.getElementById('netEqPanel').classList.add('show');
+}
+
+function parseSpecies(side, dict) {
+  const terms = side.split('+').map(t => t.trim());
+  terms.forEach(term => {
+    const match = term.match(/^([\d\/½⅓⅔.]+)?\s*(.+)$/);
+    if (!match) return;
+    
+    let coeff = 1;
+    if (match[1]) {
+      if (match[1] === '½') coeff = 0.5;
+      else if (match[1] === '⅓') coeff = 1/3;
+      else if (match[1] === '⅔') coeff = 2/3;
+      else coeff = parseFloat(match[1]);
+    }
+    
+    const species = match[2].trim();
+    dict[species] = (dict[species] || 0) + coeff;
+  });
+}
+
+function formatSpecies(dict) {
+  return Object.entries(dict)
+    .filter(([_, coeff]) => coeff > 0)
+    .map(([species, coeff]) => {
+      if (coeff === 1) return species;
+      if (coeff === 0.5) return `½ ${species}`;
+      if (coeff === 1/3) return `⅓ ${species}`;
+      if (coeff === 2/3) return `⅔ ${species}`;
+      return `${coeff} ${species}`;
+    })
+    .join(' + ');
+}
+
+function selectReaction(idx) {
+  selectedIdx = idx;
+  const r = workspace[idx];
+  
+  document.getElementById('adjustPanel').classList.remove('disabled');
+  
+  let eq = multiplyEq(r.eq, r.coeff);
+  if (r.reversed) eq = reverseEq(eq);
+  document.getElementById('currentEq').innerHTML = eq;
+  
+  document.getElementById('directionSelect').value = r.reversed ? 'reversed' : 'forward';
+  document.getElementById('coeffSelect').value = r.coeff === 1/3 ? '0.333' : r.coeff.toString();
+  
   renderWorkspace();
-  
-  // Scroll adjustment panel into view on mobile
-  document.getElementById('adjustmentPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function hideAdjustmentPanel() {
-  document.getElementById('adjustmentPanel').classList.remove('show');
-  activeReactionIndex = null;
-}
-
-function deselectReaction() {
-  hideAdjustmentPanel();
+function deselect() {
+  selectedIdx = null;
+  document.getElementById('adjustPanel').classList.add('disabled');
+  document.getElementById('currentEq').textContent = 'Select a reaction from workspace';
+  document.getElementById('directionSelect').value = 'forward';
+  document.getElementById('coeffSelect').value = '1';
   renderWorkspace();
 }
 
-function setDirection(direction) {
-  if (activeReactionIndex === null) return;
-  selectedReactions[activeReactionIndex].reversed = (direction === 'reversed');
-  selectReactionForAdjustment(activeReactionIndex);
+function updateDirection() {
+  if (selectedIdx === null) return;
+  workspace[selectedIdx].reversed = document.getElementById('directionSelect').value === 'reversed';
+  selectReaction(selectedIdx);
 }
 
-function setCoefficient(coeffString) {
-  if (activeReactionIndex === null) return;
-  const coeff = coeffString === '0.333' ? 1/3 : parseFloat(coeffString);
-  selectedReactions[activeReactionIndex].coefficient = coeff;
-  selectReactionForAdjustment(activeReactionIndex);
+function updateCoefficient() {
+  if (selectedIdx === null) return;
+  const val = document.getElementById('coeffSelect').value;
+  workspace[selectedIdx].coeff = val === '0.333' ? 1/3 : parseFloat(val);
+  selectReaction(selectedIdx);
 }
 
-function formatCoefficient(coeff) {
-  if (coeff === 0.5) return '½';
-  if (coeff === 1/3) return '⅓';
-  if (coeff === 2/3) return '⅔';
-  return coeff.toString();
+function removeReaction(idx) {
+  workspace.splice(idx, 1);
+  if (selectedIdx === idx) deselect();
+  else if (selectedIdx > idx) selectedIdx--;
+  renderWorkspace();
 }
 
-function reverseEquation(eq) {
+function clearAll() {
+  workspace = [];
+  deselect();
+  renderWorkspace();
+}
+
+
+function reverseEq(eq) {
+  const parts = eq.split('→');
+  return parts.length === 2 ? `${parts[1].trim()} → ${parts[0].trim()}` : eq;
+}
+
+function multiplyEq(eq, coeff) {
+  if (coeff === 1) return eq;
   const parts = eq.split('→');
   if (parts.length !== 2) return eq;
-  return `${parts[1].trim()} → ${parts[0].trim()}`;
-}
-
-function multiplyEquation(eq, coefficient) {
-  if (coefficient === 1) return eq;
   
-  const parts = eq.split('→');
-  if (parts.length !== 2) return eq;
-  
-  const multiplyTerms = (side) => {
-    // Split by + to get individual terms
+  const multiply = (side) => {
     return side.split('+').map(term => {
       term = term.trim();
-      
-      // Match coefficient and formula pattern
-      // Handles: "2 H₂O(l)", "½ O₂(g)", "CO₂(g)", etc.
-      const match = term.match(/^([\d\/½⅓⅔]+)?\s*(.+)$/);
+      const match = term.match(/^([\d\/½⅓⅔.]+)?\s*(.+)$/);
       if (!match) return term;
       
       let existingCoeff = match[1];
       const formula = match[2];
+      let num = 1;
       
-      // Convert existing coefficient to number
-      let coeffNum = 1;
       if (existingCoeff) {
-        if (existingCoeff === '½' || existingCoeff === '1/2') coeffNum = 0.5;
-        else if (existingCoeff === '⅓' || existingCoeff === '1/3') coeffNum = 1/3;
-        else if (existingCoeff === '⅔' || existingCoeff === '2/3') coeffNum = 2/3;
-        else coeffNum = parseFloat(existingCoeff);
+        if (existingCoeff === '½') num = 0.5;
+        if (existingCoeff === '½') num = 0.5;
+        else if (existingCoeff === '⅓') num = 1/3;
+        else if (existingCoeff === '⅔') num = 2/3;
       }
       
-      // Multiply coefficients
-      const newCoeff = coeffNum * coefficient;
+      const newCoeff = num * coeff;
+      let display = '';
       
-      // Format new coefficient
-      let displayCoeff = '';
-      if (newCoeff === 0.5) displayCoeff = '½';
-      else if (newCoeff === 1/3) displayCoeff = '⅓';
-      else if (newCoeff === 2/3) displayCoeff = '⅔';
-      else if (newCoeff === 1.5) displayCoeff = '1.5';
-      else if (newCoeff !== 1) displayCoeff = newCoeff.toString();
+      if (newCoeff === 0.5) display = '½';
+        else if (newCoeff === 1/3) display = '⅓';
+        else if (newCoeff === 2/3) display = '⅔';
+      else if (newCoeff !== 1) display = newCoeff.toString();
       
-      return displayCoeff ? `${displayCoeff} ${formula}` : formula;
+      return display ? `${display} ${formula}` : formula;
     }).join(' + ');
   };
   
-  const leftSide = multiplyTerms(parts[0]);
-  const rightSide = multiplyTerms(parts[1]);
-  
-  return `${leftSide} → ${rightSide}`;
+  return `${multiply(parts[0])} → ${multiply(parts[1])}`;
 }
 
-function toggleReverse(idx) {
-  selectedReactions[idx].reversed = !selectedReactions[idx].reversed;
-  renderWorkspace();
-}
-
-function setCoefficient(idx, coeff) {
-  selectedReactions[idx].coefficient = coeff;
-  renderWorkspace();
-}
-
-function removeReaction(idx) {
-  selectedReactions.splice(idx, 1);
-  if (activeReactionIndex === idx) {
-    hideAdjustmentPanel();
-  } else if (activeReactionIndex > idx) {
-    activeReactionIndex--;
-  }
-  renderWorkspace();
-  updateCalculateButton();
-}
-
-function clearWorkspace() {
-  selectedReactions = [];
-  activeReactionIndex = null;
-  renderWorkspace();
-  updateCalculateButton();
-  hideResults();
-  hideAdjustmentPanel();
-}
-
-function updateCalculateButton() {
-  const btn = document.getElementById('calculateBtn');
-  btn.disabled = selectedReactions.length === 0;
-}
-
-function calculateResult() {
-  if (selectedReactions.length === 0) return;
-  
-  // Calculate total ΔH
-  const totalDH = selectedReactions.reduce((sum, rxn) => {
-    return sum + (rxn.dH * rxn.coefficient * (rxn.reversed ? -1 : 1));
-  }, 0);
-  
-  // Build equation steps
-  const stepsHtml = selectedReactions.map((rxn, idx) => {
-    const currentDH = rxn.dH * rxn.coefficient * (rxn.reversed ? -1 : 1);
-    
-    // Apply coefficient multiplication first, then reverse if needed
-    let displayEquation = multiplyEquation(rxn.equation, rxn.coefficient);
-    if (rxn.reversed) {
-      displayEquation = reverseEquation(displayEquation);
-    }
-    
-    const stepLabel = [];
-    if (rxn.coefficient !== 1) stepLabel.push(`×${formatCoefficient(rxn.coefficient)}`);
-    if (rxn.reversed) stepLabel.push('reversed');
-    const labelText = stepLabel.length > 0 ? ` (${stepLabel.join(', ')})` : '';
-    
-    return `
-      <div class="equation-step">
-        <span class="step-label">Equation ${idx + 1}${labelText}:</span>
-        ${displayEquation}
-        <br>ΔH = ${currentDH > 0 ? '+' : ''}${currentDH.toFixed(1)} kJ
-      </div>
-    `;
-  }).join('');
-  
-  // Build combined equation (simplified)
-  const combinedEquation = 'Combined equation (species may cancel when added)';
-  
-  // Display results
-  document.getElementById('equationSteps').innerHTML = stepsHtml;
-  document.getElementById('finalEquation').innerHTML = `
-    <div class="label">Net Thermochemical Equation:</div>
-    <div class="equation">${combinedEquation}</div>
-    <div class="total-dh ${totalDH < 0 ? 'exo' : 'endo'}">
-      Total ΔH = ${totalDH > 0 ? '+' : ''}${totalDH.toFixed(1)} kJ
-      <span style="font-size: 0.85rem; font-weight: 500; margin-left: 1rem;">
-        (${totalDH < 0 ? 'Exothermic' : 'Endothermic'})
-      </span>
-    </div>
-  `;
-  
-  // Show results section
-  document.getElementById('sec-results').style.display = 'block';
-  document.getElementById('sec-results').scrollIntoView({ behavior: 'smooth' });
-}
-
-function hideResults() {
-  document.getElementById('sec-results').style.display = 'none';
-  document.getElementById('sec-workspace').scrollIntoView({ behavior: 'smooth' });
-}
-
-function saveAsExample() {
-  alert('Calculation saved! (In a full implementation, this would save to local storage or export as PDF)');
-}
-
-// Initialize on load
 init();
-
-// Iframe auto-resize
-function postHeight() {
-  const height = document.documentElement.scrollHeight;
-  if (window.parent && window.parent !== window) {
-    window.parent.postMessage({ type: 'resize', height: height }, '*');
-  }
-}
-
-window.addEventListener('load', function() {
-  postHeight();
-  setTimeout(postHeight, 500);
-  setTimeout(postHeight, 2000);
-});
-window.addEventListener('resize', postHeight);
-
-if (typeof MutationObserver !== 'undefined') {
-  const resizeObserver = new MutationObserver(function() {
-    setTimeout(postHeight, 100);
-  });
-  resizeObserver.observe(document.body, { 
-    childList: true, 
-    subtree: true, 
-    attributes: true, 
-    characterData: true 
-  });
-}
 </script>
 
 </body>
