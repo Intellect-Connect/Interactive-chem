@@ -85,6 +85,27 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
   border-top:3px solid var(--teal);
   border-bottom:3px solid var(--teal);
 }
+
+/* FULL-WIDTH PROPERTIES SECTION */
+.properties-fullwidth{
+  max-width:1500px;
+  margin:2rem auto;
+  padding:0 1rem;
+}
+.properties-fullwidth .card.gc{
+  background:white;
+  border:3px solid var(--gold);
+  border-radius:12px;
+  padding:1.75rem 2.5rem;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.properties-fullwidth h3{
+  font-family:'DM Serif Display',serif;
+  font-size:1.3rem;
+  color:var(--gold);
+  text-align:center;
+  margin-bottom:1.25rem;
+}
 .concept-questions-fullwidth .qs{
   max-width:82.5%;
   margin:0 auto;
@@ -140,13 +161,14 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
 .pi{margin-top:.65rem;text-align:center;display:none}
 .pi .hint{font-size:.76rem;color:var(--s4);margin-bottom:.3rem}
 .pbadge{display:inline-block;padding:.3rem 1rem;border-radius:20px;font-weight:700;font-size:.82rem;min-width:140px;border:2px solid var(--s3);color:var(--s5);background:var(--s1);transition:all .2s}
-.pr{display:flex;justify-content:space-between;align-items:flex-start;padding:.42rem 0;border-bottom:1px solid var(--s2);gap:.5rem}
+#props{display:grid;grid-template-columns:1fr 1fr;gap:.5rem 2rem;max-width:900px;margin:0 auto;min-height:150px;align-items:center;}
+.pr{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;gap:1rem;border-bottom:1px solid var(--s2);}
 .pr:last-child{border-bottom:none}
-.pl{font-size:.82rem;color:var(--s7);flex:1;line-height:1.4}
-.pv{font-size:.88rem;font-weight:700;color:var(--s9);text-align:right;flex-shrink:0}
+.pl{font-size:.92rem;color:var(--s7);font-weight:500;flex:1;line-height:1.4;}
+.pv{font-size:.95rem;font-weight:700;color:var(--s9);text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums;}
 .pv.mp{color:var(--gold)}.pv.bp{color:var(--exo)}.pv.hf{color:var(--endo)}.pv.hv{color:var(--vap)}
-.imfn{margin-top:.6rem;padding:.55rem .7rem;background:var(--s1);border-radius:7px;font-size:.8rem;color:var(--s7);line-height:1.45;border-left:3px solid var(--endo)}
-.pp{text-align:center;padding:1.5rem;color:var(--s4);font-style:italic;font-size:.88rem}
+.imfn{grid-column:1/-1;margin-top:1rem;padding:.85rem 1rem;background:var(--endo-light);border-radius:8px;font-size:.88rem;color:var(--s7);line-height:1.6;border-left:4px solid var(--endo)}
+.pp{text-align:center;padding:1.5rem;color:var(--s4);font-style:italic;font-size:.88rem;grid-column:1/-1;}
 /* CALCULATOR PANEL */
 .calc-intro{font-size:.82rem;color:var(--s7);margin-bottom:.85rem;line-height:1.5}
 .calc-inputs{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem}
@@ -353,16 +375,25 @@ body{font-family:'Source Sans 3',sans-serif;background:#FAFAF7;color:#1A202C;lin
     <div id="calc-out"></div>
   </div>
 
+  <button class="rbtn" onclick="resetAll()">Reset All Answers</button>
+</div>
+
+</div><!-- end workspace --></div>
+
+</div><!-- end workspace -->
+
+
+
+<!-- FULL-WIDTH PHYSICAL PROPERTIES SECTION -->
+<div class="properties-fullwidth">
   <div class="card gc">
     <div class="plbl g">PANEL 3</div>
     <h3>Physical Properties</h3>
     <div id="props"><div class="pp">Select a substance above to view its physical properties and enthalpies.</div></div>
   </div>
 
-  <button class="rbtn" onclick="resetAll()">Reset All Answers</button>
-</div>
 
-</div><!-- end workspace -->
+</div>
 
 <!-- FULL-WIDTH CONCEPT QUESTIONS SECTION -->
 <div class="concept-questions-fullwidth">
