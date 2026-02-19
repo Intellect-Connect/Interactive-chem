@@ -336,6 +336,143 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(107,70,193,0.1);
 }
 
+/* ========== CONCEPT QUESTIONS SECTION ========== */
+.concept-questions-fullwidth{
+  width:100%;
+  margin:2rem 0;
+  padding:2rem;
+  background:white;
+  border-top:3px solid var(--purple);
+  border-bottom:3px solid var(--purple);
+}
+.qs{
+  max-width:82.5%;
+  margin:0 auto;
+  padding:2rem 0;
+  display:flex;
+  flex-direction:column;
+  gap:1.25rem;
+}
+.qs h3{
+  font-family:'DM Serif Display',serif;
+  font-size:1.4rem;
+  text-align:center;
+  margin-bottom:.5rem;
+  color:var(--slate-900);
+}
+.qc-question{
+  background:#fff;
+  border:2px solid #CBD5E1;
+  border-radius:10px;
+  padding:1.25rem;
+  transition:all .2s;
+}
+.qc-question-text{
+  font-weight:600;
+  font-size:1.05rem;
+  color:#1A202C;
+  margin-bottom:1rem;
+  line-height:1.6;
+}
+.qc-question-text strong{
+  color:var(--purple);
+  text-transform:uppercase;
+  font-size:0.85rem;
+  letter-spacing:0.5px;
+}
+.qc-options{
+  display:flex;
+  flex-direction:column;
+  gap:.6rem;
+}
+.qc-option{
+  display:flex;
+  align-items:flex-start;
+  gap:.75rem;
+  padding:.85rem 1rem;
+  background:#F1F5F9;
+  border:2px solid #E2E8F0;
+  border-radius:8px;
+  cursor:pointer;
+  transition:all .2s;
+  min-height:52px;
+}
+.qc-option:hover:not(.locked){
+  background:#F3E8FF;
+  border-color:var(--purple);
+  transform:translateX(2px);
+}
+.qc-letter{
+  flex-shrink:0;
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:#CBD5E1;
+  color:#1A202C;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:.9rem;
+  transition:all .2s;
+}
+.qc-option span:last-child{
+  flex:1;
+  line-height:1.5;
+  color:#334155;
+  font-size:.98rem;
+}
+.qc-option.locked{
+  cursor:not-allowed;
+}
+.qc-option.correct-pick{
+  background:#F0FFF4;
+  border-color:#2F855A;
+}
+.qc-option.correct-pick .qc-letter{
+  background:#2F855A;
+  color:#fff;
+}
+.qc-option.wrong-pick{
+  background:#FFF0EB;
+  border-color:#D94F30;
+}
+.qc-option.wrong-pick .qc-letter{
+  background:#D94F30;
+  color:#fff;
+}
+.qc-option.reveal-correct{
+  background:#F0FFF4;
+  border-color:#2F855A;
+  opacity:.7;
+}
+.qc-option.reveal-correct .qc-letter{
+  background:#2F855A;
+  color:#fff;
+}
+.qc-feedback-inline{
+  margin-top:.85rem;
+  padding:.85rem 1rem;
+  border-radius:6px;
+  font-size:.95rem;
+  line-height:1.6;
+  display:none;
+}
+.qc-feedback-inline.show{
+  display:block;
+}
+.qc-feedback-inline.correct{
+  background:#F0FFF4;
+  color:#22543D;
+  border-left:4px solid #2F855A;
+}
+.qc-feedback-inline.incorrect{
+  background:#FFF0EB;
+  color:#742A2A;
+  border-left:4px solid #D94F30;
+}
+
+
 .reactions-scroll {
   flex: 1;
   overflow-y: auto;
@@ -643,6 +780,175 @@ select:focus {
 
 </div>
 
+<!-- FULL-WIDTH CONCEPT QUESTIONS SECTION -->
+<div class="concept-questions-fullwidth">
+  <div class="qs">
+    <h3>Concept Check Questions</h3>
+    <p style="color: var(--slate-700); margin-bottom: 1.5rem; font-size: 0.95rem;">Complete these questions using the interactive tool above. Each question requires you to actually use the workspace to find the answer.</p>
+
+    <!-- Q1: Simple Addition -->
+    <div class="qc-question" id="q1">
+      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Add "Carbon combustion" and "Hydrogen combustion" to your workspace (do NOT modify them). Look at the Net Equation panel.<br><br>1. What is the net ΔH when these two reactions are combined?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q1','a')">
+          <span class="qc-letter">A</span>
+          <span>-679.3 kJ</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q1','b')">
+          <span class="qc-letter">B</span>
+          <span>-107.7 kJ</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q1','c')">
+          <span class="qc-letter">C</span>
+          <span>+679.3 kJ</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q1','d')">
+          <span class="qc-letter">D</span>
+          <span>+107.7 kJ</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q1-fb"></div>
+    </div>
+
+    <!-- Q2: Understanding Reversal -->
+    <div class="qc-question" id="q2">
+      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Click "Clear All". Add "Water decomposition" to your workspace. Click on it, then change Direction to "← Reversed" in Panel 2.<br><br>2. After reversing, what is the ΔH value displayed?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q2','a')">
+          <span class="qc-letter">A</span>
+          <span>+571.6 kJ (same as original)</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q2','b')">
+          <span class="qc-letter">B</span>
+          <span>-571.6 kJ (opposite sign)</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q2','c')">
+          <span class="qc-letter">C</span>
+          <span>0 kJ (cancels out)</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q2','d')">
+          <span class="qc-letter">D</span>
+          <span>+285.8 kJ (half the value)</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q2-fb"></div>
+    </div>
+
+    <!-- Q3: Multiplication Effect -->
+    <div class="qc-question" id="q3">
+      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Click "Clear All". Add "Ammonia (Haber)" to workspace. Select it, then in Panel 2 change "Multiply by" to "2".<br><br>3. What happens to the ΔH value when you multiply the equation by 2?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q3','a')">
+          <span class="qc-letter">A</span>
+          <span>ΔH stays the same (-92.2 kJ)</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q3','b')">
+          <span class="qc-letter">B</span>
+          <span>ΔH doubles (-184.4 kJ)</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q3','c')">
+          <span class="qc-letter">C</span>
+          <span>ΔH is divided by 2 (-46.1 kJ)</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q3','d')">
+          <span class="qc-letter">D</span>
+          <span>ΔH becomes positive (+92.2 kJ)</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q3-fb"></div>
+    </div>
+
+    <!-- Q4: Net Equation Interpretation -->
+    <div class="qc-question" id="q4">
+      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Click "Clear All". Add "NO formation" and "NO₂ formation" to workspace (do NOT modify). Examine the Net Equation display.<br><br>4. True or False: The net equation still contains NO because it appears on both sides and cancels out completely.</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q4','a')">
+          <span class="qc-letter">A</span>
+          <span>True - NO cancels completely</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q4','b')">
+          <span class="qc-letter">B</span>
+          <span>False - NO does NOT cancel completely in the net equation</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q4-fb"></div>
+    </div>
+
+    <!-- Q5: Strategic Reversal -->
+    <div class="qc-question" id="q5">
+      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Click "Clear All". Your goal is to make CO as a PRODUCT. Add "Carbon combustion" and "CO combustion". Try reversing ONE of them to achieve this goal.<br><br>5. Which reaction must be reversed to get CO on the product side of the net equation?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q5','a')">
+          <span class="qc-letter">A</span>
+          <span>Reverse "Carbon combustion"</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q5','b')">
+          <span class="qc-letter">B</span>
+          <span>Reverse "CO combustion"</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q5','c')">
+          <span class="qc-letter">C</span>
+          <span>Reverse both reactions</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q5','d')">
+          <span class="qc-letter">D</span>
+          <span>Don't reverse either - CO is already a product</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q5-fb"></div>
+    </div>
+
+    <!-- Q6: Cancellation Understanding -->
+    <div class="qc-question" id="q6">
+      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Click "Clear All". Add "Propane combustion" to workspace. Look at the equation carefully.<br><br>6. If you wanted to cancel out the CO₂ produced by propane combustion, which reaction would you need to add and HOW would you modify it?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q6','a')">
+          <span class="qc-letter">A</span>
+          <span>Add "Carbon combustion" and reverse it</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q6','b')">
+          <span class="qc-letter">B</span>
+          <span>Add "Carbon combustion", reverse it, and multiply by 3</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q6','c')">
+          <span class="qc-letter">C</span>
+          <span>Add "CO combustion" and multiply by 3</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q6','d')">
+          <span class="qc-letter">D</span>
+          <span>Add "Limestone decomp" and multiply by 3</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q6-fb"></div>
+    </div>
+
+    <!-- Q7: Hess's Law Application -->
+    <div class="qc-question" id="q7">
+      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Using the tool, determine ΔH for the target equation: C(s) + ½ O₂(g) → CO(g). You'll need to use TWO equations from the library and manipulate them appropriately.<br><br>7. What is the ΔH for this reaction?</div>
+      <div class="qc-options">
+        <div class="qc-option" onclick="checkMC('q7','a')">
+          <span class="qc-letter">A</span>
+          <span>-110.5 kJ</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q7','b')">
+          <span class="qc-letter">B</span>
+          <span>-676.5 kJ</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q7','c')">
+          <span class="qc-letter">C</span>
+          <span>+110.5 kJ</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q7','d')">
+          <span class="qc-letter">D</span>
+          <span>+283.0 kJ</span>
+        </div>
+      </div>
+      <div class="qc-feedback-inline" id="q7-fb"></div>
+    </div>
+
+  </div>
+</div>
+
 <script>
 const reactions = [
   { id: 'r1', eq: 'C(s) + O<sub>2</sub>(g) → CO<sub>2</sub>(g)', dH: -393.5, cat: 'combustion', label: 'Carbon combustion' },
@@ -897,6 +1203,63 @@ function multiplyEq(eq, coeff) {
 }
 
 init();
+
+// Multi-choice question answers and feedback
+var mcAnswers={
+  q1:{correct:'a',
+      feedback:'Correct! When you add reactions together, you ADD their ΔH values: -393.5 kJ + (-285.8 kJ) = -679.3 kJ. The Net Equation panel shows this total.',
+      wrongFeedback:'Not quite. Look at the Net ΔH value displayed in the purple box at the bottom of your workspace. When combining reactions, you ADD the individual ΔH values together.'},
+  q2:{correct:'b',
+      feedback:'Exactly right! When you reverse a reaction, the sign of ΔH flips. The original decomposition is +571.6 kJ (endothermic), but the reverse (forming water) is -571.6 kJ (exothermic).',
+      wrongFeedback:'Remember: reversing a reaction changes the direction, which changes whether energy is absorbed or released. Check the ΔH value shown on your workspace card after reversing.'},
+  q3:{correct:'b',
+      feedback:'Perfect! When you multiply an equation by a coefficient, you multiply ΔH by the same factor. Original: -92.2 kJ. Multiplied by 2: -184.4 kJ. This makes sense—twice as much reaction releases twice as much energy!',
+      wrongFeedback:'Look at the ΔH displayed on the workspace card after multiplying. When you double the amount of reaction, what happens to the energy released?'},
+  q4:{correct:'b',
+      feedback:'Correct! NO does NOT cancel completely. The first reaction produces 2 NO, and the second reaction consumes 2 NO—so they DO cancel. The net equation shows only the starting N₂, O₂ and final NO₂.',
+      wrongFeedback:'Look carefully at the Net Equation display. Count the NO molecules produced in the first reaction and consumed in the second. What happens when you produce 2 NO and then consume 2 NO?'},
+  q5:{correct:'b',
+      feedback:'Excellent strategic thinking! CO combustion has CO as a REACTANT (left side). When you reverse it, CO moves to the PRODUCT side (right side). Carbon combustion produces CO₂, not CO, so reversing it will not help.',
+      wrongFeedback:'Think about where CO appears in each equation. To get CO as a product, you need an equation that currently has CO as a reactant, then reverse it. Try both options in the tool!'},
+  q6:{correct:'b',
+      feedback:'Perfect! Propane produces 3 CO₂. To cancel this, you need: (1) a reaction that CONSUMES CO₂, and (2) the right amount. Carbon combustion produces CO₂, so reverse it (making it consume CO₂), then multiply by 3 to match the 3 CO₂ from propane.',
+      wrongFeedback:'Propane combustion produces 3 CO₂. You need a reaction that will consume exactly 3 CO₂. Which library reaction involves CO₂, and how would you manipulate it? Try different combinations in the tool!'},
+  q7:{correct:'a',
+      feedback:'Excellent work! The target C(s) + ½O₂(g) → CO(g) can be found by: (1) Using Carbon combustion: C + O₂ → CO₂ (ΔH = -393.5 kJ), and (2) Reversing CO combustion: CO₂ → CO + ½O₂ (ΔH = +283.0 kJ). Net: -393.5 + 283.0 = -110.5 kJ.',
+      wrongFeedback:'This requires combining two equations. Think about how to get C and ½O₂ on the left, and CO on the right. Which equations contain these species? You will need to reverse one of them. Build it in the workspace and check the Net Equation!'}
+};
+
+function checkMC(questionId,picked){
+  var q=document.getElementById(questionId);
+  if(q.dataset.locked==='true')return;
+  q.dataset.locked='true';
+  
+  var info=mcAnswers[questionId];
+  var options=q.querySelectorAll('.qc-option');
+  var letters=['a','b','c','d'];
+  var fb=document.getElementById(questionId+'-fb');
+  
+  var isCorrect=picked===info.correct;
+  
+  options.forEach(function(opt,i){
+    opt.classList.add('locked');
+    if(letters[i]===picked&&isCorrect){
+      opt.classList.add('correct-pick');
+    }else if(letters[i]===picked&&!isCorrect){
+      opt.classList.add('wrong-pick');
+    }
+    if(letters[i]===info.correct&&!isCorrect){
+      opt.classList.add('reveal-correct');
+    }
+  });
+  
+  fb.className='qc-feedback-inline '+(isCorrect?'correct':'incorrect')+' show';
+  fb.textContent=isCorrect?info.feedback:info.wrongFeedback;
+}
+</script>
+
+
+
 </script>
 
 </body>
