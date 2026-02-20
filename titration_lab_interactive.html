@@ -563,6 +563,46 @@
     line-height: 1.6;
   }
 
+  /* CALCULATION CANVAS */
+  .calc-canvas-wrap {
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    background: var(--canvas-bg);
+  }
+  .calc-canvas-toolbar {
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    padding: 7px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .calc-canvas {
+    display: block;
+    cursor: crosshair;
+    touch-action: none;
+    width: 100%;
+    background: #fffef9;
+  }
+  .calc-answer-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .calc-answer-label {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .vision-btn { background: var(--blue); display: flex; align-items: center; gap: 7px; }
+  .vision-btn:hover { background: #1a3d65; }
+
   /* MULTIPLE CHOICE */
   .mc-options {
     margin-left: 36px;
@@ -648,6 +688,40 @@
     .calc-area { grid-template-columns: 1fr; }
     .submit-section { flex-direction: column; }
   }
+
+  /* DATA VALIDATION MESSAGES */
+  .val-msg {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 0;
+    margin-top: 3px;
+    min-height: 0;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+  .val-msg.ok {
+    color: var(--green);
+    padding: 3px 6px;
+    background: var(--green-light);
+    border-left: 2px solid var(--green);
+  }
+  .val-msg.warn {
+    color: var(--gold);
+    padding: 3px 6px;
+    background: var(--gold-light);
+    border-left: 2px solid var(--gold);
+  }
+  .val-msg.err {
+    color: var(--accent);
+    padding: 3px 6px;
+    background: var(--accent-light);
+    border-left: 2px solid var(--accent);
+  }
+  input.val-ok   { border-color: var(--green) !important; box-shadow: 0 0 0 2px rgba(26,107,60,0.12); }
+  input.val-warn { border-color: var(--gold)  !important; box-shadow: 0 0 0 2px rgba(184,134,11,0.12); }
+  input.val-err  { border-color: var(--accent)!important; box-shadow: 0 0 0 2px rgba(192,57,43,0.12); }
+
 </style>
 </head>
 <body>
@@ -763,8 +837,8 @@
     </div>
     <div class="section-body">
       <div class="ref-box">
-        <div class="ref-box-title">Significant Figures Reminder</div>
-        <p>Buret readings are recorded to <strong>0.01 mL</strong> (two decimal places). Analytical balance readings to <strong>0.0001 g</strong>. Never round before your final answer — carry all digits through intermediate steps.</p>
+        <div class="ref-box-title">Significant Figures Reminder &amp; Live Validation</div>
+        <p>Buret readings are recorded to <strong>0.01 mL</strong> (two decimal places). Analytical balance readings to <strong>0.0001 g</strong>. Each field validates automatically when you tab out &mdash; green confirms the value is experimentally reasonable, yellow flags an unusual value worth double-checking, and red identifies a likely error with a specific explanation of what went wrong and why.</p>
       </div>
 
       <p style="font-weight:600; margin-bottom:12px; font-size:14px;">Part A: Standardization of NaOH with KHP</p>
@@ -774,23 +848,24 @@
         </thead>
         <tbody>
           <tr><td class="label">Mass of KHP (g)</td>
-            <td><input type="text" id="khp-mass-1" placeholder="0.0000"></td>
-            <td><input type="text" id="khp-mass-2" placeholder="0.0000"></td>
+            <td><input type="text" id="khp-mass-1" placeholder="0.0000" onblur="validateField(this,'khp-mass','1')"><div class="val-msg" id="val-khp-mass-1"></div></td>
+            <td><input type="text" id="khp-mass-2" placeholder="0.0000" onblur="validateField(this,'khp-mass','2')"><div class="val-msg" id="val-khp-mass-2"></div></td>
           </tr>
           <tr><td class="label">Initial buret reading (mL)</td>
-            <td><input type="text" id="init-1" placeholder="0.00"></td>
-            <td><input type="text" id="init-2" placeholder="0.00"></td>
+            <td><input type="text" id="init-1" placeholder="0.00" onblur="validateField(this,'buret-init','1')"><div class="val-msg" id="val-init-1"></div></td>
+            <td><input type="text" id="init-2" placeholder="0.00" onblur="validateField(this,'buret-init','2')"><div class="val-msg" id="val-init-2"></div></td>
           </tr>
           <tr><td class="label">Final buret reading (mL)</td>
-            <td><input type="text" id="final-1" placeholder="00.00"></td>
-            <td><input type="text" id="final-2" placeholder="00.00"></td>
+            <td><input type="text" id="final-1" placeholder="00.00" onblur="validateField(this,'buret-final','1'); validateKHPVolume('1')"><div class="val-msg" id="val-final-1"></div></td>
+            <td><input type="text" id="final-2" placeholder="00.00" onblur="validateField(this,'buret-final','2'); validateKHPVolume('2')"><div class="val-msg" id="val-final-2"></div></td>
           </tr>
           <tr><td class="label">Volume NaOH used (mL) <em style="color:#aaa;font-size:11px;">calculate below</em></td>
-            <td><input type="text" id="vol-1" placeholder="0.00"></td>
-            <td><input type="text" id="vol-2" placeholder="0.00"></td>
+            <td><input type="text" id="vol-1" placeholder="0.00" onblur="validateField(this,'vol-naoh','1'); validateKHPTrialConsistency()"><div class="val-msg" id="val-vol-1"></div></td>
+            <td><input type="text" id="vol-2" placeholder="0.00" onblur="validateField(this,'vol-naoh','2'); validateKHPTrialConsistency()"><div class="val-msg" id="val-vol-2"></div></td>
           </tr>
         </tbody>
       </table>
+      <div class="val-msg" id="val-khp-consistency" style="margin:8px 0 16px;"></div>
 
       <p style="font-weight:600; margin: 20px 0 12px; font-size:14px;">Part B: Titration of Vinegar Sample</p>
       <table class="data-table">
@@ -799,35 +874,36 @@
         </thead>
         <tbody>
           <tr><td class="label">Mass of empty flask (g)</td>
-            <td><input type="text" id="flask-empty-1" placeholder="0.0000"></td>
-            <td><input type="text" id="flask-empty-2" placeholder="0.0000"></td>
+            <td><input type="text" id="flask-empty-1" placeholder="0.0000" onblur="validateField(this,'flask-mass','1')"><div class="val-msg" id="val-flask-empty-1"></div></td>
+            <td><input type="text" id="flask-empty-2" placeholder="0.0000" onblur="validateField(this,'flask-mass','2')"><div class="val-msg" id="val-flask-empty-2"></div></td>
           </tr>
           <tr><td class="label">Mass of flask + vinegar (g)</td>
-            <td><input type="text" id="flask-full-1" placeholder="0.0000"></td>
-            <td><input type="text" id="flask-full-2" placeholder="0.0000"></td>
+            <td><input type="text" id="flask-full-1" placeholder="0.0000" onblur="validateField(this,'flask-full','1'); validateVinegarMass('1')"><div class="val-msg" id="val-flask-full-1"></div></td>
+            <td><input type="text" id="flask-full-2" placeholder="0.0000" onblur="validateField(this,'flask-full','2'); validateVinegarMass('2')"><div class="val-msg" id="val-flask-full-2"></div></td>
           </tr>
           <tr><td class="label">Mass of vinegar sample (g) <em style="color:#aaa;font-size:11px;">calculate below</em></td>
-            <td><input type="text" id="vinegar-mass-1" placeholder="0.0000"></td>
-            <td><input type="text" id="vinegar-mass-2" placeholder="0.0000"></td>
+            <td><input type="text" id="vinegar-mass-1" placeholder="0.0000" onblur="validateField(this,'vinegar-mass','1')"><div class="val-msg" id="val-vinegar-mass-1"></div></td>
+            <td><input type="text" id="vinegar-mass-2" placeholder="0.0000" onblur="validateField(this,'vinegar-mass','2')"><div class="val-msg" id="val-vinegar-mass-2"></div></td>
           </tr>
           <tr><td class="label">Initial buret reading (mL)</td>
-            <td><input type="text" id="vin-init-1" placeholder="0.00"></td>
-            <td><input type="text" id="vin-init-2" placeholder="0.00"></td>
+            <td><input type="text" id="vin-init-1" placeholder="0.00" onblur="validateField(this,'buret-init','1')"><div class="val-msg" id="val-vin-init-1"></div></td>
+            <td><input type="text" id="vin-init-2" placeholder="0.00" onblur="validateField(this,'buret-init','2')"><div class="val-msg" id="val-vin-init-2"></div></td>
           </tr>
           <tr><td class="label">Final buret reading (mL)</td>
-            <td><input type="text" id="vin-final-1" placeholder="00.00"></td>
-            <td><input type="text" id="vin-final-2" placeholder="00.00"></td>
+            <td><input type="text" id="vin-final-1" placeholder="00.00" onblur="validateField(this,'buret-final','1'); validateVinVolume('1')"><div class="val-msg" id="val-vin-final-1"></div></td>
+            <td><input type="text" id="vin-final-2" placeholder="00.00" onblur="validateField(this,'buret-final','2'); validateVinVolume('2')"><div class="val-msg" id="val-vin-final-2"></div></td>
           </tr>
           <tr><td class="label">Volume NaOH used (mL) <em style="color:#aaa;font-size:11px;">calculate below</em></td>
-            <td><input type="text" id="vin-vol-1" placeholder="0.00"></td>
-            <td><input type="text" id="vin-vol-2" placeholder="0.00"></td>
+            <td><input type="text" id="vin-vol-1" placeholder="0.00" onblur="validateField(this,'vol-naoh','1'); validateVinTrialConsistency()"><div class="val-msg" id="val-vin-vol-1"></div></td>
+            <td><input type="text" id="vin-vol-2" placeholder="0.00" onblur="validateField(this,'vol-naoh','2'); validateVinTrialConsistency()"><div class="val-msg" id="val-vin-vol-2"></div></td>
           </tr>
         </tbody>
       </table>
+      <div class="val-msg" id="val-vin-consistency" style="margin:8px 0 4px;"></div>
     </div>
   </div>
 
-  <!-- SECTION 3: DIAGRAM CANVAS -->
+    <!-- SECTION 3: DIAGRAM CANVAS -->
   <div class="section-card">
     <div class="section-header">
       <div class="section-num">3</div>
@@ -885,9 +961,14 @@
   <div class="section-card">
     <div class="section-header">
       <div class="section-num">4</div>
-      <div class="section-title">Calculations &mdash; Show All Work</div>
+      <div class="section-title">Calculations &mdash; Show All Work by Hand</div>
     </div>
     <div class="section-body">
+
+      <div class="ref-box" style="margin-bottom:20px;">
+        <div class="ref-box-title">How This Section Works</div>
+        <p>Write your complete dimensional analysis on each canvas using a stylus or mouse. Include every conversion factor and unit cancellation. When finished, type your final numeric answer and click <strong>Check &amp; Analyze Work</strong> — the AI will read your handwritten work and evaluate whether your process correctly supports your answer.</p>
+      </div>
 
       <!-- 4a: Molarity NaOH -->
       <div class="q-block">
@@ -895,22 +976,36 @@
           <span class="q-num">4a</span>
           <span class="q-text">Calculate the molarity of your NaOH solution using Trial 1 KHP data. (M<sub>KHP</sub> = 204.22 g/mol)</span>
         </div>
-        <p class="q-hint">Setup: moles KHP = mass / molar mass &bull; at equivalence: moles NaOH = moles KHP &bull; M = mol / L</p>
-        <div class="calc-area">
-          <div class="calc-box">
-            <div class="calc-box-label">Show work here</div>
-            <textarea class="calc-input" id="work-4a" placeholder="Write your dimensional analysis / calculation steps..."></textarea>
+        <p class="q-hint">moles KHP = mass (g) / 204.22 g/mol &nbsp;&bull;&nbsp; moles NaOH = moles KHP (1:1) &nbsp;&bull;&nbsp; M = moles / V(L)</p>
+        <div class="calc-canvas-wrap">
+          <div class="calc-canvas-toolbar">
+            <span class="canvas-toolbar-label">Tool:</span>
+            <button class="tool-btn active" onclick="setCalcTool('4a','pen',this)">Pen</button>
+            <button class="tool-btn" onclick="setCalcTool('4a','eraser',this)">Eraser</button>
+            <select class="size-select" id="calcSize-4a">
+              <option value="2">Fine</option>
+              <option value="3" selected>Medium</option>
+              <option value="6">Thick</option>
+            </select>
+            <div class="color-dot active" style="background:#1a1a2e;" onclick="setCalcColor('4a','#1a1a2e',this)"></div>
+            <div class="color-dot" style="background:#1a4a7a;" onclick="setCalcColor('4a','#1a4a7a',this)"></div>
+            <div class="color-dot" style="background:#c0392b;" onclick="setCalcColor('4a','#c0392b',this)"></div>
+            <button class="clear-btn" onclick="clearCalcCanvas('4a')">Clear</button>
           </div>
-          <div class="calc-box">
-            <div class="calc-box-label">Check your answer</div>
-            <div style="margin-bottom:8px; font-size:12px; color:#888;">Enter final value:</div>
-            <div class="answer-row" style="margin-left:0;">
-              <input class="answer-input" type="text" id="ans-4a" placeholder="0.0000" style="min-width:120px;">
-              <span class="units-label">mol/L</span>
-              <button class="check-btn" onclick="checkCalc('4a')">Check</button>
-            </div>
-            <div class="feedback-inline" id="fb-4a" style="margin-left:0; margin-top:10px;"></div>
-          </div>
+          <canvas id="calcCanvas-4a" class="calc-canvas" height="200"></canvas>
+          <div class="canvas-caption">Write your full dimensional analysis here — show every conversion factor and unit cancellation.</div>
+        </div>
+        <div class="calc-answer-row">
+          <span class="calc-answer-label">Final Answer:</span>
+          <input class="answer-input" type="text" id="ans-4a" placeholder="0.0000" style="min-width:130px;">
+          <span class="units-label">mol/L</span>
+          <button class="check-btn vision-btn" onclick="checkCalcWithVision('4a', this)">
+            <span class="spinner"></span>Check &amp; Analyze Work
+          </button>
+        </div>
+        <div class="ai-feedback-box" id="fb-4a">
+          <div class="ai-label">Work Analysis</div>
+          <div class="ai-feedback-content"></div>
         </div>
       </div>
 
@@ -918,42 +1013,81 @@
       <div class="q-block">
         <div class="q-label">
           <span class="q-num">4b</span>
-          <span class="q-text">Using Trial 1 vinegar data and your calculated M<sub>NaOH</sub>, determine the percent acetic acid by mass. (M<sub>acetic acid</sub> = 60.052 g/mol)</span>
+          <span class="q-text">Using Trial 1 vinegar data and your M<sub>NaOH</sub> from 4a, determine the percent acetic acid by mass. (M<sub>CH&#x2083;COOH</sub> = 60.052 g/mol)</span>
         </div>
-        <p class="q-hint">moles NaOH = M &times; V(L) &bull; moles CH&#x2083;COOH = moles NaOH &bull; mass CH&#x2083;COOH = mol &times; 60.052 g/mol &bull; % = mass acid / mass vinegar &times; 100</p>
-        <div class="calc-area">
-          <div class="calc-box">
-            <div class="calc-box-label">Show work here</div>
-            <textarea class="calc-input" id="work-4b" placeholder="Step-by-step dimensional analysis..."></textarea>
+        <p class="q-hint">moles NaOH = M &times; V(L) &nbsp;&bull;&nbsp; moles CH&#x2083;COOH = moles NaOH &nbsp;&bull;&nbsp; mass acid = mol &times; 60.052 &nbsp;&bull;&nbsp; % = mass acid / mass vinegar &times; 100</p>
+        <div class="calc-canvas-wrap">
+          <div class="calc-canvas-toolbar">
+            <span class="canvas-toolbar-label">Tool:</span>
+            <button class="tool-btn active" onclick="setCalcTool('4b','pen',this)">Pen</button>
+            <button class="tool-btn" onclick="setCalcTool('4b','eraser',this)">Eraser</button>
+            <select class="size-select" id="calcSize-4b">
+              <option value="2">Fine</option>
+              <option value="3" selected>Medium</option>
+              <option value="6">Thick</option>
+            </select>
+            <div class="color-dot active" style="background:#1a1a2e;" onclick="setCalcColor('4b','#1a1a2e',this)"></div>
+            <div class="color-dot" style="background:#1a4a7a;" onclick="setCalcColor('4b','#1a4a7a',this)"></div>
+            <div class="color-dot" style="background:#c0392b;" onclick="setCalcColor('4b','#c0392b',this)"></div>
+            <button class="clear-btn" onclick="clearCalcCanvas('4b')">Clear</button>
           </div>
-          <div class="calc-box">
-            <div class="calc-box-label">Check your answer</div>
-            <div style="margin-bottom:8px; font-size:12px; color:#888;">Enter final value:</div>
-            <div class="answer-row" style="margin-left:0;">
-              <input class="answer-input" type="text" id="ans-4b" placeholder="0.00" style="min-width:120px;">
-              <span class="units-label">%</span>
-              <button class="check-btn" onclick="checkMC('mc-4b')">Check</button>
-            </div>
-            <div class="feedback-inline" id="fb-4b" style="margin-left:0; margin-top:10px;"></div>
-          </div>
+          <canvas id="calcCanvas-4b" class="calc-canvas" height="220"></canvas>
+          <div class="canvas-caption">Multi-step calculation — use the full space. Show each step on a new line.</div>
+        </div>
+        <div class="calc-answer-row">
+          <span class="calc-answer-label">Final Answer:</span>
+          <input class="answer-input" type="text" id="ans-4b" placeholder="0.00" style="min-width:130px;">
+          <span class="units-label">%</span>
+          <button class="check-btn vision-btn" onclick="checkCalcWithVision('4b', this)">
+            <span class="spinner"></span>Check &amp; Analyze Work
+          </button>
+        </div>
+        <div class="ai-feedback-box" id="fb-4b">
+          <div class="ai-label">Work Analysis</div>
+          <div class="ai-feedback-content"></div>
         </div>
       </div>
 
-      <!-- 4c: Average and % error concept -->
+      <!-- 4c: Average and % error -->
       <div class="q-block">
         <div class="q-label">
           <span class="q-num">4c</span>
-          <span class="q-text">Commercial vinegar is labeled 4–8% acetic acid by mass. After averaging your two trials, does your result fall within this range? Calculate your percent error if the accepted value is 5.00%.</span>
+          <span class="q-text">Average your two trials and calculate percent error. Does your result fall within the commercial vinegar range of 4&ndash;8%?</span>
         </div>
-        <p class="q-hint">% error = |experimental &minus; accepted| / accepted &times; 100</p>
-        <div class="answer-row">
-          <span style="font-size:13.5px;">Average % acetic acid:</span>
+        <p class="q-hint">% error = |experimental &minus; accepted| / accepted &times; 100 &nbsp;&bull;&nbsp; accepted = 5.00%</p>
+        <div class="calc-canvas-wrap">
+          <div class="calc-canvas-toolbar">
+            <span class="canvas-toolbar-label">Tool:</span>
+            <button class="tool-btn active" onclick="setCalcTool('4c','pen',this)">Pen</button>
+            <button class="tool-btn" onclick="setCalcTool('4c','eraser',this)">Eraser</button>
+            <select class="size-select" id="calcSize-4c">
+              <option value="2">Fine</option>
+              <option value="3" selected>Medium</option>
+              <option value="6">Thick</option>
+            </select>
+            <div class="color-dot active" style="background:#1a1a2e;" onclick="setCalcColor('4c','#1a1a2e',this)"></div>
+            <div class="color-dot" style="background:#1a4a7a;" onclick="setCalcColor('4c','#1a4a7a',this)"></div>
+            <div class="color-dot" style="background:#c0392b;" onclick="setCalcColor('4c','#c0392b',this)"></div>
+            <button class="clear-btn" onclick="clearCalcCanvas('4c')">Clear</button>
+          </div>
+          <canvas id="calcCanvas-4c" class="calc-canvas" height="160"></canvas>
+          <div class="canvas-caption">Show the average calculation and percent error formula with your values substituted in.</div>
+        </div>
+        <div class="calc-answer-row">
+          <span class="calc-answer-label">Average %:</span>
           <input class="answer-input" type="text" id="ans-avg" placeholder="0.00" style="min-width:100px;">
           <span class="units-label">%</span>
           &nbsp;&nbsp;
-          <span style="font-size:13.5px;">Percent error:</span>
+          <span class="calc-answer-label">% Error:</span>
           <input class="answer-input" type="text" id="ans-error" placeholder="0.00" style="min-width:100px;">
           <span class="units-label">%</span>
+          <button class="check-btn vision-btn" onclick="checkCalcWithVision('4c', this)">
+            <span class="spinner"></span>Check &amp; Analyze Work
+          </button>
+        </div>
+        <div class="ai-feedback-box" id="fb-4c">
+          <div class="ai-label">Work Analysis</div>
+          <div class="ai-feedback-content"></div>
         </div>
       </div>
 
@@ -1367,7 +1501,7 @@ async function getAIFeedback(qId, btn) {
 // Leave as empty string '' if not yet configured — lab will
 // still score locally but will not log to Sheets.
 // =========================================================
-const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw5doNBiyVi0Hb6XaDcs_zjSpU1893JQc3rGdknc95yGsyTYahOcHGWAy0hjVGRAVCEPg/exec';
+const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxQP35AhylZOAaUqwnUkDrANI-P5hTaJPuLR3u5jC53K1HsD13MVW36QudxyN24MFg2YQ/exec';
 
 // =========================================================
 // SUBMISSION & SCORING
@@ -1501,6 +1635,459 @@ function showScorePanel(name, score, total, pct, timestamp, details) {
     details.map(d => `<span style="display:block; padding: 3px 0; border-bottom: 1px dashed var(--rule);">${d}</span>`).join('') +
     '<div id="sheets-status" style="margin-top:14px; font-family: JetBrains Mono, monospace; font-size:12px;"></div>';
 }
+
+// =========================================================
+// CALCULATION CANVAS ENGINE (per-question)
+// =========================================================
+const calcCanvases = {};
+
+function initCalcCanvas(id) {
+  const c = document.getElementById('calcCanvas-' + id);
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  // set pixel width to match display width
+  c.width = c.offsetWidth || 820;
+  ctx.fillStyle = '#fffef9';
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  calcCanvases[id] = {
+    ctx, drawing: false, tool: 'pen', color: '#1a1a2e', lastX: 0, lastY: 0
+  };
+
+  function getPos(e) {
+    const rect = c.getBoundingClientRect();
+    const sx = c.width / rect.width;
+    const sy = c.height / rect.height;
+    if (e.touches) return { x:(e.touches[0].clientX-rect.left)*sx, y:(e.touches[0].clientY-rect.top)*sy };
+    return { x:(e.clientX-rect.left)*sx, y:(e.clientY-rect.top)*sy };
+  }
+
+  c.addEventListener('mousedown', e => { e.preventDefault(); const s=calcCanvases[id]; s.drawing=true; const p=getPos(e); s.lastX=p.x; s.lastY=p.y; });
+  c.addEventListener('touchstart', e => { e.preventDefault(); const s=calcCanvases[id]; s.drawing=true; const p=getPos(e); s.lastX=p.x; s.lastY=p.y; }, {passive:false});
+
+  function doDraw(e) {
+    e.preventDefault();
+    const s = calcCanvases[id];
+    if (!s.drawing) return;
+    const p = getPos(e);
+    const size = parseInt(document.getElementById('calcSize-' + id).value);
+    s.ctx.lineWidth = s.tool === 'eraser' ? size * 5 : size;
+    s.ctx.strokeStyle = s.tool === 'eraser' ? '#fffef9' : s.color;
+    s.ctx.globalCompositeOperation = s.tool === 'eraser' ? 'destination-out' : 'source-over';
+    s.ctx.beginPath();
+    s.ctx.moveTo(s.lastX, s.lastY);
+    s.ctx.lineTo(p.x, p.y);
+    s.ctx.stroke();
+    if (s.tool === 'eraser') {
+      s.ctx.fillStyle = '#fffef9';
+      s.ctx.beginPath();
+      s.ctx.arc(p.x, p.y, size*2.5, 0, Math.PI*2);
+      s.ctx.fill();
+    }
+    s.lastX = p.x; s.lastY = p.y;
+  }
+
+  c.addEventListener('mousemove', doDraw);
+  c.addEventListener('touchmove', doDraw, {passive:false});
+  c.addEventListener('mouseup', () => { calcCanvases[id].drawing=false; calcCanvases[id].ctx.globalCompositeOperation='source-over'; });
+  c.addEventListener('mouseleave', () => { calcCanvases[id].drawing=false; });
+  c.addEventListener('touchend', () => { calcCanvases[id].drawing=false; calcCanvases[id].ctx.globalCompositeOperation='source-over'; });
+}
+
+function setCalcTool(id, tool, btn) {
+  if (calcCanvases[id]) calcCanvases[id].tool = tool;
+  const toolbar = btn.closest('.calc-canvas-toolbar');
+  toolbar.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('calcCanvas-'+id).style.cursor = tool==='eraser' ? 'cell' : 'crosshair';
+}
+
+function setCalcColor(id, color, dot) {
+  if (calcCanvases[id]) { calcCanvases[id].color = color; calcCanvases[id].tool = 'pen'; }
+  const toolbar = dot.closest('.calc-canvas-toolbar');
+  toolbar.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+  dot.classList.add('active');
+  toolbar.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  toolbar.querySelector('.tool-btn').classList.add('active');
+  document.getElementById('calcCanvas-'+id).style.cursor = 'crosshair';
+}
+
+function clearCalcCanvas(id) {
+  if (!confirm('Clear this work area?')) return;
+  const c = document.getElementById('calcCanvas-'+id);
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle='#fffef9';
+  ctx.fillRect(0,0,c.width,c.height);
+}
+
+// Initialize all calc canvases after page load
+window.addEventListener('load', () => {
+  ['4a','4b','4c'].forEach(id => initCalcCanvas(id));
+});
+
+// Also init on resize for correct pixel dimensions
+window.addEventListener('resize', () => {
+  ['4a','4b','4c'].forEach(id => {
+    const c = document.getElementById('calcCanvas-'+id);
+    if (!c) return;
+    const imgData = c.getContext('2d').getImageData(0,0,c.width,c.height);
+    c.width = c.offsetWidth || 820;
+    c.getContext('2d').putImageData(imgData,0,0);
+  });
+});
+
+// =========================================================
+// VISION-ENABLED CALCULATION CHECK
+// =========================================================
+const calcPrompts = {
+  '4a': {
+    question: 'Calculate the molarity of NaOH using Trial 1 KHP data. M_KHP = 204.22 g/mol. The calculation requires: moles KHP = mass/204.22, moles NaOH = moles KHP (1:1 ratio), M_NaOH = moles NaOH / volume in liters.',
+    units: 'mol/L',
+    range: [0.08, 0.30]
+  },
+  '4b': {
+    question: 'Calculate percent acetic acid by mass in vinegar. M_acetic acid = 60.052 g/mol. Steps: moles NaOH = M x V(L), moles acetic acid = moles NaOH (1:1), mass acetic acid = moles x 60.052, percent = mass acid / mass vinegar x 100.',
+    units: '%',
+    range: [3.5, 9.0]
+  },
+  '4c': {
+    question: 'Average the two percent acetic acid trials and calculate percent error using accepted value of 5.00%. Formula: % error = |experimental - 5.00| / 5.00 x 100.',
+    units: '% and % error',
+    range: [0, 100]
+  }
+};
+
+async function checkCalcWithVision(id, btn) {
+  const answerEl = document.getElementById('ans-' + id) || document.getElementById('ans-avg');
+  const answer4c_err = document.getElementById('ans-error');
+  const answerVal = answerEl ? answerEl.value.trim() : '';
+
+  if (!answerVal) {
+    alert('Please enter your final answer before checking.');
+    return;
+  }
+
+  const canvas = document.getElementById('calcCanvas-' + id);
+  const imageData = canvas.toDataURL('image/png').split(',')[1];
+
+  const fb = document.getElementById('fb-' + id);
+  btn.disabled = true;
+  btn.classList.add('loading');
+  const spinner = btn.querySelector('.spinner');
+  if (spinner) spinner.style.display = 'inline-block';
+
+  const p = calcPrompts[id];
+  const answerDisplay = id === '4c'
+    ? 'Average: ' + answerVal + '%, Error: ' + (answer4c_err ? answer4c_err.value : '?') + '%'
+    : answerVal + ' ' + p.units;
+
+  const numericVal = parseFloat(answerVal);
+  const inRange = !isNaN(numericVal) && numericVal >= p.range[0] && numericVal <= p.range[1];
+  const rangeNote = id === '4c' ? '' : (inRange
+    ? 'The final numeric answer (' + answerVal + ') is within the expected range.'
+    : 'The final numeric answer (' + answerVal + ') is OUTSIDE the expected range (' + p.range[0] + ' to ' + p.range[1] + ').');
+
+  const promptText = `You are a general chemistry instructor reviewing a student's handwritten calculation work.
+
+Question: ${p.question}
+
+The student's typed final answer: ${answerDisplay}
+${rangeNote}
+
+The attached image shows the student's handwritten work on a digital canvas. Please:
+1. Read and interpret the handwritten work as best you can
+2. Identify whether the correct formula/approach was used
+3. Check if units are properly tracked and cancelled throughout
+4. Verify whether the work shown is consistent with the typed final answer
+5. Point out the first specific error if one exists, or confirm the work is correct
+
+Be direct and specific. Reference what you can read in the handwriting. Keep your response to 4-6 sentences. Do not use bullet points.`;
+
+  try {
+    const apiKey = typeof ANTHROPIC_API_KEY !== 'undefined' ? ANTHROPIC_API_KEY : '';
+    if (!apiKey) {
+      fb.querySelector('.ai-feedback-content').textContent = 'API key not configured. Add your Anthropic API key to the ANTHROPIC_API_KEY variable in the script section.';
+      fb.classList.add('visible');
+      return;
+    }
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: 'image/png', data: imageData } },
+            { type: 'text', text: promptText }
+          ]
+        }]
+      })
+    });
+
+    const data = await res.json();
+    const text = data.content.map(c => c.text || '').join('');
+    fb.querySelector('.ai-feedback-content').textContent = text;
+    fb.classList.add('visible');
+
+  } catch (err) {
+    fb.querySelector('.ai-feedback-content').textContent = 'Could not connect to feedback service. Check your internet connection.';
+    fb.classList.add('visible');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    if (spinner) spinner.style.display = 'none';
+  }
+}
+
+
+// =========================================================
+// DATA TABLE VALIDATION ENGINE
+// =========================================================
+
+// Helper: count decimal places in a string number
+function decimalPlaces(str) {
+  const parts = str.trim().split('.');
+  return parts.length === 2 ? parts[1].length : 0;
+}
+
+// Helper: set field state
+function setVal(inputEl, msgId, level, msg) {
+  const msgEl = document.getElementById(msgId);
+  if (!msgEl) return;
+  inputEl.classList.remove('val-ok','val-warn','val-err');
+  msgEl.className = 'val-msg';
+  if (!level) return; // clear
+  inputEl.classList.add('val-' + level);
+  msgEl.classList.add(level === 'ok' ? 'ok' : level === 'warn' ? 'warn' : 'err');
+  msgEl.textContent = msg;
+}
+
+function validateField(el, type, trial) {
+  const raw = el.value.trim();
+  const msgId = 'val-' + el.id;
+  if (!raw) { setVal(el, msgId, null, ''); return; }
+
+  const num = parseFloat(raw);
+  if (isNaN(num)) {
+    setVal(el, msgId, 'err', 'Not a number. Enter a numeric value.');
+    return;
+  }
+
+  const dp = decimalPlaces(raw);
+
+  switch(type) {
+
+    case 'khp-mass':
+      if (dp < 4) {
+        setVal(el, msgId, 'err', 'Analytical balance records 4 decimal places (e.g., 0.5024 g). Check your recording.');
+      } else if (num < 0.2) {
+        setVal(el, msgId, 'err', 'Too small — sample < 0.2 g produces a titration volume too small to read accurately. Recheck or re-weigh.');
+      } else if (num < 0.35) {
+        setVal(el, msgId, 'warn', 'Low but possible. Titration volume will be small — read buret carefully near endpoint.');
+      } else if (num <= 0.85) {
+        setVal(el, msgId, 'ok', 'Mass in acceptable range for KHP standardization.');
+      } else if (num <= 1.2) {
+        setVal(el, msgId, 'warn', 'Larger than typical — verify you did not exceed burette capacity (50.00 mL) during titration.');
+      } else {
+        setVal(el, msgId, 'err', 'Unusually large KHP mass. This would require more NaOH than the buret holds. Recheck.');
+      }
+      break;
+
+    case 'buret-init':
+      if (dp < 2) {
+        setVal(el, msgId, 'err', 'Buret readings require 2 decimal places (e.g., 0.45 mL). Read to the 0.01 mL mark.');
+      } else if (num < 0) {
+        setVal(el, msgId, 'err', 'Buret readings cannot be negative. The buret reads 0.00 at the top.');
+      } else if (num > 50.00) {
+        setVal(el, msgId, 'err', 'Exceeds buret capacity of 50.00 mL. Check your reading.');
+      } else if (num > 5.00) {
+        setVal(el, msgId, 'warn', 'Initial reading > 5.00 mL. Did you refill the buret partway through? Acceptable if intentional.');
+      } else {
+        setVal(el, msgId, 'ok', 'Initial buret reading looks reasonable.');
+      }
+      break;
+
+    case 'buret-final':
+      if (dp < 2) {
+        setVal(el, msgId, 'err', 'Buret readings require 2 decimal places (e.g., 24.37 mL). Read to the 0.01 mL mark.');
+      } else if (num < 0) {
+        setVal(el, msgId, 'err', 'Cannot be negative.');
+      } else if (num > 50.00) {
+        setVal(el, msgId, 'err', 'Exceeds buret capacity of 50.00 mL. Did you read past the scale?');
+      } else if (num < 5.00) {
+        setVal(el, msgId, 'warn', 'Final reading < 5.00 mL — very small volume used. Verify the endpoint was actually reached.');
+      } else {
+        setVal(el, msgId, 'ok', 'Final buret reading in acceptable range.');
+      }
+      break;
+
+    case 'vol-naoh':
+      if (dp < 2) {
+        setVal(el, msgId, 'err', 'Volume should be calculated from buret readings to 2 decimal places.');
+      } else if (num <= 0) {
+        setVal(el, msgId, 'err', 'Volume must be positive. Final reading must be greater than initial reading.');
+      } else if (num > 50.00) {
+        setVal(el, msgId, 'err', 'Volume exceeds one full buret (50.00 mL). Check your subtraction: final − initial.');
+      } else if (num < 8.00) {
+        setVal(el, msgId, 'warn', 'Volume < 8 mL is small for this experiment. Endpoint may be difficult to detect reliably. Confirm with instructor.');
+      } else if (num <= 45.00) {
+        setVal(el, msgId, 'ok', 'Volume in expected range for this titration.');
+      } else {
+        setVal(el, msgId, 'warn', 'Volume > 45 mL is near buret capacity. Verify the endpoint was not overshot.');
+      }
+      break;
+
+    case 'flask-mass':
+      if (dp < 4) {
+        setVal(el, msgId, 'err', 'Flask mass requires 4 decimal places from the analytical balance (e.g., 92.3451 g).');
+      } else if (num < 60) {
+        setVal(el, msgId, 'err', 'Flask mass < 60 g is unrealistic for a 250 mL Erlenmeyer flask. Check you weighed the correct container.');
+      } else if (num < 80) {
+        setVal(el, msgId, 'warn', 'Slightly low for a 250 mL Erlenmeyer. Acceptable if using a smaller flask.');
+      } else if (num <= 200) {
+        setVal(el, msgId, 'ok', 'Flask mass in expected range for a 250 mL Erlenmeyer flask.');
+      } else {
+        setVal(el, msgId, 'warn', 'Flask mass > 200 g is high. Confirm you are not weighing additional equipment.');
+      }
+      break;
+
+    case 'flask-full':
+      if (dp < 4) {
+        setVal(el, msgId, 'err', 'Requires 4 decimal places from the analytical balance.');
+      } else if (num < 60) {
+        setVal(el, msgId, 'err', 'Value lower than an empty flask. Flask + sample must be heavier than empty flask alone.');
+      } else {
+        setVal(el, msgId, 'ok', 'Value recorded. Vinegar mass will be validated after subtraction.');
+      }
+      break;
+
+    case 'vinegar-mass':
+      if (dp < 4) {
+        setVal(el, msgId, 'err', 'Vinegar mass should be calculated from balance readings and recorded to 4 decimal places.');
+      } else if (num <= 0) {
+        setVal(el, msgId, 'err', 'Negative or zero mass. Flask + vinegar must be greater than empty flask mass.');
+      } else if (num < 1.0) {
+        setVal(el, msgId, 'err', 'Sample < 1.0 g is too small for a reliable result. Check subtraction: (flask+vinegar) − (empty flask).');
+      } else if (num < 2.5) {
+        setVal(el, msgId, 'warn', 'Small sample mass. Result will be valid but precision may be lower. Confirm this is your recorded value.');
+      } else if (num <= 10.0) {
+        setVal(el, msgId, 'ok', 'Vinegar sample mass in the expected range.');
+      } else {
+        setVal(el, msgId, 'warn', 'Sample > 10 g is larger than typical. Confirm you recorded mass of vinegar only, not the full flask+contents.');
+      }
+      break;
+  }
+}
+
+// Cross-field: KHP final > initial, volume matches
+function validateKHPVolume(trial) {
+  const initEl = document.getElementById('init-' + trial);
+  const finalEl = document.getElementById('final-' + trial);
+  const volEl = document.getElementById('vol-' + trial);
+  if (!initEl || !finalEl) return;
+  const ini = parseFloat(initEl.value);
+  const fin = parseFloat(finalEl.value);
+  if (isNaN(ini) || isNaN(fin)) return;
+
+  if (fin <= ini) {
+    setVal(finalEl, 'val-final-' + trial, 'err',
+      'Final reading (' + fin.toFixed(2) + ') must be greater than initial (' + ini.toFixed(2) + '). Did you read the wrong line, or forget to refill?');
+    return;
+  }
+
+  const expected = (fin - ini).toFixed(2);
+  const recorded = volEl ? parseFloat(volEl.value) : NaN;
+  if (!isNaN(recorded) && Math.abs(recorded - parseFloat(expected)) > 0.05) {
+    setVal(volEl, 'val-vol-' + trial, 'warn',
+      'Recorded volume (' + recorded.toFixed(2) + ' mL) does not match final−initial (' + expected + ' mL). Recheck subtraction.');
+  }
+}
+
+function validateVinVolume(trial) {
+  const initEl = document.getElementById('vin-init-' + trial);
+  const finalEl = document.getElementById('vin-final-' + trial);
+  const volEl = document.getElementById('vin-vol-' + trial);
+  if (!initEl || !finalEl) return;
+  const ini = parseFloat(initEl.value);
+  const fin = parseFloat(finalEl.value);
+  if (isNaN(ini) || isNaN(fin)) return;
+
+  if (fin <= ini) {
+    setVal(finalEl, 'val-vin-final-' + trial, 'err',
+      'Final reading (' + fin.toFixed(2) + ') must be greater than initial (' + ini.toFixed(2) + '). Verify readings.');
+    return;
+  }
+
+  const expected = (fin - ini).toFixed(2);
+  const recorded = volEl ? parseFloat(volEl.value) : NaN;
+  if (!isNaN(recorded) && Math.abs(recorded - parseFloat(expected)) > 0.05) {
+    setVal(volEl, 'val-vin-vol-' + trial, 'warn',
+      'Recorded volume (' + recorded.toFixed(2) + ' mL) does not match final−initial (' + expected + ' mL). Recheck subtraction.');
+  }
+}
+
+// Cross-field: vinegar mass from difference
+function validateVinegarMass(trial) {
+  const emptyEl = document.getElementById('flask-empty-' + trial);
+  const fullEl = document.getElementById('flask-full-' + trial);
+  if (!emptyEl || !fullEl) return;
+  const empty = parseFloat(emptyEl.value);
+  const full = parseFloat(fullEl.value);
+  if (isNaN(empty) || isNaN(full)) return;
+  if (full <= empty) {
+    setVal(fullEl, 'val-flask-full-' + trial, 'err',
+      'Flask + vinegar (' + full.toFixed(4) + ' g) must be greater than empty flask (' + empty.toFixed(4) + ' g). Check which mass is which.');
+  }
+}
+
+// Cross-field: KHP trial consistency
+function validateKHPTrialConsistency() {
+  const v1 = parseFloat(document.getElementById('vol-1').value);
+  const v2 = parseFloat(document.getElementById('vol-2').value);
+  const msgEl = document.getElementById('val-khp-consistency');
+  if (!msgEl || isNaN(v1) || isNaN(v2)) return;
+  const diff = Math.abs(v1 - v2);
+  if (diff <= 0.20) {
+    msgEl.className = 'val-msg ok';
+    msgEl.textContent = 'Trial agreement: ΔV = ' + diff.toFixed(2) + ' mL — excellent reproducibility.';
+  } else if (diff <= 0.50) {
+    msgEl.className = 'val-msg warn';
+    msgEl.textContent = 'Trial agreement: ΔV = ' + diff.toFixed(2) + ' mL — acceptable but borderline. If time permits, consider a third trial.';
+  } else {
+    msgEl.className = 'val-msg err';
+    msgEl.textContent = 'Trial agreement: ΔV = ' + diff.toFixed(2) + ' mL — trials differ by more than 0.50 mL. One endpoint was likely missed or overshot. A third trial is strongly recommended.';
+  }
+}
+
+// Cross-field: vinegar trial consistency
+function validateVinTrialConsistency() {
+  const v1 = parseFloat(document.getElementById('vin-vol-1').value);
+  const v2 = parseFloat(document.getElementById('vin-vol-2').value);
+  const msgEl = document.getElementById('val-vin-consistency');
+  if (!msgEl || isNaN(v1) || isNaN(v2)) return;
+  const diff = Math.abs(v1 - v2);
+  if (diff <= 0.30) {
+    msgEl.className = 'val-msg ok';
+    msgEl.textContent = 'Trial agreement: ΔV = ' + diff.toFixed(2) + ' mL — good reproducibility between vinegar trials.';
+  } else if (diff <= 0.60) {
+    msgEl.className = 'val-msg warn';
+    msgEl.textContent = 'Trial agreement: ΔV = ' + diff.toFixed(2) + ' mL — marginal agreement. Review endpoint detection technique.';
+  } else {
+    msgEl.className = 'val-msg err';
+    msgEl.textContent = 'Trial agreement: ΔV = ' + diff.toFixed(2) + ' mL — poor reproducibility. One trial likely has an endpoint error. A third trial is strongly recommended before proceeding to calculations.';
+  }
+}
+
 </script>
 </body>
 </html>
