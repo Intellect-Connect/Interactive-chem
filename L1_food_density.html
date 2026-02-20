@@ -1,0 +1,3129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Density Investigation | CHEM 100 Lab 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #faf8f4;
+    --cream: #f2ede3;
+    --rule: #d4c9b0;
+    --accent: #2e7d32;
+    --accent-light: #e8f5e9;
+    --accent-dark: #1b5e20;
+    --red: #c0392b;
+    --red-light: #f9ebea;
+    --blue: #1a4a7a;
+    --blue-light: #e8f0f9;
+    --gold: #b8860b;
+    --gold-light: #fdf6e3;
+    --orange: #e65100;
+    --orange-light: #fff3e0;
+    --canvas-bg: #fffef9;
+    --border: #c8bfa8;
+    --shadow: 0 2px 12px rgba(26,26,46,0.08);
+    --green: #1a6b3c;
+    --green-light: #e8f5ee;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #e0ddd6;
+    background-image:
+      radial-gradient(ellipse at 15% 10%, rgba(46,125,50,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 90%, rgba(26,74,122,0.06) 0%, transparent 50%);
+    min-height: 100vh;
+    color: var(--ink);
+  }
+
+  /* HEADER */
+  .lab-header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .lab-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      90deg, transparent, transparent 59px,
+      rgba(255,255,255,0.04) 59px, rgba(255,255,255,0.04) 60px
+    );
+  }
+  .header-inner {
+    position: relative;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 40px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+  }
+  .lab-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: #6fcf6f;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .lab-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.15;
+    color: #fff;
+  }
+  .lab-subtitle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 6px;
+    font-style: italic;
+  }
+  .header-meta {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.38);
+    line-height: 1.8;
+    flex-shrink: 0;
+  }
+
+  /* STUDENT BAR */
+  .student-bar {
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+  }
+  .student-bar-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 16px 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+  }
+  .field-group label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .field-group input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--border);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 4px 0;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field-group input:focus { border-color: var(--accent); }
+
+  /* TAB NAV */
+  .tab-nav-wrap {
+    background: var(--ink);
+    border-bottom: 2px solid rgba(255,255,255,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .tab-nav {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    gap: 0;
+  }
+  .tab-btn {
+    padding: 14px 22px;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.45);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.18s;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    position: relative;
+    top: 2px;
+  }
+  .tab-btn:hover { color: rgba(255,255,255,0.75); }
+  .tab-btn.active {
+    color: #6fcf6f;
+    border-bottom-color: #6fcf6f;
+  }
+  .tab-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    margin-right: 7px;
+    opacity: 0.6;
+  }
+
+  /* TAB PANELS */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* MAIN CONTENT */
+  .main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 40px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* SCENARIO BANNER */
+  .scenario-banner {
+    background: var(--ink);
+    border: 1px solid rgba(111,207,111,0.25);
+    border-left: 4px solid #6fcf6f;
+    border-radius: 4px;
+    padding: 22px 26px;
+    position: relative;
+    overflow: hidden;
+  }
+  .scenario-banner::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 200px;
+    background: radial-gradient(ellipse at right, rgba(111,207,111,0.06) 0%, transparent 70%);
+  }
+  .scenario-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: #6fcf6f;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .scenario-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px;
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .scenario-body {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.68;
+  }
+  .scenario-mission {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: rgba(111,207,111,0.1);
+    border-radius: 3px;
+    font-size: 13px;
+    color: #a8e6a8;
+    line-height: 1.6;
+  }
+  .scenario-mission strong { color: #6fcf6f; }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .section-badge {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-blue { background: var(--blue-light); color: var(--blue); }
+  .badge-gold { background: var(--gold-light); color: var(--gold); }
+  .section-body { padding: 24px; }
+
+  /* REF BOX */
+  .ref-box {
+    background: var(--blue-light);
+    border: 1px solid rgba(26,74,122,0.2);
+    border-left: 3px solid var(--blue);
+    border-radius: 3px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .ref-box-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+  .ref-box p { font-size: 13.5px; line-height: 1.65; color: #2a3a50; }
+  .ref-box p + p { margin-top: 8px; }
+  .eq {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: rgba(26,74,122,0.1);
+    padding: 2px 7px;
+    border-radius: 2px;
+    color: var(--blue);
+  }
+
+  .ref-box-green {
+    background: var(--green-light);
+    border: 1px solid rgba(26,107,60,0.2);
+    border-left: 3px solid var(--green);
+  }
+  .ref-box-green .ref-box-title { color: var(--green); }
+  .ref-box-green p { color: #1a3a28; }
+
+  .ref-box-gold {
+    background: var(--gold-light);
+    border: 1px solid rgba(184,134,11,0.25);
+    border-left: 3px solid var(--gold);
+  }
+  .ref-box-gold .ref-box-title { color: var(--gold); }
+  .ref-box-gold p { color: #3a2e10; }
+
+  .ref-box-orange {
+    background: var(--orange-light);
+    border: 1px solid rgba(230,81,0,0.2);
+    border-left: 3px solid var(--orange);
+  }
+  .ref-box-orange .ref-box-title { color: var(--orange); }
+  .ref-box-orange p { color: #3e2000; }
+
+  /* CONCEPT GRID */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .concept-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    position: relative;
+  }
+  .concept-card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .concept-card h4 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+  .concept-card p { font-size: 12.5px; line-height: 1.6; color: #555; }
+  .concept-card .example {
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    padding: 4px 8px;
+    background: var(--cream);
+    border-radius: 2px;
+  }
+
+  /* FORMULA BOX */
+  .formula-display {
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 24px;
+    text-align: center;
+    margin: 16px 0;
+  }
+  .formula-main {
+    font-family: 'Source Serif 4', serif;
+    font-size: 28px;
+    color: #fff;
+    letter-spacing: 0.03em;
+    margin-bottom: 8px;
+  }
+  .formula-main .formula-sym {
+    color: #6fcf6f;
+  }
+  .formula-unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.1em;
+  }
+
+  /* DENSITY COLUMN VISUAL */
+  .density-column-visual {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0;
+    margin: 20px auto;
+    max-width: 260px;
+    position: relative;
+  }
+  .density-column-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .density-column-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #888;
+    text-align: center;
+  }
+  .column-container {
+    width: 80px;
+    border: 2.5px solid #aaa;
+    border-radius: 4px 4px 6px 6px;
+    overflow: hidden;
+    background: #f8f8f8;
+    box-shadow: 2px 4px 16px rgba(0,0,0,0.12);
+  }
+  .layer {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: rgba(0,0,0,0.6);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    transition: all 0.4s ease;
+    text-align: center;
+    padding: 0 4px;
+    line-height: 1.3;
+  }
+  .layer:last-child { border-bottom: none; }
+  .layer-oil { background: #f5c842; }
+  .layer-soap { background: #b8e0cc; }
+  .layer-water { background: #a8d4f5; }
+  .layer-soap { background: #b8e0cc; }
+  .layer-honey { background: #d4860a; color: rgba(255,255,255,0.8); }
+  .density-labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 220px;
+    margin-left: 14px;
+    gap: 0;
+  }
+  .d-label {
+    font-size: 11.5px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 44px;
+  }
+  .d-label .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #888;
+    background: var(--cream);
+    padding: 1px 5px;
+    border-radius: 2px;
+  }
+
+  /* MATERIALS LIST */
+  .materials-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .mat-group h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .mat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    font-size: 13.5px;
+    color: var(--ink);
+    border-bottom: 1px dashed var(--rule);
+  }
+  .mat-item:last-child { border-bottom: none; }
+  .mat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* PROCEDURE STEPS */
+  .proc-part-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 20px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .proc-part-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .proc-step {
+    display: flex;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--rule);
+    align-items: flex-start;
+  }
+  .proc-step:last-child { border-bottom: none; }
+  .step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--ink);
+    margin-top: 1px;
+  }
+  .step-num.highlight {
+    background: var(--accent);
+    border-color: var(--accent-dark);
+    color: #fff;
+  }
+  .step-content { flex: 1; }
+  .step-text { font-size: 14px; line-height: 1.65; color: var(--ink); }
+  .step-note {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+    padding: 5px 10px;
+    background: var(--cream);
+    border-radius: 2px;
+  }
+  .step-note.warning {
+    background: var(--orange-light);
+    color: var(--orange);
+    font-style: normal;
+    font-weight: 500;
+    border-left: 2px solid var(--orange);
+  }
+  .step-note.tip {
+    background: var(--green-light);
+    color: var(--green);
+    font-style: normal;
+    border-left: 2px solid var(--green);
+  }
+
+  /* DATA TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin: 16px 0;
+  }
+  .data-table th {
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: middle;
+  }
+  .data-table tr:nth-child(even) td { background: var(--cream); }
+  .data-table td.label {
+    font-weight: 500;
+    color: #333;
+    font-size: 13px;
+  }
+  .data-table td.label .sub {
+    display: block;
+    font-size: 11px;
+    color: #aaa;
+    font-weight: 400;
+    margin-top: 1px;
+  }
+  .data-table input[type="text"],
+  .data-table input[type="number"],
+  .data-table select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .data-table select { cursor: pointer; }
+  .data-table input:focus,
+  .data-table select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,74,122,0.1);
+  }
+  .data-table td.calc-cell {
+    background: rgba(46,125,50,0.05);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .auto-calc {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    min-height: 20px;
+  }
+  .auto-calc.empty { color: #bbb; font-weight: 400; }
+
+  /* LIQUID COLOR INDICATORS */
+  .liquid-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .liquid-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.15);
+    flex-shrink: 0;
+  }
+
+  /* QUESTION BLOCKS */
+  .q-block {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .q-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .q-label {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 2px 7px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .q-points {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: #888;
+    background: var(--cream);
+    padding: 2px 6px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    margin-left: auto;
+  }
+  .q-text { font-size: 14px; line-height: 1.6; color: var(--ink); }
+  .q-hint {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+    margin-bottom: 8px;
+    margin-left: 36px;
+  }
+
+  /* TYPED ANSWER INPUTS */
+  .answer-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 36px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .answer-input {
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    min-width: 140px;
+  }
+  .answer-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,74,122,0.1);
+  }
+  .units-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #666;
+  }
+  .check-btn {
+    padding: 7px 16px;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .check-btn:hover { background: #2d2d4e; }
+  .feedback-inline {
+    margin-left: 36px;
+    margin-top: 8px;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 3px;
+    display: none;
+    line-height: 1.5;
+  }
+  .feedback-inline.correct {
+    background: var(--green-light);
+    border: 1px solid rgba(26,107,60,0.3);
+    color: var(--green);
+    display: block;
+  }
+  .feedback-inline.incorrect {
+    background: var(--red-light);
+    border: 1px solid rgba(192,57,43,0.3);
+    color: var(--red);
+    display: block;
+  }
+  .feedback-inline.partial {
+    background: var(--gold-light);
+    border: 1px solid rgba(184,134,11,0.3);
+    color: var(--gold);
+    display: block;
+  }
+
+  /* OPEN RESPONSE */
+  .open-textarea {
+    width: 100%;
+    min-height: 90px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    padding: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .open-textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,74,122,0.1);
+  }
+  .open-area-wrap { margin-left: 36px; }
+  .ai-feedback-btn {
+    margin-top: 8px;
+    padding: 8px 18px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .ai-feedback-btn:hover { background: #1a3d65; }
+  .ai-feedback-btn:disabled { background: #aaa; cursor: not-allowed; }
+  .spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .ai-feedback-btn.loading .spinner { display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ai-feedback-box {
+    margin-top: 10px;
+    padding: 14px 16px;
+    background: var(--blue-light);
+    border: 1px solid rgba(26,74,122,0.2);
+    border-radius: 3px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #1a2a3a;
+    display: none;
+  }
+  .ai-feedback-box.visible { display: block; }
+  .ai-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--blue);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  /* MC OPTIONS */
+  .mc-options {
+    margin-left: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .mc-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  .mc-option:hover { border-color: var(--blue); background: var(--blue-light); }
+  .mc-option input[type="radio"] { margin-top: 2px; accent-color: var(--blue); flex-shrink: 0; }
+  .mc-option.selected-correct { border-color: var(--green); background: var(--green-light); }
+  .mc-option.selected-wrong { border-color: var(--red); background: var(--red-light); }
+
+  /* RANKING SECTION */
+  .rank-table {
+    width: 100%;
+    margin-left: 36px;
+    max-width: calc(100% - 36px);
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  .rank-table th {
+    background: var(--cream);
+    padding: 8px 12px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    border-bottom: 1.5px solid var(--border);
+    color: #555;
+  }
+  .rank-table td {
+    padding: 8px 12px;
+    border-bottom: 1px dashed var(--rule);
+    vertical-align: middle;
+  }
+  .rank-table select {
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    background: #fff;
+    color: var(--ink);
+    width: 100%;
+    min-width: 140px;
+    outline: none;
+  }
+
+  /* VAL MESSAGES */
+  .val-msg {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 0;
+    margin-top: 3px;
+    min-height: 0;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+  .val-msg.ok { color: var(--green); padding: 3px 6px; background: var(--green-light); border-left: 2px solid var(--green); }
+  .val-msg.warn { color: var(--gold); padding: 3px 6px; background: var(--gold-light); border-left: 2px solid var(--gold); }
+  .val-msg.err { color: var(--red); padding: 3px 6px; background: var(--red-light); border-left: 2px solid var(--red); }
+  input.val-ok   { border-color: var(--green) !important; box-shadow: 0 0 0 2px rgba(26,107,60,0.12); }
+  input.val-warn { border-color: var(--gold)  !important; box-shadow: 0 0 0 2px rgba(184,134,11,0.12); }
+  input.val-err  { border-color: var(--red)   !important; box-shadow: 0 0 0 2px rgba(192,57,43,0.12); }
+
+  /* SUBMIT SECTION */
+  .submit-section {
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .submit-info { color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.6; }
+  .submit-info strong { color: #fff; display: block; margin-bottom: 4px; font-size: 15px; }
+  .submit-main-btn {
+    padding: 14px 32px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .submit-main-btn:hover { background: var(--accent-dark); }
+
+  /* SCORE PANEL */
+  .score-panel {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 32px;
+    display: none;
+  }
+  .score-panel.visible { display: block; }
+  .score-header { font-family: 'Source Serif 4', serif; font-size: 22px; font-weight: 600; margin-bottom: 16px; }
+  .score-bar-wrap { background: var(--rule); border-radius: 99px; height: 10px; margin-bottom: 8px; overflow: hidden; }
+  .score-bar { height: 100%; border-radius: 99px; background: var(--green); transition: width 1s ease; }
+  .score-text { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #666; margin-bottom: 16px; }
+  .score-details { font-size: 14px; line-height: 1.8; color: #444; }
+
+  /* PHOTO UPLOAD NOTE */
+  .photo-note {
+    background: var(--orange-light);
+    border: 1px solid rgba(230,81,0,0.2);
+    border-left: 3px solid var(--orange);
+    border-radius: 3px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #3e2000;
+    line-height: 1.6;
+    margin: 16px 0;
+  }
+  .photo-note strong { color: var(--orange); }
+
+  /* SECTION DIVIDER */
+  .section-divider {
+    height: 1px;
+    background: var(--rule);
+    margin: 24px 0;
+  }
+
+  /* LEARNING OBJECTIVES */
+  .objectives-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .objectives-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .obj-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    border: 1.5px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .header-inner { padding: 24px 20px 20px; flex-direction: column; align-items: flex-start; }
+    .student-bar-inner { grid-template-columns: 1fr; padding: 12px 20px; }
+    .main { padding: 20px; }
+    .section-body { padding: 16px; }
+    .concept-grid { grid-template-columns: 1fr; }
+    .materials-grid { grid-template-columns: 1fr; }
+    .tab-nav { padding: 0 10px; overflow-x: auto; }
+    .tab-btn { padding: 12px 14px; font-size: 12px; }
+    .submit-section { flex-direction: column; }
+  }
+
+  /* DENSITY COLUMN DEMO INTERACTIVE */
+  .demo-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 30px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .beaker-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .beaker-svg-wrap { position: relative; }
+  .pour-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 200px;
+  }
+  .pour-btn {
+    padding: 9px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--ink);
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+  }
+  .pour-btn:hover { background: var(--cream); }
+  .pour-btn.poured { opacity: 0.5; cursor: default; text-decoration: line-through; }
+  .pour-btn .swatch { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); flex-shrink: 0; }
+  .pour-btn-sub { font-size: 11px; color: #888; font-weight: 400; }
+  .reset-btn {
+    margin-top: 4px;
+    padding: 7px 14px;
+    border: 1.5px solid var(--red);
+    border-radius: 3px;
+    background: #fff;
+    color: var(--red);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: #fff; }
+  .observation-note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 500;
+    min-height: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  /* PROGRESS INDICATOR */
+  .tab-progress {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 12px 40px;
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .prog-segment {
+    flex: 1;
+    height: 3px;
+    background: var(--rule);
+    border-radius: 99px;
+    transition: background 0.3s;
+  }
+  .prog-segment.done { background: var(--accent); }
+
+  /* POINTS TOTAL DISPLAY */
+  .points-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    background: var(--gold-light);
+    border: 1px solid rgba(184,134,11,0.25);
+    border-radius: 3px;
+    color: var(--gold);
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="lab-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="lab-tag">CHEM 100 &mdash; Introductory Chemistry Laboratory</div>
+      <h1 class="lab-title">Food Density Investigation</h1>
+      <p class="lab-subtitle">Classification of Matter &bull; Physical Properties &bull; Density Measurement &bull; Food Safety Application</p>
+    </div>
+    <div class="header-meta">
+      Lab 1<br>
+      Version 1.0<br>
+      Carson-Newman University
+    </div>
+  </div>
+</header>
+
+<!-- STUDENT INFO -->
+<div class="student-bar">
+  <div class="student-bar-inner">
+    <div class="field-group">
+      <label>Student Name</label>
+      <input type="text" id="studentName" placeholder="Last, First">
+    </div>
+    <div class="field-group">
+      <label>Lab Section</label>
+      <input type="text" id="labSection" placeholder="e.g. CHEM 100-01">
+    </div>
+    <div class="field-group">
+      <label>Date</label>
+      <input type="text" id="labDate" placeholder="MM/DD/YYYY">
+    </div>
+  </div>
+</div>
+
+<!-- TAB NAVIGATION -->
+<div class="tab-nav-wrap">
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('intro', this)">
+      <span class="tab-num">01</span>Introduction
+    </button>
+    <button class="tab-btn" onclick="switchTab('background', this)">
+      <span class="tab-num">02</span>Background &amp; Pre-Lab
+    </button>
+    <button class="tab-btn" onclick="switchTab('materials', this)">
+      <span class="tab-num">03</span>Materials
+    </button>
+    <button class="tab-btn" onclick="switchTab('procedure', this)">
+      <span class="tab-num">04</span>Procedure
+    </button>
+    <button class="tab-btn" onclick="switchTab('analysis', this)">
+      <span class="tab-num">05</span>Data &amp; Analysis
+    </button>
+  </div>
+</div>
+
+<!-- ================================================
+     TAB 1: INTRODUCTION
+     ================================================ -->
+<div id="tab-intro" class="tab-panel active">
+<main class="main">
+
+  <!-- SCENARIO BANNER -->
+  <div class="scenario-banner">
+    <div class="scenario-tag">Bracket City &mdash; Classifying Liquid Foods</div>
+    <div class="scenario-title">The Food Safety Crisis Begins...</div>
+    <div class="scenario-body">
+      Welcome to Bracket City's Department of Health! As the new Food Safety Chemist, your first assignment is to investigate contamination in the liquid food supply. Multiple shipments of syrups, oils, and liquid ingredients have arrived, but some are mislabeled or potentially adulterated.
+    </div>
+    <div class="scenario-mission">
+      <strong>Your Mission:</strong> Classify these liquids by measuring their densities. Density is a physical property unique to each substance — it works like a chemical fingerprint. By measuring density, you can identify which liquids are pure and which may be contaminated or mislabeled.
+    </div>
+  </div>
+
+  <!-- REAL WORLD CONTEXT -->
+  <div style="background:#fff; border:1px solid #c8bfa8; border-left:4px solid var(--accent); border-radius:4px; padding:22px 26px; box-shadow:0 2px 12px rgba(26,26,46,0.07);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); margin-bottom:12px;">Real-World Context &mdash; Why This Matters</div>
+
+    <p style="font-size:14px; line-height:1.75; color:#2a2a3e; margin-bottom:14px;">
+      <strong>Food insecurity affects 1 in 7 Americans</strong>, and food banks are often the last line of defense for families, seniors, and children who cannot reliably access nutritious food. Feeding America's network of over 200 food banks distributes billions of pounds of food each year — much of it donated by grocery stores, distributors, and manufacturers when products are near their sell-by date, mislabeled, or overproduced.
+      <a href="https://www.feedingamerica.org/hunger-blog/what-donate-food-bank-and-what-avoid" target="_blank" rel="noopener" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--blue); text-decoration:none; border-bottom:1px dotted var(--blue); margin-left:4px;">[Feeding America]</a>
+      <a href="https://www.gamountainfoodbank.org/who-we-are/faq/" target="_blank" rel="noopener" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--blue); text-decoration:none; border-bottom:1px dotted var(--blue); margin-left:4px;">[Georgia Mountain Food Bank]</a>
+    </p>
+
+    <p style="font-size:14px; line-height:1.75; color:#2a2a3e; margin-bottom:14px;">
+      This creates a genuine food safety challenge. <strong>Donated food arrives without verified histories</strong> — it may have been stored improperly, relabeled, or mixed with inferior substitutes before reaching a distribution center. Unlike large grocery chains with dedicated quality control labs, most food banks and community pantries operate on tight budgets with volunteer staff and limited testing equipment. The people they serve — often living in low-income communities with higher rates of food insecurity and diet-related chronic illness — are also those who can least afford to become sick from unsafe food.
+      <a href="https://www.greatamericaninsurancegroup.com/content-hub/loss-control/details/food-safety-for-food-banks-pantries-and-distribution-centers" target="_blank" rel="noopener" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--blue); text-decoration:none; border-bottom:1px dotted var(--blue); margin-left:4px;">[Great American Insurance Group — Food Bank Safety]</a>
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8958359/" target="_blank" rel="noopener" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--blue); text-decoration:none; border-bottom:1px dotted var(--blue); margin-left:4px;">[PMC — Food Bank Policy &amp; Low-Income Communities]</a>
+    </p>
+
+    <p style="font-size:14px; line-height:1.75; color:#2a2a3e; margin-bottom:14px;">
+      Food fraud is not hypothetical. The FDA has documented cases where manufacturers added cheaper vegetable oils to expensive olive oil and sold the product as 100% pure — and experts estimate food fraud affects roughly 1% of the global food industry at a cost of $10–40 billion per year. Food banks regularly receive donated products that are mislabeled, overproduced, or have short code dates, making it critical to have simple, reliable ways to verify what a product actually is.
+      <a href="https://www.fda.gov/food/compliance-enforcement-food/economically-motivated-adulteration-food-fraud" target="_blank" rel="noopener" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--blue); text-decoration:none; border-bottom:1px dotted var(--blue); margin-left:4px;">[FDA — Economically Motivated Adulteration]</a>
+      <a href="https://www.eurofinsus.com/food-testing/resources/understanding-food-fraud-food-defense-authenticity-and-adulteration-of-foods/" target="_blank" rel="noopener" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--blue); text-decoration:none; border-bottom:1px dotted var(--blue); margin-left:4px;">[Eurofins — Food Fraud Overview]</a>
+    </p>
+
+    <p style="font-size:14px; line-height:1.75; color:#2a2a3e; margin-bottom:16px;">
+      <strong>This is where chemistry comes in.</strong> Density is one of the most accessible analytical tools available — it requires only a scale and a measuring cup, costs nothing, and can be performed without a laboratory. A food safety volunteer who knows that pure vegetable oil should have a density of approximately 0.92 g/mL can immediately flag a shipment that measures 1.10 g/mL as potentially adulterated. <strong>The skill you practice today is the same one used by real food safety chemists protecting vulnerable communities.</strong>
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11080768/" target="_blank" rel="noopener" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--blue); text-decoration:none; border-bottom:1px dotted var(--blue); margin-left:4px;">[PMC — Food Adulteration Detection Techniques]</a>
+    </p>
+
+    <div style="border-top:1px dashed #d4c9b0; padding-top:14px;">
+      <p style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#999; line-height:1.7; margin:0;">
+        Sources: Feeding America (2025) &bull; Georgia Mountain Food Bank FAQ &bull; U.S. FDA — Economically Motivated Adulteration &bull; Eurofins Food Testing Resource Library &bull;
+        Harrington et al. (2022) <em>US state variations in food bank donation policy</em>, PMC8958359 &bull;
+        Trafialek et al. (2021) <em>Food Adulteration: Causes, Risks, and Detection</em>, PMC11080768 &bull;
+        Great American Insurance Group — Food Safety for Food Banks
+      </p>
+    </div>
+  </div>
+
+
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">A</div>
+      <div class="section-title">Learning Objectives</div>
+      <span class="section-badge badge-green">Pre-Lab</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:13.5px; color:#555; margin-bottom:16px; line-height:1.65;">By completing this investigation, you will build the following skills and knowledge. Read these carefully before you begin — they define what you should be able to do <em>after</em> the lab.</p>
+      <ul class="objectives-list">
+        <li><span class="obj-check">1</span>Classify food liquids as elements, compounds, or mixtures using the definitions of matter classification</li>
+        <li><span class="obj-check">2</span>Distinguish between physical and chemical properties, and explain why density is a physical property</li>
+        <li><span class="obj-check">3</span>Measure density experimentally using mass and volume measurements, with appropriate units and significant figures</li>
+        <li><span class="obj-check">4</span>Use experimentally determined density values to identify an unknown substance or detect contamination</li>
+        <li><span class="obj-check">5</span>Apply the scientific method to interpret data and draw evidence-based conclusions about food safety</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div style="display:flex; justify-content:flex-end;">
+    <button class="submit-main-btn" style="background:var(--blue);" onclick="switchTab('background', document.querySelectorAll('.tab-btn')[1])">
+      Next: Chemistry Background &rarr;
+    </button>
+  </div>
+
+</main>
+</div>
+
+<!-- ================================================
+     TAB 2: CHEMISTRY BACKGROUND & MATERIALS
+     ================================================ -->
+<div id="tab-background" class="tab-panel">
+<main class="main">
+
+  <!-- CLASSIFICATION OF MATTER -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">Classification of Matter</div>
+      <span class="section-badge badge-blue">Core Concept</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:13.5px; color:#555; margin-bottom:18px; line-height:1.65;">All matter can be classified into a hierarchy. Understanding where your food liquids fall in this hierarchy is the first step in today's investigation.</p>
+
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-card-icon" style="background:#e8f0f9;">
+            <span style="color:var(--blue); font-weight:700; font-family:JetBrains Mono, monospace; font-size:13px;">E</span>
+          </div>
+          <h4>Element</h4>
+          <p>A pure substance made of only one type of atom. Cannot be broken down into simpler substances by chemical means.</p>
+          <div class="example">Au (gold), O<sub>2</sub> (oxygen gas)</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-card-icon" style="background:#e8f5ee;">
+            <span style="color:var(--green); font-weight:700; font-family:JetBrains Mono, monospace; font-size:13px;">C</span>
+          </div>
+          <h4>Compound</h4>
+          <p>A pure substance made of two or more elements chemically bonded together in a fixed, definite ratio.</p>
+          <div class="example">H<sub>2</sub>O (water), NaCl (table salt), C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> (glucose)</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-card-icon" style="background:#fdf6e3;">
+            <span style="color:var(--gold); font-weight:700; font-family:JetBrains Mono, monospace; font-size:13px;">M</span>
+          </div>
+          <h4>Mixture</h4>
+          <p>A physical combination of two or more pure substances. Composition can vary. Components retain their individual properties.</p>
+          <div class="example">Dish soap, vinegar, vegetable oil, salt water</div>
+        </div>
+      </div>
+
+      <div class="ref-box" style="margin-top:16px; margin-bottom:0;">
+        <div class="ref-box-title">Two Types of Mixtures</div>
+        <p><strong>Homogeneous mixture (solution):</strong> Uniform throughout — you cannot see the individual components. Examples: salt water, vinegar, clear apple juice.</p>
+        <p><strong>Heterogeneous mixture:</strong> Not uniform — you can see distinct regions or phases. Examples: Italian salad dressing, chunky salsa, unshaken orange juice.</p>
+        <p><strong>Key test:</strong> Most food liquids you will use today are <em>mixtures</em>, not pure compounds. Even something as simple as tap water is technically a mixture because it contains dissolved minerals. Distilled water is a compound.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DENSITY -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">Density: The Physical Property</div>
+      <span class="section-badge badge-green">Core Concept</span>
+    </div>
+    <div class="section-body">
+      <div class="formula-display">
+        <div class="formula-main">
+          <span class="formula-sym">d</span> = <span class="formula-sym">m</span> / <span class="formula-sym">V</span>
+        </div>
+        <div class="formula-unit">density (g/mL) = mass (g) / volume (mL)</div>
+      </div>
+
+      <div class="ref-box" style="margin-bottom:16px;">
+        <div class="ref-box-title">What Density Tells Us</div>
+        <p>Density is an <strong>intensive property</strong> — it does not depend on the size of the sample. Whether you have 1 mL of water or 1 L of water, the density is always 1.00 g/mL at room temperature. This makes density a reliable identifier.</p>
+        <p>When two immiscible (non-mixing) liquids are combined, the denser liquid sinks and the less dense liquid floats. This is why oil floats on water: oil (d &asymp; 0.92 g/mL) is less dense than water (d = 1.00 g/mL).</p>
+      </div>
+
+      <p style="font-size:13px; font-weight:600; color:#555; margin-bottom:12px;">Build the density column — click each liquid in order from densest to least dense.</p>
+
+      <!-- 3-COLUMN INTERACTIVE: notes | beaker | buttons -->
+      <div style="display:grid; grid-template-columns:1fr 100px 1fr; gap:12px; align-items:stretch; margin:0 0 4px;">
+
+        <!-- LEFT: layer observation notes, one per slot aligned to beaker rows -->
+        <div style="display:flex; flex-direction:column; justify-content:space-between; height:300px; padding-top:4px;">
+          <div class="col-note" id="note-layer-1" style="flex:1; display:flex; align-items:center; justify-content:flex-end; padding-right:10px; border-right:2px dashed #e0d9cc;">
+            <span style="font-family:JetBrains Mono,monospace; font-size:10px; color:#bbb; text-align:right; line-height:1.4;">densest &mdash; sinks to bottom</span>
+          </div>
+          <div class="col-note" id="note-layer-2" style="flex:1; display:flex; align-items:center; justify-content:flex-end; padding-right:10px; border-right:2px dashed #e0d9cc;">
+            <span style="font-family:JetBrains Mono,monospace; font-size:10px; color:#bbb; text-align:right; line-height:1.4;"></span>
+          </div>
+          <div class="col-note" id="note-layer-3" style="flex:1; display:flex; align-items:center; justify-content:flex-end; padding-right:10px; border-right:2px dashed #e0d9cc;">
+            <span style="font-family:JetBrains Mono,monospace; font-size:10px; color:#bbb; text-align:right; line-height:1.4;"></span>
+          </div>
+          <div class="col-note" id="note-layer-4" style="flex:1; display:flex; align-items:center; justify-content:flex-end; padding-right:10px; border-right:2px dashed #e0d9cc;">
+            <span style="font-family:JetBrains Mono,monospace; font-size:10px; color:#bbb; text-align:right; line-height:1.4;"></span>
+          </div>
+          <div class="col-note" id="note-layer-5" style="flex:1; display:flex; align-items:center; justify-content:flex-end; padding-right:10px; border-right:2px dashed #e0d9cc;">
+            <span style="font-family:JetBrains Mono,monospace; font-size:10px; color:#bbb; text-align:right; line-height:1.4;">least dense &mdash; floats on top</span>
+          </div>
+        </div>
+
+        <!-- CENTER: fixed-position beaker -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div style="position:relative; width:100px; height:300px;">
+            <svg width="100" height="300" viewBox="0 0 100 300" style="position:absolute; top:0; left:0; pointer-events:none; z-index:2;">
+              <rect x="8" y="6"  width="84" height="10" rx="2" fill="#ddd" stroke="#aaa" stroke-width="1.5"/>
+              <rect x="13" y="16" width="74" height="278" rx="3" fill="none" stroke="#999" stroke-width="2.5"/>
+              <line x1="14" y1="238" x2="86" y2="238" stroke="rgba(0,0,0,0.09)" stroke-width="1" stroke-dasharray="3,3"/>
+              <line x1="14" y1="182" x2="86" y2="182" stroke="rgba(0,0,0,0.09)" stroke-width="1" stroke-dasharray="3,3"/>
+              <line x1="14" y1="126" x2="86" y2="126" stroke="rgba(0,0,0,0.09)" stroke-width="1" stroke-dasharray="3,3"/>
+              <line x1="14" y1="70"  x2="86" y2="70"  stroke="rgba(0,0,0,0.09)" stroke-width="1" stroke-dasharray="3,3"/>
+            </svg>
+            <div id="col-layer-1" style="position:absolute; left:14px; top:238px; width:72px; height:56px; background:#b5651d; opacity:0; transition:opacity 0.35s ease; z-index:1;"></div>
+            <div id="col-layer-2" style="position:absolute; left:14px; top:182px; width:72px; height:56px; background:#c8e6c9; opacity:0; transition:opacity 0.35s ease; z-index:1;"></div>
+            <div id="col-layer-3" style="position:absolute; left:14px; top:126px; width:72px; height:56px; background:#add8e6; opacity:0; transition:opacity 0.35s ease; z-index:1;"></div>
+            <div id="col-layer-4" style="position:absolute; left:14px; top:70px;  width:72px; height:56px; background:#ffd700; opacity:0; transition:opacity 0.35s ease; z-index:1;"></div>
+            <div id="col-layer-5" style="position:absolute; left:14px; top:16px;  width:72px; height:54px; background:#e0f0ff; opacity:0; transition:opacity 0.35s ease; z-index:1;"></div>
+          </div>
+          <div style="font-family:JetBrains Mono,monospace; font-size:9px; color:#aaa; letter-spacing:0.12em; text-transform:uppercase; text-align:center;">Column</div>
+          <div id="col-obs-note" style="font-family:JetBrains Mono,monospace; font-size:10px; min-height:28px; text-align:center; max-width:110px; line-height:1.4; padding:0 4px;"></div>
+        </div>
+
+        <!-- RIGHT: liquid buttons, height-matched, shuffled order -->
+        <div style="display:flex; flex-direction:column; gap:5px; height:300px;">
+          <div style="font-family:JetBrains Mono,monospace; font-size:9px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#aaa; flex-shrink:0; margin-bottom:2px;">Click to add &rarr;</div>
+          <button class="pour-btn" id="colbtn-alcohol"   onclick="addToColumn('alcohol')"   style="flex:1; padding:6px 10px;">
+            <span style="width:10px;height:10px;border-radius:50%;background:#e0f0ff;border:1px solid #aac;flex-shrink:0;"></span>
+            <span style="display:flex;flex-direction:column; line-height:1.3;">Rubbing Alcohol<span class="pour-btn-sub">d = 0.79 g/mL</span></span>
+          </button>
+          <button class="pour-btn" id="colbtn-saltwater" onclick="addToColumn('saltwater')" style="flex:1; padding:6px 10px;">
+            <span style="width:10px;height:10px;border-radius:50%;background:#add8e6;border:1px solid #88b;flex-shrink:0;"></span>
+            <span style="display:flex;flex-direction:column; line-height:1.3;">Salt Water<span class="pour-btn-sub">d = 1.07 g/mL</span></span>
+          </button>
+          <button class="pour-btn" id="colbtn-cornsyrup" onclick="addToColumn('cornsyrup')" style="flex:1; padding:6px 10px;">
+            <span style="width:10px;height:10px;border-radius:50%;background:#b5651d;border:1px solid #8b4;flex-shrink:0;"></span>
+            <span style="display:flex;flex-direction:column; line-height:1.3;">Corn Syrup<span class="pour-btn-sub">d = 1.33 g/mL</span></span>
+          </button>
+          <button class="pour-btn" id="colbtn-oliveoil"  onclick="addToColumn('oliveoil')"  style="flex:1; padding:6px 10px;">
+            <span style="width:10px;height:10px;border-radius:50%;background:#ffd700;border:1px solid #ba0;flex-shrink:0;"></span>
+            <span style="display:flex;flex-direction:column; line-height:1.3;">Olive Oil<span class="pour-btn-sub">d = 0.91 g/mL</span></span>
+          </button>
+          <button class="pour-btn" id="colbtn-glycerin"  onclick="addToColumn('glycerin')"  style="flex:1; padding:6px 10px;">
+            <span style="width:10px;height:10px;border-radius:50%;background:#c8e6c9;border:1px solid #8a8;flex-shrink:0;"></span>
+            <span style="display:flex;flex-direction:column; line-height:1.3;">Glycerin<span class="pour-btn-sub">d = 1.26 g/mL</span></span>
+          </button>
+          <button class="reset-btn" onclick="resetColumn()" style="flex-shrink:0; margin-top:2px; padding:5px 10px; font-size:11px;">Reset</button>
+        </div>
+
+      </div>
+
+      <div class="ref-box ref-box-gold" style="margin-top:4px;">
+        <div class="ref-box-title">Significant Figures in Density Calculations</div>
+        <p>Your digital scale measures mass to <strong>0.1 g</strong> (e.g., 52.3 g). You will measure a volume of <strong>60 mL</strong> (1/4 cup) using a household measuring cup. Your calculated density should reflect the precision of your least precise measurement. Report density to <strong>2 significant figures</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRE-LAB CONCEPTUAL CHECK -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">C</div>
+      <div class="section-title">Pre-Lab Conceptual Check</div>
+      <span class="section-badge badge-blue">5 pts &mdash; Complete Before Lab</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:13.5px; color:#555; margin-bottom:20px; line-height:1.65;">Use the chemistry background above to answer these questions before you begin the experiment. Each question tests whether you are ready to interpret what you will observe.</p>
+
+      <!-- MC 1 -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q1</span>
+          <span class="q-text">Pure water (H<sub>2</sub>O) consists of hydrogen and oxygen atoms chemically bonded together. Based on this, water is best classified as:</span>
+          <span class="q-points">1 pt</span>
+        </div>
+        <div class="mc-options" id="mc1">
+          <label class="mc-option"><input type="radio" name="mc1" value="A"> An element, because it is a single pure substance</label>
+          <label class="mc-option"><input type="radio" name="mc1" value="B"> A compound, because it is made of two elements chemically bonded in a fixed ratio</label>
+          <label class="mc-option"><input type="radio" name="mc1" value="C"> A homogeneous mixture, because hydrogen and oxygen are uniformly distributed</label>
+          <label class="mc-option"><input type="radio" name="mc1" value="D"> A heterogeneous mixture, because you can see separate components</label>
+        </div>
+        <div class="feedback-inline" id="fb-mc1"></div>
+      </div>
+
+      <!-- MC 2 -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q2</span>
+          <span class="q-text">A sample of vegetable oil has a density of 0.92 g/mL. A sample of water has a density of 1.00 g/mL. When poured into the same container, which statement is correct?</span>
+          <span class="q-points">1 pt</span>
+        </div>
+        <div class="mc-options" id="mc2">
+          <label class="mc-option"><input type="radio" name="mc2" value="A"> Oil sinks because it is heavier than water</label>
+          <label class="mc-option"><input type="radio" name="mc2" value="B"> Water sinks because it is denser than oil; oil floats on top</label>
+          <label class="mc-option"><input type="radio" name="mc2" value="C"> They will mix completely because they are both liquids</label>
+          <label class="mc-option"><input type="radio" name="mc2" value="D"> Oil sinks because 0.92 is a smaller number than 1.00</label>
+        </div>
+        <div class="feedback-inline" id="fb-mc2"></div>
+      </div>
+
+      <!-- MC 3 -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q3</span>
+          <span class="q-text">Dish soap is a surfactant solution — water is the primary component, but it also contains detergent molecules, fragrances, preservatives, and dyes, all uniformly distributed throughout. Dish soap is best classified as:</span>
+          <span class="q-points">1 pt</span>
+        </div>
+        <div class="mc-options" id="mc3">
+          <label class="mc-option"><input type="radio" name="mc3" value="A"> An element</label>
+          <label class="mc-option"><input type="radio" name="mc3" value="B"> A compound</label>
+          <label class="mc-option"><input type="radio" name="mc3" value="C"> A homogeneous mixture</label>
+          <label class="mc-option"><input type="radio" name="mc3" value="D"> A heterogeneous mixture</label>
+        </div>
+        <div class="feedback-inline" id="fb-mc3"></div>
+      </div>
+
+      <!-- Open Q4 -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q4</span>
+          <span class="q-text">In your own words, explain why measuring density is useful for detecting food contamination. How does density act like a "chemical fingerprint"?</span>
+          <span class="q-points">2 pts</span>
+        </div>
+        <div class="open-area-wrap">
+          <textarea class="open-textarea" id="open-q4-intro" placeholder="Write 2-3 sentences explaining the connection between density and food identity..."></textarea>
+          <button class="ai-feedback-btn" onclick="getAIFeedback('q4-intro', this)">
+            <span class="spinner"></span>Get Feedback
+          </button>
+          <div class="ai-feedback-box" id="ai-q4-intro">
+            <div class="ai-label">Instructor Feedback</div>
+            <div class="ai-feedback-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <button class="check-btn" onclick="switchTab('intro', document.querySelectorAll('.tab-btn')[0])">&larr; Introduction</button>
+    <button class="submit-main-btn" style="background:var(--blue);" onclick="switchTab('materials', document.querySelectorAll('.tab-btn')[2])">Next: Materials &rarr;</button>
+  </div>
+
+</main>
+</div>
+
+<!-- ================================================
+     TAB 3: MATERIALS
+     ================================================ -->
+<div id="tab-materials" class="tab-panel">
+<main class="main">
+
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">D</div>
+      <div class="section-title">Materials</div>
+      <span class="section-badge badge-gold">Gather Before Starting</span>
+    </div>
+    <div class="section-body">
+      <div class="ref-box ref-box-green" style="margin-bottom:20px;">
+        <div class="ref-box-title">Safety &amp; Home Lab Notes</div>
+        <p>All liquids used today are food items — this lab is safe for home or dorm use. No heating is required. Clean up spills immediately. Wash hands after handling dish soap. Do not consume dish soap. The density column in Part 3 should be disposed of in the trash or sink (in small amounts); do not eat it after mixing.</p>
+      </div>
+
+      <div class="materials-grid">
+        <div class="mat-group">
+          <h4>Food Liquids to Test</h4>
+          <div class="mat-item"><span class="mat-dot" style="background:#a8d4f5;"></span>Water (tap or bottled)</div>
+          <div class="mat-item"><span class="mat-dot" style="background:#f5c842;"></span>Vegetable oil (any type)</div>
+          <div class="mat-item"><span class="mat-dot" style="background:#d4860a;"></span>Pancake syrup or honey</div>
+          <div class="mat-item"><span class="mat-dot" style="background:#b8e0cc;"></span>Dish soap (used in all three parts)</div>
+        </div>
+        <div class="mat-group">
+          <h4>Equipment</h4>
+          <div class="mat-item"><span class="mat-dot" style="background:#888;"></span>Digital kitchen scale (recommended) or measuring cups + spoons</div>
+          <div class="mat-item"><span class="mat-dot" style="background:#888;"></span>5 small clear cups or containers (8 oz / 250 mL)</div>
+          <div class="mat-item"><span class="mat-dot" style="background:#888;"></span>Measuring cup (1/4 cup = 60 mL) — one per student or group</div>
+          <div class="mat-item"><span class="mat-dot" style="background:#888;"></span>1 tall clear container (for density column, Part 3)</div>
+          <div class="mat-item"><span class="mat-dot" style="background:#888;"></span>Labels or marker, paper towels</div>
+          <div class="mat-item"><span class="mat-dot" style="background:#888;"></span>Calculator (or phone)</div>
+        </div>
+      </div>
+
+      <div class="ref-box ref-box-orange" style="margin-top:16px; margin-bottom:0;">
+        <div class="ref-box-title">Volume Note for Home Lab</div>
+        <p>A standard US measuring cup = 240 mL. One-quarter cup = <strong>60 mL</strong>. Four tablespoons = approximately 60 mL. Use exactly <strong>1/4 cup (60 mL)</strong> consistently for all four samples — consistency matters more than the exact volume, as long as you record what you actually use.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <button class="check-btn" onclick="switchTab('background', document.querySelectorAll('.tab-btn')[1])">&larr; Background &amp; Pre-Lab</button>
+    <button class="submit-main-btn" style="background:var(--blue);" onclick="switchTab('procedure', document.querySelectorAll('.tab-btn')[3])">Next: Procedure &rarr;</button>
+  </div>
+
+</main>
+</div>
+
+<!-- ================================================
+     TAB 3: PROCEDURE
+     ================================================ -->
+<div id="tab-procedure" class="tab-panel">
+<main class="main">
+
+  <!-- PHOTO NOTE -->
+  <div class="photo-note">
+    <strong>Documentation Note:</strong> Your instructor may ask you to photograph your workspace, setup, and density column for submission. Steps where a photo is recommended are marked with a <strong>green step number</strong>. Submit photos separately through your course's Canvas assignment — they cannot be uploaded within this document.
+  </div>
+
+  <!-- PART 1 -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">Part 1 &mdash; Classifying Food Liquids</div>
+      <span class="section-badge badge-blue">Observation</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:13.5px; color:#555; margin-bottom:16px; line-height:1.65;">Before taking any measurements, you will examine each liquid and classify it based on your prior knowledge and observations. You will record your formal classifications in the Data Table on Tab 4.</p>
+
+      <div class="proc-step">
+        <span class="step-num">1</span>
+        <div class="step-content">
+          <div class="step-text">Label your four cups or containers with the name of each liquid: Water, Vegetable Oil, Syrup/Honey, Dish Soap.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <span class="step-num">2</span>
+        <div class="step-content">
+          <div class="step-text">Pour a small amount (about 2 tablespoons) of each liquid into its labeled cup. Examine each liquid visually.</div>
+          <div class="step-note">For each liquid, ask: Can you see distinct layers or separate components? Is the color uniform throughout? Does it appear to be a single, pure substance, or a mixture of things?</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <span class="step-num">3</span>
+        <div class="step-content">
+          <div class="step-text">Record your classification (Element, Compound, or Mixture) and reasoning in <strong>Data Table 1</strong> on the Data &amp; Analysis tab. Use your background knowledge — you do not need to look anything up.</div>
+          <div class="step-note tip">Think about what you know: Is water made of one type of molecule or many? Is dish soap a single pure substance or a combination of ingredients?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 2 -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">Part 2 &mdash; Measuring Density</div>
+      <span class="section-badge badge-green">Quantitative Measurement</span>
+    </div>
+    <div class="section-body">
+      <div class="ref-box" style="margin-bottom:16px;">
+        <div class="ref-box-title">The Method: Mass by Difference</div>
+        <p>You will measure the mass of each liquid using a technique called <strong>mass by difference</strong>: weigh the empty container, add your liquid, weigh again, and subtract. This eliminates any error from the container's weight. The calculation is: <span class="eq">mass of liquid = (mass of cup + liquid) &minus; (mass of empty cup)</span></p>
+      </div>
+
+      <div class="proc-part-title">
+        <span>Repeat these steps for each of the 5 liquids</span>
+        <span class="proc-part-badge" style="background:var(--blue-light); color:var(--blue);">One at a time</span>
+      </div>
+
+      <div class="proc-step">
+        <span class="step-num highlight">4</span>
+        <div class="step-content">
+          <div class="step-text">Place your empty, labeled cup on the scale. Record the mass in grams to the nearest 0.1 g (e.g., 12.3 g). Record in Data Table 2 under "Mass of Empty Cup."</div>
+          <div class="step-note warning">If your scale has a tare button, press it with the empty cup on the scale — then enter <strong>0</strong> (or leave the Empty Cup field blank) in Data Table 2. The mass of liquid column will calculate correctly either way.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <span class="step-num highlight">5</span>
+        <div class="step-content">
+          <div class="step-text">Measure exactly <strong>1/4 cup (60 mL)</strong> of the liquid and add it to the cup. Be consistent — use the same volume for all four liquids.</div>
+          <div class="step-note">Record which volume you used at the top of Data Table 2. All calculations will use this same volume value.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <span class="step-num highlight">6</span>
+        <div class="step-content">
+          <div class="step-text">Weigh the cup with the liquid inside. Record in Data Table 2 under "Mass of Cup + Liquid."</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <span class="step-num">7</span>
+        <div class="step-content">
+          <div class="step-text">The Data &amp; Analysis tab will automatically display the mass of liquid once you enter both cup masses — showing your subtraction result. Use this to confirm your own arithmetic: <span class="eq">mass of liquid = (cup + liquid) &minus; (empty cup)</span>.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <span class="step-num">8</span>
+        <div class="step-content">
+          <div class="step-text">Calculate density by hand using <span class="eq">density = mass of liquid &divide; volume (mL)</span>. Enter your result directly into the Density column in Data Table 2 — the table will check whether your answer is consistent with your mass and volume data.</div>
+          <div class="step-note tip">Check your work: Water should come out close to 1.0 g/mL. This is a built-in check on your technique.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <span class="step-num">9</span>
+        <div class="step-content">
+          <div class="step-text">Repeat Steps 4&ndash;8 for all five liquids. Rinse and dry cups between different liquids to avoid cross-contamination.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 3 -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">Part 3 &mdash; Density Column Demonstration</div>
+      <span class="section-badge badge-gold">Observation &amp; Photo</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:13.5px; color:#555; margin-bottom:14px; line-height:1.65;">This part visually demonstrates how density determines where liquids sit relative to each other. You will build a layered density column and then photograph it for your submission.</p>
+
+      <div class="proc-step">
+        <span class="step-num">10</span>
+        <div class="step-content">
+          <div class="step-text">Get a tall, clear container (a large drinking glass, mason jar, or clear plastic cup works well).</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <span class="step-num highlight">11</span>
+        <div class="step-content">
+          <div class="step-text">Using the density values you measured in Part 2, determine the correct pouring sequence — then add each liquid <strong>slowly</strong>, one at a time, down the side of the glass. Do not pour straight down the center.</div>
+          <div class="step-note warning">Think carefully before you pour: adding a denser liquid on top of a less dense one will cause it to sink through and disrupt the layers below. Your Data Table 2 has everything you need to figure out the right order.</div>
+        </div>
+      </div>
+
+      <div class="proc-step">
+        <span class="step-num">12</span>
+        <div class="step-content">
+          <div class="step-text">Observe the layers as they form. Allow 2&ndash;3 minutes for everything to fully settle. Record which liquid ended up at each position — top, middle layers, and bottom. Do the positions match what your density measurements predicted?</div>
+          <div class="step-note">If two liquids have very similar measured densities, their layers may be thin or partially mixed. Note this as an observation — it is scientifically meaningful, not a mistake.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <span class="step-num highlight">13</span>
+        <div class="step-content">
+          <div class="step-text"><strong>Take a photograph</strong> of your completed density column. Submit this photo through your Canvas assignment. Label the layers in your photo before submitting (you can write on a piece of paper and hold it next to the column, or annotate digitally).</div>
+          <div class="step-note tip">Photograph against a white background with the container in front of it — this makes the layer boundaries visible. Good lighting helps distinguish the colors.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <button class="check-btn" onclick="switchTab('materials', document.querySelectorAll('.tab-btn')[2])">&larr; Materials</button>
+    <button class="submit-main-btn" style="background:var(--blue);" onclick="switchTab('analysis', document.querySelectorAll('.tab-btn')[4])">Next: Data &amp; Analysis &rarr;</button>
+  </div>
+
+</main>
+</div>
+
+<!-- ================================================
+     TAB 4: DATA & ANALYSIS (SUBMISSION)
+     ================================================ -->
+<div id="tab-analysis" class="tab-panel">
+<main class="main">
+
+  <!-- DATA TABLE 1: CLASSIFICATION -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">Data Table 1 &mdash; Classification of Food Liquids</div>
+      <span class="section-badge badge-blue">5 pts</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:13.5px; color:#555; margin-bottom:14px; line-height:1.65;">For each liquid, select its classification and the reasoning that best supports your choice. Both must be correct for full credit.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:16%;">Liquid</th>
+            <th style="width:26%;">Classification</th>
+            <th>Best Reasoning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label">
+              <span class="liquid-badge"><span class="liquid-swatch" style="background:#a8d4f5;"></span>Water</span>
+            </td>
+            <td>
+              <select id="class-water" onchange="validateClassification(this, 'water')">
+                <option value="">-- Select --</option>
+                <option value="element">Element</option>
+                <option value="compound">Compound</option>
+                <option value="mixture-homo">Homogeneous Mixture</option>
+                <option value="mixture-hetero">Heterogeneous Mixture</option>
+              </select>
+              <div class="val-msg" id="val-class-water"></div>
+            </td>
+            <td>
+              <select id="reason-water" onchange="validateReasoning(this,'water')">
+                <option value="">-- Select best reasoning --</option>
+                <option value="a">It contains two elements (H and O) chemically bonded in a fixed 2:1 ratio — always H₂O</option>
+                <option value="b">It looks clear and uniform, so it must be a pure element</option>
+                <option value="c">It is made of multiple dissolved minerals and gases, making it a mixture</option>
+                <option value="d">Its composition changes depending on temperature, so it is a mixture</option>
+              </select>
+              <div class="val-msg" id="val-reason-water"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="label">
+              <span class="liquid-badge"><span class="liquid-swatch" style="background:#f5c842;"></span>Vegetable Oil</span>
+            </td>
+            <td>
+              <select id="class-oil" onchange="validateClassification(this, 'oil')">
+                <option value="">-- Select --</option>
+                <option value="element">Element</option>
+                <option value="compound">Compound</option>
+                <option value="mixture-homo">Homogeneous Mixture</option>
+                <option value="mixture-hetero">Heterogeneous Mixture</option>
+              </select>
+              <div class="val-msg" id="val-class-oil"></div>
+            </td>
+            <td>
+              <select id="reason-oil" onchange="validateReasoning(this,'oil')">
+                <option value="">-- Select best reasoning --</option>
+                <option value="a">It is made of carbon atoms only, making it an element</option>
+                <option value="b">It contains a single type of triglyceride molecule with a fixed formula</option>
+                <option value="c">It is a blend of many different triglyceride molecules that appear uniform throughout</option>
+                <option value="d">You can see separate layers in the bottle, indicating a heterogeneous mixture</option>
+              </select>
+              <div class="val-msg" id="val-reason-oil"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="label">
+              <span class="liquid-badge"><span class="liquid-swatch" style="background:#d4860a;"></span>Syrup/Honey</span>
+            </td>
+            <td>
+              <select id="class-syrup" onchange="validateClassification(this, 'syrup')">
+                <option value="">-- Select --</option>
+                <option value="element">Element</option>
+                <option value="compound">Compound</option>
+                <option value="mixture-homo">Homogeneous Mixture</option>
+                <option value="mixture-hetero">Heterogeneous Mixture</option>
+              </select>
+              <div class="val-msg" id="val-class-syrup"></div>
+            </td>
+            <td>
+              <select id="reason-syrup" onchange="validateReasoning(this,'syrup')">
+                <option value="">-- Select best reasoning --</option>
+                <option value="a">It is a pure sugar compound with the fixed formula C₁₂H₂₂O₁₁</option>
+                <option value="b">It contains water, multiple sugars, flavoring, and colorings dissolved uniformly</option>
+                <option value="c">You can see distinct layers of sugar and water, making it heterogeneous</option>
+                <option value="d">It is made only of carbon and hydrogen atoms, so it is an element</option>
+              </select>
+              <div class="val-msg" id="val-reason-syrup"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="label">
+              <span class="liquid-badge"><span class="liquid-swatch" style="background:#b8e0cc;"></span>Dish Soap</span>
+            </td>
+            <td>
+              <select id="class-soap" onchange="validateClassification(this, 'soap')">
+                <option value="">-- Select --</option>
+                <option value="element">Element</option>
+                <option value="compound">Compound</option>
+                <option value="mixture-homo">Homogeneous Mixture</option>
+                <option value="mixture-hetero">Heterogeneous Mixture</option>
+              </select>
+              <div class="val-msg" id="val-class-soap"></div>
+            </td>
+            <td>
+              <select id="reason-soap" onchange="validateReasoning(this,'soap')">
+                <option value="">-- Select best reasoning --</option>
+                <option value="a">It is a single pure compound — sodium lauryl sulfate — with one fixed formula</option>
+                <option value="b">It contains water, surfactants, dyes, and fragrances physically combined and uniform throughout</option>
+                <option value="c">You can see separate colored layers inside the bottle, making it heterogeneous</option>
+                <option value="d">It contains only oxygen and hydrogen, making it an element</option>
+              </select>
+              <div class="val-msg" id="val-reason-soap"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DATA TABLE 2: DENSITY MEASUREMENTS -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">Data Table 2 &mdash; Density Measurements</div>
+      <span class="section-badge badge-green">5 pts</span>
+    </div>
+    <div class="section-body">
+      <div class="ref-box" style="margin-bottom:16px;">
+        <div class="ref-box-title">Volume Used &mdash; Record Once, Applied to All</div>
+        <p>Enter the volume you measured for each liquid. All four samples use the same volume — 1/4 cup (60 mL). The mass of liquid and density will calculate automatically as you fill in the mass fields.</p>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:12px; flex-wrap:wrap;">
+          <label style="font-size:13px; font-weight:600;">Volume used for all samples:</label>
+          <input type="text" id="volume-used" placeholder="60.0" style="border:1.5px solid var(--border); border-radius:3px; padding:7px 12px; font-family:JetBrains Mono,monospace; font-size:14px; width:100px; outline:none; background:#fff;" oninput="recalculateAll()">
+          <span class="units-label">mL</span>
+          <span style="font-size:12px; color:#888; font-style:italic;">(1/4 cup = 60 mL)</span>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Liquid</th>
+            <th>Empty Cup (g) <span style="font-weight:400; opacity:0.6;">or 0 if tared</span></th>
+            <th>Cup + Liquid (g)</th>
+            <th>Mass of Liquid (g) <span style="font-weight:400; opacity:0.6;">auto</span></th>
+            <th>Density (g/mL) <span style="font-weight:400; opacity:0.6;">you calculate</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label"><span class="liquid-badge"><span class="liquid-swatch" style="background:#a8d4f5;"></span>Water</span></td>
+            <td>
+              <input type="text" id="cup-water" placeholder="0.0" onblur="validateMass(this,'cup-water'); recalcRow('water')" oninput="recalcRow('water')">
+              <div class="val-msg" id="val-cup-water"></div>
+            </td>
+            <td>
+              <input type="text" id="full-water" placeholder="0.0" onblur="validateFullMass(this,'full-water','water'); recalcRow('water')" oninput="recalcRow('water')">
+              <div class="val-msg" id="val-full-water"></div>
+            </td>
+            <td class="calc-cell"><span class="auto-calc empty" id="mass-water">-- enter masses --</span></td>
+            <td>
+              <input type="text" id="density-water" placeholder="calculate" onblur="checkDensity('water')" style="font-family:JetBrains Mono,monospace; font-size:13px; border:1.5px solid var(--border); border-radius:3px; padding:6px 10px; width:100%; outline:none; background:#fff;">
+              <div class="val-msg" id="val-density-water"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="label"><span class="liquid-badge"><span class="liquid-swatch" style="background:#f5c842;"></span>Vegetable Oil</span></td>
+            <td>
+              <input type="text" id="cup-oil" placeholder="0.0" onblur="validateMass(this,'cup-oil'); recalcRow('oil')" oninput="recalcRow('oil')">
+              <div class="val-msg" id="val-cup-oil"></div>
+            </td>
+            <td>
+              <input type="text" id="full-oil" placeholder="0.0" onblur="validateFullMass(this,'full-oil','oil'); recalcRow('oil')" oninput="recalcRow('oil')">
+              <div class="val-msg" id="val-full-oil"></div>
+            </td>
+            <td class="calc-cell"><span class="auto-calc empty" id="mass-oil">-- enter masses --</span></td>
+            <td>
+              <input type="text" id="density-oil" placeholder="calculate" onblur="checkDensity('oil')" style="font-family:JetBrains Mono,monospace; font-size:13px; border:1.5px solid var(--border); border-radius:3px; padding:6px 10px; width:100%; outline:none; background:#fff;">
+              <div class="val-msg" id="val-density-oil"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="label"><span class="liquid-badge"><span class="liquid-swatch" style="background:#d4860a;"></span>Syrup/Honey</span></td>
+            <td>
+              <input type="text" id="cup-syrup" placeholder="0.0" onblur="validateMass(this,'cup-syrup'); recalcRow('syrup')" oninput="recalcRow('syrup')">
+              <div class="val-msg" id="val-cup-syrup"></div>
+            </td>
+            <td>
+              <input type="text" id="full-syrup" placeholder="0.0" onblur="validateFullMass(this,'full-syrup','syrup'); recalcRow('syrup')" oninput="recalcRow('syrup')">
+              <div class="val-msg" id="val-full-syrup"></div>
+            </td>
+            <td class="calc-cell"><span class="auto-calc empty" id="mass-syrup">-- enter masses --</span></td>
+            <td>
+              <input type="text" id="density-syrup" placeholder="calculate" onblur="checkDensity('syrup')" style="font-family:JetBrains Mono,monospace; font-size:13px; border:1.5px solid var(--border); border-radius:3px; padding:6px 10px; width:100%; outline:none; background:#fff;">
+              <div class="val-msg" id="val-density-syrup"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="label"><span class="liquid-badge"><span class="liquid-swatch" style="background:#b8e0cc;"></span>Dish Soap</span></td>
+            <td>
+              <input type="text" id="cup-soap" placeholder="0.0" onblur="validateMass(this,'cup-soap'); recalcRow('soap')" oninput="recalcRow('soap')">
+              <div class="val-msg" id="val-cup-soap"></div>
+            </td>
+            <td>
+              <input type="text" id="full-soap" placeholder="0.0" onblur="validateFullMass(this,'full-soap','soap'); recalcRow('soap')" oninput="recalcRow('soap')">
+              <div class="val-msg" id="val-full-soap"></div>
+            </td>
+            <td class="calc-cell"><span class="auto-calc empty" id="mass-soap">-- enter masses --</span></td>
+            <td>
+              <input type="text" id="density-soap" placeholder="calculate" onblur="checkDensity('soap')" style="font-family:JetBrains Mono,monospace; font-size:13px; border:1.5px solid var(--border); border-radius:3px; padding:6px 10px; width:100%; outline:none; background:#fff;">
+              <div class="val-msg" id="val-density-soap"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="val-msg" id="val-water-check" style="margin-top:8px;"></div>
+    </div>
+  </div>
+
+  <!-- ANALYSIS QUESTIONS -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">Analysis Questions</div>
+      <span class="section-badge badge-gold">22 pts</span>
+    </div>
+    <div class="section-body">
+
+      <!-- Q1 -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q1</span>
+          <span class="q-text">Which statement best explains why water is a <em>compound</em> while dish soap is a <em>mixture</em>?</span>
+          <span class="q-points">4 pts</span>
+        </div>
+        <div class="mc-options" id="mc-q1">
+          <label class="mc-option"><input type="radio" name="q1mc" value="A"> Water contains only one type of atom (hydrogen), while dish soap contains many types of atoms</label>
+          <label class="mc-option"><input type="radio" name="q1mc" value="B"> Water is always H₂O — two elements chemically bonded in a fixed ratio — while dish soap is a physical combination of water, surfactants, dyes, and fragrances with no fixed composition</label>
+          <label class="mc-option"><input type="radio" name="q1mc" value="C"> Water is clear and uniform, which makes it a compound, while dish soap is colored, which makes it a mixture</label>
+          <label class="mc-option"><input type="radio" name="q1mc" value="D"> Water can be separated by boiling, so it is a compound; dish soap cannot be separated, so it is a mixture</label>
+        </div>
+        <div class="feedback-inline" id="fb-q1"></div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q2</span>
+          <span class="q-text">Match each property or observation to its correct type: <strong>Physical Property</strong> or <strong>Chemical Property</strong>.</span>
+          <span class="q-points">3 pts</span>
+        </div>
+        <p class="q-hint">Physical properties can be observed or measured without changing the substance's chemical identity. Chemical properties describe how a substance reacts or transforms into a new substance.</p>
+        <table class="data-table" style="margin-top:8px;">
+          <thead>
+            <tr><th style="width:60%;">Property / Observation</th><th>Classification</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="label">The density of vegetable oil is approximately 0.92 g/mL</td>
+              <td>
+                <select id="match-1" onchange="checkMatching()">
+                  <option value="">-- Select --</option>
+                  <option value="physical">Physical Property</option>
+                  <option value="chemical">Chemical Property</option>
+                </select>
+                <div class="val-msg" id="val-match-1"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Vegetable oil turns rancid (oxidizes) when exposed to air over time</td>
+              <td>
+                <select id="match-2" onchange="checkMatching()">
+                  <option value="">-- Select --</option>
+                  <option value="physical">Physical Property</option>
+                  <option value="chemical">Chemical Property</option>
+                </select>
+                <div class="val-msg" id="val-match-2"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Syrup/honey is a thick, viscous liquid at room temperature</td>
+              <td>
+                <select id="match-3" onchange="checkMatching()">
+                  <option value="">-- Select --</option>
+                  <option value="physical">Physical Property</option>
+                  <option value="chemical">Chemical Property</option>
+                </select>
+                <div class="val-msg" id="val-match-3"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Sugar in syrup caramelizes (breaks down) when heated above 160°C</td>
+              <td>
+                <select id="match-4" onchange="checkMatching()">
+                  <option value="">-- Select --</option>
+                  <option value="physical">Physical Property</option>
+                  <option value="chemical">Chemical Property</option>
+                </select>
+                <div class="val-msg" id="val-match-4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Water is colorless and transparent</td>
+              <td>
+                <select id="match-5" onchange="checkMatching()">
+                  <option value="">-- Select --</option>
+                  <option value="physical">Physical Property</option>
+                  <option value="chemical">Chemical Property</option>
+                </select>
+                <div class="val-msg" id="val-match-5"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Dish soap reacts with grease, breaking it into small droplets that rinse away</td>
+              <td>
+                <select id="match-6" onchange="checkMatching()">
+                  <option value="">-- Select --</option>
+                  <option value="physical">Physical Property</option>
+                  <option value="chemical">Chemical Property</option>
+                </select>
+                <div class="val-msg" id="val-match-6"></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="feedback-inline" id="fb-q2" style="margin-top:10px; margin-left:0;"></div>
+      </div>
+
+      <!-- Q3: Ranking -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q3</span>
+          <span class="q-text">Rank your five liquids from most dense to least dense based on <em>your experimental measurements</em>. Then compare your ranking to the expected ranking — are they in the same order?</span>
+          <span class="q-points">5 pts</span>
+        </div>
+        <p class="q-hint">Use the density values you calculated in Data Table 2. Your ranking may differ slightly from the expected values due to measurement precision.</p>
+
+        <table class="rank-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Liquid (Most Dense &rarr; Least Dense)</th>
+              <th>Your Measured Density</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-family:JetBrains Mono,monospace; font-weight:600; color:var(--ink);">1st</td>
+              <td>
+                <select id="rank1">
+                  <option value="">-- Select --</option>
+                  <option value="water">Water</option>
+                  <option value="oil">Vegetable Oil</option>
+                  <option value="syrup">Syrup/Honey</option>
+                  <option value="soap">Dish Soap</option>
+                </select>
+              </td>
+              <td><input class="answer-input" type="text" id="rank1-val" placeholder="g/mL" style="min-width:90px;"></td>
+            </tr>
+            <tr>
+              <td style="font-family:JetBrains Mono,monospace; font-weight:600; color:var(--ink);">2nd</td>
+              <td>
+                <select id="rank2">
+                  <option value="">-- Select --</option>
+                  <option value="water">Water</option>
+                  <option value="oil">Vegetable Oil</option>
+                  <option value="syrup">Syrup/Honey</option>
+                  <option value="soap">Dish Soap</option>
+                </select>
+              </td>
+              <td><input class="answer-input" type="text" id="rank2-val" placeholder="g/mL" style="min-width:90px;"></td>
+            </tr>
+            <tr>
+              <td style="font-family:JetBrains Mono,monospace; font-weight:600; color:var(--ink);">3rd</td>
+              <td>
+                <select id="rank3">
+                  <option value="">-- Select --</option>
+                  <option value="water">Water</option>
+                  <option value="oil">Vegetable Oil</option>
+                  <option value="syrup">Syrup/Honey</option>
+                  <option value="soap">Dish Soap</option>
+                </select>
+              </td>
+              <td><input class="answer-input" type="text" id="rank3-val" placeholder="g/mL" style="min-width:90px;"></td>
+            </tr>
+            <tr>
+              <td style="font-family:JetBrains Mono,monospace; font-weight:600; color:var(--ink);">4th</td>
+              <td>
+                <select id="rank4">
+                  <option value="">-- Select --</option>
+                  <option value="water">Water</option>
+                  <option value="oil">Vegetable Oil</option>
+                  <option value="syrup">Syrup/Honey</option>
+                  <option value="soap">Dish Soap</option>
+                </select>
+              </td>
+              <td><input class="answer-input" type="text" id="rank4-val" placeholder="g/mL" style="min-width:90px;"></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="check-btn" style="margin-left:0; margin-top:8px;" onclick="checkRanking()">Check Ranking</button>
+        <div class="feedback-inline" id="fb-ranking" style="margin-left:0;"></div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q4</span>
+          <span class="q-text">Select <strong>all statements that are TRUE</strong> about why liquids formed distinct layers in Part 3.</span>
+          <span class="q-points">4 pts</span>
+        </div>
+        <p class="q-hint">More than one statement may be true. Read each carefully before selecting.</p>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;" id="tf-q4">
+          <label class="mc-option" style="cursor:pointer;">
+            <input type="checkbox" name="q4tf" value="1" onchange="checkTrueFalse()">
+            Denser liquids have more mass per unit volume, so gravity pulls them lower in the container than less dense liquids
+          </label>
+          <label class="mc-option" style="cursor:pointer;">
+            <input type="checkbox" name="q4tf" value="2" onchange="checkTrueFalse()">
+            Vegetable oil floated on top because it has a lower density than the other liquids — it is less massive per mL
+          </label>
+          <label class="mc-option" style="cursor:pointer;">
+            <input type="checkbox" name="q4tf" value="3" onchange="checkTrueFalse()">
+            The layers formed because the liquids have different colors, which prevents them from mixing
+          </label>
+          <label class="mc-option" style="cursor:pointer;">
+            <input type="checkbox" name="q4tf" value="4" onchange="checkTrueFalse()">
+            If two liquids had identical densities, they would not form separate layers — they would mix
+          </label>
+          <label class="mc-option" style="cursor:pointer;">
+            <input type="checkbox" name="q4tf" value="5" onchange="checkTrueFalse()">
+            Syrup sank to the bottom because it was added first, not because of its density
+          </label>
+          <label class="mc-option" style="cursor:pointer;">
+            <input type="checkbox" name="q4tf" value="6" onchange="checkTrueFalse()">
+            Density is the physical property that determines each liquid's position in the column
+          </label>
+        </div>
+        <div class="feedback-inline" id="fb-q4" style="margin-top:10px; margin-left:0;"></div>
+      </div>
+
+      <!-- Q5: BRACKET CITY APPLICATION -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q5</span>
+          <span class="q-text" style="font-weight:600;">Bracket City Application: A contaminated shipment of cooking oil has arrived. The label reads "Pure Vegetable Oil" (expected density: 0.92 g/mL), but your measurement gives a density of 1.10 g/mL. What does this tell you about the shipment? What substance(s) might have been added?</span>
+          <span class="q-points">6 pts</span>
+        </div>
+        <p class="q-hint">Consider: what liquids have densities close to 1.10 g/mL? What would it mean chemically for the density to increase by ~0.18 g/mL? Is this a safety concern?</p>
+        <div class="open-area-wrap">
+          <textarea class="open-textarea" id="open-q5" placeholder="Interpret the density discrepancy, identify possible contaminants, and discuss the safety implications for Bracket City's food supply..."></textarea>
+          <button class="ai-feedback-btn" onclick="getAIFeedback('q5', this)">
+            <span class="spinner"></span>Get Feedback
+          </button>
+          <div class="ai-feedback-box" id="ai-q5">
+            <div class="ai-label">Instructor Feedback</div>
+            <div class="ai-feedback-content"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONCLUSION -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-title">Conclusion</div>
+      <span class="section-badge badge-gold">3 pts</span>
+    </div>
+    <div class="section-body">
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">C</span>
+          <span class="q-text">Write a 3&ndash;4 sentence conclusion. Address: (1) How can measuring density help identify food contamination in Bracket City? (2) Why is the classification of matter important for food safety investigations? (3) One source of error in your measurements and how it might have affected your results.</span>
+        </div>
+        <div class="open-area-wrap">
+          <textarea class="open-textarea" id="open-conclusion" style="min-height:110px;" placeholder="Write your conclusion here. Cover all three required points: density as identification tool, importance of matter classification, and error analysis..."></textarea>
+          <button class="ai-feedback-btn" onclick="getAIFeedback('conclusion', this)">
+            <span class="spinner"></span>Get Feedback
+          </button>
+          <div class="ai-feedback-box" id="ai-conclusion">
+            <div class="ai-label">Instructor Feedback</div>
+            <div class="ai-feedback-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTO REMINDER -->
+  <div class="photo-note">
+    <strong>Before Submitting:</strong> Your instructor may ask for photos of the steps marked with a green numbered circle in the Procedure tab. These are Steps 4, 5, 6, 11, and 13 — covering your scale setup, each weighing, your density column being built, and your final completed column. Submit all photos separately through the Canvas assignment. This document captures your data and written responses only.
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-section">
+    <div class="submit-info">
+      <strong>Submit Your Lab Report</strong>
+      All data fields and analysis questions will be scored automatically. Written responses receive AI-assisted instructor feedback. Complete all sections before submitting. Total: 30 points.
+    </div>
+    <button class="submit-main-btn" onclick="submitLab()">Submit Lab Report</button>
+  </div>
+
+  <!-- SCORE PANEL -->
+  <div class="score-panel" id="scorePanel">
+    <div class="score-header">Lab 1 Score</div>
+    <div class="score-bar-wrap"><div class="score-bar" id="scoreBar" style="width:0%"></div></div>
+    <div class="score-text" id="scoreText"></div>
+    <div class="score-details" id="scoreDetails"></div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// =========================================================
+// TAB SWITCHING
+// =========================================================
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// =========================================================
+// MULTIPLE CHOICE ENGINE
+// =========================================================
+const mcAnswers = {
+  mc1: {
+    correct: 'B',
+    explanation: 'Correct. Water (H2O) is a compound because it consists of hydrogen and oxygen atoms chemically bonded together in a fixed 2:1 ratio. A chemical bond means the atoms cannot be separated by physical means — you would need a chemical reaction (electrolysis) to decompose water into hydrogen and oxygen gas.',
+    wrong: {
+      A: 'An element is made of only one kind of atom. Water contains two different kinds of atoms (H and O), so it cannot be an element. Table salt (NaCl) is also not an element for the same reason.',
+      C: 'A mixture contains substances that are physically combined but retain their own properties and can be separated by physical means. In water, H and O are chemically bonded — no physical process separates them. That makes water a compound, not a mixture.',
+      D: 'A heterogeneous mixture would have visibly distinct regions. Water appears uniform (and is uniform at the molecular level), but the key point is that its composition is fixed by chemical bonding, not variable mixing.'
+    }
+  },
+  mc2: {
+    correct: 'B',
+    explanation: 'Correct. Water (d = 1.00 g/mL) is denser than oil (d ≈ 0.92 g/mL), so water sinks to the bottom and oil floats on top. Density determines relative position — the denser substance always sinks beneath the less dense one in an immiscible mixture.',
+    wrong: {
+      A: 'This confuses "heavier" (total mass) with density. A swimming pool of oil is heavier than a cup of water, but oil still floats on water because density — mass per unit volume — is what matters, not total mass.',
+      C: 'Oil and water are immiscible — they do not mix at the molecular level because water is polar and oil is nonpolar. You can shake them together temporarily, but they will always separate into layers.',
+      D: 'The fact that 0.92 is a smaller number than 1.00 is coincidentally true here, but the reasoning is backward. The substance with the smaller density value is less dense and therefore floats, because it has less mass packed into the same volume.'
+    }
+  },
+  mc3: {
+    correct: 'C',
+    explanation: 'Correct. Dish soap is a homogeneous mixture. It contains water, surfactant molecules (like sodium lauryl sulfate), fragrances, dyes, and preservatives — multiple chemically distinct substances physically combined in a uniform solution. Nothing is chemically bonded into a new pure substance, and components retain their individual properties.',
+    wrong: {
+      A: 'Elements consist of only one kind of atom. Dish soap contains water, surfactants, fragrances, and dyes — many different types of molecules, not a single element.',
+      B: 'A compound is a pure substance with a fixed chemical formula. Dish soap\'s composition varies by brand and formulation, and its components can be separated physically. That variability and separability rules out compound.',
+      D: 'A heterogeneous mixture has visibly distinct regions you can see without magnification. Dish soap appears completely uniform throughout — it is a homogeneous mixture, specifically a surfactant solution.'
+    }
+  }
+};
+
+document.querySelectorAll('.mc-options').forEach(group => {
+  group.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const name = this.name;
+      const data = mcAnswers[name];
+      if (!data) return;
+      const fb = document.getElementById('fb-' + name);
+      document.querySelectorAll(`input[name="${name}"]`).forEach(opt => {
+        opt.closest('.mc-option').classList.remove('selected-correct','selected-wrong');
+      });
+      if (this.value === data.correct) {
+        this.closest('.mc-option').classList.add('selected-correct');
+        fb.className = 'feedback-inline correct';
+        fb.textContent = data.explanation;
+      } else {
+        this.closest('.mc-option').classList.add('selected-wrong');
+        fb.className = 'feedback-inline incorrect';
+        fb.textContent = data.wrong[this.value] || 'Not quite. Review the classification definitions.';
+      }
+    });
+  });
+});
+
+// =========================================================
+// DENSITY COLUMN — fixed-position interactive fill
+// Correct order (densest first): cornsyrup(1.33), glycerin(1.26),
+// saltwater(1.07), oliveoil(0.91), alcohol(0.79)
+// Layer slots 1-5 = bottom to top
+// =========================================================
+const columnOrder = ['cornsyrup','glycerin','saltwater','oliveoil','alcohol'];
+const columnSlots = { cornsyrup:1, glycerin:2, saltwater:3, oliveoil:4, alcohol:5 };
+const columnColors = { cornsyrup:'#b5651d', glycerin:'#c8e6c9', saltwater:'#add8e6', oliveoil:'#ffd700', alcohol:'#e0f0ff' };
+const columnNotes = {
+  cornsyrup: 'Corn Syrup (1.33)<br>densest — sinks first',
+  glycerin:  'Glycerin (1.26)<br>settles above syrup',
+  saltwater: 'Salt Water (1.07)<br>middle of the column',
+  oliveoil:  'Olive Oil (0.91)<br>less dense than water',
+  alcohol:   'Rubbing Alcohol (0.79)<br>least dense — floats on top'
+};
+let columnFilled = [];
+
+function addToColumn(id) {
+  if (columnFilled.includes(id)) return;
+  const note = document.getElementById('col-obs-note');
+  const expected = columnOrder[columnFilled.length];
+
+  if (id !== expected) {
+    note.style.color = '#c0392b';
+    note.textContent = 'Which remaining liquid is densest?';
+    setTimeout(() => { if (note.textContent.startsWith('Which')) note.textContent = ''; }, 2500);
+    return;
+  }
+
+  columnFilled.push(id);
+  const slot = columnSlots[id];
+
+  // Reveal the layer
+  const layerEl = document.getElementById('col-layer-' + slot);
+  if (layerEl) layerEl.style.opacity = '1';
+
+  // Update left-side note for this layer
+  const noteEl = document.getElementById('note-layer-' + slot);
+  if (noteEl) {
+    const color = columnColors[id];
+    noteEl.innerHTML = '<span style="font-family:JetBrains Mono,monospace; font-size:10px; color:#444; text-align:right; line-height:1.5; background:' + color + '33; padding:3px 8px; border-radius:2px; display:inline-block;">' + columnNotes[id] + '</span>';
+  }
+
+  const btn = document.getElementById('colbtn-' + id);
+  if (btn) btn.classList.add('poured');
+
+  if (columnFilled.length === 5) {
+    note.style.color = 'var(--green)';
+    note.textContent = 'Complete! Density determines every layer position.';
+  } else {
+    note.style.color = 'var(--green)';
+    note.textContent = id.charAt(0).toUpperCase() + id.slice(1) + ' added.';
+    setTimeout(() => { if (columnFilled.length < 5) note.textContent = ''; }, 1800);
+  }
+}
+
+function resetColumn() {
+  columnFilled = [];
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('col-layer-' + i);
+    if (el) el.style.opacity = '0';
+  }
+  // Reset left-side notes to defaults
+  const defaultNotes = {1:'densest &mdash; sinks to bottom', 2:'', 3:'', 4:'', 5:'least dense &mdash; floats on top'};
+  for (let i = 1; i <= 5; i++) {
+    const noteEl = document.getElementById('note-layer-' + i);
+    if (noteEl) noteEl.innerHTML = '<span style="font-family:JetBrains Mono,monospace; font-size:10px; color:#bbb; text-align:right; line-height:1.4;">' + (defaultNotes[i] || '') + '</span>';
+  }
+  columnOrder.forEach(id => {
+    const btn = document.getElementById('colbtn-' + id);
+    if (btn) btn.classList.remove('poured');
+  });
+  const note = document.getElementById('col-obs-note');
+  if (note) note.textContent = '';
+}
+
+// =========================================================
+// DATA TABLE 2: AUTO-CALCULATION
+// =========================================================
+const liquids = ['water','oil','syrup','soap'];
+
+const expectedDensities = {
+  water: { min: 0.97, max: 1.03, label: 'Water should be close to 1.00 g/mL. This confirms your technique.' },
+  oil:   { min: 0.87, max: 0.96, label: 'Vegetable oil: expected ~0.92 g/mL. Good.' },
+  syrup: { min: 1.25, max: 1.55, label: 'Pancake syrup/honey: expected 1.30–1.45 g/mL. Good.' },
+  soap:  { min: 1.02, max: 1.12, label: 'Dish soap: expected ~1.04–1.08 g/mL. Good.' }
+};
+
+function recalcRow(liquid) {
+  const cupEl  = document.getElementById('cup-'  + liquid);
+  const fullEl = document.getElementById('full-' + liquid);
+  const massEl = document.getElementById('mass-' + liquid);
+
+  const cupRaw  = cupEl  ? cupEl.value.trim()  : '';
+  const fullRaw = fullEl ? fullEl.value.trim() : '';
+
+  // If full mass not entered yet, nothing to show
+  if (fullRaw === '') {
+    massEl.textContent = '-- enter masses --';
+    massEl.className = 'auto-calc empty';
+    massEl.style.color = '';
+    return;
+  }
+
+  const full = parseFloat(fullRaw);
+  if (isNaN(full)) {
+    massEl.textContent = '-- enter masses --';
+    massEl.className = 'auto-calc empty';
+    massEl.style.color = '';
+    return;
+  }
+
+  // Treat blank empty-cup as 0 (tared scale)
+  const cup = cupRaw === '' ? 0 : parseFloat(cupRaw);
+  if (isNaN(cup)) {
+    massEl.textContent = '-- enter masses --';
+    massEl.className = 'auto-calc empty';
+    massEl.style.color = '';
+    return;
+  }
+
+  const mass = full - cup;
+  if (mass <= 0) {
+    massEl.textContent = cup === 0
+      ? 'Cup + liquid must be > 0 g'
+      : 'Check: cup + liquid (' + full.toFixed(1) + ') must be > empty cup (' + cup.toFixed(1) + ')';
+    massEl.className = 'auto-calc';
+    massEl.style.color = 'var(--red)';
+    return;
+  }
+
+  massEl.textContent = mass.toFixed(1) + ' g';
+  massEl.className = 'auto-calc';
+  massEl.style.color = 'var(--accent)';
+
+  // If student has already entered a density, re-check it against the updated mass
+  const densInput = document.getElementById('density-' + liquid);
+  if (densInput && densInput.value.trim() !== '') checkDensity(liquid);
+}
+
+function recalculateAll() {
+  liquids.forEach(l => recalcRow(l));
+}
+
+function checkDensity(liquid) {
+  const densInput = document.getElementById('density-' + liquid);
+  const msgEl     = document.getElementById('val-density-' + liquid);
+  if (!densInput || !msgEl) return;
+
+  const raw = densInput.value.trim();
+  if (!raw) { msgEl.className = 'val-msg'; msgEl.textContent = ''; return; }
+
+  const studentDens = parseFloat(raw);
+  if (isNaN(studentDens)) {
+    msgEl.className = 'val-msg err';
+    msgEl.textContent = 'Enter a numeric value (e.g. 0.92).';
+    return;
+  }
+
+  const cupEl  = document.getElementById('cup-'  + liquid);
+  const fullEl = document.getElementById('full-' + liquid);
+  const vol    = parseFloat(document.getElementById('volume-used').value);
+
+  const cupRaw  = cupEl  ? cupEl.value.trim()  : '';
+  const fullRaw = fullEl ? fullEl.value.trim() : '';
+  const cup  = cupRaw === '' ? 0 : parseFloat(cupRaw);
+  const full = parseFloat(fullRaw);
+
+  // If we don't have both masses and a volume yet, just range-check
+  if (isNaN(cup) || isNaN(full) || full <= cup || isNaN(vol) || vol <= 0) {
+    const exp = expectedDensities[liquid];
+    if (exp && studentDens >= exp.min && studentDens <= exp.max) {
+      msgEl.className = 'val-msg ok';
+      msgEl.textContent = 'Value looks reasonable. Enter your mass data above to verify your calculation.';
+    } else if (exp) {
+      msgEl.className = 'val-msg warn';
+      msgEl.textContent = 'Value may be off. Enter your mass data above to check your arithmetic.';
+    }
+    return;
+  }
+
+  const computedMass = full - cup;
+  const computedDens = computedMass / vol;
+  const diff = Math.abs(studentDens - computedDens);
+  const tolerance = 0.03; // allow rounding differences up to 0.03 g/mL
+
+  if (diff <= tolerance) {
+    msgEl.className = 'val-msg ok';
+    msgEl.textContent = 'Correct. Your calculated density (' + studentDens.toFixed(2) + ' g/mL) matches your mass and volume data.';
+
+    // Water technique check
+    if (liquid === 'water') {
+      const waterCheckEl = document.getElementById('val-water-check');
+      const exp = expectedDensities['water'];
+      if (waterCheckEl && exp) {
+        if (studentDens >= exp.min && studentDens <= exp.max) {
+          waterCheckEl.className = 'val-msg ok';
+          waterCheckEl.textContent = 'Water density check: ' + studentDens.toFixed(2) + ' g/mL — your measurement technique looks good.';
+        } else {
+          waterCheckEl.className = 'val-msg warn';
+          waterCheckEl.textContent = 'Water density ' + studentDens.toFixed(2) + ' g/mL is outside the expected range for pure water. Double-check your volume measurement and mass subtraction.';
+        }
+      }
+    }
+  } else if (diff <= 0.10) {
+    msgEl.className = 'val-msg warn';
+    msgEl.textContent = 'Close but off by ' + diff.toFixed(2) + ' g/mL. Expected ' + computedDens.toFixed(2) + ' g/mL from your masses. Check rounding — carry at least 3 significant figures through your calculation.';
+  } else {
+    msgEl.className = 'val-msg err';
+    msgEl.textContent = 'Does not match your data. From your masses (' + computedMass.toFixed(1) + ' g) and volume (' + vol + ' mL), density should be ' + computedDens.toFixed(2) + ' g/mL. Recheck your arithmetic: density = mass ÷ volume.';
+  }
+}
+
+// =========================================================
+// DATA TABLE 2: VALIDATION
+// =========================================================
+function validateMass(el, msgId) {
+  const raw = el.value.trim();
+  const msgEl = document.getElementById('val-' + msgId);
+  if (!msgEl || raw === '') { if(msgEl) { msgEl.className='val-msg'; msgEl.textContent=''; } return; }
+  const num = parseFloat(raw);
+  if (isNaN(num)) {
+    setValMsg(el, msgEl, 'err', 'Enter a number (e.g. 45.2 g), or 0 if you used the tare button.');
+    return;
+  }
+  if (num === 0) { setValMsg(el, msgEl, 'ok', 'Tared — empty cup mass recorded as 0 g.'); return; }
+  if (num < 0) { setValMsg(el, msgEl, 'err', 'Cup mass cannot be negative.'); return; }
+  if (num < 5) { setValMsg(el, msgEl, 'warn', 'Cup mass < 5 g is unusually low. If you used the tare button, enter 0 instead.'); return; }
+  if (num > 500) { setValMsg(el, msgEl, 'err', 'Cup mass > 500 g is unusually high. Check your scale or container.'); return; }
+  setValMsg(el, msgEl, 'ok', 'Cup mass recorded.');
+}
+
+function validateFullMass(el, msgId, liquid) {
+  const raw = el.value.trim();
+  const msgEl = document.getElementById('val-' + msgId);
+  if (!msgEl || raw === '') { if(msgEl) { msgEl.className='val-msg'; msgEl.textContent=''; } return; }
+  const num = parseFloat(raw);
+  const cupRaw = document.getElementById('cup-' + liquid) ? document.getElementById('cup-' + liquid).value.trim() : '';
+  const cupVal = cupRaw !== '' ? parseFloat(cupRaw) : NaN;
+  const tared  = cupRaw === '0' || cupVal === 0;
+
+  if (isNaN(num)) { setValMsg(el, msgEl, 'err', 'Enter a number.'); return; }
+
+  if (!isNaN(cupVal) && num <= cupVal && !tared) {
+    setValMsg(el, msgEl, 'err', 'Cup + liquid (' + num.toFixed(1) + ' g) must be greater than empty cup (' + cupVal.toFixed(1) + ' g).');
+    return;
+  }
+  if (tared && num <= 0) {
+    setValMsg(el, msgEl, 'err', 'With a tared scale, this field holds the liquid mass directly — it must be greater than 0.');
+    return;
+  }
+
+  const diff = tared ? num : (!isNaN(cupVal) ? num - cupVal : NaN);
+  if (!isNaN(diff)) {
+    if (diff < 10) { setValMsg(el, msgEl, 'warn', 'Liquid mass = ' + diff.toFixed(1) + ' g seems small for 60 mL. Verify your volume.'); return; }
+    if (diff > 200) { setValMsg(el, msgEl, 'warn', 'Liquid mass = ' + diff.toFixed(1) + ' g seems high. Did you use the correct volume?'); return; }
+  }
+  setValMsg(el, msgEl, 'ok', tared ? 'Liquid mass recorded (tared scale).' : 'Mass recorded.');
+}
+
+function setValMsg(el, msgEl, level, text) {
+  el.classList.remove('val-ok','val-warn','val-err');
+  msgEl.className = 'val-msg';
+  if (!level) return;
+  el.classList.add('val-' + level);
+  msgEl.classList.add(level === 'ok' ? 'ok' : level === 'warn' ? 'warn' : 'err');
+  msgEl.textContent = text;
+}
+
+// =========================================================
+// Q1 MULTIPLE CHOICE — Compound vs. Mixture
+// =========================================================
+const q1Answer = 'B';
+const q1Feedback = {
+  A: 'Not quite. Water (H₂O) contains two types of atoms — hydrogen and oxygen. The key distinction is not the number of atom types, but whether they are chemically bonded in a fixed ratio (compound) or physically combined with variable composition (mixture).',
+  B: 'Correct. Water is always H₂O — a fixed chemical bond between hydrogen and oxygen in a 2:1 ratio. Dish soap contains multiple substances physically combined with no fixed formula, making it a mixture.',
+  C: 'Appearance — color or clarity — does not determine whether something is a compound or mixture. Many mixtures are clear and many compounds are colored. Classification is based on chemical composition.',
+  D: 'This reverses the logic. Mixtures can often be separated by physical means such as boiling or filtering. Compounds require chemical reactions to break apart — they are harder to separate, not easier.'
+};
+
+document.querySelectorAll('input[name="q1mc"]').forEach(radio => {
+  radio.addEventListener('change', function() {
+    const fb = document.getElementById('fb-q1');
+    document.querySelectorAll('#mc-q1 .mc-option').forEach(opt => opt.classList.remove('selected-correct','selected-wrong'));
+    if (this.value === q1Answer) {
+      this.closest('.mc-option').classList.add('selected-correct');
+      fb.className = 'feedback-inline correct';
+    } else {
+      this.closest('.mc-option').classList.add('selected-wrong');
+      fb.className = 'feedback-inline incorrect';
+    }
+    fb.textContent = q1Feedback[this.value] || '';
+  });
+});
+
+// =========================================================
+// Q2 MATCHING — Physical vs. Chemical Properties
+// =========================================================
+const matchAnswers = {
+  'match-1': 'physical',
+  'match-2': 'chemical',
+  'match-3': 'physical',
+  'match-4': 'chemical',
+  'match-5': 'physical',
+  'match-6': 'chemical'
+};
+const matchFeedback = {
+  'match-1': { physical: 'Correct. Density is measured without changing the oil — it remains vegetable oil after measurement.', chemical: 'Density is measured without altering the oil chemically. It is a physical property.' },
+  'match-2': { chemical: 'Correct. Rancidity is oxidation — a chemical reaction that produces new compounds with different odors and flavors. The oil is permanently changed.', physical: 'Turning rancid is a chemical change — oxygen reacts with fatty acid chains, forming new substances. This is a chemical property.' },
+  'match-3': { physical: 'Correct. Viscosity can be observed without changing the syrup chemically. It is a physical property.', chemical: 'Viscosity is how a substance flows and can be observed without a chemical change. It is a physical property.' },
+  'match-4': { chemical: 'Correct. Caramelization is a chemical reaction — sucrose decomposes into new compounds at high temperature. The original sugar is permanently destroyed.', physical: 'Caramelization creates new substances — the sucrose is permanently broken down by heat. This is a chemical property.' },
+  'match-5': { physical: 'Correct. Color and transparency are observable without changing water chemically. These are physical properties.', chemical: 'Color and transparency can be observed without altering water chemically. They are physical properties.' },
+  'match-6': { chemical: 'Correct. Soap\'s action on grease involves surfactant molecules disrupting fat — a chemical interaction that transforms the system.', physical: 'The way soap acts on grease is best described as a chemical property — surfactants chemically interact with fat molecules to break them apart.' }
+};
+
+function checkMatching() {
+  let correct = 0; let attempted = 0;
+  Object.keys(matchAnswers).forEach(id => {
+    const el = document.getElementById(id);
+    const msgEl = document.getElementById('val-' + id);
+    if (!el || !el.value) return;
+    attempted++;
+    const isCorrect = el.value === matchAnswers[id];
+    if (isCorrect) { correct++; msgEl.className = 'val-msg ok'; }
+    else { msgEl.className = 'val-msg err'; }
+    msgEl.textContent = (matchFeedback[id] && matchFeedback[id][el.value]) || '';
+  });
+  const fb = document.getElementById('fb-q2');
+  if (attempted === 6) {
+    fb.className = correct === 6 ? 'feedback-inline correct' : correct >= 4 ? 'feedback-inline partial' : 'feedback-inline incorrect';
+    fb.textContent = correct + '/6 correct.' + (correct < 6 ? ' Review items marked in red — ask whether the property requires a chemical change to observe.' : ' All correct.');
+  }
+}
+
+// =========================================================
+// Q4 TRUE/FALSE — Density Column Layer Formation
+// =========================================================
+const tfCorrect = new Set(['1','2','4','6']);
+
+function checkTrueFalse() {
+  const checked = new Set([...document.querySelectorAll('input[name="q4tf"]:checked')].map(cb => cb.value));
+  const fb = document.getElementById('fb-q4');
+
+  document.querySelectorAll('input[name="q4tf"]').forEach(cb => {
+    const opt = cb.closest('.mc-option');
+    opt.classList.remove('selected-correct','selected-wrong');
+    if (cb.checked) {
+      opt.classList.add(tfCorrect.has(cb.value) ? 'selected-correct' : 'selected-wrong');
+    }
+  });
+
+  const truePositives  = [...checked].filter(v => tfCorrect.has(v)).length;
+  const falsePositives = [...checked].filter(v => !tfCorrect.has(v)).length;
+  const missed         = [...tfCorrect].filter(v => !checked.has(v)).length;
+
+  if (checked.size === 0) { fb.className = 'feedback-inline'; fb.textContent = ''; return; }
+
+  if (falsePositives === 0 && missed === 0) {
+    fb.className = 'feedback-inline correct';
+    fb.textContent = 'All correct — you identified all four true statements with no false ones selected.';
+  } else if (falsePositives === 0 && missed > 0) {
+    fb.className = 'feedback-inline partial';
+    fb.textContent = truePositives + '/4 true statements found. ' + missed + ' true statement' + (missed > 1 ? 's' : '') + ' still unselected — keep looking.';
+  } else {
+    fb.className = 'feedback-inline incorrect';
+    fb.textContent = falsePositives + ' incorrect selection' + (falsePositives > 1 ? 's' : '') + ' highlighted in red. Re-read those statements carefully.';
+  }
+}
+
+// =========================================================
+// REASONING DROPDOWN VALIDATION
+// =========================================================
+const correctReasoning = { water: 'a', oil: 'c', syrup: 'b', soap: 'b' };
+
+const reasoningFeedback = {
+  water: {
+    a: 'Correct. Water is always H₂O — hydrogen and oxygen in a fixed 2:1 ratio, chemically bonded. That fixed composition is the hallmark of a compound.',
+    b: 'Appearance alone does not determine classification. Many compounds and mixtures look clear and uniform. The key is composition, not clarity.',
+    c: 'Tap water does contain dissolved minerals, which technically makes it a mixture. However, the question refers to pure water (distilled), which is always H₂O — a compound. In this lab, treat water as a compound.',
+    d: 'Water\'s composition does not change with temperature — it is always H₂O whether liquid, solid, or gas. Temperature affects state, not chemical identity.'
+  },
+  oil: {
+    a: 'Vegetable oil contains carbon, hydrogen, and oxygen — three elements — combined in triglyceride molecules. It is not a single element.',
+    b: 'Vegetable oil is not one molecule with a fixed formula. It is a blend of palmitic, oleic, linoleic, and other triglycerides — variable composition, which defines a mixture.',
+    c: 'Correct. Vegetable oil is a homogeneous mixture of several different triglyceride molecules that appear completely uniform. No single fixed formula exists for the whole blend.',
+    d: 'Fresh vegetable oil from a well-mixed bottle is a single uniform phase — there are no visible layers. Heterogeneous requires distinct, visible regions.'
+  },
+  syrup: {
+    a: 'Sucrose (C₁₂H₂₂O₁₁) is one component in syrup, but syrup also contains water, coloring agents, flavoring, and other sugars. A mixture of ingredients cannot be a single pure compound.',
+    b: 'Correct. Syrup and honey contain water, multiple types of sugars, minerals, and flavorings — all dissolved uniformly. Variable composition and physical combination makes this a homogeneous mixture.',
+    c: 'A well-mixed syrup or honey shows no visible separation — it appears uniform throughout. Distinct visible layers would be required to call it heterogeneous.',
+    d: 'Syrup contains carbon, hydrogen, and oxygen — multiple elements combined in molecules. Calling it an element would require it to contain only one kind of atom.'
+  },
+  soap: {
+    a: 'Sodium lauryl sulfate is one ingredient in dish soap, but commercial dish soap also contains water, fragrance, dyes, thickeners, and preservatives. A blend of multiple ingredients is a mixture.',
+    b: 'Correct. Dish soap is a homogeneous mixture — multiple substances (surfactants, water, dyes, fragrances) are physically combined and uniformly distributed throughout.',
+    c: 'A single-phase dish soap appears uniform. Unless you can see distinct separated layers or regions with the naked eye, it is homogeneous, not heterogeneous.',
+    d: 'Dish soap contains many types of molecules made of carbon, hydrogen, oxygen, sulfur, and sodium. It is not composed of a single type of atom.'
+  }
+};
+
+function validateReasoning(el, liquid) {
+  const val = el.value;
+  const msgEl = document.getElementById('val-reason-' + liquid);
+  if (!msgEl || !val) { msgEl.className = 'val-msg'; msgEl.textContent = ''; return; }
+  const correct = correctReasoning[liquid];
+  const fb = reasoningFeedback[liquid][val] || '';
+  if (val === correct) {
+    msgEl.className = 'val-msg ok';
+  } else {
+    msgEl.className = 'val-msg err';
+  }
+  msgEl.textContent = fb;
+}
+const correctClassifications = {
+  water:  { correct: 'compound',        alt: null },
+  oil:    { correct: 'mixture-homo',    alt: null },
+  syrup:  { correct: 'mixture-homo',    alt: 'mixture-hetero' },
+  soap:   { correct: 'mixture-homo',    alt: null }
+};
+const classificationFeedback = {
+  water: {
+    compound: 'Correct. Pure water (H2O) is a compound — hydrogen and oxygen bonded in a fixed 2:1 ratio.',
+    element: 'Elements contain only one type of atom. Water contains both hydrogen and oxygen atoms.',
+    'mixture-homo': 'Close, but water is actually a compound. Its composition is always H2O — it cannot vary like a mixture.',
+    'mixture-hetero': 'Water is a compound with fixed composition (H2O), not a mixture of variable components.'
+  },
+  oil: {
+    'mixture-homo': 'Correct. Vegetable oil is a homogeneous mixture of different triglyceride molecules, appearing uniform throughout.',
+    'mixture-hetero': 'Acceptable — vegetable oil is primarily homogeneous (one phase), though it may contain trace particles. Homogeneous is the better classification.',
+    compound: 'Vegetable oil is not a single compound — it is a blend of many different triglyceride molecules (palmitic, oleic, linoleic acids, etc.).',
+    element: 'Elements contain only one kind of atom. Oil is composed of carbon, hydrogen, and oxygen in complex molecules.'
+  },
+  syrup: {
+    'mixture-homo': 'Correct. Pancake syrup is a homogeneous mixture of water, corn syrup (sucrose/glucose), flavorings, and colorings.',
+    'mixture-hetero': 'Accepted — honey can appear heterogeneous if crystallized. Pancake syrup is homogeneous, but this answer is reasonable.',
+    compound: 'Syrup and honey contain multiple dissolved substances (sugars, water, minerals), so they are mixtures, not single compounds.',
+    element: 'Elements consist of one kind of atom — syrup is made of many different molecules.'
+  },
+  soap: {
+    'mixture-homo': 'Correct. Commercial dish soap is a homogeneous mixture of water, surfactants (detergent molecules), dyes, and fragrances — multiple substances uniformly combined.',
+    'mixture-hetero': 'Dish soap appears uniform throughout (one phase), so homogeneous is the better classification.',
+    compound: 'Dish soap contains many different ingredients — surfactants, water, dyes, fragrance. This makes it a mixture, not a pure compound.',
+    element: 'Elements contain only one kind of atom. Soap is composed of many different molecules.'
+  }
+};
+
+function validateClassification(el, liquid) {
+  const val = el.value;
+  const msgEl = document.getElementById('val-class-' + liquid);
+  if (!msgEl || !val) { msgEl.className = 'val-msg'; msgEl.textContent = ''; return; }
+  const correct = correctClassifications[liquid];
+  const fb = classificationFeedback[liquid][val] || 'Select a classification.';
+  if (val === correct.correct || val === correct.alt) {
+    msgEl.className = 'val-msg ok';
+  } else {
+    msgEl.className = 'val-msg warn';
+  }
+  msgEl.textContent = fb;
+}
+
+// =========================================================
+// RANKING CHECK
+// =========================================================
+function checkRanking() {
+  const fb = document.getElementById('fb-ranking');
+  const ranks = [
+    document.getElementById('rank1').value,
+    document.getElementById('rank2').value,
+    document.getElementById('rank3').value,
+    document.getElementById('rank4').value,
+  ];
+
+  if (ranks.some(r => !r)) {
+    fb.className = 'feedback-inline incorrect';
+    fb.textContent = 'Please select a liquid for each rank position before checking.';
+    return;
+  }
+
+  const expected = ['syrup','soap','water','oil'];
+  const correct = expected.filter((e, i) => e === ranks[i]).length;
+
+  if (correct === 4) {
+    fb.className = 'feedback-inline correct';
+    fb.textContent = 'Correct order! Syrup/Honey (densest) > Dish Soap > Water > Vegetable Oil (least dense). Your ranking matches the expected densities.';
+  } else if (correct >= 2) {
+    fb.className = 'feedback-inline partial';
+    fb.textContent = correct + '/4 correct. Review your Data Table 2 density values — the liquid with the largest calculated density should be ranked 1st. Compare each pair carefully.';
+  } else {
+    fb.className = 'feedback-inline incorrect';
+    fb.textContent = correct + '/4 correct. Return to Data Table 2 and list the density values in order from largest to smallest — that sequence is your ranking.';
+  }
+}
+
+// =========================================================
+// AI FEEDBACK ENGINE
+// =========================================================
+const questionContexts = {
+  'q4-intro': {
+    prompt: `A CHEM 100 student answered this pre-lab question: "In your own words, explain why measuring density is useful for detecting food contamination. How does density act like a chemical fingerprint?"
+
+Student response: "{RESPONSE}"
+
+You are an instructor giving feedback in 3-4 sentences. Evaluate whether the student:
+1. Understands that density is an intensive property (does not depend on sample size)
+2. Understands that each pure substance has a characteristic, reproducible density
+3. Can connect the concept of density to identification/contamination detection
+If they missed key ideas (intensive vs. extensive properties, the uniqueness of density to each substance), clarify these briefly. Be encouraging and specific. Do not use bullet points.`
+  },
+  q5: {
+    prompt: `A CHEM 100 student answered the Bracket City application question: "Pure vegetable oil should have density 0.92 g/mL but measures 1.10 g/mL. What does this mean? What might be contaminating it?"
+
+Student response: "{RESPONSE}"
+
+You are an instructor giving feedback. In 4-5 sentences:
+1. Confirm whether they correctly interpreted the higher-than-expected density as evidence of contamination or adulteration
+2. Assess whether their proposed contaminant is scientifically plausible (water at 1.00 g/mL is too low; substances closer to 1.10 might include palm oil, certain mineral oils, or water-based adulterants mixed in)
+3. Check whether they addressed the safety implication (mislabeled food is a health risk, may contain unlisted allergens, fraud)
+4. Note any logical gaps in their reasoning
+Be evaluative and rigorous but encouraging. Do not use bullet points.`
+  },
+  conclusion: {
+    prompt: `A CHEM 100 student wrote this lab conclusion for a food density investigation: "How can density help identify food contamination? Why is classification of matter important? What was one source of error?"
+
+Student response: "{RESPONSE}"
+
+You are an instructor giving feedback. In 4-5 sentences:
+1. Evaluate whether they addressed all three required points (density as ID tool, importance of classification, error analysis)
+2. Assess the scientific accuracy of their claims
+3. Evaluate whether their error analysis is specific and mechanistic (e.g., "reading the measuring cup from an angle introduces parallax error" rather than just "I may have measured wrong")
+4. Note the strongest part and one area for improvement
+Be constructive and specific. Do not use bullet points.`
+  }
+};
+
+async function getAIFeedback(qId, btn) {
+  const textareaId = qId === 'q4-intro' ? 'open-q4-intro' : 'open-' + qId;
+  const response = document.getElementById(textareaId).value.trim();
+  if (!response || response.length < 15) {
+    alert('Please write a response before requesting feedback.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.querySelector('.spinner').style.display = 'inline-block';
+
+  const context = questionContexts[qId];
+  const promptText = context.prompt.replace('{RESPONSE}', response);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: 'You are a chemistry instructor at a liberal arts university giving concise, constructive, scientifically accurate feedback on student lab reports for an introductory (CHEM 100) course. Your students are non-majors, many encountering chemistry formally for the first time. Be encouraging but rigorous. Connect chemistry to everyday experience. Never use bullet points.',
+        messages: [{ role: 'user', content: promptText }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content.map(c => c.text || '').join('');
+    const boxId = qId === 'q4-intro' ? 'ai-q4-intro' : 'ai-' + qId;
+    const box = document.getElementById(boxId);
+    box.querySelector('.ai-feedback-content').textContent = text;
+    box.classList.add('visible');
+  } catch (err) {
+    const boxId = qId === 'q4-intro' ? 'ai-q4-intro' : 'ai-' + qId;
+    const box = document.getElementById(boxId);
+    box.querySelector('.ai-feedback-content').textContent = 'Could not connect to the feedback service. Check your internet connection and try again.';
+    box.classList.add('visible');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.querySelector('.spinner').style.display = 'none';
+  }
+}
+
+// =========================================================
+// GOOGLE SHEETS CONFIGURATION
+// Paste your Web App URL here after following setup steps.
+// Leave as empty string '' if not yet configured.
+// =========================================================
+const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxsVglVbDQWGq8kYvJKyVQ1XIO6TqM4Ar-2NKtNyU6pVWIEBsHzInlJgJOBNTqVdsJnFw/exec';
+
+// =========================================================
+// SUBMISSION & SCORING
+// =========================================================
+async function submitLab() {
+  const name = document.getElementById('studentName').value.trim();
+  const section = document.getElementById('labSection').value.trim();
+  const date = document.getElementById('labDate').value.trim();
+
+  if (!name) {
+    alert('Please enter your name before submitting.');
+    return;
+  }
+
+  let score = 0;
+  let total = 35;
+  let details = [];
+
+  // Pre-Lab MC Q1, Q2, Q3 (1 pt each) + open Q4-intro (2 pts) = 5 pts
+  const prelabMCs = [
+    { name: 'mc1', correct: 'B', label: 'Pre-Lab Q1 (Water classification)' },
+    { name: 'mc2', correct: 'B', label: 'Pre-Lab Q2 (Oil vs. water density)' },
+    { name: 'mc3', correct: 'C', label: 'Pre-Lab Q3 (Dish soap classification)' }
+  ];
+  prelabMCs.forEach(q => {
+    const sel = document.querySelector(`input[name="${q.name}"]:checked`);
+    const pts = sel && sel.value === q.correct ? 1 : 0;
+    score += pts;
+    details.push(q.label + ': ' + pts + '/1' + (!sel ? ' (not attempted)' : pts ? ' (correct)' : ' (incorrect)'));
+  });
+  const q4introVal = document.getElementById('open-q4-intro').value.trim();
+  const q4introPts = q4introVal.length > 80 ? 2 : q4introVal.length > 20 ? 1 : 0;
+  score += q4introPts;
+  details.push('Pre-Lab Q4 (Density as fingerprint): ' + q4introPts + '/2' + (!q4introVal ? ' (not attempted)' : ' (submitted)'));
+
+  // Data Table 1: Classification + Reasoning (5 pts — 2.5 each half)
+  let classScore = 0;
+  const classItems = ['water','oil','syrup','soap'];
+  classItems.forEach(liq => {
+    const val = document.getElementById('class-' + liq).value;
+    const correct = correctClassifications[liq];
+    if (val === correct.correct || val === correct.alt) classScore++;
+  });
+  let reasonScore = 0;
+  classItems.forEach(liq => {
+    const el = document.getElementById('reason-' + liq);
+    if (el && el.value === correctReasoning[liq]) reasonScore++;
+  });
+  const dt1pts = Math.round(((classScore + reasonScore) / 8) * 5);
+  score += dt1pts;
+  details.push('Data Table 1 (Classification + Reasoning): ' + dt1pts + '/5 (' + classScore + '/4 classifications, ' + reasonScore + '/4 reasoning correct)');
+
+  // Data Table 2: Measurements (5 pts)
+  let dataScore = 0;
+  const volUsed = parseFloat(document.getElementById('volume-used').value);
+  if (!isNaN(volUsed) && volUsed > 0) dataScore++;
+  liquids.forEach(liq => {
+    const cup = parseFloat(document.getElementById('cup-' + liq) ? document.getElementById('cup-' + liq).value : '');
+    const full = parseFloat(document.getElementById('full-' + liq) ? document.getElementById('full-' + liq).value : '');
+    if (!isNaN(cup) && !isNaN(full) && full > cup) dataScore++;
+  });
+  const dt2pts = Math.min(5, Math.round((dataScore / 6) * 5));
+  score += dt2pts;
+  details.push('Data Table 2 (Measurements): ' + dt2pts + '/5 (' + dataScore + '/6 fields correctly filled)');
+
+  // Ranking Q3 (5 pts)
+  const ranks = ['rank1','rank2','rank3','rank4'].map(id => document.getElementById(id) ? document.getElementById(id).value : '');
+  const expected = ['syrup','soap','water','oil'];
+  const rankCorrect = expected.filter((e,i) => e === ranks[i]).length;
+  const rankPts = rankCorrect === 4 ? 5 : rankCorrect >= 2 ? 3 : rankCorrect >= 1 ? 1 : 0;
+  score += rankPts;
+  details.push('Q3 (Density Ranking): ' + rankPts + '/5 (' + rankCorrect + '/4 positions correct)');
+
+  // Q1 Multiple Choice (4 pts)
+  const q1mc = document.querySelector('input[name="q1mc"]:checked');
+  const q1pts = q1mc && q1mc.value === 'B' ? 4 : q1mc ? 1 : 0;
+  score += q1pts;
+  details.push('Q1 (Compound vs. Mixture MC): ' + q1pts + '/4' + (!q1mc ? ' (not attempted)' : q1mc.value === 'B' ? ' (correct)' : ' (incorrect)'));
+
+  // Q2 Matching (3 pts)
+  const matchKeys = ['match-1','match-2','match-3','match-4','match-5','match-6'];
+  const matchCorrectCount = matchKeys.filter(id => {
+    const el = document.getElementById(id);
+    return el && el.value === matchAnswers[id];
+  }).length;
+  const q2pts = matchCorrectCount === 6 ? 3 : matchCorrectCount >= 4 ? 2 : matchCorrectCount >= 2 ? 1 : 0;
+  score += q2pts;
+  details.push('Q2 (Physical vs. Chemical Matching): ' + q2pts + '/3 (' + matchCorrectCount + '/6 correct)');
+
+  // Q4 True/False (4 pts)
+  const checkedTF = [...document.querySelectorAll('input[name="q4tf"]:checked')].map(cb => cb.value);
+  const tfTP = checkedTF.filter(v => ['1','2','4','6'].includes(v)).length;
+  const tfFP = checkedTF.filter(v => !['1','2','4','6'].includes(v)).length;
+  const q4pts = (tfTP === 4 && tfFP === 0) ? 4 : (tfTP >= 3 && tfFP <= 1) ? 3 : (tfTP >= 2 && tfFP <= 1) ? 2 : tfTP >= 1 ? 1 : 0;
+  score += q4pts;
+  details.push('Q4 (True/False Density Column): ' + q4pts + '/4 (' + tfTP + '/4 true found, ' + tfFP + ' false selected)');
+
+  // Written Q5 (6 pts), Conclusion (3 pts)
+  const writtenQs = [
+    { id: 'q5', pts: 6, label: 'Q5 (Bracket City Application)' },
+    { id: 'conclusion', pts: 3, label: 'Conclusion' }
+  ];
+
+  writtenQs.forEach(q => {
+    const val = document.getElementById('open-' + q.id).value.trim();
+    let earned = 0;
+    if (val.length > 100) earned = q.pts;
+    else if (val.length > 40) earned = Math.round(q.pts * 0.5);
+    score += earned;
+    details.push(q.label + ': ' + earned + '/' + q.pts + (val.length === 0 ? ' (not attempted)' : val.length < 40 ? ' (response too brief)' : ' (submitted)'));
+  });
+
+  const pct = Math.round((score / total) * 100);
+  const timestamp = new Date().toLocaleString();
+
+  const payload = {
+    lab_id: 'Lab_1',
+    timestamp, name, section, date,
+    score: score.toFixed(1), total, percent: pct,
+    prelab_mc1: document.querySelector('input[name="mc1"]:checked') ? document.querySelector('input[name="mc1"]:checked').value : 'blank',
+    prelab_mc2: document.querySelector('input[name="mc2"]:checked') ? document.querySelector('input[name="mc2"]:checked').value : 'blank',
+    prelab_mc3: document.querySelector('input[name="mc3"]:checked') ? document.querySelector('input[name="mc3"]:checked').value : 'blank',
+    prelab_q4: document.getElementById('open-q4-intro').value.trim() || 'blank',
+    classifications: classItems.map(l => l + ':' + document.getElementById('class-' + l).value).join(', '),
+    density_water: document.getElementById('density-water').value || 'blank',
+    density_oil:   document.getElementById('density-oil').value   || 'blank',
+    density_syrup: document.getElementById('density-syrup').value || 'blank',
+    density_soap:  document.getElementById('density-soap').value  || 'blank',
+    ranking: ranks.join(' > '),
+    q1_response: q1mc ? 'Selected: ' + q1mc.value : 'not attempted',
+    q2_response: matchKeys.map(id => { const el = document.getElementById(id); return id + ':' + (el ? el.value : 'blank'); }).join(', '),
+    q4_response: 'Selected statements: ' + (checkedTF.join(', ') || 'none'),
+    q5_response: document.getElementById('open-q5').value.trim(),
+    conclusion: document.getElementById('open-conclusion').value.trim(),
+    details: details.join(' | ')
+  };
+
+  showScorePanel(name, score, total, pct, timestamp, details);
+
+  if (SHEETS_ENDPOINT) {
+    const statusEl = document.getElementById('sheets-status');
+    if (statusEl) { statusEl.textContent = 'Sending to gradebook...'; statusEl.style.color = 'var(--gold)'; }
+    try {
+      await fetch(SHEETS_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (statusEl) { statusEl.textContent = 'Submitted to gradebook successfully.'; statusEl.style.color = 'var(--green)'; }
+    } catch (err) {
+      if (statusEl) { statusEl.textContent = 'Could not reach gradebook — screenshot your score and email it to your instructor.'; statusEl.style.color = 'var(--red)'; }
+    }
+  }
+}
+
+function showScorePanel(name, score, total, pct, timestamp, details) {
+  const panel = document.getElementById('scorePanel');
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  setTimeout(() => {
+    document.getElementById('scoreBar').style.width = pct + '%';
+    document.getElementById('scoreBar').style.background =
+      pct >= 85 ? 'var(--green)' : pct >= 65 ? 'var(--gold)' : 'var(--red)';
+  }, 100);
+
+  document.getElementById('scoreText').textContent =
+    name + '  |  ' + score.toFixed(1) + ' / ' + total + ' points  (' + pct + '%)  |  Submitted ' + timestamp;
+  document.getElementById('scoreDetails').innerHTML =
+    '<strong style="display:block;margin-bottom:8px;">Item-by-item breakdown:</strong>' +
+    details.map(d => '<span style="display:block; padding:3px 0; border-bottom:1px dashed var(--rule);">' + d + '</span>').join('') +
+    '<div style="margin-top:12px; padding:12px; background:var(--orange-light); border-radius:3px; font-size:12.5px; color:#3e2000; line-height:1.6;"><strong>Reminder:</strong> Submit your density column photo separately through the Canvas assignment. Your written responses have received AI instructor feedback — click "Get Feedback" on any open response to see detailed comments.</div>' +
+    '<div id="sheets-status" style="margin-top:12px; font-family:JetBrains Mono,monospace; font-size:11px;"></div>';
+}
+</script>
+</body>
+</html>
