@@ -742,6 +742,7 @@ select:focus {
             <option value="combustion">Combustion</option>
             <option value="formation">Formation</option>
             <option value="decomposition">Decomposition</option>
+            <option value="phase">Phase Change</option>
           </select>
         </div>
         <div class="reactions-scroll" id="library"></div>
@@ -858,65 +859,73 @@ select:focus {
       <div class="qc-feedback-inline" id="q3-fb"></div>
     </div>
 
-    <!-- Q4: Net Equation Interpretation -->
+    <!-- Q4: Combining ΔH Values -->
     <div class="qc-question" id="q4">
-      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Click "Clear All". Add "NO formation" and "NO₂ formation" to workspace (do NOT modify). Examine the Net Equation display.<br><br>4. True or False: The net equation still contains NO because it appears on both sides and cancels out completely.</div>
+      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Click "Clear All". Add "Methane combustion" (ΔH = -890.3 kJ) to your workspace. Then add "Water decomposition" (ΔH = +571.6 kJ).<br><br>4. What is the total ΔH when you combine these two reactions?</div>
       <div class="qc-options">
         <div class="qc-option" onclick="checkMC('q4','a')">
           <span class="qc-letter">A</span>
-          <span>True - NO cancels completely</span>
+          <span>-318.7 kJ</span>
         </div>
         <div class="qc-option" onclick="checkMC('q4','b')">
           <span class="qc-letter">B</span>
-          <span>False - NO does NOT cancel completely in the net equation</span>
+          <span>-1461.9 kJ</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q4','c')">
+          <span class="qc-letter">C</span>
+          <span>+318.7 kJ</span>
+        </div>
+        <div class="qc-option" onclick="checkMC('q4','d')">
+          <span class="qc-letter">D</span>
+          <span>+1461.9 kJ</span>
         </div>
       </div>
       <div class="qc-feedback-inline" id="q4-fb"></div>
     </div>
 
-    <!-- Q5: Strategic Reversal -->
+    <!-- Q5: Why Reverse Equations -->
     <div class="qc-question" id="q5">
-      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Click "Clear All". Your goal is to make CO as a PRODUCT. Add "Carbon combustion" and "CO combustion". Try reversing ONE of them to achieve this goal.<br><br>5. Which reaction must be reversed to get CO on the product side of the net equation?</div>
+      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Your goal is to find ΔH for: 2 C(s) + 2 H₂(g) → C₂H₄(g). You cannot measure this directly, but you have combustion data. Look at "Carbon combustion," "Hydrogen combustion," and "Ethene combustion" in the library.<br><br>5. To use "Ethene combustion" to help find ΔH for ethene FORMATION, what must you do?</div>
       <div class="qc-options">
         <div class="qc-option" onclick="checkMC('q5','a')">
           <span class="qc-letter">A</span>
-          <span>Reverse "Carbon combustion"</span>
+          <span>Use it as-is because it already contains C₂H₄</span>
         </div>
         <div class="qc-option" onclick="checkMC('q5','b')">
           <span class="qc-letter">B</span>
-          <span>Reverse "CO combustion"</span>
+          <span>Reverse it because combustion has C₂H₄ as a reactant, but we need it as a product</span>
         </div>
         <div class="qc-option" onclick="checkMC('q5','c')">
           <span class="qc-letter">C</span>
-          <span>Reverse both reactions</span>
+          <span>Multiply it by 2</span>
         </div>
         <div class="qc-option" onclick="checkMC('q5','d')">
           <span class="qc-letter">D</span>
-          <span>Don't reverse either - CO is already a product</span>
+          <span>You cannot use combustion data to find formation ΔH</span>
         </div>
       </div>
       <div class="qc-feedback-inline" id="q5-fb"></div>
     </div>
 
-    <!-- Q6: Cancellation Understanding -->
+    <!-- Q6: Applying the Strategy -->
     <div class="qc-question" id="q6">
-      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Click "Clear All". Add "Propane combustion" to workspace. Look at the equation carefully.<br><br>6. If you wanted to cancel out the CO₂ produced by propane combustion, which reaction would you need to add and HOW would you modify it?</div>
+      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Use the tool! Add these to workspace: "Carbon combustion" (multiply by 2), "Hydrogen combustion" (multiply by 2), and "Ethene combustion" (reverse it). Look at the Net Equation and Net ΔH.<br><br>6. What is the net ΔH for forming ethene: 2 C(s) + 2 H₂(g) → C₂H₄(g)?</div>
       <div class="qc-options">
         <div class="qc-option" onclick="checkMC('q6','a')">
           <span class="qc-letter">A</span>
-          <span>Add "Carbon combustion" and reverse it</span>
+          <span>+52.4 kJ</span>
         </div>
         <div class="qc-option" onclick="checkMC('q6','b')">
           <span class="qc-letter">B</span>
-          <span>Add "Carbon combustion", reverse it, and multiply by 3</span>
+          <span>-52.4 kJ</span>
         </div>
         <div class="qc-option" onclick="checkMC('q6','c')">
           <span class="qc-letter">C</span>
-          <span>Add "CO combustion" and multiply by 3</span>
+          <span>+1411 kJ</span>
         </div>
         <div class="qc-option" onclick="checkMC('q6','d')">
           <span class="qc-letter">D</span>
-          <span>Add "Limestone decomp" and multiply by 3</span>
+          <span>-1411 kJ</span>
         </div>
       </div>
       <div class="qc-feedback-inline" id="q6-fb"></div>
@@ -924,23 +933,23 @@ select:focus {
 
     <!-- Q7: Hess's Law Application -->
     <div class="qc-question" id="q7">
-      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Using the tool, determine ΔH for the target equation: C(s) + ½ O₂(g) → CO(g). You'll need to use TWO equations from the library and manipulate them appropriately.<br><br>7. What is the ΔH for this reaction?</div>
+      <div class="qc-question-text"><strong>DIRECTIONS:</strong> Now YOU choose the strategy! Use the library to find ΔH for: C(s) + 2 H₂(g) → CH₄(g). You'll need to select and manipulate equations strategically.<br><br>7. What is ΔH for methane formation from its elements?</div>
       <div class="qc-options">
         <div class="qc-option" onclick="checkMC('q7','a')">
           <span class="qc-letter">A</span>
-          <span>-110.5 kJ</span>
+          <span>-74.6 kJ</span>
         </div>
         <div class="qc-option" onclick="checkMC('q7','b')">
           <span class="qc-letter">B</span>
-          <span>-676.5 kJ</span>
+          <span>+74.6 kJ</span>
         </div>
         <div class="qc-option" onclick="checkMC('q7','c')">
           <span class="qc-letter">C</span>
-          <span>+110.5 kJ</span>
+          <span>-890.3 kJ</span>
         </div>
         <div class="qc-option" onclick="checkMC('q7','d')">
           <span class="qc-letter">D</span>
-          <span>+283.0 kJ</span>
+          <span>+890.3 kJ</span>
         </div>
       </div>
       <div class="qc-feedback-inline" id="q7-fb"></div>
@@ -951,18 +960,27 @@ select:focus {
 
 <script>
 const reactions = [
+  // REQUIRED FOR CONCEPT CHECK QUESTIONS
   { id: 'r1', eq: 'C(s) + O<sub>2</sub>(g) → CO<sub>2</sub>(g)', dH: -393.5, cat: 'combustion', label: 'Carbon combustion' },
   { id: 'r2', eq: 'CO(g) + ½ O<sub>2</sub>(g) → CO<sub>2</sub>(g)', dH: -283.0, cat: 'combustion', label: 'CO combustion' },
   { id: 'r3', eq: 'H<sub>2</sub>(g) + ½ O<sub>2</sub>(g) → H<sub>2</sub>O(l)', dH: -285.8, cat: 'combustion', label: 'Hydrogen combustion' },
   { id: 'r4', eq: 'CH<sub>4</sub>(g) + 2 O<sub>2</sub>(g) → CO<sub>2</sub>(g) + 2 H<sub>2</sub>O(l)', dH: -890.3, cat: 'combustion', label: 'Methane combustion' },
-  { id: 'r5', eq: 'C<sub>3</sub>H<sub>8</sub>(g) + 5 O<sub>2</sub>(g) → 3 CO<sub>2</sub>(g) + 4 H<sub>2</sub>O(l)', dH: -2220, cat: 'combustion', label: 'Propane combustion' },
-  { id: 'r6', eq: 'N<sub>2</sub>(g) + O<sub>2</sub>(g) → 2 NO(g)', dH: 180.5, cat: 'formation', label: 'NO formation' },
-  { id: 'r7', eq: '2 NO(g) + O<sub>2</sub>(g) → 2 NO<sub>2</sub>(g)', dH: -114.1, cat: 'formation', label: 'NO<sub>2</sub> formation' },
-  { id: 'r8', eq: 'N<sub>2</sub>(g) + 3 H<sub>2</sub>(g) → 2 NH<sub>3</sub>(g)', dH: -92.2, cat: 'formation', label: 'Ammonia (Haber)' },
-  { id: 'r9', eq: '2 C(s) + H<sub>2</sub>(g) → C<sub>2</sub>H<sub>2</sub>(g)', dH: 226.7, cat: 'formation', label: 'Acetylene formation' },
-  { id: 'r10', eq: 'CaCO<sub>3</sub>(s) → CaO(s) + CO<sub>2</sub>(g)', dH: 178.3, cat: 'decomposition', label: 'Limestone decomp' },
-  { id: 'r11', eq: '2 H<sub>2</sub>O(l) → 2 H<sub>2</sub>(g) + O<sub>2</sub>(g)', dH: 571.6, cat: 'decomposition', label: 'Water decomp' },
-  { id: 'r12', eq: 'N<sub>2</sub>O<sub>4</sub>(g) → 2 NO<sub>2</sub>(g)', dH: 57.2, cat: 'decomposition', label: 'N<sub>2</sub>O<sub>4</sub> decomp' }
+  { id: 'r5', eq: '2 H<sub>2</sub>O(l) → 2 H<sub>2</sub>(g) + O<sub>2</sub>(g)', dH: 571.6, cat: 'decomposition', label: 'Water decomposition' },
+  { id: 'r6', eq: 'N<sub>2</sub>(g) + 3 H<sub>2</sub>(g) → 2 NH<sub>3</sub>(g)', dH: -92.2, cat: 'formation', label: 'Ammonia synthesis' },
+  
+  // ADDITIONAL REACTIONS FOR HESS'S LAW PRACTICE - Rich in O₂, H₂O, CO₂, H₂
+  { id: 'r7', eq: 'C<sub>2</sub>H<sub>6</sub>(g) + 7/2 O<sub>2</sub>(g) → 2 CO<sub>2</sub>(g) + 3 H<sub>2</sub>O(l)', dH: -1560, cat: 'combustion', label: 'Ethane combustion' },
+  { id: 'r8', eq: 'C<sub>2</sub>H<sub>4</sub>(g) + 3 O<sub>2</sub>(g) → 2 CO<sub>2</sub>(g) + 2 H<sub>2</sub>O(l)', dH: -1411, cat: 'combustion', label: 'Ethene combustion' },
+  { id: 'r9', eq: 'C<sub>2</sub>H<sub>2</sub>(g) + 5/2 O<sub>2</sub>(g) → 2 CO<sub>2</sub>(g) + H<sub>2</sub>O(l)', dH: -1300, cat: 'combustion', label: 'Ethyne combustion' },
+  { id: 'r10', eq: '2 C(s) + 3 H<sub>2</sub>(g) → C<sub>2</sub>H<sub>6</sub>(g)', dH: -84.0, cat: 'formation', label: 'Ethane formation' },
+  { id: 'r11', eq: '2 C(s) + 2 H<sub>2</sub>(g) → C<sub>2</sub>H<sub>4</sub>(g)', dH: 52.4, cat: 'formation', label: 'Ethene formation' },
+  { id: 'r12', eq: '2 C(s) + H<sub>2</sub>(g) → C<sub>2</sub>H<sub>2</sub>(g)', dH: 226.7, cat: 'formation', label: 'Ethyne formation' },
+  { id: 'r13', eq: 'CH<sub>3</sub>OH(l) + 3/2 O<sub>2</sub>(g) → CO<sub>2</sub>(g) + 2 H<sub>2</sub>O(l)', dH: -726.1, cat: 'combustion', label: 'Methanol combustion' },
+  { id: 'r14', eq: 'CO(g) + 2 H<sub>2</sub>(g) → CH<sub>3</sub>OH(l)', dH: -128.1, cat: 'formation', label: 'Methanol synthesis' },
+  { id: 'r15', eq: 'C(s) + 2 H<sub>2</sub>(g) → CH<sub>4</sub>(g)', dH: -74.6, cat: 'formation', label: 'Methane formation' },
+  { id: 'r16', eq: 'H<sub>2</sub>O(l) → H<sub>2</sub>O(g)', dH: 44.0, cat: 'phase', label: 'Water vaporization' },
+  { id: 'r17', eq: '4 NH<sub>3</sub>(g) + 5 O<sub>2</sub>(g) → 4 NO(g) + 6 H<sub>2</sub>O(l)', dH: -905.2, cat: 'combustion', label: 'Ammonia oxidation' },
+  { id: 'r18', eq: 'N<sub>2</sub>(g) + 2 O<sub>2</sub>(g) → 2 NO<sub>2</sub>(g)', dH: 66.4, cat: 'formation', label: 'NO₂ formation (direct)' }
 ];
 
 
@@ -1007,6 +1025,7 @@ function renderWorkspace() {
   ws.innerHTML = workspace.map((r, i) => {
     let eq = multiplyEq(r.eq, r.coeff);
     if (r.reversed) eq = reverseEq(eq);
+    eq = cleanEquation(eq); // Clean up any decimal coefficients
     const dh = r.dH * r.coeff * (r.reversed ? -1 : 1);
     const isSelected = selectedIdx === i;
     
@@ -1023,6 +1042,15 @@ function renderWorkspace() {
   }).join('');
   
   computeNetEquation();
+}
+
+function cleanEquation(eq) {
+  // Replace any decimal coefficients with fractions
+  return eq.replace(/(\d+\.\d+)\s+/g, (match, decimal) => {
+    const num = parseFloat(decimal);
+    const frac = decimalToFraction(num);
+    return frac + ' ';
+  });
 }
 
 function computeNetEquation() {
@@ -1100,13 +1128,72 @@ function formatSpecies(dict) {
     .filter(([_, coeff]) => coeff > 0)
     .map(([species, coeff]) => {
       if (coeff === 1) return species;
-      if (coeff === 0.5) return `½ ${species}`;
-      if (coeff === 1/3) return `⅓ ${species}`;
-      if (coeff === 2/3) return `⅔ ${species}`;
-      return `${coeff} ${species}`;
+      
+      // Try to convert to fraction
+      const fracStr = decimalToFraction(coeff);
+      return `${fracStr} ${species}`;
     })
     .join(' + ');
 }
+
+function decimalToFraction(decimal) {
+  // Handle common fractions first
+  if (decimal === 0.5) return '½';
+  if (Math.abs(decimal - 1/3) < 0.0001) return '⅓';
+  if (Math.abs(decimal - 2/3) < 0.0001) return '⅔';
+  if (Math.abs(decimal - 1/4) < 0.0001) return '¼';
+  if (Math.abs(decimal - 3/4) < 0.0001) return '¾';
+  if (Math.abs(decimal - 1/5) < 0.0001) return '⅕';
+  if (Math.abs(decimal - 2/5) < 0.0001) return '⅖';
+  if (Math.abs(decimal - 3/5) < 0.0001) return '⅗';
+  if (Math.abs(decimal - 4/5) < 0.0001) return '⅘';
+  if (Math.abs(decimal - 1/6) < 0.0001) return '⅙';
+  if (Math.abs(decimal - 5/6) < 0.0001) return '⅚';
+  if (Math.abs(decimal - 1/8) < 0.0001) return '⅛';
+  if (Math.abs(decimal - 3/8) < 0.0001) return '⅜';
+  if (Math.abs(decimal - 5/8) < 0.0001) return '⅝';
+  if (Math.abs(decimal - 7/8) < 0.0001) return '⅞';
+  
+  // For other decimals, try to find a simple fraction
+  const tolerance = 0.0001;
+  
+  // Try denominators up to 20
+  for (let denom = 2; denom <= 20; denom++) {
+    for (let numer = 1; numer < denom * 10; numer++) {
+      if (Math.abs(decimal - numer/denom) < tolerance) {
+        // Simplify the fraction
+        const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+        const g = gcd(numer, denom);
+        const simpleNumer = numer / g;
+        const simpleDenom = denom / g;
+        
+        // If it's a whole number, return as integer
+        if (simpleDenom === 1) return simpleNumer.toString();
+        
+        // Check if we have a Unicode fraction for this
+        const unicodeFrac = getUnicodeFraction(simpleNumer, simpleDenom);
+        if (unicodeFrac) return unicodeFrac;
+        
+        // Otherwise return as "n/d"
+        return `${simpleNumer}/${simpleDenom}`;
+      }
+    }
+  }
+  
+  // If no simple fraction found, return as decimal
+  return decimal.toString();
+}
+
+function getUnicodeFraction(numerator, denominator) {
+  const fractions = {
+    '1/2': '½', '1/3': '⅓', '2/3': '⅔', '1/4': '¼', '3/4': '¾',
+    '1/5': '⅕', '2/5': '⅖', '3/5': '⅗', '4/5': '⅘',
+    '1/6': '⅙', '5/6': '⅚',
+    '1/8': '⅛', '3/8': '⅜', '5/8': '⅝', '7/8': '⅞'
+  };
+  return fractions[`${numerator}/${denominator}`] || null;
+}
+
 
 function selectReaction(idx) {
   selectedIdx = idx;
@@ -1181,19 +1268,28 @@ function multiplyEq(eq, coeff) {
       let num = 1;
       
       if (existingCoeff) {
-        if (existingCoeff === '½') num = 0.5;
-        if (existingCoeff === '½') num = 0.5;
-        else if (existingCoeff === '⅓') num = 1/3;
-        else if (existingCoeff === '⅔') num = 2/3;
+        if (existingCoeff === '½') {
+          num = 0.5;
+        } else if (existingCoeff === '⅓') {
+          num = 1/3;
+        } else if (existingCoeff === '⅔') {
+          num = 2/3;
+        } else {
+          // Parse regular numbers like "2", "3", "2.5", etc.
+          num = parseFloat(existingCoeff);
+          if (isNaN(num)) num = 1;
+        }
       }
       
       const newCoeff = num * coeff;
       let display = '';
       
-      if (newCoeff === 0.5) display = '½';
-        else if (newCoeff === 1/3) display = '⅓';
-        else if (newCoeff === 2/3) display = '⅔';
-      else if (newCoeff !== 1) display = newCoeff.toString();
+      if (newCoeff === 1) {
+        display = '';
+      } else {
+        // Use the decimalToFraction function for all coefficients
+        display = decimalToFraction(newCoeff);
+      }
       
       return display ? `${display} ${formula}` : formula;
     }).join(' + ');
@@ -1215,18 +1311,18 @@ var mcAnswers={
   q3:{correct:'b',
       feedback:'Perfect! When you multiply an equation by a coefficient, you multiply ΔH by the same factor. Original: -92.2 kJ. Multiplied by 2: -184.4 kJ. This makes sense—twice as much reaction releases twice as much energy!',
       wrongFeedback:'Look at the ΔH displayed on the workspace card after multiplying. When you double the amount of reaction, what happens to the energy released?'},
-  q4:{correct:'b',
-      feedback:'Correct! NO does NOT cancel completely. The first reaction produces 2 NO, and the second reaction consumes 2 NO—so they DO cancel. The net equation shows only the starting N₂, O₂ and final NO₂.',
-      wrongFeedback:'Look carefully at the Net Equation display. Count the NO molecules produced in the first reaction and consumed in the second. What happens when you produce 2 NO and then consume 2 NO?'},
+  q4:{correct:'a',
+      feedback:'Exactly right! When you combine reactions in Hess\'s Law, you ADD their ΔH values. Here: (-890.3 kJ) + (+571.6 kJ) = -318.7 kJ. Check the Net ΔH display at the bottom of your workspace to confirm!',
+      wrongFeedback:'Remember: in Hess\'s Law, when you combine multiple reactions, you ADD their ΔH values together. Look at the Net ΔH shown in the purple panel at the bottom of your workspace. What happens when you add -890.3 + 571.6?'},
   q5:{correct:'b',
-      feedback:'Excellent strategic thinking! CO combustion has CO as a REACTANT (left side). When you reverse it, CO moves to the PRODUCT side (right side). Carbon combustion produces CO₂, not CO, so reversing it will not help.',
-      wrongFeedback:'Think about where CO appears in each equation. To get CO as a product, you need an equation that currently has CO as a reactant, then reverse it. Try both options in the tool!'},
-  q6:{correct:'b',
-      feedback:'Perfect! Propane produces 3 CO₂. To cancel this, you need: (1) a reaction that CONSUMES CO₂, and (2) the right amount. Carbon combustion produces CO₂, so reverse it (making it consume CO₂), then multiply by 3 to match the 3 CO₂ from propane.',
-      wrongFeedback:'Propane combustion produces 3 CO₂. You need a reaction that will consume exactly 3 CO₂. Which library reaction involves CO₂, and how would you manipulate it? Try different combinations in the tool!'},
+      feedback:'Exactly! Ethene combustion shows: C₂H₄ + 3O₂ → 2CO₂ + 2H₂O. Here, C₂H₄ is a REACTANT (burns). But for formation, we need C₂H₄ as a PRODUCT (being made). Reversing gives: 2CO₂ + 2H₂O → C₂H₄ + 3O₂. This is the KEY insight: we can use combustion data backward to find formation enthalpies!',
+      wrongFeedback:'Think about what "formation" means - making C₂H₄ from elements. In combustion, C₂H₄ is burning (reactant side). To get it on the product side (being formed), what operation moves species from one side to the other? Try looking at the ethene combustion equation in the library.'},
+  q6:{correct:'a',
+      feedback:'Perfect! You used Hess\'s Law to find a formation enthalpy from combustion data! Here\'s what happened: 2[C + O₂ → CO₂] gives -787.0 kJ, 2[H₂ + ½O₂ → H₂O] gives -571.6 kJ, and reversing [C₂H₄ + 3O₂ → 2CO₂ + 2H₂O] gives +1411 kJ. Net: -787.0 + (-571.6) + 1411 = +52.4 kJ. The O₂, CO₂, and H₂O all cancel out, leaving only 2C + 2H₂ → C₂H₄!',
+      wrongFeedback:'Follow the directions step-by-step: (1) Add carbon combustion, multiply by 2, (2) Add hydrogen combustion, multiply by 2, (3) Add ethene combustion and REVERSE it. Check the Net ΔH display. Remember: 2×(-393.5) + 2×(-285.8) + (reverse of -1411) = ?'},
   q7:{correct:'a',
-      feedback:'Excellent work! The target C(s) + ½O₂(g) → CO(g) can be found by: (1) Using Carbon combustion: C + O₂ → CO₂ (ΔH = -393.5 kJ), and (2) Reversing CO combustion: CO₂ → CO + ½O₂ (ΔH = +283.0 kJ). Net: -393.5 + 283.0 = -110.5 kJ.',
-      wrongFeedback:'This requires combining two equations. Think about how to get C and ½O₂ on the left, and CO on the right. Which equations contain these species? You will need to reverse one of them. Build it in the workspace and check the Net Equation!'}
+      feedback:'Excellent! You can find this two ways: (1) EASY: Just look in the library - "Methane formation" gives it directly! (2) HESS\'S LAW WAY: Use carbon combustion (C + O₂ → CO₂, ΔH = -393.5 kJ), 2× hydrogen combustion (2H₂ + O₂ → 2H₂O, ΔH = -571.6 kJ), and reverse methane combustion (CO₂ + 2H₂O → CH₄ + 2O₂, ΔH = +890.3 kJ). Net: -393.5 + (-571.6) + 890.3 = -74.6 kJ.',
+      wrongFeedback:'Strategy hint: You need CH₄ as a product. Look for reactions containing CH₄. You can either (1) find it directly in the library, or (2) use methane combustion reversed, plus carbon and hydrogen combustion. Try building this in the workspace and check the Net ΔH!'}
 };
 
 function checkMC(questionId,picked){
