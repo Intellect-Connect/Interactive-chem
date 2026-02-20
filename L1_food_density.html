@@ -2309,6 +2309,12 @@
 
 <script>
 // =========================================================
+// CONFIGURATION — declared first so all functions can access
+// =========================================================
+const SHEETS_ENDPOINT = '';
+const AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbz01sdvaCqhqqNoDlQXGI5Z6irkOD0yI6yVrWXMpiSxk0IcvtCpffUn4zmjTb_U7Br0Yg/exec';
+
+// =========================================================
 // TAB SWITCHING
 // =========================================================
 function switchTab(id, btn) {
@@ -2962,20 +2968,7 @@ async function getAIFeedback(qId, btn) {
   }
 }
 
-// =========================================================
-// GOOGLE SHEETS CONFIGURATION
-// Paste your Web App URL here after following setup steps.
-// Leave as empty string '' if not yet configured.
-// =========================================================
-const SHEETS_ENDPOINT = '';
-
-// =========================================================
-// AI FEEDBACK PROXY
-// Same Web App URL as SHEETS_ENDPOINT — the Apps Script
-// routes /feedback requests to the Anthropic API server-side.
-// Your API key is stored only in Apps Script, never here.
-// =========================================================
-const AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbz01sdvaCqhqqNoDlQXGI5Z6irkOD0yI6yVrWXMpiSxk0IcvtCpffUn4zmjTb_U7Br0Yg/exec';
+// (SHEETS_ENDPOINT and AI_PROXY_ENDPOINT configured at top of script)
 
 // =========================================================
 // SUBMISSION LIMIT & ATTEMPT TRACKING
