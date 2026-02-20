@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acid-Base Titration Lab | General Chemistry</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #faf8f4;
+    --cream: #f2ede3;
+    --rule: #d4c9b0;
+    --accent: #c0392b;
+    --accent-light: #f9ebea;
+    --green: #1a6b3c;
+    --green-light: #e8f5ee;
+    --blue: #1a4a7a;
+    --blue-light: #e8f0f9;
+    --gold: #b8860b;
+    --gold-light: #fdf6e3;
+    --canvas-bg: #fffef9;
+    --border: #c8bfa8;
+    --shadow: 0 2px 12px rgba(26,26,46,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #e8e2d8;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(192,57,43,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(26,74,122,0.06) 0%, transparent 50%);
+    min-height: 100vh;
+    color: var(--ink);
+  }
+
+  /* LAB NOTEBOOK HEADER */
+  .lab-header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .lab-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 59px,
+      rgba(255,255,255,0.04) 59px,
+      rgba(255,255,255,0.04) 60px
+    );
+  }
+  .header-inner {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 36px 40px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+  }
+  .header-left {}
+  .lab-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .lab-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.15;
+    color: #fff;
+  }
+  .lab-subtitle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 6px;
+    font-style: italic;
+  }
+  .header-meta {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.8;
+  }
+
+  /* STUDENT INFO BAR */
+  .student-bar {
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+  }
+  .student-bar-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+  }
+  .field-group label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .field-group input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--border);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 4px 0;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field-group input:focus { border-color: var(--accent); }
+
+  /* MAIN CONTENT */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 40px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .section-body { padding: 24px; }
+
+  /* REFERENCE BOX */
+  .ref-box {
+    background: var(--blue-light);
+    border: 1px solid rgba(26,74,122,0.2);
+    border-left: 3px solid var(--blue);
+    border-radius: 3px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .ref-box-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+  .ref-box p { font-size: 13.5px; line-height: 1.65; color: #2a3a50; }
+  .ref-box p + p { margin-top: 6px; }
+  .eq {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: rgba(26,74,122,0.08);
+    padding: 2px 6px;
+    border-radius: 2px;
+    color: var(--blue);
+  }
+
+  /* DATA TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin: 16px 0;
+  }
+  .data-table th {
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: middle;
+  }
+  .data-table tr:nth-child(even) td { background: var(--cream); }
+  .data-table td.label { font-weight: 500; color: #444; }
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .data-table input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,74,122,0.1);
+  }
+
+  /* QUESTION BLOCKS */
+  .q-block {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .q-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .q-label {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 2px 7px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .q-text { font-size: 14px; line-height: 1.6; color: var(--ink); }
+  .q-hint {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+    margin-bottom: 8px;
+    margin-left: 36px;
+  }
+
+  /* TYPED ANSWER INPUTS */
+  .answer-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 36px;
+    flex-wrap: wrap;
+  }
+  .answer-input {
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    min-width: 160px;
+  }
+  .answer-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,74,122,0.1);
+  }
+  .units-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #666;
+  }
+  .check-btn {
+    padding: 7px 16px;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .check-btn:hover { background: #2d2d4e; }
+  .feedback-inline {
+    margin-left: 36px;
+    margin-top: 8px;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 3px;
+    display: none;
+    line-height: 1.5;
+  }
+  .feedback-inline.correct {
+    background: var(--green-light);
+    border: 1px solid rgba(26,107,60,0.3);
+    color: var(--green);
+    display: block;
+  }
+  .feedback-inline.incorrect {
+    background: var(--accent-light);
+    border: 1px solid rgba(192,57,43,0.3);
+    color: var(--accent);
+    display: block;
+  }
+  .feedback-inline.partial {
+    background: var(--gold-light);
+    border: 1px solid rgba(184,134,11,0.3);
+    color: var(--gold);
+    display: block;
+  }
+
+  /* OPEN RESPONSE TEXTAREA */
+  .open-textarea {
+    width: 100%;
+    min-height: 90px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    padding: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    margin-left: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-top: 2px;
+  }
+  .open-textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,74,122,0.1);
+  }
+  .open-area-wrap { margin-left: 36px; }
+  .ai-feedback-btn {
+    margin-top: 8px;
+    padding: 8px 18px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .ai-feedback-btn:hover { background: #1a3d65; }
+  .ai-feedback-btn:disabled { background: #aaa; cursor: not-allowed; }
+  .spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .ai-feedback-btn.loading .spinner { display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ai-feedback-box {
+    margin-top: 10px;
+    padding: 14px 16px;
+    background: var(--blue-light);
+    border: 1px solid rgba(26,74,122,0.2);
+    border-radius: 3px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #1a2a3a;
+    display: none;
+  }
+  .ai-feedback-box.visible { display: block; }
+  .ai-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--blue);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  /* CANVAS PANEL */
+  .canvas-panel {
+    background: var(--canvas-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .canvas-toolbar {
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .canvas-toolbar-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: #888;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+  .tool-btn {
+    padding: 5px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--ink);
+    transition: all 0.15s;
+  }
+  .tool-btn:hover { background: var(--cream); }
+  .tool-btn.active {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .color-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+  .color-dot:hover { transform: scale(1.15); }
+  .color-dot.active { border-color: var(--ink); transform: scale(1.15); }
+  .size-select {
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    outline: none;
+  }
+  .clear-btn {
+    margin-left: auto;
+    padding: 5px 12px;
+    border: 1.5px solid var(--accent);
+    border-radius: 3px;
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--accent);
+    transition: all 0.15s;
+  }
+  .clear-btn:hover { background: var(--accent); color: #fff; }
+  canvas {
+    display: block;
+    cursor: crosshair;
+    touch-action: none;
+  }
+  .canvas-caption {
+    padding: 8px 14px;
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+    border-top: 1px solid var(--rule);
+    background: var(--cream);
+  }
+
+  /* CALCULATION WORK AREA */
+  .calc-area {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-left: 36px;
+    margin-top: 4px;
+  }
+  .calc-box {
+    background: var(--cream);
+    border: 1px dashed var(--border);
+    border-radius: 3px;
+    padding: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #666;
+  }
+  .calc-box-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 6px;
+  }
+  .calc-input {
+    width: 100%;
+    min-height: 70px;
+    border: none;
+    background: transparent;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink);
+    resize: none;
+    outline: none;
+    line-height: 1.6;
+  }
+
+  /* MULTIPLE CHOICE */
+  .mc-options {
+    margin-left: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .mc-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  .mc-option:hover { border-color: var(--blue); background: var(--blue-light); }
+  .mc-option input[type="radio"] { margin-top: 2px; accent-color: var(--blue); flex-shrink: 0; }
+  .mc-option.selected-correct { border-color: var(--green); background: var(--green-light); }
+  .mc-option.selected-wrong { border-color: var(--accent); background: var(--accent-light); }
+
+  /* SUBMIT SECTION */
+  .submit-section {
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .submit-info { color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.6; }
+  .submit-info strong { color: #fff; display: block; margin-bottom: 4px; font-size: 15px; }
+  .submit-main-btn {
+    padding: 14px 32px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .submit-main-btn:hover { background: #a93226; }
+
+  /* SCORE PANEL */
+  .score-panel {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 32px;
+    display: none;
+  }
+  .score-panel.visible { display: block; }
+  .score-header {
+    font-family: 'Source Serif 4', serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--ink);
+  }
+  .score-bar-wrap { background: var(--rule); border-radius: 99px; height: 10px; margin-bottom: 8px; overflow: hidden; }
+  .score-bar { height: 100%; border-radius: 99px; background: var(--green); transition: width 1s ease; }
+  .score-text { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #666; margin-bottom: 16px; }
+  .score-details { font-size: 14px; line-height: 1.8; color: #444; }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .header-inner { padding: 24px 20px 20px; flex-direction: column; align-items: flex-start; }
+    .student-bar-inner { grid-template-columns: 1fr; padding: 12px 20px; }
+    .main { padding: 20px; }
+    .section-body { padding: 16px; }
+    .calc-area { grid-template-columns: 1fr; }
+    .submit-section { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header class="lab-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="lab-tag">CHEM 103/104 &mdash; General Chemistry Laboratory</div>
+      <h1 class="lab-title">Acid-Base Titration<br>Percent Acetic Acid in Vinegar</h1>
+      <p class="lab-subtitle">Standardization of NaOH &bull; Titration of Acetic Acid &bull; Stoichiometric Analysis</p>
+    </div>
+    <div class="header-meta">
+      Lab Report<br>
+      Version 2.1<br>
+      Spring 2026<br>
+      Carson-Newman University
+    </div>
+  </div>
+</header>
+
+<div class="student-bar">
+  <div class="student-bar-inner">
+    <div class="field-group">
+      <label>Student Name</label>
+      <input type="text" id="studentName" placeholder="Last, First">
+    </div>
+    <div class="field-group">
+      <label>Lab Section</label>
+      <input type="text" id="labSection" placeholder="e.g. CHEM 104-02">
+    </div>
+    <div class="field-group">
+      <label>Date</label>
+      <input type="text" id="labDate" placeholder="MM/DD/YYYY">
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- SECTION 1: PRE-LAB CONCEPTUAL -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">Pre-Lab: Conceptual Foundations</div>
+    </div>
+    <div class="section-body">
+      <div class="ref-box">
+        <div class="ref-box-title">Key Reactions &amp; Relationships</div>
+        <p><strong>Neutralization (NaOH &amp; KHP standardization):</strong><br>
+        <span class="eq">KHC&#x2088;H&#x2084;O&#x2084; + NaOH &rarr; KNaC&#x2088;H&#x2084;O&#x2084; + H&#x2082;O</span> &nbsp;&nbsp; (1:1 mole ratio)</p>
+        <p style="margin-top:10px;"><strong>Acetic acid titration:</strong><br>
+        <span class="eq">CH&#x2083;COOH(aq) + NaOH(aq) &rarr; CH&#x2083;COO&#x207B;Na&#x207A;(aq) + H&#x2082;O(l)</span> &nbsp;&nbsp; (1:1 mole ratio)</p>
+        <p style="margin-top:10px;"><strong>Percent acetic acid by mass:</strong><br>
+        <span class="eq">% = (mass CH&#x2083;COOH / mass vinegar sample) &times; 100</span></p>
+      </div>
+
+      <!-- Q1 MC -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q1</span>
+          <span class="q-text">In this experiment, which substance is the <em>titrant</em> and which is the <em>analyte</em> during the acetic acid determination?</span>
+        </div>
+        <div class="mc-options" id="mc1">
+          <label class="mc-option"><input type="radio" name="mc1" value="A"> NaOH is the titrant; acetic acid in vinegar is the analyte</label>
+          <label class="mc-option"><input type="radio" name="mc1" value="B"> Acetic acid is the titrant; NaOH is the analyte</label>
+          <label class="mc-option"><input type="radio" name="mc1" value="C"> KHP is the titrant; NaOH is the analyte</label>
+          <label class="mc-option"><input type="radio" name="mc1" value="D"> Both NaOH and acetic acid are titrants</label>
+        </div>
+        <div class="feedback-inline" id="fb-mc1"></div>
+      </div>
+
+      <!-- Q2 MC -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q2</span>
+          <span class="q-text">Phenolphthalein is colorless in acidic solution and pink in basic solution. At the equivalence point of this titration, you should stop when the solution is:</span>
+        </div>
+        <div class="mc-options" id="mc2">
+          <label class="mc-option"><input type="radio" name="mc2" value="A"> Intensely pink — more NaOH ensures complete reaction</label>
+          <label class="mc-option"><input type="radio" name="mc2" value="B"> Faint pink that persists for at least 30 seconds after swirling</label>
+          <label class="mc-option"><input type="radio" name="mc2" value="C"> Colorless, because all acid has been consumed</label>
+          <label class="mc-option"><input type="radio" name="mc2" value="D"> Yellow, indicating the endpoint has been reached</label>
+        </div>
+        <div class="feedback-inline" id="fb-mc2"></div>
+      </div>
+
+      <!-- Q3 Open -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q3</span>
+          <span class="q-text">Explain in your own words why we standardize the NaOH solution before using it to titrate the vinegar. Why can't we just trust the labeled concentration on the NaOH bottle?</span>
+        </div>
+        <div class="open-area-wrap">
+          <textarea class="open-textarea" id="open-q3" placeholder="Write your explanation here..."></textarea>
+          <button class="ai-feedback-btn" onclick="getAIFeedback('q3', this)">
+            <span class="spinner"></span>
+            Get Feedback
+          </button>
+          <div class="ai-feedback-box" id="ai-q3">
+            <div class="ai-label">Instructor Feedback</div>
+            <div class="ai-feedback-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: RAW DATA -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">Raw Data &mdash; Record All Measurements</div>
+    </div>
+    <div class="section-body">
+      <div class="ref-box">
+        <div class="ref-box-title">Significant Figures Reminder</div>
+        <p>Buret readings are recorded to <strong>0.01 mL</strong> (two decimal places). Analytical balance readings to <strong>0.0001 g</strong>. Never round before your final answer — carry all digits through intermediate steps.</p>
+      </div>
+
+      <p style="font-weight:600; margin-bottom:12px; font-size:14px;">Part A: Standardization of NaOH with KHP</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Measurement</th><th>Trial 1</th><th>Trial 2</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="label">Mass of KHP (g)</td>
+            <td><input type="text" id="khp-mass-1" placeholder="0.0000"></td>
+            <td><input type="text" id="khp-mass-2" placeholder="0.0000"></td>
+          </tr>
+          <tr><td class="label">Initial buret reading (mL)</td>
+            <td><input type="text" id="init-1" placeholder="0.00"></td>
+            <td><input type="text" id="init-2" placeholder="0.00"></td>
+          </tr>
+          <tr><td class="label">Final buret reading (mL)</td>
+            <td><input type="text" id="final-1" placeholder="00.00"></td>
+            <td><input type="text" id="final-2" placeholder="00.00"></td>
+          </tr>
+          <tr><td class="label">Volume NaOH used (mL) <em style="color:#aaa;font-size:11px;">calculate below</em></td>
+            <td><input type="text" id="vol-1" placeholder="0.00"></td>
+            <td><input type="text" id="vol-2" placeholder="0.00"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="font-weight:600; margin: 20px 0 12px; font-size:14px;">Part B: Titration of Vinegar Sample</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Measurement</th><th>Trial 1</th><th>Trial 2</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="label">Mass of empty flask (g)</td>
+            <td><input type="text" id="flask-empty-1" placeholder="0.0000"></td>
+            <td><input type="text" id="flask-empty-2" placeholder="0.0000"></td>
+          </tr>
+          <tr><td class="label">Mass of flask + vinegar (g)</td>
+            <td><input type="text" id="flask-full-1" placeholder="0.0000"></td>
+            <td><input type="text" id="flask-full-2" placeholder="0.0000"></td>
+          </tr>
+          <tr><td class="label">Mass of vinegar sample (g) <em style="color:#aaa;font-size:11px;">calculate below</em></td>
+            <td><input type="text" id="vinegar-mass-1" placeholder="0.0000"></td>
+            <td><input type="text" id="vinegar-mass-2" placeholder="0.0000"></td>
+          </tr>
+          <tr><td class="label">Initial buret reading (mL)</td>
+            <td><input type="text" id="vin-init-1" placeholder="0.00"></td>
+            <td><input type="text" id="vin-init-2" placeholder="0.00"></td>
+          </tr>
+          <tr><td class="label">Final buret reading (mL)</td>
+            <td><input type="text" id="vin-final-1" placeholder="00.00"></td>
+            <td><input type="text" id="vin-final-2" placeholder="00.00"></td>
+          </tr>
+          <tr><td class="label">Volume NaOH used (mL) <em style="color:#aaa;font-size:11px;">calculate below</em></td>
+            <td><input type="text" id="vin-vol-1" placeholder="0.00"></td>
+            <td><input type="text" id="vin-vol-2" placeholder="0.00"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 3: DIAGRAM CANVAS -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">Apparatus Diagram &mdash; Sketch Your Experimental Setup</div>
+    </div>
+    <div class="section-body">
+      <p style="font-size:13.5px; color:#555; margin-bottom:16px; line-height:1.6;">Draw and label the complete titration setup below. Include: buret with clamp and ring stand, Erlenmeyer flask on a white tile, indicator color change, and the direction of NaOH addition. Use the pen tool on a tablet or mouse on desktop.</p>
+      <div class="canvas-panel">
+        <div class="canvas-toolbar">
+          <span class="canvas-toolbar-label">Tool:</span>
+          <button class="tool-btn active" id="btn-pen" onclick="setTool('pen', this)">Pen</button>
+          <button class="tool-btn" id="btn-eraser" onclick="setTool('eraser', this)">Eraser</button>
+          &nbsp;
+          <span class="canvas-toolbar-label">Size:</span>
+          <select class="size-select" id="brushSize">
+            <option value="2">Fine (2)</option>
+            <option value="4" selected>Medium (4)</option>
+            <option value="8">Thick (8)</option>
+            <option value="16">Bold (16)</option>
+          </select>
+          &nbsp;
+          <span class="canvas-toolbar-label">Color:</span>
+          <div class="color-dot active" style="background:#1a1a2e;" onclick="setColor('#1a1a2e', this)" title="Black"></div>
+          <div class="color-dot" style="background:#c0392b;" onclick="setColor('#c0392b', this)" title="Red"></div>
+          <div class="color-dot" style="background:#1a4a7a;" onclick="setColor('#1a4a7a', this)" title="Blue"></div>
+          <div class="color-dot" style="background:#1a6b3c;" onclick="setColor('#1a6b3c', this)" title="Green"></div>
+          <div class="color-dot" style="background:#b8860b;" onclick="setColor('#b8860b', this)" title="Gold"></div>
+          <button class="clear-btn" onclick="clearCanvas()">Clear</button>
+        </div>
+        <canvas id="drawingCanvas" width="820" height="340"></canvas>
+        <div class="canvas-caption">Use a stylus, Apple Pencil, or mouse. Right-click or long-press to erase. Your drawing is saved locally.</div>
+      </div>
+
+      <div class="q-block" style="margin-top:20px;">
+        <div class="q-label">
+          <span class="q-num">Q4</span>
+          <span class="q-text">In your diagram, label both the <em>meniscus</em> and indicate whether you read from the top or bottom of the meniscus for an aqueous NaOH solution. Explain why.</span>
+        </div>
+        <div class="open-area-wrap">
+          <textarea class="open-textarea" id="open-q4" placeholder="Explain your labeling choice..."></textarea>
+          <button class="ai-feedback-btn" onclick="getAIFeedback('q4', this)">
+            <span class="spinner"></span>
+            Get Feedback
+          </button>
+          <div class="ai-feedback-box" id="ai-q4">
+            <div class="ai-label">Instructor Feedback</div>
+            <div class="ai-feedback-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: CALCULATIONS -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-title">Calculations &mdash; Show All Work</div>
+    </div>
+    <div class="section-body">
+
+      <!-- 4a: Molarity NaOH -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">4a</span>
+          <span class="q-text">Calculate the molarity of your NaOH solution using Trial 1 KHP data. (M<sub>KHP</sub> = 204.22 g/mol)</span>
+        </div>
+        <p class="q-hint">Setup: moles KHP = mass / molar mass &bull; at equivalence: moles NaOH = moles KHP &bull; M = mol / L</p>
+        <div class="calc-area">
+          <div class="calc-box">
+            <div class="calc-box-label">Show work here</div>
+            <textarea class="calc-input" id="work-4a" placeholder="Write your dimensional analysis / calculation steps..."></textarea>
+          </div>
+          <div class="calc-box">
+            <div class="calc-box-label">Check your answer</div>
+            <div style="margin-bottom:8px; font-size:12px; color:#888;">Enter final value:</div>
+            <div class="answer-row" style="margin-left:0;">
+              <input class="answer-input" type="text" id="ans-4a" placeholder="0.0000" style="min-width:120px;">
+              <span class="units-label">mol/L</span>
+              <button class="check-btn" onclick="checkCalc('4a')">Check</button>
+            </div>
+            <div class="feedback-inline" id="fb-4a" style="margin-left:0; margin-top:10px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4b: % acetic acid -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">4b</span>
+          <span class="q-text">Using Trial 1 vinegar data and your calculated M<sub>NaOH</sub>, determine the percent acetic acid by mass. (M<sub>acetic acid</sub> = 60.052 g/mol)</span>
+        </div>
+        <p class="q-hint">moles NaOH = M &times; V(L) &bull; moles CH&#x2083;COOH = moles NaOH &bull; mass CH&#x2083;COOH = mol &times; 60.052 g/mol &bull; % = mass acid / mass vinegar &times; 100</p>
+        <div class="calc-area">
+          <div class="calc-box">
+            <div class="calc-box-label">Show work here</div>
+            <textarea class="calc-input" id="work-4b" placeholder="Step-by-step dimensional analysis..."></textarea>
+          </div>
+          <div class="calc-box">
+            <div class="calc-box-label">Check your answer</div>
+            <div style="margin-bottom:8px; font-size:12px; color:#888;">Enter final value:</div>
+            <div class="answer-row" style="margin-left:0;">
+              <input class="answer-input" type="text" id="ans-4b" placeholder="0.00" style="min-width:120px;">
+              <span class="units-label">%</span>
+              <button class="check-btn" onclick="checkMC('mc-4b')">Check</button>
+            </div>
+            <div class="feedback-inline" id="fb-4b" style="margin-left:0; margin-top:10px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4c: Average and % error concept -->
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">4c</span>
+          <span class="q-text">Commercial vinegar is labeled 4–8% acetic acid by mass. After averaging your two trials, does your result fall within this range? Calculate your percent error if the accepted value is 5.00%.</span>
+        </div>
+        <p class="q-hint">% error = |experimental &minus; accepted| / accepted &times; 100</p>
+        <div class="answer-row">
+          <span style="font-size:13.5px;">Average % acetic acid:</span>
+          <input class="answer-input" type="text" id="ans-avg" placeholder="0.00" style="min-width:100px;">
+          <span class="units-label">%</span>
+          &nbsp;&nbsp;
+          <span style="font-size:13.5px;">Percent error:</span>
+          <input class="answer-input" type="text" id="ans-error" placeholder="0.00" style="min-width:100px;">
+          <span class="units-label">%</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 5: POST-LAB ANALYSIS -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div class="section-title">Post-Lab Analysis &amp; Discussion</div>
+    </div>
+    <div class="section-body">
+
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q5</span>
+          <span class="q-text">If you added excess NaOH past the endpoint (solution turned dark pink), would your calculated percent acetic acid be <em>higher or lower</em> than the true value? Explain the source of error in detail.</span>
+        </div>
+        <div class="open-area-wrap">
+          <textarea class="open-textarea" id="open-q5" placeholder="Discuss directional error and its chemical reasoning..."></textarea>
+          <button class="ai-feedback-btn" onclick="getAIFeedback('q5', this)">
+            <span class="spinner"></span>
+            Get Feedback
+          </button>
+          <div class="ai-feedback-box" id="ai-q5">
+            <div class="ai-label">Instructor Feedback</div>
+            <div class="ai-feedback-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q6</span>
+          <span class="q-text">Acetic acid is a weak acid (K<sub>a</sub> = 1.8 &times; 10<sup>&minus;5</sup>). Why does titrating with a strong base (NaOH) still allow us to accurately determine the total amount of acetic acid present, even though it only partially dissociates in water?</span>
+        </div>
+        <div class="open-area-wrap">
+          <textarea class="open-textarea" id="open-q6" placeholder="Connect weak acid equilibrium to the stoichiometry of the neutralization reaction..."></textarea>
+          <button class="ai-feedback-btn" onclick="getAIFeedback('q6', this)">
+            <span class="spinner"></span>
+            Get Feedback
+          </button>
+          <div class="ai-feedback-box" id="ai-q6">
+            <div class="ai-label">Instructor Feedback</div>
+            <div class="ai-feedback-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">Q7</span>
+          <span class="q-text">Extension: Your percent error is given. Propose two specific procedural improvements that would reduce this error, explaining the mechanism by which each improvement works.</span>
+        </div>
+        <div class="open-area-wrap">
+          <textarea class="open-textarea" id="open-q7" placeholder="Describe two concrete procedural improvements..."></textarea>
+          <button class="ai-feedback-btn" onclick="getAIFeedback('q7', this)">
+            <span class="spinner"></span>
+            Get Feedback
+          </button>
+          <div class="ai-feedback-box" id="ai-q7">
+            <div class="ai-label">Instructor Feedback</div>
+            <div class="ai-feedback-content"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-section">
+    <div class="submit-info">
+      <strong>Submit Your Lab Report</strong>
+      Check all answers and feedback before submitting. Your responses will be scored automatically on the calculation questions, and your written responses will receive instructor-level feedback.
+    </div>
+    <button class="submit-main-btn" onclick="submitLab()">Submit Lab Report</button>
+  </div>
+
+  <!-- SCORE PANEL -->
+  <div class="score-panel" id="scorePanel">
+    <div class="score-header">Lab Report Score</div>
+    <div class="score-bar-wrap"><div class="score-bar" id="scoreBar" style="width:0%"></div></div>
+    <div class="score-text" id="scoreText"></div>
+    <div class="score-details" id="scoreDetails"></div>
+  </div>
+
+</main>
+
+<script>
+// =========================================================
+// CANVAS DRAWING ENGINE
+// =========================================================
+const canvas = document.getElementById('drawingCanvas');
+const ctx = canvas.getContext('2d');
+let isDrawing = false;
+let currentTool = 'pen';
+let currentColor = '#1a1a2e';
+let lastX = 0, lastY = 0;
+
+function resizeCanvas() {
+  const container = canvas.parentElement;
+  const w = container.clientWidth;
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  canvas.width = w;
+  canvas.height = 340;
+  ctx.putImageData(imageData, 0, 0);
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
+ctx.fillStyle = '#fffef9';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  if (e.touches) {
+    return {
+      x: (e.touches[0].clientX - rect.left) * scaleX,
+      y: (e.touches[0].clientY - rect.top) * scaleY
+    };
+  }
+  return {
+    x: (e.clientX - rect.left) * scaleX,
+    y: (e.clientY - rect.top) * scaleY
+  };
+}
+
+function startDraw(e) {
+  e.preventDefault();
+  isDrawing = true;
+  const pos = getPos(e);
+  lastX = pos.x;
+  lastY = pos.y;
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  e.preventDefault();
+  const pos = getPos(e);
+  const size = parseInt(document.getElementById('brushSize').value);
+
+  ctx.lineWidth = currentTool === 'eraser' ? size * 4 : size;
+  ctx.strokeStyle = currentTool === 'eraser' ? '#fffef9' : currentColor;
+  ctx.globalCompositeOperation = currentTool === 'eraser' ? 'destination-out' : 'source-over';
+
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+
+  if (currentTool === 'eraser') {
+    ctx.fillStyle = '#fffef9';
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, size * 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  lastX = pos.x;
+  lastY = pos.y;
+}
+
+function stopDraw(e) {
+  isDrawing = false;
+  ctx.globalCompositeOperation = 'source-over';
+}
+
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', stopDraw);
+canvas.addEventListener('mouseleave', stopDraw);
+canvas.addEventListener('touchstart', startDraw, { passive: false });
+canvas.addEventListener('touchmove', draw, { passive: false });
+canvas.addEventListener('touchend', stopDraw);
+
+function setTool(tool, btn) {
+  currentTool = tool;
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  canvas.style.cursor = tool === 'eraser' ? 'cell' : 'crosshair';
+}
+
+function setColor(color, dot) {
+  currentColor = color;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+  dot.classList.add('active');
+  if (currentTool === 'eraser') {
+    setTool('pen', document.getElementById('btn-pen'));
+  }
+}
+
+function clearCanvas() {
+  if (!confirm('Clear your diagram? This cannot be undone.')) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#fffef9';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+// =========================================================
+// MULTIPLE CHOICE FEEDBACK
+// =========================================================
+const mcAnswers = {
+  mc1: { correct: 'A', explanation: 'Correct. NaOH is placed in the buret and added in measured increments (titrant). The acetic acid in vinegar, whose quantity we are determining, is the analyte in the flask.' },
+  mc2: { correct: 'B', explanation: 'Correct. A faint pink that persists for 30 seconds represents the first permanent color change past the equivalence point. Intense pink means you have gone well past the equivalence point, adding excess NaOH and introducing systematic error.' }
+};
+
+const wrongMC = {
+  mc1: {
+    B: 'Revisit the definition. The titrant is the solution of known concentration delivered from the buret. Since we know the molarity of NaOH and dispense it from the buret, NaOH is the titrant.',
+    C: 'KHP is used in a separate standardization step. In the vinegar titration, KHP is not involved.',
+    D: 'Only one substance can be the titrant in a given titration — the one of known concentration being delivered from the buret.'
+  },
+  mc2: {
+    A: 'Intense pink means you have significantly overshot the equivalence point. Each drop past the endpoint introduces excess NaOH, inflating your volume reading and raising your calculated percent acetic acid above the true value.',
+    C: 'A colorless solution indicates the solution is still acidic — you have not yet reached the equivalence point. More NaOH is needed.',
+    D: 'Phenolphthalein does not turn yellow. It is colorless below pH ~8.2 and pink above it. Yellow would suggest a different indicator entirely, such as methyl orange.'
+  }
+};
+
+document.querySelectorAll('.mc-options').forEach(group => {
+  group.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const name = this.name;
+      const data = mcAnswers[name];
+      if (!data) return;
+      const fb = document.getElementById('fb-' + name);
+      const options = document.querySelectorAll(`input[name="${name}"]`);
+      options.forEach(opt => {
+        opt.closest('.mc-option').classList.remove('selected-correct', 'selected-wrong');
+      });
+      if (this.value === data.correct) {
+        this.closest('.mc-option').classList.add('selected-correct');
+        fb.className = 'feedback-inline correct';
+        fb.textContent = data.explanation;
+      } else {
+        this.closest('.mc-option').classList.add('selected-wrong');
+        fb.className = 'feedback-inline incorrect';
+        fb.textContent = wrongMC[name][this.value] || 'Not quite. Review the definitions of titrant and analyte.';
+      }
+    });
+  });
+});
+
+// =========================================================
+// CALCULATION CHECKING — sig fig aware range check
+// =========================================================
+function checkCalc(id) {
+  const val = parseFloat(document.getElementById('ans-' + id).value);
+  const fb = document.getElementById('fb-' + id);
+
+  // These ranges correspond to example data from the reference lab procedure
+  // With actual student data, these ranges would be set per-lab by instructor
+  const checks = {
+    '4a': {
+      min: 0.08, max: 0.30,
+      sigfigDigits: 4,
+      hintLow: 'Your value seems too low. Check: did you convert mL to L? (divide by 1000)',
+      hintHigh: 'Your value seems too high. Common error: using mL instead of L in M = mol/L.',
+      hintSigFig: 'Check your significant figures. Buret volumes are read to 0.01 mL, so your final answer should carry appropriate precision through the calculation.',
+      goodMsg: 'Value is in the expected range for a typical NaOH standardization. Verify your sig figs match those of your least precise measurement.'
+    },
+    '4b': {
+      min: 3.5, max: 9.0,
+      sigfigDigits: 3,
+      hintLow: 'Below the typical range for commercial vinegar (4-8%). Check your volume conversion and that you used moles, not millimoles.',
+      hintHigh: 'Above the typical range for commercial vinegar. Did you forget to divide by the mass of the vinegar sample (not the solution volume)?',
+      hintSigFig: 'Your sig figs should reflect the precision of the least precise measurement used — likely the buret reading (4 sig figs) or mass measurement.',
+      goodMsg: 'Your result falls within the range of commercial vinegar (4-8% acetic acid). Check sig figs carefully.'
+    }
+  };
+
+  const c = checks[id];
+  if (!c || isNaN(val)) {
+    fb.className = 'feedback-inline incorrect';
+    fb.textContent = 'Please enter a numeric value to check.';
+    return;
+  }
+
+  if (val < c.min) {
+    fb.className = 'feedback-inline incorrect';
+    fb.textContent = c.hintLow;
+  } else if (val > c.max) {
+    fb.className = 'feedback-inline incorrect';
+    fb.textContent = c.hintHigh;
+  } else {
+    fb.className = 'feedback-inline correct';
+    fb.textContent = c.goodMsg;
+  }
+}
+
+// =========================================================
+// CLAUDE AI FEEDBACK FOR OPEN RESPONSES
+// =========================================================
+const questionContexts = {
+  q3: {
+    prompt: `A general chemistry student wrote the following response to this question: "Explain in your own words why we standardize the NaOH solution before using it to titrate the vinegar. Why can't we just trust the labeled concentration on the NaOH bottle?"
+
+Student response: "{RESPONSE}"
+
+You are an instructor giving feedback on this response. In 3-5 sentences:
+1. Acknowledge what the student got right
+2. Identify any missing key ideas (NaOH absorbs CO2 and water vapor from air making it hygroscopic; labeled concentrations are approximate; standardization establishes a precise, traceable concentration using a primary standard like KHP)
+3. Give one specific suggestion to strengthen the answer
+
+Be direct, scientifically precise, and encouraging. Do not use bullet points in your response.`
+  },
+  q4: {
+    prompt: `A general chemistry student wrote the following response about reading a buret meniscus: "In your diagram, label both the meniscus and indicate whether you read from the top or bottom of the meniscus for an aqueous NaOH solution. Explain why."
+
+Student response: "{RESPONSE}"
+
+You are an instructor giving feedback. In 3-4 sentences:
+1. Confirm if they correctly identified reading from the BOTTOM of the concave meniscus
+2. If correct, reinforce WHY (water wets glass, forming a concave shape; reading the bottom gives the actual liquid level; reading the top would introduce a positive systematic error)
+3. If incorrect, redirect clearly without being discouraging
+
+Be direct and scientifically accurate. Do not use bullet points.`
+  },
+  q5: {
+    prompt: `A general chemistry student wrote the following response about the effect of adding excess NaOH past the endpoint: Question: "If you added excess NaOH past the endpoint, would your calculated percent acetic acid be higher or lower than the true value?"
+
+Student response: "{RESPONSE}"
+
+You are an instructor giving feedback. In 3-5 sentences:
+1. Confirm whether they correctly identified the direction (HIGHER — excess NaOH inflates the volume used, which inflates moles NaOH, moles acetic acid, mass acetic acid, and therefore the percent)
+2. Evaluate the quality of their causal chain of reasoning
+3. Note any gaps (did they trace the error through ALL steps of the calculation chain?)
+
+Be direct, rigorous, and encouraging. Do not use bullet points.`
+  },
+  q6: {
+    prompt: `A general chemistry student wrote the following response: Question: "Acetic acid is a weak acid (Ka = 1.8e-5). Why does titrating with a strong base still allow us to accurately determine the total amount of acetic acid present, even though acetic acid only partially dissociates?"
+
+Student response: "{RESPONSE}"
+
+You are an instructor giving feedback. In 4-5 sentences:
+1. Evaluate whether the student understands Le Chatelier's principle / equilibrium shift — as OH- consumes H+/CH3COO-, the equilibrium is driven completely to the right
+2. Check if they understand that at the equivalence point, ALL acetic acid has been neutralized (not just the dissociated fraction)
+3. Identify any conceptual gaps between partial dissociation in pure water vs. reaction with strong base
+4. Give one specific suggestion
+
+Be rigorous and precise. Do not use bullet points.`
+  },
+  q7: {
+    prompt: `A general chemistry student proposed improvements to reduce percent error in the vinegar titration lab: Question: "Propose two specific procedural improvements that would reduce experimental error, explaining the mechanism by which each works."
+
+Student response: "{RESPONSE}"
+
+You are an instructor giving feedback. In 4-5 sentences:
+1. Evaluate whether their improvements are specific and actionable (vague suggestions like "be more careful" are insufficient)
+2. Check if they correctly explained the mechanism by which the improvement reduces error
+3. Note whether improvements address systematic vs. random error
+4. Common strong answers include: conditioning the buret with titrant before use, using a white background for endpoint detection, performing more trials, slow drop-by-drop addition near endpoint, re-standardizing NaOH if stored for extended time
+
+Be direct and evaluative. Do not use bullet points.`
+  }
+};
+
+async function getAIFeedback(qId, btn) {
+  const response = document.getElementById('open-' + qId).value.trim();
+  if (!response || response.length < 15) {
+    alert('Please write a response before requesting feedback.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.querySelector('.spinner').style.display = 'inline-block';
+
+  const context = questionContexts[qId];
+  const promptText = context.prompt.replace('{RESPONSE}', response);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: 'You are a chemistry instructor at a small liberal arts university giving concise, constructive, scientifically accurate feedback on student lab reports. You are encouraging but rigorous. You never use bullet points.',
+        messages: [{ role: 'user', content: promptText }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content.map(c => c.text || '').join('');
+    const box = document.getElementById('ai-' + qId);
+    box.querySelector('.ai-feedback-content').textContent = text;
+    box.classList.add('visible');
+  } catch (err) {
+    const box = document.getElementById('ai-' + qId);
+    box.querySelector('.ai-feedback-content').textContent = 'Could not connect to the feedback service. Please check your internet connection and try again.';
+    box.classList.add('visible');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.querySelector('.spinner').style.display = 'none';
+  }
+}
+
+// =========================================================
+// GOOGLE SHEETS CONFIGURATION
+// Paste your Web App URL here after following setup steps.
+// Leave as empty string '' if not yet configured — lab will
+// still score locally but will not log to Sheets.
+// =========================================================
+const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw5doNBiyVi0Hb6XaDcs_zjSpU1893JQc3rGdknc95yGsyTYahOcHGWAy0hjVGRAVCEPg/exec';
+
+// =========================================================
+// SUBMISSION & SCORING
+// =========================================================
+async function submitLab() {
+  const name = document.getElementById('studentName').value.trim();
+  const section = document.getElementById('labSection').value.trim();
+  const date = document.getElementById('labDate').value.trim();
+
+  if (!name) {
+    alert('Please enter your name before submitting.');
+    return;
+  }
+
+  let score = 0;
+  let total = 0;
+  let details = [];
+
+  // MC Q1
+  total += 2;
+  const mc1val = document.querySelector('input[name="mc1"]:checked');
+  if (mc1val && mc1val.value === 'A') { score += 2; details.push('Q1 (Titrant/Analyte): Full credit'); }
+  else details.push('Q1 (Titrant/Analyte): Review titrant vs. analyte definitions');
+
+  // MC Q2
+  total += 2;
+  const mc2val = document.querySelector('input[name="mc2"]:checked');
+  if (mc2val && mc2val.value === 'B') { score += 2; details.push('Q2 (Endpoint): Full credit'); }
+  else details.push('Q2 (Endpoint): Review faint-pink endpoint technique');
+
+  // Data table completeness
+  total += 4;
+  const dataFields = ['khp-mass-1','khp-mass-2','init-1','init-2','final-1','final-2',
+                      'vinegar-mass-1','vinegar-mass-2','vin-init-1','vin-final-1'];
+  const filled = dataFields.filter(id => document.getElementById(id).value.trim() !== '').length;
+  const dataScore = Math.round((filled / dataFields.length) * 4);
+  score += dataScore;
+  details.push(`Data Table: ${dataScore}/4 (${filled}/${dataFields.length} fields filled)`);
+
+  // Calculation 4a
+  total += 4;
+  const calc4a = parseFloat(document.getElementById('ans-4a').value);
+  if (!isNaN(calc4a) && calc4a >= 0.08 && calc4a <= 0.30) { score += 4; details.push('Calc 4a (M NaOH): Full credit'); }
+  else if (!isNaN(calc4a)) { score += 2; details.push('Calc 4a (M NaOH): Attempted — check units and sig figs'); }
+  else details.push('Calc 4a (M NaOH): Not completed');
+
+  // Calculation 4b
+  total += 4;
+  const calc4b = parseFloat(document.getElementById('ans-4b').value);
+  if (!isNaN(calc4b) && calc4b >= 3.5 && calc4b <= 9.0) { score += 4; details.push('Calc 4b (% acetic acid): Full credit'); }
+  else if (!isNaN(calc4b)) { score += 2; details.push('Calc 4b (% acetic acid): Attempted — check units'); }
+  else details.push('Calc 4b (% acetic acid): Not completed');
+
+  // Open responses
+  total += 8;
+  const openQs = ['q3','q4','q5','q6','q7'];
+  openQs.forEach(q => {
+    const val = document.getElementById('open-' + q).value.trim();
+    if (val.length > 80) { score += 1.6; }
+    else if (val.length > 20) { score += 0.8; }
+  });
+  details.push(`Written Responses: ${openQs.filter(q => document.getElementById('open-'+q).value.trim().length > 80).length}/5 substantive responses submitted`);
+
+  const pct = Math.round((score / total) * 100);
+  const timestamp = new Date().toLocaleString();
+
+  // Build the payload that goes to Google Sheets
+  const payload = {
+    timestamp,
+    name,
+    section,
+    date,
+    score: score.toFixed(1),
+    total,
+    percent: pct,
+    q1_mc: mc1val ? mc1val.value : 'no answer',
+    q2_mc: mc2val ? mc2val.value : 'no answer',
+    data_fields_filled: filled,
+    calc_4a: document.getElementById('ans-4a').value || 'blank',
+    calc_4b: document.getElementById('ans-4b').value || 'blank',
+    avg_pct: document.getElementById('ans-avg').value || 'blank',
+    pct_error: document.getElementById('ans-error').value || 'blank',
+    q3_response: document.getElementById('open-q3').value.trim(),
+    q4_response: document.getElementById('open-q4').value.trim(),
+    q5_response: document.getElementById('open-q5').value.trim(),
+    q6_response: document.getElementById('open-q6').value.trim(),
+    q7_response: document.getElementById('open-q7').value.trim(),
+    details: details.join(' | ')
+  };
+
+  // Show score panel immediately — don't make student wait for network
+  showScorePanel(name, score, total, pct, timestamp, details);
+
+  // Send to Google Sheets if endpoint is configured
+  if (SHEETS_ENDPOINT) {
+    const statusEl = document.getElementById('sheets-status');
+    statusEl.textContent = 'Sending to gradebook...';
+    statusEl.style.color = 'var(--gold)';
+    try {
+      await fetch(SHEETS_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      // no-cors means we can't read the response, but if no error was thrown it went through
+      statusEl.textContent = 'Submitted to gradebook successfully.';
+      statusEl.style.color = 'var(--green)';
+    } catch (err) {
+      statusEl.textContent = 'Could not reach gradebook — screenshot your score and email it to your instructor.';
+      statusEl.style.color = 'var(--accent)';
+    }
+  }
+}
+
+function showScorePanel(name, score, total, pct, timestamp, details) {
+  const panel = document.getElementById('scorePanel');
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  setTimeout(() => {
+    document.getElementById('scoreBar').style.width = pct + '%';
+    document.getElementById('scoreBar').style.background =
+      pct >= 85 ? 'var(--green)' : pct >= 65 ? 'var(--gold)' : 'var(--accent)';
+  }, 100);
+
+  document.getElementById('scoreText').textContent =
+    `${name}  |  ${score.toFixed(1)} / ${total} points  (${pct}%)  |  Submitted ${timestamp}`;
+  document.getElementById('scoreDetails').innerHTML =
+    '<strong style="display:block;margin-bottom:8px;">Item-by-item breakdown:</strong>' +
+    details.map(d => `<span style="display:block; padding: 3px 0; border-bottom: 1px dashed var(--rule);">${d}</span>`).join('') +
+    '<div id="sheets-status" style="margin-top:14px; font-family: JetBrains Mono, monospace; font-size:12px;"></div>';
+}
+</script>
+</body>
+</html>
