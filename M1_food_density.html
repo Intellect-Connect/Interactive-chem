@@ -2309,12 +2309,6 @@
 
 <script>
 // =========================================================
-// CONFIGURATION — declared first so all functions can access
-// =========================================================
-const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx69Jq2ktdQG0zE8tDc7LRqH_vve74sM4O5_cP-sPluaTdYNZVW9KlyU7eESxf96o4pvg/exec';
-const AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx69Jq2ktdQG0zE8tDc7LRqH_vve74sM4O5_cP-sPluaTdYNZVW9KlyU7eESxf96o4pvg/exec';
-
-// =========================================================
 // TAB SWITCHING
 // =========================================================
 function switchTab(id, btn) {
@@ -2946,7 +2940,7 @@ async function getAIFeedback(qId, btn) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         action: 'feedback',
-        system: 'You are a chemistry instructor at a liberal arts university giving concise, constructive, scientifically accurate feedback on student lab reports for an introductory (CHEM 100) course. Your students are non-majors, many encountering chemistry formally for the first time. Be encouraging but rigorous. Connect chemistry to everyday experience. Never use bullet points.',
+        system: 'You are a chemistry instructor at a liberal arts university giving concise, constructive, scientifically accurate feedback on student lab reports for an introductory (CHEM 100) course. Your students are non-majors, many encountering chemistry formally for the first time. Be encouraging but rigorous. Connect chemistry to everyday experience. Never use bullet points. IMPORTANT: Before giving feedback, evaluate whether the writing sounds authentically like a first-year non-major student. Red flags for AI-generated text include: overly formal academic phrasing, sophisticated vocabulary inconsistent with introductory coursework, perfectly structured arguments with no errors or hesitation, hedging language like "it is worth noting" or "furthermore" or "in conclusion", and responses that address every possible angle of a question simultaneously with no personal voice. If the response shows these signs, do not give content feedback. Instead respond only with: "Your response reads like it may have been written with AI assistance. This is a CHEM 100 course and I want to hear your own thinking in your own words. Please rewrite this the way you would explain it to a friend — using simpler, more natural language. What do YOU actually understand about this topic?" If the writing is clearly a genuine student attempt — even if imperfect, incomplete, or grammatically rough — give normal constructive feedback.',
         prompt: promptText
       })
     });
@@ -2968,7 +2962,20 @@ async function getAIFeedback(qId, btn) {
   }
 }
 
-// (SHEETS_ENDPOINT and AI_PROXY_ENDPOINT configured at top of script)
+// =========================================================
+// GOOGLE SHEETS CONFIGURATION
+// Paste your Web App URL here after following setup steps.
+// Leave as empty string '' if not yet configured.
+// =========================================================
+const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx69Jq2ktdQG0zE8tDc7LRqH_vve74sM4O5_cP-sPluaTdYNZVW9KlyU7eESxf96o4pvg/exec';
+
+// =========================================================
+// AI FEEDBACK PROXY
+// Same Web App URL as SHEETS_ENDPOINT — the Apps Script
+// routes /feedback requests to the Anthropic API server-side.
+// Your API key is stored only in Apps Script, never here.
+// =========================================================
+const AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx69Jq2ktdQG0zE8tDc7LRqH_vve74sM4O5_cP-sPluaTdYNZVW9KlyU7eESxf96o4pvg/exec';
 
 // =========================================================
 // SUBMISSION LIMIT & ATTEMPT TRACKING
