@@ -2943,7 +2943,6 @@ async function getAIFeedback(qId, btn) {
   try {
     const res = await fetch(AI_PROXY_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         action: 'feedback',
         system: 'You are a chemistry instructor at a liberal arts university giving concise, constructive, scientifically accurate feedback on student lab reports for an introductory (CHEM 100) course. Your students are non-majors, many encountering chemistry formally for the first time. Be encouraging but rigorous. Connect chemistry to everyday experience. Never use bullet points. IMPORTANT: Before giving feedback, evaluate whether the writing sounds authentically like a first-year non-major student. Red flags for AI-generated text include: overly formal academic phrasing, sophisticated vocabulary inconsistent with introductory coursework, perfectly structured arguments with no errors or hesitation, hedging language like "it is worth noting" or "furthermore" or "in conclusion", and responses that address every possible angle of a question simultaneously with no personal voice. If the response shows these signs, do not give content feedback. Instead respond only with: "Your response reads like it may have been written with AI assistance. This is a CHEM 100 course and I want to hear your own thinking in your own words. Please rewrite this the way you would explain it to a friend — using simpler, more natural language. What do YOU actually understand about this topic?" If the writing is clearly a genuine student attempt — even if imperfect, incomplete, or grammatically rough — give normal constructive feedback.',
@@ -3248,7 +3247,6 @@ Keep the tone warm, constructive, and specific. Use plain text with section head
   try {
     const response = await fetch(AI_PROXY_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         action: 'feedback',
         system: 'You are an encouraging CHEM 100 instructor providing personalized post-submission feedback. Be warm, specific, and constructive. Use plain text only — no markdown, no bullet points.',
