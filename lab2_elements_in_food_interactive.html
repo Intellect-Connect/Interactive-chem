@@ -1490,10 +1490,10 @@
   <div class="student-bar-inner">
     <div class="field-group">
       <label>Student Name</label>
-      <input type="text" id="student-name" placeholder="First Last">
+      <input type="text" id="student-name" placeholder="Last, First">
     </div>
     <div class="field-group">
-      <label>Section / Lab Period</label>
+      <label>Lab Section</label>
       <input type="text" id="student-section" placeholder="e.g. CHEM 100-03">
     </div>
     <div class="field-group">
@@ -2795,7 +2795,7 @@
     <div class="submit-section">
       <div class="submit-info">
         <strong>Submit Your Lab Report</strong>
-        All data fields and analysis questions are scored automatically. Written responses receive AI-assisted instructor feedback. Complete all sections before submitting. You have 2 submission attempts.
+        All data fields and analysis questions will be scored automatically. Written responses receive AI-assisted instructor feedback. Complete all sections before submitting. Total: 55 points.
       </div>
       <div id="attempt-status" style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#888; margin-bottom:10px; line-height:1.7;"></div>
       <button class="submit-main-btn" id="submit-btn" onclick="submitLab()">Submit Lab Report</button>
@@ -2809,10 +2809,15 @@
       <div class="score-details" id="scoreDetails"></div>
     </div>
 
-    <!-- FEEDBACK REPORT -->
+    <!-- AI FEEDBACK REPORT PANEL -->
     <div id="feedbackReportPanel" style="display:none; margin-top:20px; background:#fff; border:1px solid #c8bfa8; border-left:4px solid var(--blue); border-radius:4px; padding:24px 28px; box-shadow:0 2px 12px rgba(26,26,46,0.07);">
       <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--blue); margin-bottom:14px;">Instructor Feedback Report</div>
-      <div id="feedbackReportContent" style="font-size:13.5px; line-height:1.8; color:#2a2a3e;"></div>
+      <div id="feedbackReportContent" style="font-size:13.5px; line-height:1.8; color:#2a2a3e;">
+        <div style="display:flex; align-items:center; gap:10px; color:#888; font-size:13px;">
+          <div class="spinner" style="display:inline-block; width:16px; height:16px; border:2px solid #ddd; border-top-color:var(--blue); border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+          Generating your personalized feedback report...
+        </div>
+      </div>
     </div>
 
     <div class="nav-row">
@@ -2921,8 +2926,8 @@
 
 <!-- ============================================================ JAVASCRIPT ============================================================ -->
 <script>
-const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyp3N_GTXKVcvEmZuZDlcH9LlVsSac7NLZpHHhqp0bVGyjBdJkQERHpc2ChSLRmTjR9QA/exec';
-const AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyp3N_GTXKVcvEmZuZDlcH9LlVsSac7NLZpHHhqp0bVGyjBdJkQERHpc2ChSLRmTjR9QA/exec';
+const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx69Jq2ktdQG0zE8tDc7LRqH_vve74sM4O5_cP-sPluaTdYNZVW9KlyU7eESxf96o4pvg/exec';
+const AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx69Jq2ktdQG0zE8tDc7LRqH_vve74sM4O5_cP-sPluaTdYNZVW9KlyU7eESxf96o4pvg/exec';
 const MAX_ATTEMPTS = 2;
 const LAB_STORAGE_KEY = 'chem100_lab2_attempts';
 
