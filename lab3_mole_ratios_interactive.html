@@ -1,0 +1,3249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mole Ratios in a Chemical Reaction | CHEM 103L Lab 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #faf8f4;
+    --cream: #f2ede3;
+    --rule: #d4c9b0;
+    --accent: #7b1fa2;
+    --accent-light: #f3e5f5;
+    --accent-dark: #4a0072;
+    --red: #c0392b;
+    --red-light: #f9ebea;
+    --blue: #1a4a7a;
+    --blue-light: #e8f0f9;
+    --gold: #b8860b;
+    --gold-light: #fdf6e3;
+    --orange: #e65100;
+    --orange-light: #fff3e0;
+    --canvas-bg: #fffef9;
+    --border: #c8bfa8;
+    --shadow: 0 2px 12px rgba(26,26,46,0.08);
+    --green: #6a1b9a;
+    --green-light: #f3e5f5;
+    --purple: #5b2d8e;
+    --purple-light: #f0eaf8;
+    --teal: #1565c0;
+    --teal-light: #e3f0fc;
+    --teal-dark: #0d47a1;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #e0ddd6;
+    background-image:
+      radial-gradient(ellipse at 15% 10%, rgba(123,31,162,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 90%, rgba(26,74,122,0.06) 0%, transparent 50%);
+    min-height: 100vh;
+    color: var(--ink);
+  }
+
+  /* HEADER */
+  .lab-header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .lab-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      90deg, transparent, transparent 59px,
+      rgba(255,255,255,0.04) 59px, rgba(255,255,255,0.04) 60px
+    );
+  }
+  .header-inner {
+    position: relative;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 40px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+  }
+  .lab-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: #ce93d8;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .lab-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.15;
+    color: #fff;
+  }
+  .lab-subtitle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 6px;
+    font-style: italic;
+  }
+  .header-meta {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.38);
+    line-height: 1.8;
+    flex-shrink: 0;
+  }
+
+  /* STUDENT BAR */
+  .student-bar {
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+  }
+  .student-bar-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 16px 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .field-group label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .field-group input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--border);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 4px 0;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field-group input:focus { border-color: var(--accent); }
+
+
+  /* TAB NAV */
+  .tab-nav-wrap {
+    background: var(--ink);
+    border-bottom: 2px solid rgba(255,255,255,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .tab-nav {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 10px;
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 12px 14px;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.45);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.18s;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    position: relative;
+    top: 2px;
+  }
+  .tab-btn:hover { color: rgba(255,255,255,0.75); }
+  .tab-btn.active {
+    color: #ce93d8;
+    border-bottom-color: #ce93d8;
+  }
+  .tab-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    margin-right: 7px;
+    opacity: 0.6;
+  }
+
+  /* TAB PANELS */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* MAIN CONTENT */
+  .main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 40px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* SCENARIO BANNER */
+  .scenario-banner {
+    background: var(--ink);
+    border: 1px solid rgba(206,147,216,0.25);
+    border-left: 4px solid #ce93d8;
+    border-radius: 4px;
+    padding: 22px 26px;
+    position: relative;
+    overflow: hidden;
+  }
+  .scenario-banner::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 200px;
+    background: radial-gradient(ellipse at right, rgba(206,147,216,0.06) 0%, transparent 70%);
+  }
+  .scenario-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: #ce93d8;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .scenario-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px;
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .scenario-body {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.68;
+  }
+  .scenario-mission {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: rgba(206,147,216,0.1);
+    border-radius: 3px;
+    font-size: 13px;
+    color: #e1bee7;
+    line-height: 1.6;
+  }
+  .scenario-mission strong { color: #ce93d8; }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .section-badge {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-blue { background: var(--blue-light); color: var(--blue); }
+  .badge-gold { background: var(--gold-light); color: var(--gold); }
+  .badge-red { background: var(--red-light); color: var(--red); }
+  .badge-purple { background: var(--purple-light); color: var(--purple); }
+  .badge-teal { background: var(--teal-light); color: var(--teal); }
+  .section-body { padding: 24px; }
+
+  /* REF BOXES */
+  .ref-box {
+    background: var(--blue-light);
+    border: 1px solid rgba(26,74,122,0.2);
+    border-left: 3px solid var(--blue);
+    border-radius: 3px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .ref-box-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+  .ref-box p { font-size: 13.5px; line-height: 1.65; color: #2a3a50; }
+  .ref-box p + p { margin-top: 8px; }
+
+  .ref-box-green {
+    background: var(--green-light);
+    border: 1px solid rgba(26,107,60,0.2);
+    border-left: 3px solid var(--green);
+  }
+  .ref-box-green .ref-box-title { color: var(--green); }
+  .ref-box-green p { color: #1a3a28; }
+
+  .ref-box-gold {
+    background: var(--gold-light);
+    border: 1px solid rgba(184,134,11,0.25);
+    border-left: 3px solid var(--gold);
+  }
+  .ref-box-gold .ref-box-title { color: var(--gold); }
+  .ref-box-gold p { color: #3a2e10; }
+
+  .ref-box-red {
+    background: var(--red-light);
+    border: 1px solid rgba(192,57,43,0.2);
+    border-left: 3px solid var(--red);
+  }
+  .ref-box-red .ref-box-title { color: var(--red); }
+  .ref-box-red p { color: #4a1a16; }
+
+  .ref-box-orange {
+    background: var(--orange-light);
+    border: 1px solid rgba(230,81,0,0.2);
+    border-left: 3px solid var(--orange);
+  }
+  .ref-box-orange .ref-box-title { color: var(--orange); }
+  .ref-box-orange p { color: #3e2000; }
+
+  /* PROCEDURE STEPS */
+  .proc-part-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 20px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .proc-part-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .proc-step {
+    display: flex;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--rule);
+    align-items: flex-start;
+  }
+  .proc-step:last-child { border-bottom: none; }
+  .step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--ink);
+    margin-top: 1px;
+  }
+  .step-num.highlight {
+    background: var(--accent);
+    border-color: var(--accent-dark);
+    color: #fff;
+  }
+  .step-num.highlight-blue {
+    background: var(--blue);
+    border-color: var(--teal-dark);
+    color: #fff;
+  }
+  .step-content { flex: 1; }
+  .step-text { font-size: 14px; line-height: 1.65; color: var(--ink); }
+  .step-note {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+    padding: 5px 10px;
+    background: var(--cream);
+    border-radius: 2px;
+  }
+  .step-note.warning {
+    background: var(--orange-light);
+    color: var(--orange);
+    font-style: normal;
+    font-weight: 500;
+    border-left: 2px solid var(--orange);
+  }
+  .step-note.tip {
+    background: var(--green-light);
+    color: var(--green);
+    font-style: normal;
+    border-left: 2px solid var(--green);
+  }
+
+  /* DATA TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin: 16px 0;
+  }
+  .data-table th {
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: middle;
+    text-align: center;
+  }
+  .data-table tr:nth-child(even) td { background: var(--cream); }
+  .data-table td.label-cell {
+    font-weight: 500;
+    color: #333;
+    font-size: 13px;
+    text-align: left;
+  }
+  .data-table td.label-cell .sub {
+    display: block;
+    font-size: 11px;
+    color: #aaa;
+    font-weight: 400;
+    margin-top: 1px;
+  }
+  .data-table td.computed-cell {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--blue);
+    background: var(--blue-light) !important;
+    font-weight: 600;
+  }
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .data-table input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,74,122,0.1);
+  }
+  .data-table input.valid { border-color: var(--green); background: var(--green-light); }
+  .data-table input.invalid { border-color: var(--red); background: var(--red-light); }
+  .data-table td.group-header {
+    background: var(--ink);
+    color: #ce93d8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+  }
+
+  /* QUESTION BLOCKS */
+  .q-block {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .q-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .q-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 6px;
+  }
+  .q-text {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .q-sub {
+    font-size: 13.5px;
+    color: #444;
+    margin: 6px 0 8px 12px;
+    line-height: 1.6;
+  }
+  textarea.open-response {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 12px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink);
+    background: #fff;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  textarea.open-response:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,74,122,0.1);
+  }
+
+  /* CANVAS / WORK AREA */
+  .canvas-wrap {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--canvas-bg);
+    overflow: hidden;
+  }
+  .canvas-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .canvas-toolbar button {
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--ink);
+    transition: all 0.15s;
+  }
+  .canvas-toolbar button:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .canvas-toolbar button.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .canvas-toolbar .color-btn {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px var(--border);
+    transition: transform 0.15s;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .canvas-toolbar .color-btn:hover { transform: scale(1.2); }
+  .canvas-toolbar .color-btn.active { box-shadow: 0 0 0 2px var(--blue); transform: scale(1.1); }
+  .canvas-toolbar label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #888;
+  }
+  .canvas-toolbar input[type="range"] { width: 70px; cursor: pointer; }
+  canvas.work-canvas {
+    display: block;
+    width: 100%;
+    cursor: crosshair;
+    touch-action: none;
+  }
+
+  /* AI FEEDBACK BUTTON */
+  .ai-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 8px;
+    padding: 7px 14px;
+    background: var(--blue-light);
+    border: 1px solid rgba(26,74,122,0.3);
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--blue);
+    cursor: pointer;
+    transition: all 0.18s;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .ai-btn:hover { background: rgba(26,74,122,0.15); }
+  .ai-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .ai-feedback-area {
+    margin-top: 10px;
+    padding: 14px 16px;
+    background: var(--blue-light);
+    border-left: 3px solid var(--blue);
+    border-radius: 3px;
+    font-size: 13.5px;
+    line-height: 1.68;
+    color: #2a3a50;
+    display: none;
+  }
+  .ai-feedback-area.visible { display: block; }
+
+  /* NAVIGATION BUTTON */
+  .nav-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    gap: 12px;
+  }
+  .nav-btn {
+    padding: 11px 28px;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+    border: none;
+  }
+  .nav-btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .nav-btn-primary:hover { background: var(--accent-dark); }
+  .nav-btn-secondary {
+    background: var(--cream);
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+  .nav-btn-secondary:hover { background: var(--border); }
+
+  /* CONCEPT GRID */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .concept-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+  }
+  .concept-card h4 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+  .concept-card p { font-size: 12.5px; line-height: 1.6; color: #555; }
+  .concept-card .example {
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    padding: 4px 8px;
+    background: var(--cream);
+    border-radius: 2px;
+  }
+
+  /* REACTION EQUATION DISPLAY */
+  .rxn-display {
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 20px 26px;
+    margin: 16px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 0.06em;
+    line-height: 2;
+  }
+  .rxn-display .reactant { color: #ce93d8; }
+  .rxn-display .product { color: #90caf9; }
+  .rxn-display .coeff { color: #ffd54f; font-weight: 600; }
+  .rxn-display .arrow { color: rgba(255,255,255,0.5); margin: 0 12px; }
+
+  /* TEMPERATURE CHANGE INDICATOR */
+  .temp-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .temp-exo { background: #fce4ec; color: #c62828; }
+  .temp-endo { background: #e3f2fd; color: #1565c0; }
+
+  /* VALIDATION FEEDBACK */
+  .val-msg {
+    font-size: 11.5px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 4px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    display: none;
+  }
+  .val-msg.show { display: block; }
+  .val-msg.ok { background: var(--green-light); color: var(--green); }
+  .val-msg.err { background: var(--red-light); color: var(--red); }
+  .val-msg.warn { background: var(--orange-light); color: var(--orange); }
+
+  /* Ratio bar CSS removed - replaced by scatter plot */
+
+  /* SUBMIT */
+  .submit-section {
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 24px 0;
+  }
+  .submit-info { color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.6; }
+  .submit-info strong { color: #fff; display: block; margin-bottom: 4px; font-size: 15px; }
+  .submit-main-btn {
+    padding: 14px 32px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .submit-main-btn:hover { background: var(--accent-dark); }
+  .submit-main-btn:disabled { background: #aaa; cursor: not-allowed; }
+
+  /* FEEDBACK PANEL */
+  .feedback-panel {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--blue);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: none;
+  }
+  .feedback-panel.visible { display: block; }
+  .feedback-panel-header {
+    padding: 16px 24px;
+    background: var(--blue-light);
+    border-bottom: 1px solid rgba(26,74,122,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .feedback-panel-header h3 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--blue);
+  }
+  .feedback-body { padding: 20px 24px; font-size: 14px; line-height: 1.72; color: var(--ink); }
+
+  /* SCORE PANEL */
+  .score-panel {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: none;
+  }
+  .score-panel.visible { display: block; }
+  .score-header {
+    background: var(--ink);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .score-header h3 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 18px;
+    color: #fff;
+    font-weight: 600;
+  }
+  .score-bar-wrap {
+    flex: 1;
+    background: rgba(255,255,255,0.12);
+    border-radius: 2px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .score-bar {
+    height: 100%;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.8s ease;
+  }
+  .score-body { padding: 20px 24px; font-size: 13.5px; line-height: 1.7; }
+
+  /* REFERENCE TAB STYLES */
+  .ref-concept-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    transition: box-shadow 0.15s;
+  }
+  .ref-concept-card:hover { box-shadow: 0 4px 16px rgba(26,74,122,0.12); }
+  .ref-concept-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    cursor: pointer;
+  }
+  .ref-concept-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .ref-concept-body {
+    padding: 0 16px 14px;
+    font-size: 13px;
+    line-height: 1.65;
+    display: none;
+    border-top: 1px solid var(--rule);
+    margin-top: 2px;
+  }
+  .ref-concept-body.open { display: block; }
+
+  /* FORMULA BOX */
+  .formula-box {
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 16px 22px;
+    margin: 10px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #e0e0e0;
+    line-height: 1.9;
+  }
+  .formula-box .formula-title {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: #ce93d8;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .formula-box .var { color: #ffd54f; }
+  .formula-box .unit { color: #90caf9; font-size: 11px; }
+
+  @media (max-width: 700px) {
+    .student-bar-inner { grid-template-columns: 1fr 1fr; }
+    .concept-grid { grid-template-columns: 1fr; }
+    .main { padding: 20px 16px 40px; }
+    .header-inner { padding: 24px 20px 18px; flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ── AUTO-SAVE STATUS BAR ── */
+  #save-status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: var(--ink);
+    border-top: 2px solid #ce93d8;
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    gap: 16px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  #save-status-bar.visible {
+    transform: translateY(0);
+  }
+  #save-status-bar .save-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #ce93d8;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  #save-status-bar .save-dot.saving {
+    background: #ffd54f;
+    animation: pulse 0.8s infinite;
+  }
+  #save-status-bar .save-dot.saved {
+    background: #81c784;
+  }
+  #save-status-bar .save-dot.error {
+    background: #ef9a9a;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+  }
+  #save-status-bar .save-msg { flex: 1; }
+  #save-status-bar .save-actions { display: flex; gap: 10px; }
+  .save-action-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .save-action-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.9);
+    border-color: rgba(255,255,255,0.4);
+  }
+  .save-action-btn.danger:hover {
+    border-color: #ef9a9a;
+    color: #ef9a9a;
+  }
+  /* pad page bottom so fixed bar doesn't cover content */
+  body { padding-bottom: 44px; }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="lab-header">
+  <div class="header-inner">
+    <div>
+      <div class="lab-tag">CHEM 103L &nbsp;&mdash;&nbsp; General Chemistry I Lab</div>
+      <div class="lab-title">Lab 3: Determining Mole Ratios<br>in a Chemical Reaction</div>
+      <div class="lab-subtitle">Continuous Variations Method &mdash; OCl<sup>&ndash;</sup> and S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup></div>
+    </div>
+    <div class="header-meta">
+      <div>Lab 3</div>
+      <div>CHEM 103L</div>
+      <div>General Chemistry I</div>
+    </div>
+  </div>
+</header>
+
+<!-- STUDENT INFO -->
+
+<div id="save-status-bar">
+  <div class="save-dot" id="save-dot"></div>
+  <div class="save-msg" id="save-msg">Auto-save ready</div>
+  <div class="save-actions">
+    <button class="save-action-btn" onclick="saveNow()">Save now</button>
+    <button class="save-action-btn danger" onclick="confirmClearSave()">Clear saved data</button>
+  </div>
+</div>
+
+<div class="student-bar">
+  <div class="student-bar-inner">
+    <div class="field-group">
+      <label>Your Name (Last, First)</label>
+      <input type="text" id="student-name" placeholder="e.g. Smith, Jordan" autocomplete="off">
+    </div>
+    <div class="field-group">
+      <label>Lab Section</label>
+      <input type="text" id="student-section" placeholder="e.g. 103L-02" autocomplete="off">
+    </div>
+    <div class="field-group">
+      <label>Team Member 2 (Last, First)</label>
+      <input type="text" id="member2" placeholder="Last, First" autocomplete="off">
+    </div>
+    <div class="field-group">
+      <label>Team Member 3 (Last, First)</label>
+      <input type="text" id="member3" placeholder="Last, First" autocomplete="off">
+    </div>
+    <div class="field-group">
+      <label>Start Date</label>
+      <input type="date" id="start-date">
+    </div>
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<div class="tab-nav-wrap">
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab(1)"><span class="tab-num">01</span> Purpose</button>
+    <button class="tab-btn" onclick="switchTab(2)"><span class="tab-num">02</span> Background</button>
+    <button class="tab-btn" onclick="switchTab(3)"><span class="tab-num">03</span> Procedure</button>
+    <button class="tab-btn" onclick="switchTab(4)"><span class="tab-num">04</span> Data Table</button>
+    <button class="tab-btn" onclick="switchTab(5)"><span class="tab-num">05</span> Analysis</button>
+    <button class="tab-btn" onclick="switchTab(6)"><span class="tab-num">06</span> Conclusions</button>
+    <button class="tab-btn" onclick="switchTab(7)"><span class="tab-num">REF</span> Reference</button>
+  </nav>
+</div>
+
+<!-- ===================== TAB 1: PURPOSE ===================== -->
+<div id="tab-1" class="tab-panel active">
+<div class="main">
+
+  <div class="scenario-banner">
+    <div class="scenario-tag">Lab Scenario &mdash; Reaction Stoichiometry</div>
+    <div class="scenario-title">How do atoms combine? Discovering mole ratios by calorimetry.</div>
+    <div class="scenario-body">
+      In chemistry, a balanced equation tells us the exact whole-number ratio in which reactants combine and products form. But what if we did not already know the balanced equation? The method of continuous variations lets us <em>discover</em> that ratio experimentally by systematically changing the amounts of two reactants while keeping the total volume constant &mdash; and measuring the energy released in each trial. The trial producing the greatest temperature change reveals the ratio at which the two reactants are perfectly matched: no excess of either, maximum reaction.
+    </div>
+    <div class="scenario-mission">
+      <strong>Your Mission:</strong> Mix hypochlorite (OCl<sup>&ndash;</sup>) and thiosulfate (S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup>) in seven different volume ratios. Measure the temperature change for each trial. Identify the ratio that produces the largest temperature change &mdash; that is the experimental mole ratio. Compare your result to the known balanced equation.
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">I</div>
+      <div class="section-title">Purpose of Lab</div>
+      <span class="section-badge badge-green">Written Response</span>
+    </div>
+    <div class="section-body">
+      <div class="ref-box">
+        <div class="ref-box-title">Writing Guidance</div>
+        <p>State the objective of the experiment in 1&ndash;2 grammatically correct sentences. Your purpose should identify: (1) what you are measuring, (2) the method used, and (3) what you aim to determine. Avoid vague statements like "to learn about chemistry." Be specific.</p>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Purpose Statement</div>
+        <div class="q-text">Write your purpose statement below. Use complete sentences (1&ndash;2 maximum).</div>
+        <textarea class="open-response" id="purpose-text" rows="4" placeholder="The objective of this experiment is to ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('purpose')" id="ai-btn-purpose">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-purpose"></div>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn nav-btn-primary" onclick="switchTab(2)">Next: Background &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 2: BACKGROUND ===================== -->
+<div id="tab-2" class="tab-panel">
+<div class="main">
+
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">II</div>
+      <div class="section-title">Background &amp; Key Concepts</div>
+      <span class="section-badge badge-blue">Read Before Lab</span>
+    </div>
+    <div class="section-body">
+
+      <div class="ref-box ref-box-gold">
+        <div class="ref-box-title">Why This Experiment Matters</div>
+        <p>Stoichiometry &mdash; the quantitative relationship between reactants and products &mdash; underlies virtually every application of chemistry, from pharmaceutical synthesis to industrial manufacturing. The method of continuous variations (also called Job's method) is a powerful technique used in both teaching and research to determine reaction ratios without knowing the balanced equation in advance.</p>
+      </div>
+
+      <div class="concept-grid">
+        <div class="concept-card">
+          <h4>The Mole</h4>
+          <p>A mole is 6.022 &times; 10<sup>23</sup> particles (Avogadro's number). It is the chemist's "counting unit" for atoms and molecules, allowing us to work with macroscopic (measurable) amounts of substances.</p>
+          <div class="example">1 mol NaCl = 58.44 g NaCl</div>
+        </div>
+        <div class="concept-card">
+          <h4>Mole Ratio</h4>
+          <p>The coefficients in a balanced chemical equation give the mole ratio of reactants and products. If a reaction is A + 2B &rarr; products, for every 1 mol of A consumed, exactly 2 mol of B are consumed.</p>
+          <div class="example">2H<sub>2</sub> + O<sub>2</sub> &rarr; 2H<sub>2</sub>O &nbsp; ratio = 2:1</div>
+        </div>
+        <div class="concept-card">
+          <h4>Limiting Reactant</h4>
+          <p>The reactant that is completely consumed first controls how much product forms. The other reactant is in excess. Maximum reaction occurs when both reactants are perfectly matched by the mole ratio &mdash; no limiting reactant.</p>
+          <div class="example">Excess = no maximum energy release</div>
+        </div>
+        <div class="concept-card">
+          <h4>Continuous Variations</h4>
+          <p>Keep total volume constant. Change the volume ratio of two reactants across many trials. The trial with the greatest temperature change corresponds to the exact mole ratio of the reaction &mdash; neither reactant is limiting.</p>
+          <div class="example">V<sub>A</sub> + V<sub>B</sub> = constant (10.0 mL)</div>
+        </div>
+        <div class="concept-card">
+          <h4>Molarity (Concentration)</h4>
+          <p>Molarity (M) = moles of solute per liter of solution. If both solutions have the same molarity, the volume ratio is directly equal to the mole ratio, because moles = M &times; V.</p>
+          <div class="example">mol = M &times; V(L) &nbsp;&nbsp; if M<sub>A</sub> = M<sub>B</sub></div>
+        </div>
+        <div class="concept-card">
+          <h4>Exothermic Reactions</h4>
+          <p>A reaction that releases heat to the surroundings is exothermic. The solution temperature increases. The maximum temperature increase (greatest &Delta;T) signals the trial where energy release is maximized &mdash; i.e., the stoichiometric ratio.</p>
+          <div class="example">&Delta;T = T<sub>final</sub> &minus; T<sub>initial</sub> &gt; 0</div>
+        </div>
+      </div>
+
+      <div class="ref-box">
+        <div class="ref-box-title">The Reactants in This Experiment</div>
+        <p><strong>Hypochlorite ion, OCl<sup>&ndash;</sup>:</strong> The active ingredient in household bleach. A strong oxidizing agent that accepts electrons from other species. Common in bleach-based disinfectants and pool chemicals.</p>
+        <p style="margin-top:8px;"><strong>Thiosulfate ion, S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup>:</strong> A reducing agent used in photography (as "fixer") and in analytical chemistry to titrate iodine. Donates electrons to oxidizing agents like OCl<sup>&ndash;</sup>.</p>
+      </div>
+
+      <div class="rxn-display">
+        <span class="coeff">?</span> <span class="reactant">OCl<sup>&ndash;</sup></span>
+        <span class="arrow">&nbsp;+&nbsp;</span>
+        <span class="coeff">?</span> <span class="reactant">S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup></span>
+        <span class="arrow">&nbsp;&rarr;&nbsp;</span>
+        <span class="product">products</span>
+        <br>
+        <span style="font-size:11px; color:rgba(255,255,255,0.4);">You will determine the mole ratio (?:?) experimentally.</span>
+      </div>
+
+      <div class="ref-box ref-box-orange">
+        <div class="ref-box-title">Safety Note</div>
+        <p><strong>OCl<sup>&ndash;</sup> (bleach) is a strong oxidizer and skin/eye irritant.</strong> Wear goggles and gloves at all times. Avoid contact with clothing. The reaction mixture is not hazardous at the dilutions used, but handle with care. Notify your instructor immediately if spills occur.</p>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn nav-btn-secondary" onclick="switchTab(1)">&larr; Back</button>
+        <button class="nav-btn nav-btn-primary" onclick="switchTab(3)">Next: Procedure &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 3: PROCEDURE ===================== -->
+<div id="tab-3" class="tab-panel">
+<div class="main">
+
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">III</div>
+      <div class="section-title">Materials &amp; Procedure</div>
+      <span class="section-badge badge-gold">Pre-Lab Reading</span>
+    </div>
+    <div class="section-body">
+
+      <div class="proc-part-title">
+        Materials
+        <span class="proc-part-badge badge-blue">Reagents &amp; Equipment</span>
+      </div>
+
+      <div class="ref-box">
+        <div class="ref-box-title">Reagent Solutions</div>
+        <p>0.050 M NaOCl (sodium hypochlorite) &nbsp;&bull;&nbsp; 0.050 M Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub> (sodium thiosulfate) &nbsp;&bull;&nbsp; Distilled water</p>
+        <p style="margin-top:6px;"><strong>Note:</strong> Both solutions have the same molarity (0.050 M). This is essential for the method of continuous variations.</p>
+      </div>
+
+      <div class="ref-box ref-box-gold">
+        <div class="ref-box-title">Equipment</div>
+        <p>Styrofoam cup calorimeter (2 nested cups) &nbsp;&bull;&nbsp; Digital thermometer or temperature probe &nbsp;&bull;&nbsp; Two 10 mL graduated cylinders (one per solution) &nbsp;&bull;&nbsp; Stirring rod &nbsp;&bull;&nbsp; Laboratory balance &nbsp;&bull;&nbsp; Wash bottle &nbsp;&bull;&nbsp; Safety goggles &nbsp;&bull;&nbsp; Nitrile gloves</p>
+      </div>
+
+      <div class="proc-part-title">
+        Procedure
+        <span class="proc-part-badge badge-green">Step-by-Step</span>
+      </div>
+
+      <div class="proc-step">
+        <div class="step-num highlight">1</div>
+        <div class="step-content">
+          <div class="step-text"><strong>Prepare your data table</strong> before starting. You will run 7 trials. The total volume of each trial is 10.0 mL. Use the volumes listed in the data table on Tab IV.</div>
+          <div class="step-note tip">Trials: 2/8, 3/7, 4/6, 5/5, 6/4, 7/3, 8/2 mL (OCl<sup>&ndash;</sup> / S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup>)</div>
+        </div>
+      </div>
+
+      <div class="proc-step">
+        <div class="step-num highlight">2</div>
+        <div class="step-content">
+          <div class="step-text"><strong>Label two clean, dry graduated cylinders:</strong> one for OCl<sup>&ndash;</sup>, one for S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup>. Use dedicated cylinders for each solution throughout the entire experiment to avoid cross-contamination.</div>
+          <div class="step-note warning">Never mix graduated cylinders between the two solutions. Cross-contamination will ruin your temperature readings.</div>
+        </div>
+      </div>
+
+      <div class="proc-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-text"><strong>Measure the initial temperature.</strong> For each trial, measure the temperature of each solution separately before mixing. Record the average of the two as T<sub>initial</sub>. The solutions should be at or near room temperature.</div>
+          <div class="step-note">If the two solutions differ by more than 0.5 &deg;C, wait for both to equilibrate to room temperature before proceeding.</div>
+        </div>
+      </div>
+
+      <div class="proc-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-text"><strong>Add the OCl<sup>&ndash;</sup> solution</strong> to the Styrofoam cup calorimeter first. Then add the S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup> solution rapidly and stir continuously.</div>
+        </div>
+      </div>
+
+      <div class="proc-step">
+        <div class="step-num highlight-blue">5</div>
+        <div class="step-content">
+          <div class="step-text"><strong>Monitor and record T<sub>final</sub>.</strong> Watch the temperature reading continuously. Record the highest temperature reached as T<sub>final</sub>. This typically occurs within 60 seconds of mixing.</div>
+          <div class="step-note tip">Temperature should rise quickly then plateau. Record the plateau as T<sub>final</sub>. Do not wait for the temperature to begin dropping.</div>
+        </div>
+      </div>
+
+      <div class="proc-step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <div class="step-text"><strong>Calculate &Delta;T</strong> for each trial: &Delta;T = T<sub>final</sub> &minus; T<sub>initial</sub>. A positive &Delta;T confirms an exothermic reaction. Enter this value in the data table &mdash; the interface will compute &Delta;T automatically when you enter T<sub>initial</sub> and T<sub>final</sub>.</div>
+        </div>
+      </div>
+
+      <div class="proc-step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <div class="step-text"><strong>Rinse and dry the calorimeter</strong> between trials using distilled water. Shake out excess water but do not dry with paper towels (residue may contaminate). A small amount of residual water will not significantly affect dilute solutions.</div>
+        </div>
+      </div>
+
+      <div class="proc-step">
+        <div class="step-num">8</div>
+        <div class="step-content">
+          <div class="step-text"><strong>Repeat steps 3&ndash;7 for all 7 trials.</strong> Try to keep the experimental conditions as consistent as possible between trials (same room temperature, same technique, same mixing speed).</div>
+          <div class="step-note">Work efficiently &mdash; the reaction proceeds quickly once mixed. Having both solutions measured and ready before initiating mixing improves reproducibility.</div>
+        </div>
+      </div>
+
+      <div class="proc-step">
+        <div class="step-num">9</div>
+        <div class="step-content">
+          <div class="step-text"><strong>Dispose of all solutions</strong> in the waste container provided. Do not pour down the drain unless specifically instructed. Clean all glassware with water and return to your station.</div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn nav-btn-secondary" onclick="switchTab(2)">&larr; Back</button>
+        <button class="nav-btn nav-btn-primary" onclick="switchTab(4)">Next: Data Table &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 4: DATA TABLE ===================== -->
+<div id="tab-4" class="tab-panel">
+<div class="main">
+
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">IV</div>
+      <div class="section-title">Tabulated Results &mdash; Data Table</div>
+      <span class="section-badge badge-teal">Enter Lab Data</span>
+    </div>
+    <div class="section-body">
+
+      <div class="ref-box">
+        <div class="ref-box-title">Instructions</div>
+        <p>Enter your measured temperatures in the white input cells. The <span style="color:var(--blue); font-weight:600;">&Delta;T column</span> will be calculated automatically. Record values to the nearest 0.1 &deg;C. The volume of OCl<sup>&ndash;</sup> and S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup> are pre-filled &mdash; total volume = 10.0 mL per trial.</p>
+        <p style="margin-top:8px;"><strong>Minimum requirement for full credit:</strong> Complete at least <strong>4 trials</strong> that include a clear maximum &Delta;T <em>with at least one lower value on each side</em> of the peak. This confirms the maximum is real, not an outlier. The status indicator below the table will update live as you enter data.</p>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Trial</th>
+            <th>Vol OCl<sup>&ndash;</sup> (mL)</th>
+            <th>Vol S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup> (mL)</th>
+            <th>T<sub>initial</sub> (&deg;C)</th>
+            <th>T<sub>final</sub> (&deg;C)</th>
+            <th>&Delta;T (&deg;C)</th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody">
+          <!-- Rows generated by JS -->
+        </tbody>
+      </table>
+
+      <div id="ratio-vis-wrap" style="margin-top:24px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--blue); margin-bottom:8px;">Live &Delta;T vs. Volume Scatter Plot</div>
+        <div style="background:#fff; border:1px solid var(--border); border-radius:4px; padding:16px 16px 10px;">
+          <canvas id="scatter-plot" style="display:block; width:100%; height:260px;"></canvas>
+          <div style="display:flex; gap:20px; margin-top:10px; flex-wrap:wrap; align-items:center;">
+            <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555;">
+              <svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="#7b1fa2"/></svg>
+              <span>&Delta;T per trial</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555;">
+              <svg width="14" height="14"><circle cx="7" cy="7" r="6" fill="#7b1fa2" stroke="#ffd54f" stroke-width="2"/></svg>
+              <span>Maximum &Delta;T &mdash; stoichiometric ratio</span>
+            </div>
+            <div style="font-size:11px; color:#999; font-family:'JetBrains Mono',monospace; margin-left:auto;">x: V(OCl&ndash;) mL &nbsp;|&nbsp; y: &Delta;T (&deg;C)</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="max-trial-msg" class="val-msg" style="margin-top:12px; font-size:13px; padding:10px 14px; border-radius:3px;"></div>
+
+      <div class="nav-row">
+        <button class="nav-btn nav-btn-secondary" onclick="switchTab(3)">&larr; Back</button>
+        <button class="nav-btn nav-btn-primary" onclick="switchTab(5)">Next: Analysis &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 5: ANALYSIS ===================== -->
+<div id="tab-5" class="tab-panel">
+<div class="main">
+
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <div class="section-title">Observations &amp; Analysis</div>
+      <span class="section-badge badge-red">Show All Work</span>
+    </div>
+    <div class="section-body">
+
+      <div class="ref-box ref-box-gold">
+        <div class="ref-box-title">Scoring Note</div>
+        <p>Show all mathematical manipulations for full credit. Written explanations should be supported by your calculations. Use the drawing canvas below each question to show calculations, or type your work in the text areas. <strong>Box your final answers.</strong></p>
+      </div>
+
+      <!-- OBSERVATIONS (moved from former Tab 5) -->
+      <div class="section-header" style="margin: 0 -24px 20px; padding: 12px 24px; border-top: none; border-bottom: 1px solid var(--rule); background: var(--cream);">
+        <div class="section-num" style="background:var(--purple);">V</div>
+        <div class="section-title" style="font-size:15px;">Experimental Observations</div>
+        <span class="section-badge badge-purple">Record Before Analyzing</span>
+      </div>
+
+      <div class="ref-box">
+        <div class="ref-box-title">What to Observe and Record</div>
+        <p>Scientific observation goes beyond recording numbers. Note colors, odors (briefly and safely), clarity of solutions, changes upon mixing, how rapidly temperature rises, any differences between trials, and anything unexpected. These observations support your analysis and conclusions.</p>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Observation 1</div>
+        <div class="q-text">Describe the appearance of each solution before mixing. What do you observe about color, clarity, and any distinctive properties?</div>
+        <textarea class="open-response" id="obs-1" rows="3" placeholder="OCl⁻ solution appears ... S₂O₃²⁻ solution appears ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('obs1')" id="ai-btn-obs1">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-obs1"></div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Observation 2</div>
+        <div class="q-text">What did you observe when the two solutions were mixed? Describe any changes in color, the rate of temperature change, and whether all trials behaved similarly.</div>
+        <textarea class="open-response" id="obs-2" rows="3" placeholder="Upon mixing, I observed ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('obs2')" id="ai-btn-obs2">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-obs2"></div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Observation 3</div>
+        <div class="q-text">Which trial produced the most noticeable temperature change? Was this consistent with your expectation based on the method of continuous variations? Describe what you observed.</div>
+        <textarea class="open-response" id="obs-3" rows="3" placeholder="The greatest temperature change occurred in ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('obs3')" id="ai-btn-obs3">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-obs3"></div>
+      </div>
+
+      <div style="border-top: 2px solid var(--rule); margin: 24px -24px 24px; padding-top: 0;"></div>
+
+      <!-- DATA ANALYSIS HEADING -->
+      <div class="section-header" style="margin: 0 -24px 20px; padding: 12px 24px; border-top: none; border-bottom: 1px solid var(--rule); background: var(--cream);">
+        <div class="section-num" style="background:var(--red);">VI</div>
+        <div class="section-title" style="font-size:15px;">Data Analysis</div>
+        <span class="section-badge badge-red">Show All Work</span>
+      </div>
+
+
+      <!-- QUESTION 1 -->
+      <div class="q-block">
+        <div class="q-label">Question 1</div>
+        <div class="q-text">Determine the whole-number mole ratio of the two reactants (OCl<sup>&ndash;</sup> : S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup>).</div>
+        <div class="q-sub">
+          Identify the trial with the greatest &Delta;T from your data table. Because both solutions have equal molarities, the volume ratio equals the mole ratio. Express this ratio as the simplest whole-number ratio. Show your arithmetic.
+        </div>
+
+        <div class="formula-box">
+          <div class="formula-title">Key Relationship</div>
+          <span class="var">n</span> = <span class="var">M</span> &times; <span class="var">V</span> &nbsp;&nbsp; <span class="unit">[mol = mol/L &times; L]</span><br>
+          Since <span class="var">M</span><sub>OCl&ndash;</sub> = <span class="var">M</span><sub>S2O3</sub> &nbsp;&rarr;&nbsp; mole ratio = volume ratio<br>
+          Mole ratio = <span class="var">V</span><sub>OCl&ndash;</sub>(max &Delta;T) : <span class="var">V</span><sub>S2O3</sub>(max &Delta;T)
+        </div>
+
+        <div class="canvas-wrap" style="margin:12px 0;">
+          <div class="canvas-toolbar" id="tb-q1">
+            <button onclick="setTool('q1','pen')" class="active" id="tool-q1-pen">Pen</button>
+            <button onclick="setTool('q1','line')">Line</button>
+            <button onclick="clearCanvas('q1')">Clear</button>
+            <div class="color-btn active" style="background:#1a1a2e;" onclick="setColor('q1','#1a1a2e')" id="col-q1-0"></div>
+            <div class="color-btn" style="background:#c0392b;" onclick="setColor('q1','#c0392b')" id="col-q1-1"></div>
+            <div class="color-btn" style="background:#1a4a7a;" onclick="setColor('q1','#1a4a7a')" id="col-q1-2"></div>
+            <label>Size <input type="range" min="1" max="8" value="2" oninput="setSize('q1',this.value)"></label>
+          </div>
+          <canvas id="canvas-q1" class="work-canvas" height="180"></canvas>
+        </div>
+        <textarea class="open-response" id="q1-text" rows="3" placeholder="The trial with the greatest delta T is trial ___, with V(OCl-) = ___ mL and V(S2O3 2-) = ___ mL. The mole ratio is ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('q1')" id="ai-btn-q1">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-q1"></div>
+      </div>
+
+      <!-- QUESTION 2 -->
+      <div class="q-block">
+        <div class="q-label">Question 2</div>
+        <div class="q-text">In this experiment, both solutions had the same concentration (0.050 M). Why does this matter for comparing the volumes you measured?</div>
+        <div class="q-sub">
+          Think about it this way: if you measure 4 mL of one solution and 1 mL of another, you are only comparing the same number of moles if both solutions have the same concentration. Use the relationship <strong>moles = molarity &times; volume</strong> to explain why equal concentrations let you treat the volume ratio as the mole ratio directly. What would you have to do differently if the concentrations were not equal?
+        </div>
+        <div class="ref-box" style="margin:10px 0;">
+          <div class="ref-box-title">Reminder &mdash; Key Formula</div>
+          <p><strong>moles = molarity &times; volume</strong> &nbsp;&nbsp; (n = M &times; V) &nbsp;&nbsp; If M<sub>A</sub> = M<sub>B</sub>, then n<sub>A</sub>/n<sub>B</sub> = V<sub>A</sub>/V<sub>B</sub></p>
+        </div>
+        <textarea class="open-response" id="q2-text" rows="5" placeholder="Both solutions had the same concentration (0.050 M), so when I compare volumes I am also comparing moles directly because ... If the concentrations were different, I would need to ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('q2')" id="ai-btn-q2">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-q2"></div>
+      </div>
+
+      <!-- QUESTION 3 -->
+      <div class="q-block">
+        <div class="q-label">Question 3</div>
+        <div class="q-text">The <strong>limiting reactant</strong> is the one that runs out first and stops the reaction. For at least three of your trials, identify which solution was the limiting reactant and explain why.</div>
+        <div class="q-sub">
+          Start with a trial that used a small volume of OCl<sup>&ndash;</sup> (e.g., Trial 1: 2 mL OCl<sup>&ndash;</sup> / 8 mL S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup>). Then pick a trial that used a large volume of OCl<sup>&ndash;</sup> (e.g., Trial 7: 8 mL / 2 mL). Finally, discuss the trial where &Delta;T was greatest. Ask yourself: which solution is present in a smaller amount relative to what the reaction needs? That one runs out first and is the limiting reactant. The reaction cannot produce more heat once it is gone.
+        </div>
+        <div class="ref-box ref-box-green" style="margin:10px 0;">
+          <div class="ref-box-title">How to Decide</div>
+          <p>The balanced equation tells us 4 moles of OCl<sup>&ndash;</sup> react with 1 mole of S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup>. That means OCl<sup>&ndash;</sup> must make up about 80% of the total volume (8 out of 10 mL) to be in the right proportion. In trials where OCl<sup>&ndash;</sup> is <em>less</em> than 80% of the total, there is not enough OCl<sup>&ndash;</sup> &mdash; it is the limiting reactant. In trials where OCl<sup>&ndash;</sup> is <em>more</em> than 80%, there is not enough S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup> &mdash; it becomes the limiting reactant.</p>
+        </div>
+
+        <div class="canvas-wrap" style="margin:12px 0;">
+          <div class="canvas-toolbar" id="tb-q3">
+            <button onclick="setTool('q3','pen')" class="active" id="tool-q3-pen">Pen</button>
+            <button onclick="setTool('q3','line')">Line</button>
+            <button onclick="clearCanvas('q3')">Clear</button>
+            <div class="color-btn active" style="background:#1a1a2e;" onclick="setColor('q3','#1a1a2e')" id="col-q3-0"></div>
+            <div class="color-btn" style="background:#c0392b;" onclick="setColor('q3','#c0392b')" id="col-q3-1"></div>
+            <div class="color-btn" style="background:#1a4a7a;" onclick="setColor('q3','#1a4a7a')" id="col-q3-2"></div>
+            <label>Size <input type="range" min="1" max="8" value="2" oninput="setSize('q3',this.value)"></label>
+          </div>
+          <canvas id="canvas-q3" class="work-canvas" height="200"></canvas>
+        </div>
+        <textarea class="open-response" id="q3-text" rows="5" placeholder="Trial 1 (2 mL OCl- / 8 mL S2O3 2-): limiting reactant is ... because ...&#10;Trial 4 (5 mL / 5 mL): limiting reactant is ... because ...&#10;Trial 7 (8 mL OCl- / 2 mL S2O3 2-): limiting reactant is ... because ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('q3')" id="ai-btn-q3">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-q3"></div>
+      </div>
+
+      <!-- QUESTION 4 -->
+      <div class="q-block">
+        <div class="q-label">Question 4</div>
+        <div class="q-text">The actual balanced chemical equation for the reaction between OCl<sup>&ndash;</sup> and S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup> is given below. Does the mole ratio you determined experimentally match the coefficients of the two reactants in this equation? Explain, especially if your ratios do not match.</div>
+
+        <div class="rxn-display" style="margin:12px 0;">
+          <span class="coeff">4</span> <span class="reactant">OCl<sup>&ndash;</sup></span>
+          <span class="arrow">&nbsp;+&nbsp;</span>
+          <span class="coeff">1</span> <span class="reactant">S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup></span>
+          <span class="arrow">&nbsp;+&nbsp;</span>
+          <span style="color:rgba(255,255,255,0.55);">H<sub>2</sub>O</span>
+          <span class="arrow">&nbsp;&rarr;&nbsp;</span>
+          <span class="coeff">4</span> <span class="product">Cl<sup>&ndash;</sup></span>
+          <span class="arrow">&nbsp;+&nbsp;</span>
+          <span class="product">SO<sub>4</sub><sup>2&ndash;</sup></span>
+          <span class="arrow">&nbsp;+&nbsp;</span>
+          <span class="product">SO<sub>3</sub><sup>2&ndash;</sup></span>
+          <span class="arrow">&nbsp;+&nbsp;</span>
+          <span style="color:rgba(255,255,255,0.55);">2H<sup>+</sup></span>
+        </div>
+
+        <div class="ref-box">
+          <div class="ref-box-title">Interpreting Your Results</div>
+          <p>If your experimental ratio does not exactly match 4:1, consider sources of error: heat loss to the environment, imprecise volume measurements, temperature equilibration between trials, or the challenge of identifying the exact peak temperature. A ratio of approximately 4:1 (or its equivalent fraction) should be considered a match within experimental uncertainty.</p>
+        </div>
+
+        <textarea class="open-response" id="q4-text" rows="5" placeholder="The actual balanced equation shows a mole ratio of 4 OCl- : 1 S2O3 2-. My experimental ratio was ... This (matches / does not match) because ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('q4')" id="ai-btn-q4">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-q4"></div>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn nav-btn-secondary" onclick="switchTab(4)">&larr; Back</button>
+        <button class="nav-btn nav-btn-primary" onclick="switchTab(6)">Next: Conclusions &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 7: CONCLUSIONS ===================== -->
+<div id="tab-6" class="tab-panel">
+<div class="main">
+
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">VII</div>
+      <div class="section-title">Summary &amp; Conclusions</div>
+      <span class="section-badge badge-green">Final Section</span>
+    </div>
+    <div class="section-body">
+
+      <div class="ref-box">
+        <div class="ref-box-title">Writing Guidance</div>
+        <p>Write a brief summary of what was done, explain your results, and draw conclusions from the experiment. <strong>Limit your response to a maximum of 3 sentences.</strong> Your conclusion should address: (1) the method used, (2) the experimental mole ratio found, and (3) whether it agrees with the known balanced equation and why.</p>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Conclusion</div>
+        <div class="q-text">Write your conclusion in 3 sentences or fewer.</div>
+        <textarea class="open-response" id="conclusion-text" rows="5" placeholder="In this experiment, the method of continuous variations was used to determine ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('conclusion')" id="ai-btn-conclusion">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-conclusion"></div>
+      </div>
+
+      <div class="ref-box ref-box-gold" style="margin-top:20px;">
+        <div class="ref-box-title">Notes to Instructor</div>
+        <p>Use the space below to communicate any issues, discrepancies in your data, equipment problems, or anything your instructor should know before grading your submission.</p>
+      </div>
+
+      <textarea class="open-response" id="notes-to-prof" rows="4" placeholder="Notes to Professor (optional): ..."></textarea>
+
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-section" id="submit-section">
+    <div class="submit-info" id="submit-info">
+      <strong>Ready to Submit?</strong>
+      Confirm all sections are complete. You have <strong id="subs-remaining-text">2 submissions</strong> available. Each submission records your work and shows your score. Use your first submission to see feedback, revise your responses, then submit a second time for your final grade.
+    </div>
+    <button class="submit-main-btn" onclick="submitLab()" id="submit-btn">
+      Submit Lab 3 &mdash; Attempt 1 of 2
+    </button>
+  </div>
+
+  <!-- SUBMISSION 1 SCORE PANEL -->
+  <div class="score-panel" id="score-panel-1" style="display:none;">
+    <div class="score-header">
+      <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+        <h3 style="margin:0;">Attempt 1 &mdash; Feedback &amp; Score</h3>
+        <span id="score-badge-1" style="font-family:monospace; font-size:12px; padding:4px 12px; border-radius:3px; background:rgba(255,255,255,0.1); color:#ce93d8;"></span>
+      </div>
+      <div class="score-bar-wrap" style="margin-top:10px;"><div class="score-bar" id="score-bar-1" style="background:#ce93d8; width:0%;"></div></div>
+    </div>
+    <div class="score-body" id="score-body-1"></div>
+  </div>
+
+  <!-- REVISION PROMPT (between submissions) -->
+  <div id="revision-prompt" style="display:none; margin:20px 0; padding:16px 20px; background:var(--gold-light); border:1px solid var(--gold); border-radius:4px; border-left:4px solid var(--gold);">
+    <div style="font-family:monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; color:var(--gold); margin-bottom:6px;">REVISION OPPORTUNITY</div>
+    <p style="margin:0; font-size:14px; line-height:1.65;">Review the rubric feedback above. Go back through your responses and improve any sections that lost points. When you are ready, submit a second and final time below.</p>
+  </div>
+
+  <!-- SUBMISSION 2 SCORE PANEL -->
+  <div class="score-panel" id="score-panel-2" style="display:none;">
+    <div class="score-header">
+      <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+        <h3 style="margin:0;">Attempt 2 &mdash; Final Score</h3>
+        <span id="score-badge-2" style="font-family:monospace; font-size:12px; padding:4px 12px; border-radius:3px; background:rgba(255,255,255,0.1); color:#ce93d8;"></span>
+      </div>
+      <div class="score-bar-wrap" style="margin-top:10px;"><div class="score-bar" id="score-bar-2" style="background:#ce93d8; width:0%;"></div></div>
+    </div>
+    <div class="score-body" id="score-body-2"></div>
+  </div>
+
+  <div class="feedback-panel" id="feedback-panel">
+    <div class="feedback-panel-header">
+      <h3>Instructor Feedback Report</h3>
+    </div>
+    <div class="feedback-body" id="feedback-body"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 7: REFERENCE ===================== -->
+<div id="tab-7" class="tab-panel">
+<div class="main">
+
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">REF</div>
+      <div class="section-title">Reference &mdash; Key Concepts &amp; Formulas</div>
+      <span class="section-badge badge-blue">Study Aid</span>
+    </div>
+    <div class="section-body">
+
+      <div class="ref-box ref-box-gold">
+        <div class="ref-box-title">How to Use This Reference</div>
+        <p>Click any card to expand it. Use this tab during analysis questions or when reviewing for lab practicals. All content is directly relevant to this experiment.</p>
+      </div>
+
+      <!-- Ref Card: Method of Continuous Variations -->
+      <div class="ref-concept-card">
+        <div class="ref-concept-header" onclick="toggleRefCard('cv')">
+          <div class="ref-concept-icon" style="background:#f3e5f5; color:var(--green);">CV</div>
+          <div style="flex:1;">
+            <div style="font-weight:700; font-size:15px; color:var(--ink);">Method of Continuous Variations (Job's Method)</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#aaa;">Stoichiometry determination technique</div>
+          </div>
+          <span class="section-badge badge-green">Core Method</span>
+        </div>
+        <div class="ref-concept-body" id="ref-body-cv">
+          <div class="ref-card-section" style="margin-top:10px;">
+            <p>The method of continuous variations determines the mole ratio of reactants by holding the total amount of reactants constant and systematically varying how much of each reactant is used across a series of trials.</p>
+            <p style="margin-top:8px;">The key insight: reaction produces the most heat (or product) when the reactants are mixed in exactly the stoichiometric ratio. At this ratio, neither reactant is in excess &mdash; both are completely consumed, giving maximum energy release. Trials on either side have one reactant in excess, which is wasted and reduces the temperature change.</p>
+          </div>
+          <div class="formula-box" style="margin-top:12px;">
+            <div class="formula-title">Design Constraint</div>
+            <span class="var">V</span><sub>A</sub> + <span class="var">V</span><sub>B</sub> = <span class="var">V</span><sub>total</sub> = constant<br>
+            Vary: <span class="var">V</span><sub>A</sub> from small to large &nbsp;&nbsp; (simultaneously <span class="var">V</span><sub>B</sub> decreases)<br>
+            Measure: <span class="var">&Delta;T</span> for each trial &nbsp;&nbsp; Find: <span class="var">V</span><sub>A</sub>* at max <span class="var">&Delta;T</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ref Card: Molarity & Moles -->
+      <div class="ref-concept-card">
+        <div class="ref-concept-header" onclick="toggleRefCard('mol')">
+          <div class="ref-concept-icon" style="background:#e3f0fc; color:var(--teal);">M</div>
+          <div style="flex:1;">
+            <div style="font-weight:700; font-size:15px; color:var(--ink);">Molarity, Moles, and Volume</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#aaa;">Quantitative solution chemistry</div>
+          </div>
+          <span class="section-badge badge-teal">Calculation</span>
+        </div>
+        <div class="ref-concept-body" id="ref-body-mol">
+          <div class="formula-box" style="margin-top:12px;">
+            <div class="formula-title">Molarity Definition</div>
+            <span class="var">M</span> = <span class="var">n</span> / <span class="var">V</span> &nbsp;&nbsp; <span class="unit">[mol/L]</span><br>
+            Rearranged: <span class="var">n</span> = <span class="var">M</span> &times; <span class="var">V</span> &nbsp;&nbsp; <span class="unit">[mol]</span><br>
+            When <span class="var">M</span><sub>A</sub> = <span class="var">M</span><sub>B</sub>: &nbsp; <span class="var">n</span><sub>A</sub>/<span class="var">n</span><sub>B</sub> = <span class="var">V</span><sub>A</sub>/<span class="var">V</span><sub>B</sub>
+          </div>
+          <div style="margin-top:10px; font-size:13px; line-height:1.7; color:#444;">
+            This equality (mole ratio = volume ratio when molarities are equal) is what makes this experiment work. If molarities were different, you would need to correct for concentration: n<sub>A</sub>/n<sub>B</sub> = (M<sub>A</sub> &times; V<sub>A</sub>)/(M<sub>B</sub> &times; V<sub>B</sub>).
+          </div>
+        </div>
+      </div>
+
+      <!-- Ref Card: Limiting Reactant -->
+      <div class="ref-concept-card">
+        <div class="ref-concept-header" onclick="toggleRefCard('lr')">
+          <div class="ref-concept-icon" style="background:#fce4ec; color:#c62828;">LR</div>
+          <div style="flex:1;">
+            <div style="font-weight:700; font-size:15px; color:var(--ink);">Limiting Reactant &amp; Excess Reactant</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#aaa;">Stoichiometry concept</div>
+          </div>
+          <span class="section-badge badge-red">Key Concept</span>
+        </div>
+        <div class="ref-concept-body" id="ref-body-lr">
+          <div style="margin-top:10px; font-size:13px; line-height:1.7; color:#444;">
+            <p>The <strong>limiting reactant</strong> is the one that runs out first. Once it is consumed, the reaction stops &mdash; no matter how much of the other reactant remains. The amount of product formed is determined by the limiting reactant.</p>
+            <p style="margin-top:8px;">The <strong>excess reactant</strong> is present in greater than the stoichiometric amount. Leftover after the reaction is complete. Having excess reactant does NOT produce more product &mdash; it is simply wasted.</p>
+            <p style="margin-top:8px;">In this experiment: trials with small V(OCl<sup>&ndash;</sup>) have OCl<sup>&ndash;</sup> as limiting reactant. Trials with large V(OCl<sup>&ndash;</sup>) have S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup> as limiting. The maximum &Delta;T trial has neither &mdash; exact stoichiometric proportion.</p>
+          </div>
+          <div class="formula-box" style="margin-top:10px;">
+            <div class="formula-title">How to Identify Limiting Reactant</div>
+            Compare moles available vs. moles required:<br>
+            Required ratio = <span class="var">a</span>:<span class="var">b</span> (from balanced equation)<br>
+            If <span class="var">n</span><sub>A</sub>/<span class="var">n</span><sub>B</sub> &lt; <span class="var">a</span>/<span class="var">b</span> &nbsp;&rarr;&nbsp; A is limiting<br>
+            If <span class="var">n</span><sub>A</sub>/<span class="var">n</span><sub>B</sub> &gt; <span class="var">a</span>/<span class="var">b</span> &nbsp;&rarr;&nbsp; B is limiting
+          </div>
+        </div>
+      </div>
+
+      <!-- Ref Card: Calorimetry -->
+      <div class="ref-concept-card">
+        <div class="ref-concept-header" onclick="toggleRefCard('cal')">
+          <div class="ref-concept-icon" style="background:#fff3e0; color:var(--orange);">dT</div>
+          <div style="flex:1;">
+            <div style="font-weight:700; font-size:15px; color:var(--ink);">Calorimetry &amp; Temperature Measurement</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#aaa;">Heat measurement technique</div>
+          </div>
+          <span class="section-badge badge-gold">Measurement</span>
+        </div>
+        <div class="ref-concept-body" id="ref-body-cal">
+          <div style="margin-top:10px; font-size:13px; line-height:1.7; color:#444;">
+            <p>Calorimetry measures heat exchange between a chemical reaction and its surroundings. In a Styrofoam cup calorimeter, heat lost to the environment is minimized, so the temperature change of the solution approximates the heat released by the reaction.</p>
+          </div>
+          <div class="formula-box" style="margin-top:10px;">
+            <div class="formula-title">Temperature Change</div>
+            <span class="var">&Delta;T</span> = <span class="var">T</span><sub>final</sub> &minus; <span class="var">T</span><sub>initial</sub> &nbsp;&nbsp; <span class="unit">(&deg;C)</span><br>
+            Exothermic reaction: <span class="var">&Delta;T</span> &gt; 0 (solution warms)<br>
+            Endothermic reaction: <span class="var">&Delta;T</span> &lt; 0 (solution cools)
+          </div>
+          <div style="margin-top:8px; font-size:13px; line-height:1.7; color:#444;">
+            <p>For greatest accuracy: ensure both solutions are at the same initial temperature, record T<sub>initial</sub> for each solution individually and average them, and record T<sub>final</sub> as the highest (plateau) temperature before cooling begins.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ref Card: Balanced Equation -->
+      <div class="ref-concept-card">
+        <div class="ref-concept-header" onclick="toggleRefCard('rxn')">
+          <div class="ref-concept-icon" style="background:#f0eaf8; color:var(--purple);">Rxn</div>
+          <div style="flex:1;">
+            <div style="font-weight:700; font-size:15px; color:var(--ink);">The OCl<sup>&ndash;</sup> / S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup> Reaction</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#aaa;">Oxidation-reduction chemistry</div>
+          </div>
+          <span class="section-badge badge-purple">Reference Rxn</span>
+        </div>
+        <div class="ref-concept-body" id="ref-body-rxn">
+          <div class="rxn-display" style="margin:12px 0;">
+            <span class="coeff">4</span> <span class="reactant">OCl<sup>&ndash;</sup></span>
+            <span class="arrow">&nbsp;+&nbsp;</span>
+            <span class="coeff">1</span> <span class="reactant">S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup></span>
+            <span class="arrow">&nbsp;+&nbsp;</span>
+            <span style="color:rgba(255,255,255,0.55);">H<sub>2</sub>O</span>
+            <span class="arrow">&nbsp;&rarr;&nbsp;</span>
+            <span class="coeff">4</span> <span class="product">Cl<sup>&ndash;</sup></span>
+            <span class="arrow">&nbsp;+&nbsp;</span>
+            <span class="product">SO<sub>4</sub><sup>2&ndash;</sup></span>
+            <span class="arrow">&nbsp;+&nbsp;</span>
+            <span class="product">SO<sub>3</sub><sup>2&ndash;</sup></span>
+            <span class="arrow">&nbsp;+&nbsp;</span>
+            <span style="color:rgba(255,255,255,0.55);">2H<sup>+</sup></span>
+          </div>
+          <div style="font-size:13px; line-height:1.7; color:#444; margin-top:8px;">
+            <p><strong>Type of reaction:</strong> Redox (oxidation-reduction). OCl<sup>&ndash;</sup> is the oxidizing agent (it is reduced, gaining electrons). S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup> is the reducing agent (it is oxidized, losing electrons).</p>
+            <p style="margin-top:8px;"><strong>Mole ratio:</strong> 4 mol OCl<sup>&ndash;</sup> per 1 mol S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup>. This is the ratio you are trying to confirm experimentally. Your result should fall near 4:1, or equivalently 8:2 or 80%:20% of total volume.</p>
+            <p style="margin-top:8px;"><strong>Products:</strong> Cl<sup>&ndash;</sup> (chloride ion), sulfate (SO<sub>4</sub><sup>2&ndash;</sup>), sulfite (SO<sub>3</sub><sup>2&ndash;</sup>), and hydrogen ions (H<sup>+</sup>). The reaction proceeds readily at room temperature and is exothermic.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===================== JAVASCRIPT ===================== -->
+<script>
+// ===== CONFIGURATION =====
+// Replace with your deployed Google Apps Script Web App URL
+var SHEETS_ENDPOINT   = 'https://script.google.com/macros/s/AKfycbxv5aAx48mgNRTiOzvFz7VK8fPEy1Zzhk1h16qqtXxTzemCIYwO4b4abSXVtBJMO3oN/exec';
+var AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxv5aAx48mgNRTiOzvFz7VK8fPEy1Zzhk1h16qqtXxTzemCIYwO4b4abSXVtBJMO3oN/exec';
+
+// ===== TRIAL DATA =====
+var TRIALS = [
+  { ocl: 2.0, s2o3: 8.0 },
+  { ocl: 3.0, s2o3: 7.0 },
+  { ocl: 4.0, s2o3: 6.0 },
+  { ocl: 5.0, s2o3: 5.0 },
+  { ocl: 6.0, s2o3: 4.0 },
+  { ocl: 7.0, s2o3: 3.0 },
+  { ocl: 8.0, s2o3: 2.0 }
+];
+
+// ===== TAB NAVIGATION =====
+function switchTab(idx) {
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  var panel = document.getElementById('tab-' + idx);
+  if (panel) panel.classList.add('active');
+  var btns = document.querySelectorAll('.tab-btn');
+  if (btns[idx - 1]) btns[idx - 1].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== BUILD DATA TABLE =====
+function buildDataTable() {
+  var tbody = document.getElementById('data-tbody');
+  tbody.innerHTML = '';
+  TRIALS.forEach(function(t, i) {
+    var tr = document.createElement('tr');
+    tr.id = 'row-' + i;
+    tr.innerHTML =
+      '<td class="label-cell">' + (i + 1) + '</td>' +
+      '<td class="label-cell" style="font-family:\'JetBrains Mono\',monospace;">' + t.ocl.toFixed(1) + '</td>' +
+      '<td class="label-cell" style="font-family:\'JetBrains Mono\',monospace;">' + t.s2o3.toFixed(1) + '</td>' +
+      '<td><input type="number" id="ti-' + i + '" placeholder="--.-" step="0.1" oninput="calcDeltaT(' + i + ')"></td>' +
+      '<td><input type="number" id="tf-' + i + '" placeholder="--.-" step="0.1" oninput="calcDeltaT(' + i + ')"></td>' +
+      '<td class="computed-cell" id="dt-' + i + '">&mdash;</td>';
+    tbody.appendChild(tr);
+  });
+  buildRatioBars();
+}
+
+function calcDeltaT(i) {
+  var ti = parseFloat(document.getElementById('ti-' + i).value);
+  var tf = parseFloat(document.getElementById('tf-' + i).value);
+  var cell = document.getElementById('dt-' + i);
+  if (!isNaN(ti) && !isNaN(tf)) {
+    var dt = (tf - ti).toFixed(1);
+    cell.textContent = dt;
+    validateTemps(i, ti, tf, parseFloat(dt));
+  } else {
+    cell.textContent = '\u2014';
+  }
+  updateMaxTrialMsg();
+  updateRatioBars();
+}
+
+function validateTemps(i, ti, tf, dt) {
+  var tiInput = document.getElementById('ti-' + i);
+  var tfInput = document.getElementById('tf-' + i);
+  tiInput.classList.remove('valid', 'invalid');
+  tfInput.classList.remove('valid', 'invalid');
+  tiInput.title = '';
+  tfInput.title = '';
+
+  // T_initial: realistic lab temperature 18–30 C
+  if (ti < 18 || ti > 30) {
+    tiInput.classList.add('invalid');
+    tiInput.title = 'T_initial outside expected range (18–30 °C). Check your reading.';
+  } else {
+    tiInput.classList.add('valid');
+  }
+
+  // T_final: must be >= T_initial (exothermic), delta-T expected 0.5–15 C
+  if (dt < 0) {
+    tfInput.classList.add('invalid');
+    tfInput.title = 'T_final < T_initial: this reaction is exothermic — temperature should rise.';
+  } else if (dt === 0) {
+    tfInput.classList.add('invalid');
+    tfInput.title = 'No temperature change recorded. Check that solutions were mixed.';
+  } else if (dt > 15) {
+    tfInput.classList.add('invalid');
+    tfInput.title = 'ΔT > 15 °C is unusually large for these dilute solutions. Re-check your reading.';
+  } else if (dt < 0.3) {
+    tfInput.classList.add('invalid');
+    tfInput.title = 'ΔT < 0.3 °C is very small — confirm thermometer resolution and mixing.';
+  } else {
+    tfInput.classList.add('valid');
+  }
+}
+
+function getDeltaTs() {
+  return TRIALS.map(function(t, i) {
+    var ti = parseFloat(document.getElementById('ti-' + i).value);
+    var tf = parseFloat(document.getElementById('tf-' + i).value);
+    if (!isNaN(ti) && !isNaN(tf)) return tf - ti;
+    return null;
+  });
+}
+
+function isPeakVerified(dts, maxIdx) {
+  // Peak is verified when at least one valid data point exists on each side
+  // with a lower delta-T value than the maximum
+  var hasLower = { left: false, right: false };
+  dts.forEach(function(dt, i) {
+    if (dt === null) return;
+    if (i < maxIdx && dt < dts[maxIdx]) hasLower.left = true;
+    if (i > maxIdx && dt < dts[maxIdx]) hasLower.right = true;
+  });
+  return hasLower.left && hasLower.right;
+}
+
+function updateMaxTrialMsg() {
+  var dts = getDeltaTs();
+  var filledCount = dts.filter(function(d) { return d !== null; }).length;
+  var msg = document.getElementById('max-trial-msg');
+
+  if (filledCount < 2) {
+    msg.classList.remove('show');
+    return;
+  }
+
+  var maxDt = -Infinity, maxIdx = -1;
+  dts.forEach(function(dt, i) {
+    if (dt !== null && dt > maxDt) { maxDt = dt; maxIdx = i; }
+  });
+  if (maxIdx < 0) { msg.classList.remove('show'); return; }
+
+  var t = TRIALS[maxIdx];
+  var verified = isPeakVerified(dts, maxIdx);
+  msg.classList.add('show');
+
+  if (filledCount < 4) {
+    msg.className = 'val-msg show warn';
+    msg.innerHTML = 'Minimum 4 trials required for full credit &mdash; you have ' + filledCount + '/7 entered. &nbsp;|&nbsp; Current largest &Delta;T: Trial ' + (maxIdx + 1) + ' (+' + maxDt.toFixed(1) + ' &deg;C)';
+  } else if (!verified) {
+    msg.className = 'val-msg show warn';
+    msg.innerHTML = 'Largest &Delta;T so far: Trial ' + (maxIdx + 1) + ' (+' + maxDt.toFixed(1) + ' &deg;C) &nbsp;|&nbsp; V(OCl&minus;) = ' + t.ocl.toFixed(1) + ' mL &nbsp; V(S₂O₃²⁻) = ' + t.s2o3.toFixed(1) + ' mL &nbsp;|&nbsp; <strong>Peak not yet confirmed</strong> &mdash; enter at least one trial on each side with a lower &Delta;T to verify this is the maximum.';
+  } else {
+    msg.className = 'val-msg show ok';
+    msg.innerHTML = 'Peak confirmed: Trial ' + (maxIdx + 1) + ' (+' + maxDt.toFixed(1) + ' &deg;C) is the maximum &mdash; lower values exist on both sides. &nbsp;|&nbsp; V(OCl&minus;) = ' + t.ocl.toFixed(1) + ' mL &nbsp; V(S₂O₃²⁻) = ' + t.s2o3.toFixed(1) + ' mL &nbsp;|&nbsp; Mole ratio = ' + t.ocl.toFixed(0) + ':' + t.s2o3.toFixed(0);
+  }
+}
+
+// ===== RATIO BAR VISUALIZER =====
+function buildRatioBars() {
+  // Replaced by scatter plot — no-op
+}
+
+function updateRatioBars() {
+  drawScatterPlot();
+}
+
+// ===== SCATTER PLOT =====
+function drawScatterPlot() {
+  var canvas = document.getElementById('scatter-plot');
+  if (!canvas) return;
+
+  // Set pixel dimensions
+  var dpr = window.devicePixelRatio || 1;
+  var cssW = canvas.offsetWidth;
+  var cssH = 260;
+  canvas.width  = cssW * dpr;
+  canvas.height = cssH * dpr;
+  canvas.style.height = cssH + 'px';
+
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  // Margins
+  var ml = 52, mr = 24, mt = 18, mb = 44;
+  var pw = cssW - ml - mr;
+  var ph = cssH - mt - mb;
+
+  // Clear
+  ctx.clearRect(0, 0, cssW, cssH);
+
+  // Collect data points
+  var dts = getDeltaTs();
+  var points = [];
+  dts.forEach(function(dt, i) {
+    if (dt !== null) {
+      points.push({ x: TRIALS[i].ocl, y: dt, trial: i + 1 });
+    }
+  });
+
+  // Axis ranges
+  var xMin = 1.5, xMax = 8.5;
+  var yRaw = points.map(function(p) { return p.y; });
+  var yMaxData = yRaw.length > 0 ? Math.max.apply(null, yRaw) : 5;
+  var yMin = 0;
+  var yMax = Math.max(yMaxData * 1.25, 2);
+  // Nice round ceiling
+  var yTick = yMax <= 4 ? 0.5 : yMax <= 8 ? 1 : yMax <= 20 ? 2 : 5;
+  yMax = Math.ceil(yMax / yTick) * yTick;
+
+  // Map helpers
+  function toX(v) { return ml + (v - xMin) / (xMax - xMin) * pw; }
+  function toY(v) { return mt + ph - (v - yMin) / (yMax - yMin) * ph; }
+
+  // Gridlines
+  ctx.strokeStyle = '#ede8df';
+  ctx.lineWidth = 1;
+  // Horizontal grid
+  var steps = Math.round(yMax / yTick);
+  for (var s = 0; s <= steps; s++) {
+    var gy = toY(s * yTick);
+    ctx.beginPath();
+    ctx.moveTo(ml, gy);
+    ctx.lineTo(ml + pw, gy);
+    ctx.stroke();
+  }
+  // Vertical grid at each trial x-value
+  TRIALS.forEach(function(t) {
+    var gx = toX(t.ocl);
+    ctx.beginPath();
+    ctx.moveTo(gx, mt);
+    ctx.lineTo(gx, mt + ph);
+    ctx.stroke();
+  });
+
+  // Axes
+  ctx.strokeStyle = '#c8bfa8';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(ml, mt);
+  ctx.lineTo(ml, mt + ph);
+  ctx.lineTo(ml + pw, mt + ph);
+  ctx.stroke();
+
+  // Y axis labels
+  ctx.fillStyle = '#888';
+  ctx.font = '600 10px JetBrains Mono, monospace';
+  ctx.textAlign = 'right';
+  for (var s = 0; s <= steps; s++) {
+    var val = s * yTick;
+    var gy = toY(val);
+    ctx.fillText(val.toFixed(val % 1 === 0 ? 0 : 1), ml - 6, gy + 3.5);
+  }
+
+  // Y axis title
+  ctx.save();
+  ctx.translate(13, mt + ph / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#aaa';
+  ctx.font = '600 10px JetBrains Mono, monospace';
+  ctx.fillText('\u0394T (\u00b0C)', 0, 0);
+  ctx.restore();
+
+  // X axis labels
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#888';
+  ctx.font = '600 10px JetBrains Mono, monospace';
+  TRIALS.forEach(function(t, i) {
+    var gx = toX(t.ocl);
+    ctx.fillText(t.ocl.toFixed(1), gx, mt + ph + 14);
+    // Trial number below
+    ctx.fillStyle = '#bbb';
+    ctx.font = '500 9px JetBrains Mono, monospace';
+    ctx.fillText('T' + (i + 1), gx, mt + ph + 26);
+    ctx.fillStyle = '#888';
+    ctx.font = '600 10px JetBrains Mono, monospace';
+  });
+
+  // X axis title
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#aaa';
+  ctx.font = '600 10px JetBrains Mono, monospace';
+  ctx.fillText('V(OCl\u207b) mL', ml + pw / 2, mt + ph + 40);
+
+  // Zero line emphasis if there are negative values
+  if (yMin < 0) {
+    ctx.strokeStyle = 'rgba(26,26,46,0.15)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(ml, toY(0));
+    ctx.lineTo(ml + pw, toY(0));
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  if (points.length === 0) {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ccc';
+    ctx.font = '500 13px DM Sans, sans-serif';
+    ctx.fillText('Enter temperature data above to see the scatter plot.', ml + pw / 2, mt + ph / 2);
+    return;
+  }
+
+  // Find max
+  var maxDt = Math.max.apply(null, points.map(function(p) { return p.y; }));
+  var maxPoint = points.filter(function(p) { return p.y === maxDt; })[0];
+
+  // Draw connecting line through points (sorted by x)
+  var sorted = points.slice().sort(function(a, b) { return a.x - b.x; });
+  if (sorted.length > 1) {
+    ctx.strokeStyle = 'rgba(123,31,162,0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    sorted.forEach(function(p, i) {
+      var px = toX(p.x), py = toY(p.y);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Draw points
+  points.forEach(function(p) {
+    var px = toX(p.x);
+    var py = toY(p.y);
+    var isMax = (maxPoint && p.x === maxPoint.x && p.y === maxPoint.y && p.y > 0);
+
+    if (isMax) {
+      // Gold halo
+      ctx.beginPath();
+      ctx.arc(px, py, 11, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,213,79,0.2)';
+      ctx.fill();
+      // Gold ring
+      ctx.beginPath();
+      ctx.arc(px, py, 9, 0, Math.PI * 2);
+      ctx.strokeStyle = '#ffd54f';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Main dot
+    ctx.beginPath();
+    ctx.arc(px, py, isMax ? 7 : 5, 0, Math.PI * 2);
+    ctx.fillStyle = p.y < 0 ? '#ef9a9a' : '#7b1fa2';
+    ctx.fill();
+
+    // Label: delta-T value
+    ctx.textAlign = 'center';
+    ctx.fillStyle = isMax ? '#4a0072' : '#7b1fa2';
+    ctx.font = (isMax ? '700' : '600') + ' 10px JetBrains Mono, monospace';
+    var labelY = py - (isMax ? 15 : 12);
+    ctx.fillText((p.y >= 0 ? '+' : '') + p.y.toFixed(1), px, labelY);
+
+    // Max annotation
+    if (isMax) {
+      var ratio = p.x.toFixed(0) + ':' + (10 - p.x).toFixed(0);
+      ctx.font = '600 9px JetBrains Mono, monospace';
+      ctx.fillStyle = '#b8860b';
+      ctx.fillText('max \u0394T  ' + ratio + ' mL', px, py - 26);
+    }
+  });
+}
+
+
+function saveCanvasSnapshots() {
+  // Save current canvas state to localStorage without triggering full scheduleSave
+  try {
+    var raw = localStorage.getItem(SAVE_KEY);
+    var data = raw ? JSON.parse(raw) : collectFormData();
+    var canvases = data['_canvases'] || {};
+    ['q1', 'q3'].forEach(function(id) {
+      var canvas = document.getElementById('canvas-' + id);
+      if (canvas) {
+        try { canvases[id] = canvas.toDataURL('image/png'); }
+        catch(e) {}
+      }
+    });
+    data['_canvases'] = canvases;
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+// ===== CANVAS SYSTEM =====
+var canvasState = {};
+
+function initCanvas(id) {
+  var canvas = document.getElementById('canvas-' + id);
+  if (!canvas) return;
+  canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+  canvas.height = parseInt(canvas.getAttribute('height')) * window.devicePixelRatio;
+  canvas.style.height = canvas.getAttribute('height') + 'px';
+  var ctx = canvas.getContext('2d');
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.fillStyle = '#fffef9';
+  ctx.fillRect(0, 0, canvas.offsetWidth, parseInt(canvas.getAttribute('height')));
+
+  canvasState[id] = {
+    drawing: false, tool: 'pen', color: '#1a1a2e', size: 2,
+    lastX: 0, lastY: 0, startX: 0, startY: 0, snapshot: null
+  };
+
+  canvas.addEventListener('pointerdown', function(e) { startDraw(id, e); });
+  canvas.addEventListener('pointermove', function(e) { draw(id, e); });
+  canvas.addEventListener('pointerup', function(e) { endDraw(id, e); });
+  canvas.addEventListener('pointerleave', function(e) { endDraw(id, e); });
+  canvas.setPointerCapture && canvas.addEventListener('pointerdown', function(e) {
+    canvas.setPointerCapture(e.pointerId);
+  });
+}
+
+function getPos(canvas, e) {
+  var rect = canvas.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left),
+    y: (e.clientY - rect.top)
+  };
+}
+
+function startDraw(id, e) {
+  e.preventDefault();
+  var s = canvasState[id];
+  var canvas = document.getElementById('canvas-' + id);
+  var ctx = canvas.getContext('2d');
+  var pos = getPos(canvas, e);
+  s.drawing = true;
+  s.lastX = pos.x; s.lastY = pos.y;
+  s.startX = pos.x; s.startY = pos.y;
+  if (s.tool !== 'pen') {
+    s.snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  }
+  ctx.beginPath();
+  ctx.arc(pos.x, pos.y, s.size / 2, 0, Math.PI * 2);
+  ctx.fillStyle = s.color;
+  ctx.fill();
+}
+
+function draw(id, e) {
+  e.preventDefault();
+  var s = canvasState[id];
+  if (!s.drawing) return;
+  var canvas = document.getElementById('canvas-' + id);
+  var ctx = canvas.getContext('2d');
+  var pos = getPos(canvas, e);
+  ctx.strokeStyle = s.color;
+  ctx.lineWidth = s.size;
+  if (s.tool === 'pen') {
+    ctx.beginPath();
+    ctx.moveTo(s.lastX, s.lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    s.lastX = pos.x; s.lastY = pos.y;
+  } else if (s.tool === 'line') {
+    ctx.putImageData(s.snapshot, 0, 0);
+    ctx.beginPath();
+    ctx.moveTo(s.startX, s.startY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  }
+}
+
+function endDraw(id, e) {
+  if (canvasState[id]) canvasState[id].drawing = false;
+}
+
+function setTool(id, tool) {
+  if (canvasState[id]) canvasState[id].tool = tool;
+  var tb = document.getElementById('tb-' + id);
+  if (!tb) return;
+  tb.querySelectorAll('button').forEach(function(b) { b.classList.remove('active'); });
+  var map = { pen: 'tool-' + id + '-pen' };
+  if (tool === 'pen') { var btn = document.getElementById('tool-' + id + '-pen'); if (btn) btn.classList.add('active'); }
+}
+
+function setColor(id, color) {
+  if (canvasState[id]) canvasState[id].color = color;
+}
+
+function setSize(id, size) {
+  if (canvasState[id]) canvasState[id].size = parseInt(size);
+}
+
+function clearCanvas(id) {
+  var canvas = document.getElementById('canvas-' + id);
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fffef9';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function getCanvasDataURL(id) {
+  var canvas = document.getElementById('canvas-' + id);
+  return canvas ? canvas.toDataURL('image/png') : '';
+}
+
+// ===== AI FEEDBACK =====
+var AI_SYSTEM = 'You are a helpful and encouraging General Chemistry I lab instructor at a university. Your feedback should be: (1) specific to the student\'s response, (2) scientifically accurate at the introductory college chemistry level, (3) supportive and constructive in tone. Keep responses to 3-5 sentences. If the student\'s answer is correct and complete, affirm it clearly. If it is incomplete, identify what is missing without giving away the answer. Flag any significant scientific errors. Do not repeat the student\'s words back verbatim. Focus feedback on chemical reasoning, not grammar.';
+
+var AI_PROMPTS = {
+  purpose: function(txt) {
+    return 'A General Chemistry I student wrote this purpose statement for a lab on determining mole ratios using the method of continuous variations with OCl- and S2O3 2-:\n\n"' + txt + '"\n\nEvaluate whether the purpose: (1) identifies what is being measured, (2) names the method used (continuous variations or calorimetry), and (3) states what will be determined (the mole ratio). Provide brief, targeted feedback.';
+  },
+  obs1: function(txt) {
+    return 'A student described the appearance of 0.050 M NaOCl and 0.050 M Na2S2O3 solutions:\n\n"' + txt + '"\n\nBoth solutions should be colorless and clear (dilute aqueous solutions). NaOCl may have a faint chlorine/bleach odor. Evaluate whether the student\'s observation is scientifically consistent and appropriately detailed for a lab report.';
+  },
+  obs2: function(txt) {
+    return 'A student described what happened when OCl- and S2O3 2- were mixed:\n\n"' + txt + '"\n\nThe reaction is exothermic, so temperature should increase quickly upon mixing. The mixture should remain colorless or become slightly cloudy. Evaluate whether the observation describes the expected exothermic behavior and is appropriately detailed.';
+  },
+  obs3: function(txt) {
+    return 'A student described which trial gave the greatest temperature change in the method of continuous variations experiment:\n\n"' + txt + '"\n\nThe balanced equation is 4 OCl- + S2O3 2- -> products, so the maximum delta-T should occur near trial 6 (8 mL OCl- / 2 mL S2O3 2-) because that is the 4:1 ratio. Assess whether the student\'s observation aligns with this expectation and is clearly explained.';
+  },
+  q1: function(txt) {
+    return 'A CHEM 103L student determined the mole ratio from this analysis:\n\n"' + txt + '"\n\nThe actual mole ratio is 4 OCl- : 1 S2O3 2- (from the balanced equation 4 OCl- + S2O3 2- -> products). Evaluate: (1) whether the student correctly identified the maximum delta-T trial, (2) whether they correctly equated the volume ratio to the mole ratio (valid because equal molarities), and (3) whether the final ratio is expressed correctly as a whole-number ratio. Provide constructive feedback.';
+  },
+  q2: function(txt) {
+    return 'A first-semester General Chemistry student (limited stoichiometry background) answered this question: "Both solutions had the same concentration (0.050 M). Why does this matter for comparing volumes? Use moles = M x V to explain."\n\nStudent response: "' + txt + '"\n\nEvaluate whether the student: (1) correctly uses n = M x V to connect concentration, volume, and moles, (2) explains that equal concentrations make the volume ratio equal to the mole ratio, and (3) addresses what they would need to do differently if concentrations were unequal. Give encouraging, specific feedback appropriate for an introductory student. Do not expect advanced language — reward correct reasoning even if simply expressed.';
+  },
+  q3: function(txt) {
+    return 'A first-semester General Chemistry student answered this question about limiting reactants in a continuous variations experiment (OCl- + S2O3 2-, mole ratio 4:1, stoichiometric volume = 8 mL OCl- / 2 mL S2O3 2-).\n\nStudent response: "' + txt + '"\n\nEvaluate whether the student: (1) correctly identifies OCl- as limiting when its volume is small (trials 1-3, less than ~80% of total), (2) correctly identifies S2O3 2- as limiting when OCl- volume is large (trials 5-7), and (3) recognizes that the maximum delta-T trial has neither reactant limiting. The student has limited stoichiometry experience — reward correct logical reasoning about "running out first" even without formal limiting-reactant language. Point out any trial-specific errors gently and clearly.';
+  },
+  q4: function(txt) {
+    return 'A CHEM 103L student compared their experimental mole ratio to the known equation 4 OCl- + S2O3 2- -> 4 Cl- + SO4 2- + SO3 2- + 2H+:\n\n"' + txt + '"\n\nEvaluate whether: (1) the student correctly identified the expected 4:1 ratio from the balanced equation, (2) they compared their experimental ratio to 4:1 meaningfully, and (3) if there is a discrepancy, they offered a reasonable explanation (experimental error, difficulty identifying exact peak temperature, heat loss). Assess scientific reasoning quality.';
+  },
+  conclusion: function(txt) {
+    return 'A CHEM 103L student wrote this conclusion (max 3 sentences) for the mole ratios lab:\n\n"' + txt + '"\n\nA strong conclusion should state: (1) the method used (continuous variations / calorimetry), (2) the experimental mole ratio determined, and (3) comparison to the known 4:1 ratio from the balanced equation and whether it agrees. Evaluate whether all three elements are present, the conclusion is concise (3 sentences max), and the reasoning is sound. Flag any scientific inaccuracies.';
+  }
+};
+
+function getAIFeedback(qid) {
+  var textMap = {
+    purpose: 'purpose-text', obs1: 'obs-1', obs2: 'obs-2', obs3: 'obs-3',
+    q1: 'q1-text', q2: 'q2-text', q3: 'q3-text', q4: 'q4-text',
+    conclusion: 'conclusion-text'
+  };
+  var textEl = document.getElementById(textMap[qid]);
+  if (!textEl) return;
+  var txt = textEl.value.trim();
+  if (!txt || txt.length < 15) {
+    alert('Please write a response of at least 15 characters before requesting feedback.');
+    return;
+  }
+  var btn = document.getElementById('ai-btn-' + qid);
+  var feedbackEl = document.getElementById('ai-feedback-' + qid);
+  btn.disabled = true;
+  btn.textContent = 'Analyzing...';
+  feedbackEl.classList.add('visible');
+  feedbackEl.textContent = 'Getting feedback from your instructor...';
+
+  var promptFn = AI_PROMPTS[qid];
+  var prompt = promptFn ? promptFn(txt) : txt;
+
+  fetch(AI_PROXY_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'feedback', system: AI_SYSTEM, prompt: prompt })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.result === 'success') {
+      feedbackEl.textContent = data.feedback;
+    } else {
+      feedbackEl.textContent = 'Feedback unavailable: ' + (data.feedback || data.message || 'Unknown error');
+    }
+    btn.disabled = false;
+    btn.textContent = 'Get Feedback';
+  })
+  .catch(function(err) {
+    feedbackEl.textContent = 'Network error. Check that your Apps Script endpoint is configured.';
+    btn.disabled = false;
+    btn.textContent = 'Get Feedback';
+  });
+}
+
+// ===== SCORING =====
+// ===== HELPERS FOR CONTENT-AWARE SCORING =====
+
+// Returns the trial index (0-based) with the highest valid delta-T, or -1 if none
+function getMaxTrialIdx() {
+  var dts = getDeltaTs();
+  var maxDt = -Infinity, maxIdx = -1;
+  dts.forEach(function(dt, i) {
+    if (dt !== null && dt > maxDt) { maxDt = dt; maxIdx = i; }
+  });
+  return maxIdx;
+}
+
+// Normalise text: lowercase, collapse whitespace
+function norm(txt) { return (txt || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+
+// Check if any pattern in array matches text
+function anyMatch(txt, patterns) {
+  return patterns.some(function(p) { return p.test(txt); });
+}
+
+// Minimum meaningful response guard (avoids rewarding one-word answers)
+function hasSubstance(txt, minWords) {
+  return txt.trim().split(/\s+/).filter(Boolean).length >= (minWords || 8);
+}
+
+function scoreSubmission() {
+  var score = 0;
+  var total = 0;
+  var details = [];
+  var breakdown = []; // per-question rubric feedback shown in score panel
+
+  // ── PURPOSE  (5 pts) ──────────────────────────────────────────────────────
+  total += 5;
+  var purpose = norm(document.getElementById('purpose-text').value);
+  var pScore = 0;
+  var pNotes = [];
+  if (!hasSubstance(purpose, 10)) {
+    pNotes.push('too brief');
+  } else {
+    // 1 pt: identifies what is being measured (temperature / delta-T / heat)
+    if (/temperature|delta.?t|\bdt\b|heat|calorimetr/i.test(purpose)) { pScore += 1; }
+    else pNotes.push('does not mention temperature measurement');
+    // 2 pts: names the method (continuous variations / job's method)
+    if (/continu.{0,10}variat|job.{0,5}method/i.test(purpose)) { pScore += 2; }
+    else if (/method|procedure|technique/i.test(purpose)) { pScore += 1; pNotes.push('method named vaguely'); }
+    else pNotes.push('method of continuous variations not named');
+    // 2 pts: states goal (determine mole ratio / stoichiometry / balanced equation coefficients)
+    if (/mole.{0,6}ratio|stoichiometr|coeffici|whole.number.ratio/i.test(purpose)) { pScore += 2; }
+    else if (/ratio|proportion|amount/i.test(purpose)) { pScore += 1; pNotes.push('goal stated vaguely'); }
+    else pNotes.push('goal (determine mole ratio) not stated');
+  }
+  pScore = Math.min(5, pScore);
+  score += pScore;
+  details.push('Purpose: ' + pScore + '/5');
+  breakdown.push({ label: 'Purpose', earned: pScore, possible: 5,
+    notes: pNotes.length ? pNotes : ['Identifies measurement, method, and goal'] });
+
+  // ── DATA TABLE  (20 pts) ──────────────────────────────────────────────────
+  // Rubric:
+  //   Completeness  (8 pts): 0 pts < 4 trials; 2 pts per trial from 4 onwards (max 8 at 7/7)
+  //   Peak verified (6 pts): max delta-T has lower values on both sides = confirmed peak
+  //   Data quality  (6 pts): fraction of filled rows within chemically valid ranges
+  total += 20;
+  var dts = getDeltaTs();
+  var filledRows = dts.filter(function(d) { return d !== null; }).length;
+  var dtNotes = [];
+
+  // Completeness: 0 pts for < 4 trials; scale 4–7 trials → 2–8 pts
+  var dtComplete = 0;
+  if (filledRows < 4) {
+    dtComplete = 0;
+    dtNotes.push('Only ' + filledRows + '/7 trials entered — minimum 4 required for any completeness credit');
+  } else {
+    dtComplete = (filledRows - 3) * 2; // 4 trials=2, 5=4, 6=6, 7=8
+    dtNotes.push(filledRows + '/7 trials entered');
+  }
+
+  // Peak verification: confirmed if max delta-T has at least one lower value on each side
+  var maxDtIdx = getMaxTrialIdx();
+  var peakVerified = false;
+  var peakScore = 0;
+  if (maxDtIdx >= 0 && filledRows >= 4) {
+    peakVerified = isPeakVerified(dts, maxDtIdx);
+    if (peakVerified) {
+      peakScore = 6;
+      dtNotes.push('Peak confirmed: Trial ' + (maxDtIdx + 1) + ' is the maximum with lower ΔT values on both sides (+6 pts)');
+    } else if (filledRows >= 4) {
+      // Partial: peak exists but not bracketed on both sides
+      var hasLeft = dts.slice(0, maxDtIdx).some(function(d) { return d !== null && d < dts[maxDtIdx]; });
+      var hasRight = dts.slice(maxDtIdx + 1).some(function(d) { return d !== null && d < dts[maxDtIdx]; });
+      if (hasLeft || hasRight) {
+        peakScore = 3;
+        dtNotes.push('Peak partially confirmed (lower ΔT on only one side) — add trials on the ' + (!hasLeft ? 'left (lower OCl⁻ volumes)' : 'right (higher OCl⁻ volumes)') + ' to fully verify (+3 pts)');
+      } else {
+        peakScore = 0;
+        dtNotes.push('Peak not verified — no lower ΔT values on either side of Trial ' + (maxDtIdx + 1) + ' yet (+0 pts)');
+      }
+    }
+  } else if (filledRows < 4) {
+    dtNotes.push('Peak verification requires ≥4 trials');
+  }
+
+  // Data quality: fraction of filled rows in chemically realistic range
+  var validRows = 0;
+  dts.forEach(function(dt, i) {
+    if (dt === null) return;
+    var ti = parseFloat(document.getElementById('ti-' + i).value);
+    if (ti >= 18 && ti <= 30 && dt >= 0.3 && dt <= 15) validRows++;
+  });
+  var dtQuality = filledRows > 0 ? Math.round((validRows / filledRows) * 6) : 0;
+  if (filledRows > 0) {
+    dtNotes.push(validRows + '/' + filledRows + ' rows pass range check (Tᵢ 18–30 °C, ΔT 0.3–15 °C)');
+  }
+
+  var dtScore = Math.min(20, dtComplete + peakScore + dtQuality);
+  score += dtScore;
+  details.push('Data Table (' + filledRows + '/7 trials, peak ' + (peakVerified ? 'verified' : 'unverified') + '): ' + dtScore + '/20');
+  breakdown.push({ label: 'Data Table', earned: dtScore, possible: 20, notes: dtNotes });
+
+  // ── OBSERVATIONS  (10 pts) ────────────────────────────────────────────────
+  total += 10;
+  var obs1 = norm(document.getElementById('obs-1').value);
+  var obs2 = norm(document.getElementById('obs-2').value);
+  var obs3 = norm(document.getElementById('obs-3').value);
+  var obsScore = 0;
+  var obsNotes = [];
+
+  // Obs 1 (3 pts): describes both solutions — colorless/clear expected; mentions at least one solution property
+  if (hasSubstance(obs1, 6)) {
+    if (/colorless|clear|transparen|no color|colour/i.test(obs1)) obsScore += 2;
+    else if (/color|colour|appear|look/i.test(obs1)) { obsScore += 1; obsNotes.push('Obs 1: color/appearance noted but not described as colorless'); }
+    else obsNotes.push('Obs 1: appearance not described');
+    if (/ocl|hypochlor|bleach|thiosulf|s2o3|both solution/i.test(obs1)) obsScore += 1;
+    else obsNotes.push('Obs 1: both solutions not distinguished');
+  } else { obsNotes.push('Obs 1: insufficient detail'); }
+
+  // Obs 2 (4 pts): describes mixing behavior — exothermic (temperature rises), any color/clarity change
+  if (hasSubstance(obs2, 6)) {
+    if (/temperature.{0,20}(rose|rose|increas|went up|warm|hot|rise)/i.test(obs2) ||
+        /(warm|hot|heat|exotherm)/i.test(obs2)) { obsScore += 2; }
+    else if (/temperature|delta.?t|change/i.test(obs2)) { obsScore += 1; obsNotes.push('Obs 2: temperature change noted vaguely'); }
+    else obsNotes.push('Obs 2: exothermic temperature rise not mentioned');
+    if (/color|colour|clear|cloudly|precipit|appear/i.test(obs2)) obsScore += 1;
+    else obsNotes.push('Obs 2: visual change upon mixing not noted');
+    if (/rapid|quick|fast|immediate|slow|gradual|rate/i.test(obs2)) obsScore += 1;
+    else obsNotes.push('Obs 2: rate of temperature change not described');
+  } else { obsNotes.push('Obs 2: insufficient detail'); }
+
+  // Obs 3 (3 pts): identifies which trial had greatest delta-T; connects to stoichiometric ratio
+  if (hasSubstance(obs3, 6)) {
+    var maxIdx = getMaxTrialIdx();
+    var maxTrialNum = maxIdx + 1;
+    // Accept if student mentions correct trial number OR correct volume (8 mL OCl or 80%)
+    var trialRe = new RegExp('trial\\s*' + maxTrialNum + '|\\b' + maxTrialNum + '\\b', 'i');
+    var volRe = /8\s*ml|8\.0\s*ml|80\s*%|80%|8:2|trial\s*[67]/i;
+    if (maxIdx >= 0 && (trialRe.test(obs3) || volRe.test(obs3))) { obsScore += 2; }
+    else if (/greatest|largest|maximum|highest|most/i.test(obs3)) { obsScore += 1; obsNotes.push('Obs 3: greatest ΔT noted but trial not clearly identified'); }
+    else obsNotes.push('Obs 3: trial with greatest ΔT not identified');
+    if (/stoichiometr|ratio|equal|proportional|expect|consistent|continu|variat/i.test(obs3)) obsScore += 1;
+    else obsNotes.push('Obs 3: connection to stoichiometric expectation not made');
+  } else { obsNotes.push('Obs 3: insufficient detail'); }
+
+  obsScore = Math.min(10, obsScore);
+  score += obsScore;
+  details.push('Observations: ' + obsScore + '/10');
+  breakdown.push({ label: 'Observations', earned: obsScore, possible: 10,
+    notes: obsNotes.length ? obsNotes : ['All three observations complete and chemically accurate'] });
+
+  // ── Q1: MOLE RATIO DETERMINATION  (10 pts) ────────────────────────────────
+  total += 10;
+  var q1 = norm(document.getElementById('q1-text').value);
+  var q1Score = 0;
+  var q1Notes = [];
+
+  if (!hasSubstance(q1, 8)) {
+    q1Notes.push('Response too brief — show your work');
+  } else {
+    // 2 pts: identifies the correct max delta-T trial from their own data
+    var mIdx = getMaxTrialIdx();
+    if (mIdx >= 0) {
+      var mTrial = mIdx + 1;
+      var mOcl = TRIALS[mIdx].ocl;
+      var mS = TRIALS[mIdx].s2o3;
+      var trialMentioned = new RegExp('trial\\s*' + mTrial + '|\\b' + mTrial + '\\b', 'i').test(q1);
+      var volMentioned = new RegExp(mOcl.toFixed(0) + '\\s*ml|' + mOcl.toFixed(1) + '\\s*ml', 'i').test(q1);
+      if (trialMentioned || volMentioned) { q1Score += 2; }
+      else { q1Notes.push('Correct max ΔT trial not clearly identified in response'); }
+    } else {
+      // No data entered — can still check for conceptual language
+      if (/greatest|largest|maximum|highest|delta.?t/i.test(q1)) q1Score += 1;
+      q1Notes.push('No data entered — cannot verify trial identification');
+    }
+
+    // 3 pts: correctly equates volume ratio to mole ratio (because equal molarities)
+    if (/volume.{0,20}(equal|same|ratio)|molarity.{0,30}equal|m.{0,5}=.{0,5}m|equal.{0,10}molar|same.{0,10}concentrat/i.test(q1)) {
+      q1Score += 3;
+    } else if (/volume.{0,10}ratio|n\s*=\s*m|mole.{0,5}=.{0,5}volume/i.test(q1)) {
+      q1Score += 2; q1Notes.push('Volume=mole ratio stated but equal molarity justification missing');
+    } else {
+      q1Notes.push('Justification that volume ratio = mole ratio (equal molarities) not stated');
+    }
+
+    // 3 pts: correct final ratio expressed — accept 4:1, 8:2, 4/1, "four to one", or integer multiples
+    if (/\b4\s*:\s*1\b|\b8\s*:\s*2\b|\b4\s*to\s*1\b|four.{0,6}one|4\/1/i.test(q1)) {
+      q1Score += 3;
+    } else if (/ratio|\d+\s*:\s*\d+/i.test(q1)) {
+      q1Score += 1; q1Notes.push('A ratio is stated but 4:1 (or equivalent 8:2) not found — check your calculation');
+    } else {
+      q1Notes.push('Final mole ratio (4:1 or 8:2) not stated');
+    }
+
+    // 2 pts: shows arithmetic / references n = M × V or equivalent calculation
+    if (/n\s*=\s*m|moles\s*=|mol\s*=|m\s*×\s*v|m\s*x\s*v|0\.05|0\.050|calculated|calculation|arithmetic/i.test(q1)) {
+      q1Score += 2;
+    } else {
+      q1Notes.push('Arithmetic / n = M×V calculation not shown');
+    }
+  }
+
+  q1Score = Math.min(10, q1Score);
+  score += q1Score;
+  details.push('Q1 (Mole Ratio): ' + q1Score + '/10');
+  breakdown.push({ label: 'Q1 — Mole Ratio', earned: q1Score, possible: 10,
+    notes: q1Notes.length ? q1Notes : ['Correct trial identified, justification complete, ratio 4:1 stated, arithmetic shown'] });
+
+  // ── Q2: EQUAL MOLARITIES DISCUSSION  (10 pts) ─────────────────────────────
+  total += 10;
+  var q2 = norm(document.getElementById('q2-text').value);
+  var q2Score = 0;
+  var q2Notes = [];
+
+  if (!hasSubstance(q2, 10)) {
+    q2Notes.push('Response too brief');
+  } else {
+    // 3 pts: states that equal molarities allow volume ratio = mole ratio
+    if (/equal.{0,15}molar.{0,30}volume.{0,15}ratio|volume.{0,15}ratio.{0,30}equal.{0,15}molar|same.{0,15}concentrat.{0,40}volume/i.test(q2)) {
+      q2Score += 3;
+    } else if (/volume.{0,10}ratio|equal.{0,10}molar|same.{0,10}concentrat/i.test(q2)) {
+      q2Score += 2; q2Notes.push('Connection between equal molarity and volume ratio partially stated');
+    } else {
+      q2Notes.push('Core relationship (equal M → volume ratio = mole ratio) not explained');
+    }
+
+    // 3 pts: addresses what happens if molarities are DIFFERENT — must use n = M×V
+    if (/(different|unequal|not equal).{0,30}molar.{0,60}(calculat|n\s*=|moles|correct|account|adjust)/i.test(q2) ||
+        /n\s*=\s*m.{0,5}v|moles\s*=\s*molarity/i.test(q2)) {
+      q2Score += 3;
+    } else if (/(different|unequal).{0,20}molar/i.test(q2)) {
+      q2Score += 1; q2Notes.push('Different molarities acknowledged but correction method (n=M×V) not described');
+    } else {
+      q2Notes.push('Does not address what to do if molarities are different');
+    }
+
+    // 2 pts: correct conclusion — equal molarities simplify but are not strictly required
+    if (/(not|not strictly|not absolutely).{0,20}(necessary|required)|simplif|convenient|still work.{0,20}different|can.{0,20}still/i.test(q2)) {
+      q2Score += 2;
+    } else if (/necessary|required|important/i.test(q2)) {
+      q2Score += 1; q2Notes.push('Conclusion on necessity stated but nuance (simplifies, not strictly required) missing');
+    } else {
+      q2Notes.push('No clear conclusion on whether equal molarities are necessary');
+    }
+
+    // 2 pts: mentions n = M × V explicitly or uses correct formula language
+    if (/n\s*=\s*m|n\s*=\s*molarity|moles\s*=\s*m|mol\s*=\s*m|n\s*=\s*c/i.test(q2)) {
+      q2Score += 2;
+    } else {
+      q2Notes.push('n = M×V relationship not explicitly referenced');
+    }
+  }
+
+  q2Score = Math.min(10, q2Score);
+  score += q2Score;
+  details.push('Q2 (Equal Molarities): ' + q2Score + '/10');
+  breakdown.push({ label: 'Q2 — Equal Molarities', earned: q2Score, possible: 10,
+    notes: q2Notes.length ? q2Notes : ['Full explanation: equal M → vol=mole ratio, different M requires n=M×V, conclusion on necessity'] });
+
+  // ── Q3: LIMITING REACTANT  (10 pts) ──────────────────────────────────────
+  total += 10;
+  var q3 = norm(document.getElementById('q3-text').value);
+  var q3Score = 0;
+  var q3Notes = [];
+
+  if (!hasSubstance(q3, 12)) {
+    q3Notes.push('Response too brief — identify limiting reactant for at least 3 trials');
+  } else {
+    // 2 pts: defines or correctly uses "limiting reactant" concept
+    if (/limiting.{0,15}(reactant|reagent).{0,60}(run out|consumed|less than|smaller|used up|depleted)/i.test(q3) ||
+        /(run out|consumed first|used up).{0,40}limiting/i.test(q3)) {
+      q3Score += 2;
+    } else if (/limiting.{0,15}(reactant|reagent)/i.test(q3)) {
+      q3Score += 1; q3Notes.push('Limiting reactant named but not defined/explained');
+    } else {
+      q3Notes.push('Limiting reactant concept not clearly articulated');
+    }
+
+    // 3 pts: correctly identifies OCl- as limiting in low-OCl- trials (trials 1–3, vol < 8 mL OCl-)
+    if (/(trial.{0,5}[123]|2\s*ml|3\s*ml|4\s*ml).{0,60}(ocl|hypochlor|ocl.{0,3}limit)|ocl.{0,20}limit.{0,40}(trial.{0,5}[123]|small|low)/i.test(q3)) {
+      q3Score += 3;
+    } else if (/ocl.{0,20}limit/i.test(q3)) {
+      q3Score += 2; q3Notes.push('OCl⁻ identified as limiting in some trials but specific trials not clearly stated');
+    } else {
+      q3Notes.push('OCl⁻ as limiting reactant in low-volume trials not identified');
+    }
+
+    // 3 pts: correctly identifies S2O3 as limiting in high-OCl- trials (trials 5–7, vol > 8 mL OCl-)
+    if (/(trial.{0,5}[567]|6\s*ml|7\s*ml|8\s*ml).{0,60}(s2o3|thiosulf|s.{0,3}limit)|s2o3.{0,20}limit.{0,40}(trial.{0,5}[567]|high|large)/i.test(q3) ||
+        /(thiosulf|s2o3|s.{0,3}2.{0,3}o.{0,3}3).{0,30}limit/i.test(q3)) {
+      q3Score += 3;
+    } else if (/(thiosulf|s2o3).{0,20}limit/i.test(q3)) {
+      q3Score += 2; q3Notes.push('S₂O₃²⁻ as limiting identified but high-volume trials not clearly specified');
+    } else {
+      q3Notes.push('S₂O₃²⁻ as limiting reactant in high-OCl⁻ trials not identified');
+    }
+
+    // 2 pts: correctly states max delta-T trial has NO limiting reactant / stoichiometric proportion
+    if (/(no limiting|neither|stoichiometr|exact.{0,10}(ratio|proportion)|both.{0,20}(consumed|used|react))/i.test(q3)) {
+      q3Score += 2;
+    } else {
+      q3Notes.push('Max ΔT trial — neither reactant is limiting — not addressed');
+    }
+  }
+
+  q3Score = Math.min(10, q3Score);
+  score += q3Score;
+  details.push('Q3 (Limiting Reactant): ' + q3Score + '/10');
+  breakdown.push({ label: 'Q3 — Limiting Reactant', earned: q3Score, possible: 10,
+    notes: q3Notes.length ? q3Notes : ['Concept defined, OCl⁻ limiting in low trials, S₂O₃²⁻ limiting in high trials, stoichiometric trial identified'] });
+
+  // ── Q4: COMPARISON TO BALANCED EQUATION  (10 pts) ────────────────────────
+  total += 10;
+  var q4 = norm(document.getElementById('q4-text').value);
+  var q4Score = 0;
+  var q4Notes = [];
+
+  if (!hasSubstance(q4, 10)) {
+    q4Notes.push('Response too brief');
+  } else {
+    // 2 pts: states the known ratio from the balanced equation (4:1)
+    if (/\b4\s*:\s*1\b|\b4\s*ocl.{0,10}1\s*s|four.{0,6}(one|1)|balanced.{0,20}(equation|rxn).{0,30}4/i.test(q4)) {
+      q4Score += 2;
+    } else if (/balanced.{0,20}equation|actual.{0,20}ratio|known.{0,20}ratio/i.test(q4)) {
+      q4Score += 1; q4Notes.push('Balanced equation referenced but 4:1 ratio not stated explicitly');
+    } else {
+      q4Notes.push('Known 4:1 ratio from balanced equation not stated');
+    }
+
+    // 2 pts: states their experimental ratio (whatever they found)
+    if (/experiment.{0,30}(ratio|result|found|got|determin|calcul|gave)|my.{0,20}ratio|result.{0,20}(was|is|gave)/i.test(q4)) {
+      q4Score += 2;
+    } else if (/\d+\s*:\s*\d+/i.test(q4)) {
+      q4Score += 1; q4Notes.push('A ratio is mentioned but not explicitly labeled as experimental result');
+    } else {
+      q4Notes.push('Experimental ratio not explicitly stated');
+    }
+
+    // 3 pts: makes a direct comparison (match / does not match) with reasoning
+    if (/(match|agree|consistent|confirm|support).{0,60}(ratio|equation|result|experiment|4:1|4 to 1)/i.test(q4) ||
+        /(does not match|no match|disagree|inconsistent|differ).{0,60}(ratio|equation|result)/i.test(q4)) {
+      q4Score += 3;
+    } else if (/match|agree|confirm|differ/i.test(q4)) {
+      q4Score += 2; q4Notes.push('Agreement/disagreement stated but comparison lacks reasoning');
+    } else {
+      q4Notes.push('Direct comparison (match or does not match) between experimental and actual ratio not made');
+    }
+
+    // 3 pts: if results differ OR in all cases — discusses experimental error / uncertainty
+    if (/error|uncertaint|heat loss|imprecis|inaccura|volume.{0,15}(measur|pipet|graduated)|temperature.{0,20}(reading|peak|plateau|equilibr)|evaporation|mixing/i.test(q4)) {
+      q4Score += 3;
+    } else if (/error|uncertainty/i.test(q4)) {
+      q4Score += 1; q4Notes.push('Error mentioned but specific sources not identified');
+    } else {
+      q4Notes.push('Sources of experimental error not discussed (heat loss, volume measurement, peak temperature identification)');
+    }
+  }
+
+  q4Score = Math.min(10, q4Score);
+  score += q4Score;
+  details.push('Q4 (Balanced Equation): ' + q4Score + '/10');
+  breakdown.push({ label: 'Q4 — Comparison to Balanced Equation', earned: q4Score, possible: 10,
+    notes: q4Notes.length ? q4Notes : ['Known 4:1 ratio stated, experimental ratio reported, direct comparison made, error sources discussed'] });
+
+  // ── CONCLUSION  (10 pts) ──────────────────────────────────────────────────
+  total += 10;
+  var conc = norm(document.getElementById('conclusion-text').value);
+  var cScore = 0;
+  var cNotes = [];
+
+  if (!hasSubstance(conc, 10)) {
+    cNotes.push('Too brief — aim for 2–3 complete sentences');
+  } else {
+    // 2 pts: names the method used
+    if (/continu.{0,10}variat|job.{0,5}method/i.test(conc)) { cScore += 2; }
+    else if (/calorimetr|temperature|method/i.test(conc)) { cScore += 1; cNotes.push('Method referenced vaguely — name "continuous variations"'); }
+    else cNotes.push('Method (continuous variations) not named in conclusion');
+
+    // 3 pts: states the experimental mole ratio found
+    if (/\b4\s*:\s*1\b|\b8\s*:\s*2\b|four.{0,6}one|4\/1/i.test(conc)) { cScore += 3; }
+    else if (/ratio.{0,20}(found|determin|obtain|experiment|result)/i.test(conc)) { cScore += 1; cNotes.push('Ratio mentioned but 4:1 (or 8:2) not explicitly stated'); }
+    else cNotes.push('Experimental mole ratio (4:1) not stated in conclusion');
+
+    // 3 pts: compares to known equation and draws conclusion
+    if (/(match|agree|confirm|consistent|support|equal).{0,60}(balanced|known|actual|equation|literature)/i.test(conc) ||
+        /(balanced|known|actual|equation).{0,60}(match|agree|confirm|consistent)/i.test(conc)) { cScore += 3; }
+    else if (/balanced|equation|actual|known/i.test(conc)) { cScore += 1; cNotes.push('Balanced equation referenced but comparison conclusion not drawn'); }
+    else cNotes.push('Comparison to known balanced equation not made in conclusion');
+
+    // 2 pts: within 3-sentence limit (approximate — we check word count as proxy)
+    var words = conc.trim().split(/\s+/).length;
+    if (words <= 80) { cScore += 2; }
+    else if (words <= 120) { cScore += 1; cNotes.push('Conclusion is longer than 3 sentences — tighten your writing'); }
+    else cNotes.push('Exceeds 3-sentence maximum — conclusion must be concise');
+  }
+
+  cScore = Math.min(10, cScore);
+  score += cScore;
+  details.push('Conclusion: ' + cScore + '/10');
+  breakdown.push({ label: 'Conclusion', earned: cScore, possible: 10,
+    notes: cNotes.length ? cNotes : ['Method named, 4:1 ratio stated, comparison to balanced equation drawn, concise (≤3 sentences)'] });
+
+  return {
+    score: score,
+    total: total,
+    percent: Math.round(score / total * 100),
+    details: details.join(' | '),
+    breakdown: breakdown
+  };
+}
+
+
+
+// ===== SUBMIT =====
+
+// Track submission count — persisted in localStorage alongside form data
+var SUBMIT_COUNT_KEY = 'chem103l_lab3_v1_subcount';
+var _submissionCount = 0;
+
+function getSubmissionCount() {
+  try { return parseInt(localStorage.getItem(SUBMIT_COUNT_KEY) || '0', 10); }
+  catch(e) { return 0; }
+}
+
+function setSubmissionCount(n) {
+  try { localStorage.setItem(SUBMIT_COUNT_KEY, String(n)); }
+  catch(e) {}
+  _submissionCount = n;
+}
+
+function buildDtSummary() {
+  return TRIALS.map(function(t, i) {
+    var ti = document.getElementById('ti-' + i).value;
+    var tf = document.getElementById('tf-' + i).value;
+    var dt = (ti && tf) ? (parseFloat(tf) - parseFloat(ti)).toFixed(1) : '';
+    return 'T' + (i+1) + ':' + t.ocl + '/' + t.s2o3 + 'mL Ti=' + ti + ' Tf=' + tf + ' dT=' + dt;
+  }).join(' | ');
+}
+
+function submitLab() {
+  var name = document.getElementById('student-name').value.trim();
+  var section = document.getElementById('student-section').value.trim();
+  if (!name || !section) {
+    alert('Please enter your name and lab section before submitting.');
+    return;
+  }
+
+  var count = getSubmissionCount();
+  if (count >= 2) {
+    alert('You have used both submissions for this lab. Contact your instructor if you need an additional attempt.');
+    return;
+  }
+
+  var attemptNum = count + 1;
+  var result = scoreSubmission();
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting attempt ' + attemptNum + ' of 2…';
+
+  var payload = {
+    action: 'submit',
+    timestamp: new Date().toISOString(),
+    name: name,
+    section: section,
+    start_date: document.getElementById('start-date').value || '',
+    submit_date: new Date().toLocaleDateString(),
+    attempt: attemptNum,
+    members: [
+      document.getElementById('member2').value,
+      document.getElementById('member3').value
+    ].filter(Boolean).join('; '),
+    score: result.score,
+    total: result.total,
+    percent: result.percent,
+    data_table: buildDtSummary(),
+    obs_1: document.getElementById('obs-1').value || '',
+    obs_2: document.getElementById('obs-2').value || '',
+    obs_3: document.getElementById('obs-3').value || '',
+    purpose: document.getElementById('purpose-text').value || '',
+    q1: document.getElementById('q1-text').value || '',
+    q2: document.getElementById('q2-text').value || '',
+    q3: document.getElementById('q3-text').value || '',
+    q4: document.getElementById('q4-text').value || '',
+    conclusion: document.getElementById('conclusion-text').value || '',
+    notes: document.getElementById('notes-to-prof') ? (document.getElementById('notes-to-prof').value || '') : '',
+    details: result.details
+  };
+
+  fetch(SHEETS_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function() { onSubmitSuccess(attemptNum, result); })
+  .catch(function() { onSubmitSuccess(attemptNum, result, true); });
+}
+
+function onSubmitSuccess(attemptNum, result, offline) {
+  setSubmissionCount(attemptNum);
+
+  // Persist score result in localStorage so it survives a page refresh
+  try {
+    var raw = localStorage.getItem(SAVE_KEY);
+    var data = raw ? JSON.parse(raw) : {};
+    data['_attempt' + attemptNum + '_result'] = result;
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch(e) {}
+
+  showScorePanel(attemptNum, result);
+
+  var btn = document.getElementById('submit-btn');
+  var infoEl = document.getElementById('submit-info');
+
+  if (attemptNum === 1) {
+    // Show revision prompt and re-enable button for attempt 2
+    document.getElementById('revision-prompt').style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Submit Final Attempt — Attempt 2 of 2';
+    btn.style.background = 'var(--accent-dark)';
+    if (infoEl) infoEl.innerHTML = '<strong>Attempt 1 recorded' + (offline ? ' (offline)' : '') + '.</strong> Review the feedback below, revise your responses above, then submit your final attempt when ready. <strong style="color:var(--red);">Attempt 2 is your final grade.</strong>';
+    document.getElementById('subs-remaining-text').textContent = '1 submission remaining';
+  } else {
+    // Both submissions used
+    btn.disabled = true;
+    btn.textContent = 'Both submissions used';
+    document.getElementById('revision-prompt').style.display = 'none';
+    if (infoEl) infoEl.innerHTML = '<strong>Both submissions recorded' + (offline ? ' (offline)' : '') + '.</strong> Your final score is shown below. Contact your instructor if you have questions.';
+    document.getElementById('subs-remaining-text').textContent = '0 submissions remaining';
+  }
+}
+
+function buildScoreHtml(result, attemptNum) {
+  var isFinal = (attemptNum === 2);
+  var label = result.percent >= 85 ? 'Excellent' : result.percent >= 70 ? 'Good' : (isFinal ? 'Needs Improvement' : 'Needs Revision');
+  var html = '<p style="font-size:16px; font-weight:700; margin-bottom:4px;">Score: ' +
+    result.score + ' / ' + result.total + ' &nbsp;(' + result.percent + '%) &mdash; ' + label + '</p>';
+
+  if (!isFinal) {
+    html += '<p style="font-size:13px; color:var(--gold); margin-bottom:16px; font-weight:600;">&#9656; Review the items marked below. Revise your responses, then submit your final attempt for your best possible grade.</p>';
+  } else {
+    html += '<p style="font-size:13px; color:#888; margin-bottom:16px;">This is your final recorded score.</p>';
+  }
+
+  if (result.breakdown && result.breakdown.length) {
+    html += '<table style="width:100%; border-collapse:collapse; font-size:13px;">';
+    html += '<thead><tr>' +
+      '<th style="text-align:left; padding:6px 10px; background:var(--ink); color:#ce93d8; font-family:monospace; font-size:10px; letter-spacing:0.1em;">Section</th>' +
+      '<th style="text-align:center; padding:6px 10px; background:var(--ink); color:#ce93d8; font-family:monospace; font-size:10px; letter-spacing:0.1em;">Score</th>' +
+      '<th style="text-align:left; padding:6px 10px; background:var(--ink); color:#ce93d8; font-family:monospace; font-size:10px; letter-spacing:0.1em;">' +
+        (isFinal ? 'Final Rubric' : 'What to Improve') + '</th>' +
+      '</tr></thead><tbody>';
+
+    result.breakdown.forEach(function(row, idx) {
+      var pct = row.earned / row.possible;
+      var barColor = pct >= 0.85 ? '#7b1fa2' : pct >= 0.6 ? '#b8860b' : '#c0392b';
+      var rowBg = idx % 2 === 0 ? '#fff' : 'var(--cream)';
+      var needsWork = pct < 1.0;
+
+      var notesHtml = row.notes.map(function(n) {
+        var isOk = n.indexOf('not ') === -1 && n.indexOf('missing') === -1 &&
+                   n.indexOf('brief') === -1 && n.indexOf('vague') === -1 &&
+                   n.indexOf('not made') === -1 && n.indexOf('not stated') === -1 &&
+                   n.indexOf('not named') === -1 && n.indexOf('not shown') === -1 &&
+                   n.indexOf('not described') === -1 && n.indexOf('not identified') === -1 &&
+                   n.indexOf('not explicitly') === -1 && n.indexOf('not addressed') === -1 &&
+                   n.indexOf('not discussed') === -1 && n.indexOf('not mentioned') === -1 &&
+                   n.indexOf('not drawn') === -1 && n.indexOf('not referenced') === -1 &&
+                   n.indexOf('not articulated') === -1 && n.indexOf('not clear') === -1;
+        var icon = isOk ? '&#10003;' : (isFinal ? '&#9656;' : '&#9998;');
+        var noteColor = isOk ? '#2e7d32' : (isFinal ? '#b8860b' : '#c0392b');
+        return '<span style="display:block; color:' + noteColor + '; margin-bottom:3px; font-weight:' + (isOk ? '400' : '600') + ';">' + icon + ' ' + n + '</span>';
+      }).join('');
+
+      var rowStyle = 'background:' + rowBg + ';' + (needsWork && !isFinal ? ' border-left:3px solid #ffd54f;' : '');
+      html += '<tr style="' + rowStyle + '">' +
+        '<td style="padding:10px 10px; font-weight:600; border-bottom:1px solid var(--rule); white-space:nowrap;">' + row.label + '</td>' +
+        '<td style="padding:10px 10px; text-align:center; border-bottom:1px solid var(--rule);">' +
+          '<div style="font-family:monospace; font-weight:700; font-size:14px; color:' + barColor + ';">' + row.earned + '/' + row.possible + '</div>' +
+          '<div style="height:4px; background:#e0e0e0; border-radius:2px; width:60px; margin:4px auto 0;">' +
+            '<div style="height:4px; background:' + barColor + '; border-radius:2px; width:' + Math.round(pct * 100) + '%;"></div>' +
+          '</div>' +
+        '</td>' +
+        '<td style="padding:10px 10px; border-bottom:1px solid var(--rule); font-size:12px; line-height:1.7;">' + notesHtml + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+  }
+
+  var footer = isFinal
+    ? 'Final score recorded. Scores are calculated based on content and chemical accuracy. Contact your instructor for grade disputes.'
+    : 'Attempt 1 recorded. Edit your responses above, then submit your final attempt. Items marked with a pencil icon can be improved.';
+  html += '<p style="margin-top:14px; font-size:12px; color:#888; font-style:italic;">' + footer + '</p>';
+  return html;
+}
+
+function showScorePanel(attemptNum, result) {
+  var panelId = 'score-panel-' + attemptNum;
+  var panel = document.getElementById(panelId);
+  if (!panel) return;
+
+  panel.style.display = 'block';
+  panel.classList.add('visible');
+
+  // Set score badge
+  var badge = document.getElementById('score-badge-' + attemptNum);
+  if (badge) badge.textContent = result.score + '/' + result.total + ' (' + result.percent + '%)';
+
+  // Animate score bar
+  var bar = document.getElementById('score-bar-' + attemptNum);
+  if (bar) {
+    var color = result.percent >= 85 ? '#ce93d8' : result.percent >= 70 ? '#ffd54f' : '#ef9a9a';
+    bar.style.background = color;
+    bar.style.width = '0%';
+    setTimeout(function() { bar.style.width = result.percent + '%'; }, 120);
+  }
+
+  var body = document.getElementById('score-body-' + attemptNum);
+  if (body) body.innerHTML = buildScoreHtml(result, attemptNum);
+
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Legacy alias — keep in case anything calls showScore directly
+function showScore(result) { showScorePanel(1, result); }
+
+
+function restoreSubmissionState() {
+  var count = getSubmissionCount();
+  if (count === 0) return;
+  var btn = document.getElementById('submit-btn');
+  var infoEl = document.getElementById('submit-info');
+  if (count >= 1) {
+    // Show that attempt 1 was already submitted
+    document.getElementById('revision-prompt').style.display = 'block';
+    // Try to restore score from localStorage
+    try {
+      var raw = localStorage.getItem(SAVE_KEY);
+      if (raw) {
+        var data = JSON.parse(raw);
+        if (data['_attempt1_result']) {
+          showScorePanel(1, data['_attempt1_result']);
+        }
+      }
+    } catch(e) {}
+    if (count === 1) {
+      btn.disabled = false;
+      btn.textContent = 'Submit Final Attempt — Attempt 2 of 2';
+      btn.style.background = 'var(--accent-dark)';
+      document.getElementById('subs-remaining-text').textContent = '1 submission remaining';
+      if (infoEl) infoEl.innerHTML = '<strong>Attempt 1 already recorded.</strong> Review the feedback, revise your responses, then submit your final attempt. <strong style="color:var(--red);">Attempt 2 is your final grade.</strong>';
+    } else {
+      btn.disabled = true;
+      btn.textContent = 'Both submissions used';
+      document.getElementById('subs-remaining-text').textContent = '0 submissions remaining';
+      if (infoEl) infoEl.innerHTML = '<strong>Both submissions recorded.</strong> Your final score is shown below. Contact your instructor if you have questions.';
+      // Restore attempt 2 score too
+      try {
+        var raw2 = localStorage.getItem(SAVE_KEY);
+        if (raw2) {
+          var data2 = JSON.parse(raw2);
+          if (data2['_attempt2_result']) {
+            document.getElementById('revision-prompt').style.display = 'none';
+            showScorePanel(2, data2['_attempt2_result']);
+          }
+        }
+      } catch(e) {}
+    }
+  }
+}
+
+// ===== REFERENCE CARDS =====
+function toggleRefCard(id) {
+  var body = document.getElementById('ref-body-' + id);
+  if (body) body.classList.toggle('open');
+}
+
+// ===== INITIALIZE =====
+document.addEventListener('DOMContentLoaded', function() {
+  buildDataTable();
+  setTimeout(function() { drawScatterPlot(); }, 50);
+  // Init canvases after slight delay for layout
+  setTimeout(function() {
+    initCanvas('q1');
+    initCanvas('q3');
+  }, 200);
+
+  // Reinit canvases when their tabs become visible
+  var origSwitch = window.switchTab;
+  window.switchTab = function(idx) {
+    origSwitch(idx);
+    if (idx === 4) {
+      setTimeout(function() { drawScatterPlot(); }, 50);
+    }
+    if (idx === 5) {
+      setTimeout(function() {
+        initCanvas('q1');
+        initCanvas('q3');
+      }, 100);
+    }
+  };
+});
+
+window.addEventListener('resize', function() {
+  drawScatterPlot();
+  ['q1','q3'].forEach(function(id) {
+    var canvas = document.getElementById('canvas-' + id);
+    if (canvas && canvasState[id]) {
+      var snapshot = canvas.toDataURL('image/png');
+      initCanvas(id);
+      var img = new Image();
+      img.onload = function() {
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.offsetWidth, parseInt(canvas.getAttribute('height')));
+      };
+      img.src = snapshot;
+    }
+  });
+});
+
+// ===================================================
+// AUTO-SAVE SYSTEM
+// ===================================================
+
+var SAVE_KEY = 'chem103l_lab3_v1';
+
+// All plain input/textarea field IDs
+var SAVE_FIELDS = [
+  'student-name', 'student-section', 'member2', 'member3', 'start-date',
+  'purpose-text',
+  'obs-1', 'obs-2', 'obs-3',
+  'q1-text', 'q2-text', 'q3-text', 'q4-text',
+  'conclusion-text'
+];
+// Temperature inputs: ti-0 through ti-6, tf-0 through tf-6
+for (var _i = 0; _i < 7; _i++) {
+  SAVE_FIELDS.push('ti-' + _i);
+  SAVE_FIELDS.push('tf-' + _i);
+}
+
+var _saveTimer = null;
+var _saveBarTimer = null;
+
+function setSaveStatus(state, msg) {
+  var dot = document.getElementById('save-dot');
+  var msgEl = document.getElementById('save-msg');
+  var bar = document.getElementById('save-status-bar');
+  if (!dot || !msgEl || !bar) return;
+  dot.className = 'save-dot ' + state;
+  msgEl.textContent = msg;
+  bar.classList.add('visible');
+  clearTimeout(_saveBarTimer);
+  // Hide bar after 4 seconds if saved successfully
+  if (state === 'saved') {
+    _saveBarTimer = setTimeout(function() {
+      bar.classList.remove('visible');
+    }, 4000);
+  }
+}
+
+function collectFormData() {
+  var data = {};
+  SAVE_FIELDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) data[id] = el.value;
+  });
+  return data;
+}
+
+function saveNow() {
+  setSaveStatus('saving', 'Saving…');
+  try {
+    var data = collectFormData();
+
+    // Save canvas drawings as base64 PNG data URLs
+    var canvases = {};
+    ['q1', 'q3'].forEach(function(id) {
+      var canvas = document.getElementById('canvas-' + id);
+      if (canvas) {
+        try { canvases[id] = canvas.toDataURL('image/png'); }
+        catch(e) { /* cross-origin or empty — skip */ }
+      }
+    });
+    data['_canvases'] = canvases;
+    data['_savedAt'] = new Date().toISOString();
+
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    var ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setSaveStatus('saved', 'All work saved — ' + ts);
+  } catch(e) {
+    setSaveStatus('error', 'Save failed: ' + e.message + ' (storage may be full or disabled)');
+  }
+}
+
+function scheduleSave() {
+  setSaveStatus('saving', 'Unsaved changes…');
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(saveNow, 1200);
+}
+
+function restoreSavedData() {
+  try {
+    var raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    var data = JSON.parse(raw);
+    var restoredCount = 0;
+
+    SAVE_FIELDS.forEach(function(id) {
+      if (data[id] === undefined) return;
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.value = data[id];
+      restoredCount++;
+      // Trigger dependent calculations for temperature fields
+      if (id.startsWith('ti-') || id.startsWith('tf-')) {
+        var idx = parseInt(id.split('-')[1]);
+        calcDeltaT(idx);
+      }
+    });
+
+    // Restore canvas drawings
+    if (data['_canvases']) {
+      Object.keys(data['_canvases']).forEach(function(id) {
+        var dataUrl = data['_canvases'][id];
+        if (!dataUrl || dataUrl === 'data:,') return;
+        var canvas = document.getElementById('canvas-' + id);
+        if (!canvas) return;
+        var img = new Image();
+        img.onload = function() {
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = dataUrl;
+      });
+    }
+
+    if (restoredCount > 0) {
+      var ts = data['_savedAt'] ? new Date(data['_savedAt']).toLocaleString([], {
+        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      }) : 'previously';
+      setSaveStatus('saved', restoredCount + ' fields restored from ' + ts + ' — your work is back');
+      // Keep the bar visible longer so student sees the restore message
+      clearTimeout(_saveBarTimer);
+      _saveBarTimer = setTimeout(function() {
+        document.getElementById('save-status-bar').classList.remove('visible');
+      }, 7000);
+    }
+    return restoredCount > 0;
+  } catch(e) {
+    setSaveStatus('error', 'Could not restore saved data: ' + e.message);
+    return false;
+  }
+}
+
+function confirmClearSave() {
+  if (confirm('Clear all saved data for this lab? This cannot be undone. Your submitted data in Google Sheets is not affected.')) {
+    localStorage.removeItem(SAVE_KEY);
+    setSaveStatus('saved', 'Saved data cleared — form is now blank for a new student');
+  }
+}
+
+function attachAutoSaveListeners() {
+  SAVE_FIELDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', scheduleSave);
+    el.addEventListener('change', scheduleSave);
+  });
+}
+
+// Save canvases when switching tabs (covers the case where student draws then navigates away)
+var _origSwitchTab = typeof switchTab === 'function' ? switchTab : null;
+// We'll hook into it after it's defined — see the DOMContentLoaded block below.
+
+</script>
+</body>
+</html>
