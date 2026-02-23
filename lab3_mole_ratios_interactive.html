@@ -2275,7 +2275,7 @@ function getCanvasDataURL(id) {
 }
 
 // ===== AI FEEDBACK =====
-var AI_SYSTEM = 'You are a helpful and encouraging General Chemistry I lab instructor at a university. Your feedback should be: (1) specific to the student\'s response, (2) scientifically accurate at the introductory college chemistry level, (3) supportive and constructive in tone. Keep responses to 3-5 sentences. If the student\'s answer is correct and complete, affirm it clearly. If it is incomplete, identify what is missing without giving away the answer. Flag any significant scientific errors. Do not repeat the student\'s words back verbatim. Focus feedback on chemical reasoning, not grammar.';
+var AI_SYSTEM = 'You are a General Chemistry I lab instructor at a university reviewing student lab responses. Before giving feedback, assess whether the student has made a genuine attempt to answer the chemistry question. If the response is off-task (complaining, random text, jokes, nonsense, expressions of disengagement, or content unrelated to chemistry), respond ONLY with: "This response does not address the chemistry question. Please re-read the prompt and write a genuine answer about [restate the topic in a few words]. Your grade depends on a real attempt." Do not give chemistry feedback on off-task responses. For genuine attempts: (1) be specific to the student response, (2) be scientifically accurate at the introductory college level, (3) be supportive and constructive. Keep feedback to 3-5 sentences. Affirm correct and complete answers clearly. For incomplete answers, identify what is missing without giving away the answer. Flag significant scientific errors. Do not repeat the student words back verbatim. Focus on chemical reasoning, not grammar.';
 
 var AI_PROMPTS = {
   purpose: function(txt) {
@@ -2307,6 +2307,60 @@ var AI_PROMPTS = {
   }
 };
 
+// Off-task patterns checked CLIENT-SIDE before the API is ever called.
+// Catches: disengagement, profanity, gibberish, complaints, meta-commentary.
+var OFF_TASK_PATTERNS = [
+  /i (have no idea|don.t know|don.t care|hate|don.t like|am bored)/i,
+  /this (lab|class|course|experiment) is (boring|stupid|dumb|pointless|hard|terrible|awful)/i,
+  /chemistry (is|sucks|is boring|is hard|is stupid)/i,
+  /i (can.t|cannot) (do this|answer|understand)/i,
+  /^(idk|idc|n\/a|na|none|nothing|no idea|whatever|lol|lmao|wtf|who cares)[.!?]*$/i,
+  /lorem ipsum/i,
+  /asdf|qwerty|aaaa+|zzzz+/i,
+  /(fuck|shit|ass|crap|damn|hell)[^a-z]/i,
+  /not going to (answer|do this|try)/i,
+  /just (give me|want) (the|a) (grade|answer|point)/i,
+];
+
+// Topic keywords — at least one should appear in a genuine chemistry response
+var CHEMISTRY_KEYWORDS = [
+  /temperature|delta.?t|heat|exotherm/i,
+  /mole|ratio|stoichiom|continu|variat/i,
+  /ocl|hypochlor|thiosulf|s2o3|reactant|product/i,
+  /volume|molarity|concentrat|solution/i,
+  /limiting|excess|balanced|equation/i,
+  /color|clear|colorless|appearance|mix/i,
+  /trial|data|result|experiment|measur/i,
+  /error|uncertaint|source|accurate/i,
+];
+
+var OFF_TASK_TOPICS = {
+  purpose:    'the purpose of the continuous variations experiment',
+  obs1:       'the appearance of the OCl⁻ and S₂O₃²⁻ solutions before mixing',
+  obs2:       'what you observed when the two solutions were mixed',
+  obs3:       'which trial produced the greatest temperature change',
+  q1:         'determining the mole ratio from your data',
+  q2:         'why equal molarities matter for comparing volumes',
+  q3:         'identifying the limiting reactant in each trial',
+  q4:         'comparing your experimental result to the balanced equation',
+  conclusion: 'your conclusion about the mole ratio you determined'
+};
+
+function isOffTask(txt, qid) {
+  var lower = txt.toLowerCase().trim();
+
+  // Hard off-task patterns
+  if (OFF_TASK_PATTERNS.some(function(p) { return p.test(lower); })) return true;
+
+  // Very short AND no chemistry keywords = likely off-task
+  if (lower.split(/\s+/).length < 6) {
+    var hasChemistry = CHEMISTRY_KEYWORDS.some(function(p) { return p.test(lower); });
+    if (!hasChemistry) return true;
+  }
+
+  return false;
+}
+
 function getAIFeedback(qid) {
   var textMap = {
     purpose: 'purpose-text', obs1: 'obs-1', obs2: 'obs-2', obs3: 'obs-3',
@@ -2316,16 +2370,45 @@ function getAIFeedback(qid) {
   var textEl = document.getElementById(textMap[qid]);
   if (!textEl) return;
   var txt = textEl.value.trim();
-  if (!txt || txt.length < 15) {
-    alert('Please write a response of at least 15 characters before requesting feedback.');
+
+  if (!txt || txt.length < 10) {
+    alert('Please write a response before requesting feedback.');
     return;
   }
+
   var btn = document.getElementById('ai-btn-' + qid);
   var feedbackEl = document.getElementById('ai-feedback-' + qid);
-  btn.disabled = true;
-  btn.textContent = 'Analyzing...';
   feedbackEl.classList.add('visible');
-  feedbackEl.textContent = 'Getting feedback from your instructor...';
+
+  // ── Client-side off-task check ──────────────────────────────────────────
+  if (isOffTask(txt, qid)) {
+    var topic = OFF_TASK_TOPICS[qid] || 'the chemistry question';
+    feedbackEl.style.borderLeftColor = 'var(--red)';
+    feedbackEl.style.background = 'var(--red-light)';
+    feedbackEl.innerHTML = '<strong style="color:var(--red);">Response does not address the question.</strong><br>' +
+      'Please re-read the prompt and write a genuine response about <em>' + topic + '</em>. ' +
+      'Your grade on this section depends on a real attempt. ' +
+      'If you are unsure where to start, check the Background tab or the Reference tab for help.';
+    return;
+  }
+
+  // Reset feedback styling in case a previous attempt was flagged
+  feedbackEl.style.borderLeftColor = '';
+  feedbackEl.style.background = '';
+
+  // ── Endpoint not configured ─────────────────────────────────────────────
+  if (!AI_PROXY_ENDPOINT || AI_PROXY_ENDPOINT === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
+    feedbackEl.style.borderLeftColor = 'var(--gold)';
+    feedbackEl.style.background = 'var(--gold-light)';
+    feedbackEl.textContent = 'AI feedback is not yet active — your instructor has not connected the feedback service. Your written response has been saved and will be reviewed manually.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Analyzing…';
+  feedbackEl.textContent = 'Reviewing your response…';
+  feedbackEl.style.borderLeftColor = '';
+  feedbackEl.style.background = '';
 
   var promptFn = AI_PROMPTS[qid];
   var prompt = promptFn ? promptFn(txt) : txt;
@@ -2338,15 +2421,29 @@ function getAIFeedback(qid) {
   .then(function(r) { return r.json(); })
   .then(function(data) {
     if (data.result === 'success') {
-      feedbackEl.textContent = data.feedback;
+      // Check if the API itself flagged the response as off-task
+      var fb = data.feedback || '';
+      var isApiOffTask = /does not address|not address|off.task|re-read the prompt|genuine answer/i.test(fb);
+      if (isApiOffTask) {
+        feedbackEl.style.borderLeftColor = 'var(--red)';
+        feedbackEl.style.background = 'var(--red-light)';
+      } else {
+        feedbackEl.style.borderLeftColor = '';
+        feedbackEl.style.background = '';
+      }
+      feedbackEl.textContent = fb;
     } else {
+      feedbackEl.style.borderLeftColor = 'var(--gold)';
+      feedbackEl.style.background = 'var(--gold-light)';
       feedbackEl.textContent = 'Feedback unavailable: ' + (data.feedback || data.message || 'Unknown error');
     }
     btn.disabled = false;
     btn.textContent = 'Get Feedback';
   })
-  .catch(function(err) {
-    feedbackEl.textContent = 'Network error. Check that your Apps Script endpoint is configured.';
+  .catch(function() {
+    feedbackEl.style.borderLeftColor = 'var(--gold)';
+    feedbackEl.style.background = 'var(--gold-light)';
+    feedbackEl.textContent = 'Could not reach the feedback service. Check your internet connection. Your written response is saved and will be reviewed by your instructor.';
     btn.disabled = false;
     btn.textContent = 'Get Feedback';
   });
