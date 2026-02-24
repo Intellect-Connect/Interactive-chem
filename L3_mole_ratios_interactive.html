@@ -2975,14 +2975,44 @@ function submitLab() {
     ]
   };
 
+  // GAS requires text/plain to avoid CORS preflight blocking
   fetch(SHEETS_ENDPOINT, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload),
+    redirect: 'follow'
   })
-  .then(function(r) { return r.json(); })
-  .then(function() { onSubmitSuccess(attemptNum, result); })
-  .catch(function() { onSubmitSuccess(attemptNum, result, true); });
+  .then(function(r) {
+    if (!r.ok) { throw new Error('HTTP ' + r.status); }
+    return r.text();
+  })
+  .then(function(text) {
+    var data = {};
+    try { data = JSON.parse(text); } catch(e) {}
+    if (data.result === 'error') {
+      console.error('GAS error:', data.message || text);
+      showSubmitError(data.message || 'Server error — check Apps Script logs.');
+    }
+    onSubmitSuccess(attemptNum, result);
+  })
+  .catch(function(err) {
+    console.error('Fetch failed:', err);
+    showSubmitError('Could not reach server: ' + err.message + '. Check that SHEETS_ENDPOINT is set and the script is deployed.');
+    onSubmitSuccess(attemptNum, result, true);
+  });
+}
+
+function showSubmitError(msg) {
+  var el = document.getElementById('submit-error-msg');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'submit-error-msg';
+    el.style.cssText = 'margin:12px 0;padding:12px 16px;background:#ffebee;border:1px solid #ef9a9a;border-radius:6px;color:#b71c1c;font-size:0.9rem;font-family:monospace;white-space:pre-wrap;';
+    var btn = document.getElementById('submit-btn');
+    if (btn && btn.parentNode) btn.parentNode.insertBefore(el, btn.nextSibling);
+  }
+  el.textContent = 'Submission error: ' + msg;
+  el.style.display = 'block';
 }
 
 function onSubmitSuccess(attemptNum, result, offline) {
@@ -3378,23 +3408,36 @@ document.addEventListener('keyup', function(e) {
   }
 });
 function resetAttemptsOnly() {
+  // 1. Remove submission counter
   try { localStorage.removeItem(SUBMIT_COUNT_KEY); } catch(e) {}
-  var btn = document.getElementById('submit-btn');
+
+  // 2. Remove stored attempt results from SAVE_KEY so restoreSubmissionState()
+  //    does not re-lock the button on the next page load
+  try {
+    var raw = localStorage.getItem(SAVE_KEY);
+    if (raw) {
+      var saved = JSON.parse(raw);
+      delete saved['_attempt1_result'];
+      delete saved['_attempt2_result'];
+      localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+    }
+  } catch(e) {}
+
+  // 3. Reset all UI elements immediately (no page reload needed)
+  var btn    = document.getElementById('submit-btn');
   var infoEl = document.getElementById('submit-info');
   var revEl  = document.getElementById('revision-prompt');
-  if (btn) {
-    btn.disabled = false;
-    btn.textContent = 'Submit Lab 3 — Attempt 1 of 2';
-    btn.style.background = '';
-  }
+  var remEl  = document.getElementById('subs-remaining-text');
+  var p1     = document.getElementById('score-panel-1');
+  var p2     = document.getElementById('score-panel-2');
+
+  if (btn)   { btn.disabled = false; btn.textContent = 'Submit Lab 3 — Attempt 1 of 2'; btn.style.background = ''; }
   if (infoEl) infoEl.innerHTML = '<strong>Ready to Submit?</strong> Submission counter reset. You have <strong id="subs-remaining-text">2 submissions</strong> available.';
-  if (revEl) revEl.style.display = 'none';
-  var p1 = document.getElementById('score-panel-1');
-  var p2 = document.getElementById('score-panel-2');
-  if (p1) { p1.style.display = 'none'; p1.classList.remove('visible'); }
-  if (p2) { p2.style.display = 'none'; p2.classList.remove('visible'); }
-  var remEl = document.getElementById('subs-remaining-text');
-  if (remEl) remEl.textContent = '2 submissions';
+  if (revEl)  revEl.style.display = 'none';
+  if (remEl)  remEl.textContent = '2 submissions';
+  if (p1)    { p1.style.display = 'none'; p1.classList.remove('visible'); }
+  if (p2)    { p2.style.display = 'none'; p2.classList.remove('visible'); }
+
   setSaveStatus('saved', 'Submission counter reset — Attempt 1 of 2 ready');
 }
 </script>
