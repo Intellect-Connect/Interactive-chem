@@ -2637,7 +2637,7 @@
               </tr>
             </tbody>
           </table>
-          <button class="ai-btn" style="margin-top:12px;" onclick="checkMatching(); getAIFeedback('q1-feedback', 'q1-pattern', 'Q1: Student described the periodic table clustering pattern for essential nutrients vs toxic metals, selected the best explanation, and matched toxic metals to nutrient mimics. Evaluate: (1) pattern sentence accuracy — essential nutrients in s- and p-blocks, toxic metals in d-block; (2) whether MC choice B is selected; (3) matching accuracy and whether the student connects group/period position to chemical similarity.')">Check Matches &amp; Get Feedback</button>
+          <button class="ai-btn" style="margin-top:12px;" onclick="checkMatching(); getAIFeedback('q1-feedback', 'q1-pattern', 'Q1: The student described the periodic table clustering pattern for essential nutrients vs toxic metals, selected a multiple choice explanation, and matched toxic metals to the nutrients they chemically mimic. Evaluate: (1) whether the pattern description is scientifically accurate about where essential and toxic elements tend to appear on the table; (2) whether the MC reasoning is sound; (3) whether the matching connects chemical similarity — same group, similar ionic radius — to biological confusion. Do not reveal which MC option is correct or state the correct matches.')">Check Matches &amp; Get Feedback</button>
           <div class="ai-feedback-area" id="q1-feedback"></div>
         </div>
 
@@ -2770,7 +2770,7 @@
 
           <div class="q-sub">Part C &mdash; Explain your flag using your Q1 matching work as the chemical foundation.</div>
           <textarea class="open-response" id="q6b" style="min-height:110px;" placeholder="I flagged [item] because it contains [element]. In Q1, I matched [element] to [nutrient] it mimics because they share [chemical property]. When [element] substitutes in, it disrupts [body system] by... The most vulnerable population is [group] because... Even low-level repeated exposure through the food bank matters because..."></textarea>
-          <button class="ai-btn" onclick="checkTrueFalse(); getAIFeedback('q3-feedback', 'q6b', 'Q3 (8 pts): Student answered 4 T/F items about food storage chemistry and contamination, then flagged the highest-risk inventory item. Evaluate the written explanation for: (1) correct identification of the nutrient mimicked from Q1 matching with a chemical reason; (2) mechanistic explanation of the biological disruption; (3) correct vulnerable population with justification; (4) explanation of why sub-threshold repeated food bank exposure is still a concern. Award 2 pts per element present. T/F answers: TF1=T, TF2=T, TF3=T, TF4=F.')">Check T/F &amp; Get Feedback</button>
+          <button class="ai-btn" onclick="checkTrueFalse(); getAIFeedback('q3-feedback', 'q6b', 'Q3: The student answered T/F items about food storage chemistry and contamination, identified a high-risk inventory item, and wrote an explanation of the contamination concern. Evaluate the written explanation for: (1) whether the student identifies a specific toxic element and connects it to a nutrient it chemically resembles; (2) whether the mechanistic explanation addresses biological disruption at the molecular or physiological level; (3) whether a vulnerable population is named with justification; (4) whether the student addresses why repeated low-level exposure matters even below threshold. Guide toward completeness without stating which T/F answers are correct or naming the specific nutrient-toxin pairs.')">Check T/F &amp; Get Feedback</button>
           <div class="ai-feedback-area" id="q3-feedback"></div>
         </div>
 
@@ -2926,8 +2926,8 @@
 
 <!-- ============================================================ JAVASCRIPT ============================================================ -->
 <script>
-const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx69Jq2ktdQG0zE8tDc7LRqH_vve74sM4O5_cP-sPluaTdYNZVW9KlyU7eESxf96o4pvg/exec';
-const AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx69Jq2ktdQG0zE8tDc7LRqH_vve74sM4O5_cP-sPluaTdYNZVW9KlyU7eESxf96o4pvg/exec';
+const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyp3N_GTXKVcvEmZuZDlcH9LlVsSac7NLZpHHhqp0bVGyjBdJkQERHpc2ChSLRmTjR9QA/exec';
+const AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyp3N_GTXKVcvEmZuZDlcH9LlVsSac7NLZpHHhqp0bVGyjBdJkQERHpc2ChSLRmTjR9QA/exec';
 const MAX_ATTEMPTS = 2;
 const LAB_STORAGE_KEY = 'chem100_lab2_attempts';
 
@@ -3157,11 +3157,7 @@ Provide brief, specific feedback (3-5 sentences). Be warm and encouraging. Point
   const systemPrompt = `You are a chemistry instructor at a liberal arts university giving concise, constructive, scientifically accurate feedback on student lab reports for an introductory (CHEM 100) course. Your students are non-majors, many encountering chemistry formally for the first time. Be encouraging but rigorous. Connect chemistry to everyday experience. Never use bullet points. IMPORTANT: Before giving feedback, evaluate whether the writing sounds authentically like a first-year non-major student. Red flags for AI-generated text include: overly formal academic phrasing, sophisticated vocabulary inconsistent with introductory coursework, perfectly structured arguments with no errors or hesitation, hedging language like "it is worth noting" or "furthermore" or "in conclusion", and responses that address every possible angle of a question simultaneously with no personal voice. If the response shows these signs, do not give content feedback. Instead respond only with: "Your response reads like it may have been written with AI assistance. This is a CHEM 100 course and I want to hear your own thinking in your own words. Please rewrite this the way you would explain it to a friend — using simpler, more natural language. What do YOU actually understand about this topic?" If the writing is clearly a genuine student attempt — even if imperfect, incomplete, or grammatically rough — give normal constructive feedback.`;
 
   try {
-    const res = await fetch(AI_PROXY_ENDPOINT, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'feedback', system: systemPrompt, prompt })
-    });
-    const data = await res.json();
+    const data = await xhrPost(AI_PROXY_ENDPOINT, { action: 'feedback', system: systemPrompt, prompt });
     const text = data.feedback || '';
     if (text) {
       feedbackArea.innerHTML = '<strong style="display:block; font-family:JetBrains Mono,monospace; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--blue); margin-bottom:8px;">Instructor Feedback</strong>' +
@@ -3486,11 +3482,12 @@ async function submitLab() {
     const statusEl = document.getElementById('sheets-status');
     if (statusEl) { statusEl.textContent = 'Sending to gradebook...'; statusEl.style.color = 'var(--gold)'; }
     try {
-      await fetch(SHEETS_ENDPOINT, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+      await new Promise(function(resolve) {
+        var x = new XMLHttpRequest();
+        x.open('POST', SHEETS_ENDPOINT, true);
+        x.setRequestHeader('Content-Type', 'text/plain');
+        x.onload = resolve; x.onerror = resolve;
+        x.send(JSON.stringify(payload));
       });
       if (statusEl) { statusEl.textContent = 'Submitted to gradebook successfully.'; statusEl.style.color = 'var(--green)'; }
     } catch(err) {
@@ -3555,7 +3552,7 @@ Student data summary:
 Write personalized feedback with sections:
 1. Brief warm opening (1-2 sentences) acknowledging their specific score
 2. STRENGTHS — 2-3 specific things they did well, referencing actual responses or data
-3. AREAS TO REVIEW — specific items where points were lost, with brief explanation of the correct chemistry (do not just say "review this")
+3. AREAS TO GROW — specific areas where the response could be stronger, with a guiding question to prompt deeper thinking rather than stating the correct answer directly
 4. PERIODIC TABLE — comment on whether their element marking appears correct; note patterns they should have observed about nutrient vs. toxin placement
 5. FOOD ANALYSIS — briefly comment on their specific food item choice; are their mineral values plausible? Any flags?
 6. If attempt 1 of 2: 1-2 specific, actionable things to improve before resubmission
@@ -3569,15 +3566,11 @@ Tone: warm, specific, constructive. Plain text with ALL CAPS section headers. No
   }
 
   try {
-    const response = await fetch(AI_PROXY_ENDPOINT, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'feedback',
-        system: 'You are an encouraging CHEM 100 instructor providing personalized post-submission feedback. Be warm, specific, and constructive. Use plain text only, no markdown, no bullet points.',
-        prompt
-      })
+    const data = await xhrPost(AI_PROXY_ENDPOINT, {
+      action: 'feedback',
+      system: 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university. Your students are non-majors encountering chemistry for the first time. Approach every student response with grace and genuine encouragement — assume they are trying their best and that every question is an opportunity for growth. Connect chemistry to the wonder of the created world whenever it fits naturally. Be warm, specific, and constructive. Use plain conversational language. Never use bullet points. Keep feedback to 4-6 sentences. For strong responses: affirm what they did well and extend their thinking one step further. For incomplete responses: acknowledge what they got right, then gently guide them toward what is missing with a question or hint rather than a correction. Never give away the answer directly. For off-task responses (random text, jokes, complaints, or content unrelated to chemistry): respond warmly but clearly — acknowledge that this does not yet answer the question, restate what the question is asking in simple terms, and invite them to try again. Do not give chemistry feedback on off-task responses. IMPORTANT — AI-generated text: if the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, or hedging language like it is worth noting or furthermore or in conclusion, it may have been written by AI. If so, respond only with: This response reads like it may have been drafted with AI assistance. I want to hear your own voice and your own thinking — even if it is rough or incomplete, that is exactly what helps you learn. Please rewrite this in your own words, the way you would explain it to a friend. What do you actually understand about this topic?',
+      prompt
     });
-    const data = await response.json();
     const text = data.feedback || null;
     if (text) {
       const formatted = text.split('\n').map(line => {
@@ -3614,10 +3607,10 @@ function formatChemSym(input) {
 // ====================================================================
 const Q1_CORRECT = 'b';
 const Q1_EXPLANATIONS = {
-  a: 'Incorrect. Nutrient distribution on the periodic table is not random &mdash; essential elements cluster in predictable blocks. Groups predict chemical behavior, and that structure directly determines biological function.',
-  b: 'Correct. Essential macro- and micronutrients (Ca, Na, K, Mg, Fe, Zn, I, Se, P, Cu) are concentrated in the s-block and p-block. Toxic heavy metals like Pb, Hg, Cd, and As sit in the d-block or lower p-block. Elements in the same group share valence electron configurations, which is why Pb mimics Ca and As mimics phosphate &mdash; the body cannot always distinguish them at the point of absorption.',
-  c: 'Incorrect. Period 6 placement does not automatically confer toxicity &mdash; barium (Ba, Period 6, Group 2) is used safely in medical imaging at controlled doses. Toxicity is determined by biological function, dose, and chemical behavior, not period number alone.',
-  d: 'Incorrect. The entire foundation of predicting nutrient function and contamination risk rests on periodic trends. Group membership (valence electrons, ionic radius, electronegativity) is precisely why certain toxic metals mimic essential nutrients.'
+  a: 'Think about whether the location of elements on the periodic table follows any pattern. Do elements in the same group tend to behave similarly in the body?',
+  b: 'Good selection. Consider what it means for essential nutrients and toxic metals to occupy different regions of the table — what does that tell you about how the body might confuse one for the other?',
+  c: 'Think about whether period number alone determines how an element behaves biologically. What other factors might matter more?',
+  d: 'Consider whether periodic trends — like group membership and valence electrons — help predict how elements interact with biological systems.'
 };
 
 function handleMC(qid, selected) {
@@ -4153,6 +4146,21 @@ let invReady = false;
     }
   };
 })();
+
+// XHR helper — handles Google Apps Script redirects correctly
+function xhrPost(url, payload) {
+  return new Promise(function(resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-Type', 'text/plain');
+    xhr.onload = function() {
+      try { resolve(JSON.parse(xhr.responseText)); }
+      catch(e) { resolve({}); }
+    };
+    xhr.onerror = function() { reject(new Error('Network error')); };
+    xhr.send(JSON.stringify(payload));
+  });
+}
 </script>
 </body>
 </html>
