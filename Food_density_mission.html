@@ -2331,29 +2331,29 @@ function switchTab(id, btn) {
 const mcAnswers = {
   mc1: {
     correct: 'B',
-    explanation: 'Correct. Water (H2O) is a compound because it consists of hydrogen and oxygen atoms chemically bonded together in a fixed 2:1 ratio. A chemical bond means the atoms cannot be separated by physical means — you would need a chemical reaction (electrolysis) to decompose water into hydrogen and oxygen gas.',
+    explanation: 'Good selection. Think about what it means for two elements to be chemically bonded together in a fixed ratio — how does that compare to a physical mixture where components can vary?',
     wrong: {
-      A: 'An element is made of only one kind of atom. Water contains two different kinds of atoms (H and O), so it cannot be an element. Table salt (NaCl) is also not an element for the same reason.',
-      C: 'A mixture contains substances that are physically combined but retain their own properties and can be separated by physical means. In water, H and O are chemically bonded — no physical process separates them. That makes water a compound, not a mixture.',
-      D: 'A heterogeneous mixture would have visibly distinct regions. Water appears uniform (and is uniform at the molecular level), but the key point is that its composition is fixed by chemical bonding, not variable mixing.'
+      A: 'Think about how many different kinds of atoms are present in water. Does that match the definition of an element?',
+      C: 'Consider whether the hydrogen and oxygen in water can be separated by a physical process like filtering or evaporation, or whether something more is required.',
+      D: 'Look at a sample of water — do you see distinct separate regions? And consider whether its composition is fixed or variable.'
     }
   },
   mc2: {
     correct: 'B',
-    explanation: 'Correct. Water (d = 1.00 g/mL) is denser than oil (d ≈ 0.92 g/mL), so water sinks to the bottom and oil floats on top. Density determines relative position — the denser substance always sinks beneath the less dense one in an immiscible mixture.',
+    explanation: 'Good thinking. Consider how the density values you measured for water and oil compare, and what that difference tells you about which one sinks and which one floats.',
     wrong: {
-      A: 'This confuses "heavier" (total mass) with density. A swimming pool of oil is heavier than a cup of water, but oil still floats on water because density — mass per unit volume — is what matters, not total mass.',
-      C: 'Oil and water are immiscible — they do not mix at the molecular level because water is polar and oil is nonpolar. You can shake them together temporarily, but they will always separate into layers.',
-      D: 'The fact that 0.92 is a smaller number than 1.00 is coincidentally true here, but the reasoning is backward. The substance with the smaller density value is less dense and therefore floats, because it has less mass packed into the same volume.'
+      A: 'Think about whether the total amount of liquid matters here, or whether it is the mass packed into each unit of volume that determines position.',
+      C: 'Consider what you observed when you tried to mix oil and water. Does mixing happen easily, or do they always end up in separate layers?',
+      D: 'Look at the density values you measured. Which number is larger, and which liquid ended up on the bottom?'
     }
   },
   mc3: {
     correct: 'C',
-    explanation: 'Correct. Dish soap is a homogeneous mixture. It contains water, surfactant molecules (like sodium lauryl sulfate), fragrances, dyes, and preservatives — multiple chemically distinct substances physically combined in a uniform solution. Nothing is chemically bonded into a new pure substance, and components retain their individual properties.',
+    explanation: 'Good selection. Think about how many different ingredients are in dish soap and whether they are uniformly distributed or form visible separate regions.',
     wrong: {
-      A: 'Elements consist of only one kind of atom. Dish soap contains water, surfactants, fragrances, and dyes — many different types of molecules, not a single element.',
-      B: 'A compound is a pure substance with a fixed chemical formula. Dish soap\'s composition varies by brand and formulation, and its components can be separated physically. That variability and separability rules out compound.',
-      D: 'A heterogeneous mixture has visibly distinct regions you can see without magnification. Dish soap appears completely uniform throughout — it is a homogeneous mixture, specifically a surfactant solution.'
+      A: 'Consider how many different types of molecules are present in dish soap. Does that match the definition of an element?',
+      B: 'Think about whether dish soap has a single fixed chemical formula, or whether its composition could vary from brand to brand.',
+      D: 'Look at your dish soap sample. Can you see any distinct visible layers or separated regions, or does it appear completely uniform?'
     }
   }
 };
@@ -2570,7 +2570,7 @@ function checkDensity(liquid) {
 
   if (diff <= tolerance) {
     msgEl.className = 'val-msg ok';
-    msgEl.textContent = 'Correct. Your calculated density (' + studentDens.toFixed(2) + ' g/mL) matches your mass and volume data.';
+    msgEl.textContent = 'Your calculated density (' + studentDens.toFixed(2) + ' g/mL) is within a reasonable range for this liquid. Check that your mass and volume values are recorded consistently.';
 
     // Water technique check
     if (liquid === 'water') {
@@ -2657,7 +2657,7 @@ function setValMsg(el, msgEl, level, text) {
 const q1Answer = 'B';
 const q1Feedback = {
   A: 'Not quite. Water (H₂O) contains two types of atoms — hydrogen and oxygen. The key distinction is not the number of atom types, but whether they are chemically bonded in a fixed ratio (compound) or physically combined with variable composition (mixture).',
-  B: 'Correct. Water is always H₂O — a fixed chemical bond between hydrogen and oxygen in a 2:1 ratio. Dish soap contains multiple substances physically combined with no fixed formula, making it a mixture.',
+  B: 'Good selection. Think about what distinguishes a substance with a fixed chemical formula from one whose composition can vary between brands or batches.',
   C: 'Appearance — color or clarity — does not determine whether something is a compound or mixture. Many mixtures are clear and many compounds are colored. Classification is based on chemical composition.',
   D: 'This reverses the logic. Mixtures can often be separated by physical means such as boiling or filtering. Compounds require chemical reactions to break apart — they are harder to separate, not easier.'
 };
@@ -2689,12 +2689,12 @@ const matchAnswers = {
   'match-6': 'chemical'
 };
 const matchFeedback = {
-  'match-1': { physical: 'Correct. Density is measured without changing the oil — it remains vegetable oil after measurement.', chemical: 'Density is measured without altering the oil chemically. It is a physical property.' },
-  'match-2': { chemical: 'Correct. Rancidity is oxidation — a chemical reaction that produces new compounds with different odors and flavors. The oil is permanently changed.', physical: 'Turning rancid is a chemical change — oxygen reacts with fatty acid chains, forming new substances. This is a chemical property.' },
-  'match-3': { physical: 'Correct. Viscosity can be observed without changing the syrup chemically. It is a physical property.', chemical: 'Viscosity is how a substance flows and can be observed without a chemical change. It is a physical property.' },
-  'match-4': { chemical: 'Correct. Caramelization is a chemical reaction — sucrose decomposes into new compounds at high temperature. The original sugar is permanently destroyed.', physical: 'Caramelization creates new substances — the sucrose is permanently broken down by heat. This is a chemical property.' },
-  'match-5': { physical: 'Correct. Color and transparency are observable without changing water chemically. These are physical properties.', chemical: 'Color and transparency can be observed without altering water chemically. They are physical properties.' },
-  'match-6': { chemical: 'Correct. Soap\'s action on grease involves surfactant molecules disrupting fat — a chemical interaction that transforms the system.', physical: 'The way soap acts on grease is best described as a chemical property — surfactants chemically interact with fat molecules to break them apart.' }
+  'match-1': { physical: 'Good — think about whether measuring density changes anything about the oil itself.', chemical: 'Consider: after you measure the density of oil, is the oil still oil? Has anything been permanently changed?' },
+  'match-2': { chemical: 'Good — think about whether rancidity produces something new or just rearranges the original substance.', physical: 'Consider whether you could reverse rancidity. If a change produces a new substance that cannot be undone, what type of property does that suggest?' },
+  'match-3': { physical: 'Good — think about whether observing how syrup flows requires any chemical change to occur.', chemical: 'Consider: does measuring viscosity alter what the syrup is made of?' },
+  'match-4': { chemical: 'Good — think about whether caramelization produces new substances or just changes the sugar\'s physical form.', physical: 'Consider whether you could reverse caramelization back to white sugar. What does that tell you about the type of change?' },
+  'match-5': { physical: 'Good — think about whether observing color or transparency requires any reaction to take place.', chemical: 'Consider: does looking at water\'s color change its chemical makeup in any way?' },
+  'match-6': { chemical: 'Good — think about what happens at the molecular level when soap interacts with grease. Is a new substance formed?', physical: 'Consider whether soap\'s cleaning action involves molecules breaking apart and forming new bonds, or just a physical rearrangement.' }
 };
 
 function checkMatching() {
@@ -2758,28 +2758,28 @@ const correctReasoning = { water: 'a', oil: 'c', syrup: 'b', soap: 'b' };
 
 const reasoningFeedback = {
   water: {
-    a: 'Correct. Water is always H₂O — hydrogen and oxygen in a fixed 2:1 ratio, chemically bonded. That fixed composition is the hallmark of a compound.',
-    b: 'Appearance alone does not determine classification. Many compounds and mixtures look clear and uniform. The key is composition, not clarity.',
-    c: 'Tap water does contain dissolved minerals, which technically makes it a mixture. However, the question refers to pure water (distilled), which is always H₂O — a compound. In this lab, treat water as a compound.',
-    d: 'Water\'s composition does not change with temperature — it is always H₂O whether liquid, solid, or gas. Temperature affects state, not chemical identity.'
+    a: 'Good thinking — consider whether composition or appearance is the better way to identify what kind of substance something is.',
+    b: 'Think about whether clarity is what defines a substance type. Can you think of other clear liquids that belong to different categories?',
+    c: 'Interesting thought. Consider whether the lab sample is pure water or tap water, and how that affects which reasoning applies here.',
+    d: 'Think about whether temperature changes what water is made of, or only how it behaves physically.'
   },
   oil: {
-    a: 'Vegetable oil contains carbon, hydrogen, and oxygen — three elements — combined in triglyceride molecules. It is not a single element.',
-    b: 'Vegetable oil is not one molecule with a fixed formula. It is a blend of palmitic, oleic, linoleic, and other triglycerides — variable composition, which defines a mixture.',
-    c: 'Correct. Vegetable oil is a homogeneous mixture of several different triglyceride molecules that appear completely uniform. No single fixed formula exists for the whole blend.',
-    d: 'Fresh vegetable oil from a well-mixed bottle is a single uniform phase — there are no visible layers. Heterogeneous requires distinct, visible regions.'
+    a: 'Consider how many different types of atoms make up vegetable oil. Does that fit the definition of an element?',
+    b: 'Think about whether vegetable oil has one fixed chemical formula or whether it contains a blend of different molecules.',
+    c: 'Good reasoning — consider whether oil looks the same throughout and whether that tells you something about its category.',
+    d: 'Look at your sample of oil carefully. Do you see any distinct visible layers or boundaries between regions?'
   },
   syrup: {
-    a: 'Sucrose (C₁₂H₂₂O₁₁) is one component in syrup, but syrup also contains water, coloring agents, flavoring, and other sugars. A mixture of ingredients cannot be a single pure compound.',
-    b: 'Correct. Syrup and honey contain water, multiple types of sugars, minerals, and flavorings — all dissolved uniformly. Variable composition and physical combination makes this a homogeneous mixture.',
-    c: 'A well-mixed syrup or honey shows no visible separation — it appears uniform throughout. Distinct visible layers would be required to call it heterogeneous.',
-    d: 'Syrup contains carbon, hydrogen, and oxygen — multiple elements combined in molecules. Calling it an element would require it to contain only one kind of atom.'
+    a: 'Think about whether syrup contains only one type of molecule or several different dissolved substances.',
+    b: 'Good thinking — consider how many ingredients are listed on a bottle of pancake syrup and how uniformly they are distributed.',
+    c: 'Examine your syrup sample. Can you see any distinct separate regions, or does it look completely uniform?',
+    d: 'Consider how many different kinds of atoms and molecules are present in syrup.'
   },
   soap: {
-    a: 'Sodium lauryl sulfate is one ingredient in dish soap, but commercial dish soap also contains water, fragrance, dyes, thickeners, and preservatives. A blend of multiple ingredients is a mixture.',
-    b: 'Correct. Dish soap is a homogeneous mixture — multiple substances (surfactants, water, dyes, fragrances) are physically combined and uniformly distributed throughout.',
-    c: 'A single-phase dish soap appears uniform. Unless you can see distinct separated layers or regions with the naked eye, it is homogeneous, not heterogeneous.',
-    d: 'Dish soap contains many types of molecules made of carbon, hydrogen, oxygen, sulfur, and sodium. It is not composed of a single type of atom.'
+    a: 'Think about how many ingredients are listed on a bottle of dish soap. Does one ingredient define the whole substance?',
+    b: 'Good reasoning — think about how many different substances are in dish soap and whether they appear uniformly distributed.',
+    c: 'Look at your soap sample. Are there any distinct visible regions or layers, or does it appear to be one uniform phase?',
+    d: 'Consider how many different types of atoms and molecules make up dish soap.'
   }
 };
 
@@ -2804,28 +2804,28 @@ const correctClassifications = {
 };
 const classificationFeedback = {
   water: {
-    compound: 'Correct. Pure water (H2O) is a compound — hydrogen and oxygen bonded in a fixed 2:1 ratio.',
-    element: 'Elements contain only one type of atom. Water contains both hydrogen and oxygen atoms.',
-    'mixture-homo': 'Close, but water is actually a compound. Its composition is always H2O — it cannot vary like a mixture.',
-    'mixture-hetero': 'Water is a compound with fixed composition (H2O), not a mixture of variable components.'
+    compound: 'Good thinking — consider whether water has a fixed chemical composition or a variable one.',
+    element: 'Think about how many types of atoms make up water. Does that match the definition of an element?',
+    'mixture-homo': 'Think about whether water has a fixed or variable composition. Can you separate it into parts by physical means?',
+    'mixture-hetero': 'Consider whether water\'s composition ever changes from sample to sample. That distinction matters here.'
   },
   oil: {
-    'mixture-homo': 'Correct. Vegetable oil is a homogeneous mixture of different triglyceride molecules, appearing uniform throughout.',
-    'mixture-hetero': 'Acceptable — vegetable oil is primarily homogeneous (one phase), though it may contain trace particles. Homogeneous is the better classification.',
-    compound: 'Vegetable oil is not a single compound — it is a blend of many different triglyceride molecules (palmitic, oleic, linoleic acids, etc.).',
-    element: 'Elements contain only one kind of atom. Oil is composed of carbon, hydrogen, and oxygen in complex molecules.'
+    'mixture-homo': 'Good — think about whether vegetable oil looks the same throughout and whether it has a fixed composition.',
+    'mixture-hetero': 'You are in the right category. Think about whether oil appears uniform or shows distinct visible phases.',
+    compound: 'Consider whether vegetable oil has one fixed chemical formula or whether it is a blend of different molecules.',
+    element: 'Think about how many types of atoms and molecules are present in vegetable oil.'
   },
   syrup: {
-    'mixture-homo': 'Correct. Pancake syrup is a homogeneous mixture of water, corn syrup (sucrose/glucose), flavorings, and colorings.',
-    'mixture-hetero': 'Accepted — honey can appear heterogeneous if crystallized. Pancake syrup is homogeneous, but this answer is reasonable.',
-    compound: 'Syrup and honey contain multiple dissolved substances (sugars, water, minerals), so they are mixtures, not single compounds.',
-    element: 'Elements consist of one kind of atom — syrup is made of many different molecules.'
+    'mixture-homo': 'Good thinking — consider whether syrup looks uniform and whether its composition is fixed or variable.',
+    'mixture-hetero': 'You are on the right track. Look carefully at your sample — does it show separate visible layers or phases?',
+    compound: 'Think about whether syrup has a single fixed chemical formula or whether it contains several different dissolved substances.',
+    element: 'Consider how many different types of molecules are present in syrup.'
   },
   soap: {
-    'mixture-homo': 'Correct. Commercial dish soap is a homogeneous mixture of water, surfactants (detergent molecules), dyes, and fragrances — multiple substances uniformly combined.',
-    'mixture-hetero': 'Dish soap appears uniform throughout (one phase), so homogeneous is the better classification.',
-    compound: 'Dish soap contains many different ingredients — surfactants, water, dyes, fragrance. This makes it a mixture, not a pure compound.',
-    element: 'Elements contain only one kind of atom. Soap is composed of many different molecules.'
+    'mixture-homo': 'Good — think about whether dish soap looks uniform throughout and how many different ingredients it contains.',
+    'mixture-hetero': 'You are in the right category. Consider whether soap shows visible separate phases or appears completely uniform.',
+    compound: 'Think about the ingredient list on a bottle of dish soap. Does that match the definition of a single pure compound?',
+    element: 'Consider how many different types of atoms and molecules make up dish soap.'
   }
 };
 
