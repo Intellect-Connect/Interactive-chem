@@ -2918,11 +2918,6 @@ function submitLab() {
   }
 
   var count = getSubmissionCount();
-  if (count >= 2) {
-    alert('You have used both submissions for this lab. Contact your instructor if you need an additional attempt.');
-    return;
-  }
-
   var attemptNum = count + 1;
   var result = scoreSubmission();
   var btn = document.getElementById('submit-btn');
@@ -3010,12 +3005,12 @@ function onSubmitSuccess(attemptNum, result, offline) {
     if (infoEl) infoEl.innerHTML = '<strong>Attempt 1 recorded' + (offline ? ' (offline)' : '') + '.</strong> Review the feedback below, revise your responses above, then submit your final attempt when ready. <strong style="color:var(--red);">Attempt 2 is your final grade.</strong>';
     document.getElementById('subs-remaining-text').textContent = '1 submission remaining';
   } else {
-    // Both submissions used
-    btn.disabled = true;
-    btn.textContent = 'Both submissions used';
+    // Testing mode — no lockout
+    btn.disabled = false;
+    btn.textContent = 'Submit Again (Testing Mode)';
     document.getElementById('revision-prompt').style.display = 'none';
-    if (infoEl) infoEl.innerHTML = '<strong>Both submissions recorded' + (offline ? ' (offline)' : '') + '.</strong> Your final score is shown below. Contact your instructor if you have questions.';
-    document.getElementById('subs-remaining-text').textContent = '0 submissions remaining';
+    if (infoEl) infoEl.innerHTML = '<strong>Submission ' + attemptNum + ' recorded' + (offline ? ' (offline)' : '') + '.</strong> Testing mode — unlimited submissions.';
+    document.getElementById('subs-remaining-text').textContent = 'unlimited (testing)';
   }
 }
 
@@ -3139,10 +3134,10 @@ function restoreSubmissionState() {
       document.getElementById('subs-remaining-text').textContent = '1 submission remaining';
       if (infoEl) infoEl.innerHTML = '<strong>Attempt 1 already recorded.</strong> Review the feedback, revise your responses, then submit your final attempt. <strong style="color:var(--red);">Attempt 2 is your final grade.</strong>';
     } else {
-      btn.disabled = true;
-      btn.textContent = 'Both submissions used';
-      document.getElementById('subs-remaining-text').textContent = '0 submissions remaining';
-      if (infoEl) infoEl.innerHTML = '<strong>Both submissions recorded.</strong> Your final score is shown below. Contact your instructor if you have questions.';
+      btn.disabled = false;
+      btn.textContent = 'Submit Again (Testing Mode)';
+      document.getElementById('subs-remaining-text').textContent = 'unlimited (testing)';
+      if (infoEl) infoEl.innerHTML = '<strong>Testing mode — submissions unlimited.</strong>';
       // Restore attempt 2 score too
       try {
         var raw2 = localStorage.getItem(SAVE_KEY);
