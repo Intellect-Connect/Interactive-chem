@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to Bracket City | CHEM 100</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    /* Page surfaces — light warm parchment */
+    --bg:          #f4f1eb;
+    --bg-mid:      #edeae1;
+    --bg-card:     #ffffff;
+    --bg-dark:     #1a2744;   /* kept for masthead/closing — echoes the lab */
+
+    /* Borders & grid */
+    --border:      rgba(26,39,68,0.12);
+    --border-mid:  rgba(26,39,68,0.18);
+    --grid-line:   rgba(26,39,68,0.055);
+
+    /* Ink */
+    --ink:         #1a2030;
+    --ink-mid:     #3a4560;
+    --ink-muted:   #7a8099;
+
+    /* Green accent — same value as lab so they share identity */
+    --green:       #1e9e5c;      /* slightly deeper on light bg for contrast */
+    --green-bright:#3ddc84;      /* used sparingly for filled elements */
+    --green-pale:  rgba(30,158,92,0.08);
+    --green-border:rgba(30,158,92,0.28);
+
+    /* Amber & red */
+    --amber:       #c47d0e;
+    --amber-pale:  rgba(196,125,14,0.10);
+    --amber-border:rgba(196,125,14,0.32);
+    --red:         #c0392b;
+    --red-pale:    rgba(192,57,43,0.08);
+    --red-border:  rgba(192,57,43,0.28);
+
+    --white:       #ffffff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.72;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grid on light background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body > * { position: relative; z-index: 1; }
+
+  /* MASTHEAD — stays dark to anchor the page and echo the lab */
+  .masthead {
+    background: var(--bg-dark);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    min-height: 52px;
+  }
+
+  .masthead-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-right: 1.5rem;
+    border-right: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .masthead-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+  }
+
+  .masthead-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.15); }
+
+  .masthead-course {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+  }
+
+  .masthead-right {
+    display: flex;
+    align-items: center;
+    padding-left: 1.5rem;
+  }
+
+  .masthead-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.38);
+  }
+
+  /* HERO — dark band at top for visual weight, transitions to light body */
+  .hero-header {
+    background: var(--bg-dark);
+    border-bottom: 3px solid var(--green-bright);
+    padding: 3rem 2.5rem 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    animation: fadeUp 0.55s ease both;
+  }
+
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+    font-weight: 700;
+    line-height: 1.08;
+    color: var(--white);
+    margin-bottom: 1rem;
+  }
+
+  .hero-subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.45);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .hero-subtitle span { opacity: 0.35; }
+
+  .hero-meta {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.35);
+    line-height: 2;
+    white-space: nowrap;
+  }
+
+  /* SNAPSHOT BAR */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    background: var(--bg-mid);
+  }
+
+  .info-cell {
+    padding: 0.9rem 1.5rem;
+    border-right: 1px solid var(--border);
+  }
+
+  .info-cell:last-child { border-right: none; }
+
+  .info-cell-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .info-cell-value {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* TAB NAV */
+  .tab-nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border-mid);
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-shadow: 0 1px 0 var(--border);
+  }
+
+  .tab-nav::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    flex-shrink: 0;
+    padding: 0.85rem 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab-btn .tab-num {
+    color: var(--border-mid);
+    margin-right: 0.45rem;
+    font-size: 0.6rem;
+  }
+
+  .tab-btn:hover { color: var(--ink); }
+
+  .tab-btn.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+    font-weight: 600;
+  }
+
+  .tab-btn.active .tab-num { color: var(--green); opacity: 0.5; }
+
+  /* PANELS */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .panel-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 2.5rem;
+  }
+
+  /* TYPOGRAPHY */
+  .s-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 0.4rem;
+  }
+
+  .s-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 1.1rem;
+  }
+
+  p { margin-bottom: 0.9rem; color: var(--ink-mid); }
+  p:last-child { margin-bottom: 0; }
+
+  /* MISSION CARD */
+  .mission-card {
+    background: var(--white);
+    border: 1px solid var(--green-border);
+    border-left: 3px solid var(--green);
+    padding: 1.25rem 1.5rem;
+    margin: 1.75rem 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .mission-card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 0.5rem;
+  }
+
+  .mission-card-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 0.6rem;
+  }
+
+  .mission-card p { font-size: 0.97rem; color: var(--ink-mid); margin-bottom: 0; }
+
+  .mission-card.amber {
+    border-color: var(--amber-border);
+    border-left-color: var(--amber);
+  }
+  .mission-card.amber .mission-card-label { color: var(--amber); }
+
+  /* PULLQUOTE */
+  .pullquote {
+    background: var(--green-pale);
+    border-left: 3px solid var(--green);
+    padding: 1.1rem 1.4rem;
+    margin: 1.75rem 0;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--ink-mid);
+  }
+
+  .pullquote strong {
+    display: block;
+    font-style: normal;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 0.45rem;
+  }
+
+  /* MISSIONS TIMELINE */
+  .missions { margin: 2rem 0; }
+
+  .mission-row {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 0 1.25rem;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+
+  .mission-row.visible { opacity: 1; transform: none; }
+
+  .mission-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mission-dot {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 2px solid var(--green);
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    position: relative; z-index: 1;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: 0 0 0 3px var(--green-pale);
+  }
+
+  .mission-row:hover .mission-dot { background: var(--green); color: var(--white); }
+
+  .mission-line {
+    width: 1px;
+    flex: 1;
+    background: var(--border-mid);
+    margin: 4px 0;
+    min-height: 16px;
+  }
+
+  .mission-row:last-child .mission-line { display: none; }
+
+  .mission-right { padding: 0.4rem 0 1.5rem; }
+
+  .mission-name {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+  }
+
+  .mission-desc {
+    font-size: 0.93rem;
+    color: var(--ink-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .mission-tag {
+    display: inline-block;
+    background: var(--green-pale);
+    border: 1px solid var(--green-border);
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.65rem;
+  }
+
+  /* ACCORDION */
+  .accord-list { margin: 1.75rem 0; }
+
+  .accord-item {
+    border: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .accord-item.open {
+    border-color: var(--green-border);
+    box-shadow: 0 2px 8px rgba(30,158,92,0.08);
+  }
+
+  .accord-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.25rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .accord-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--green);
+    flex-shrink: 0;
+    min-width: 1.8rem;
+  }
+
+  .accord-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .accord-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    color: var(--ink-muted);
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+
+  .accord-item.open .accord-icon { transform: rotate(45deg); color: var(--green); }
+
+  .accord-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+
+  .accord-item.open .accord-body { max-height: 600px; }
+
+  .accord-inner {
+    padding: 1rem 1.25rem 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.96rem;
+    color: var(--ink-mid);
+    background: var(--bg);
+  }
+
+  .accord-inner p { color: var(--ink-mid); margin-bottom: 0.6rem; }
+  .accord-inner p:last-child { margin-bottom: 0; }
+
+  .pill {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.18rem 0.55rem;
+    margin-right: 0.35rem;
+    vertical-align: middle;
+  }
+  .pill-green { background: var(--green-pale);  color: var(--green); border: 1px solid var(--green-border); }
+  .pill-red   { background: var(--red-pale);    color: var(--red);   border: 1px solid var(--red-border); }
+  .pill-amber { background: var(--amber-pale);   color: var(--amber); border: 1px solid var(--amber-border); }
+
+  /* PATHWAY */
+  .pathway {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--border-mid);
+    margin: 1.75rem 0;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .path-col {
+    padding: 1.35rem 1.25rem;
+    border-right: 1px solid var(--border);
+    position: relative;
+    background: var(--white);
+  }
+
+  .path-col:nth-child(2) { background: var(--bg-mid); }
+  .path-col:last-child { border-right: none; }
+
+  .path-col::after {
+    content: '';
+    position: absolute;
+    right: -10px; top: 50%;
+    transform: translateY(-50%);
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 9px solid var(--border-mid);
+    z-index: 2;
+  }
+
+  .path-col:last-child::after { display: none; }
+
+  .path-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 0.4rem;
+  }
+
+  .path-name {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+
+  .path-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--ink-muted);
+    line-height: 1.7;
+    margin-bottom: 0.4rem;
+  }
+
+  .path-pts {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--amber);
+  }
+
+  /* CHECKLIST */
+  .chk-list { list-style: none; margin: 1.5rem 0; }
+
+  .chk-item {
+    display: grid;
+    grid-template-columns: 22px 1fr auto;
+    align-items: start;
+    gap: 0.75rem;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+    border-radius: 2px;
+  }
+
+  .chk-item:last-child { border-bottom: none; }
+  .chk-item:hover { background: var(--green-pale); }
+
+  .chk-box {
+    width: 22px; height: 22px;
+    border: 1.5px solid var(--green);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.12rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--green);
+    transition: background 0.2s, border-color 0.2s;
+    background: var(--white);
+  }
+
+  .chk-item.checked .chk-box { background: var(--green); border-color: var(--green); color: var(--white); }
+  .chk-label { font-size: 0.96rem; color: var(--ink-mid); transition: opacity 0.2s; }
+  .chk-item.checked .chk-label { opacity: 0.38; text-decoration: line-through; }
+
+  .chk-priority {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.18rem 0.5rem;
+    border: 1px solid;
+    white-space: nowrap;
+    margin-top: 0.15rem;
+  }
+
+  .pri-critical { color: var(--red);   border-color: var(--red-border); }
+  .pri-required { color: var(--amber); border-color: var(--amber-border); }
+  .pri-lab      { color: var(--green); border-color: var(--green-border); }
+
+  .chk-progress { height: 3px; background: var(--border-mid); margin-top: 1rem; overflow: hidden; border-radius: 2px; }
+  .chk-bar { height: 100%; background: var(--green); width: 0%; transition: width 0.4s ease; }
+  .chk-prog-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--green);
+    margin-top: 0.4rem;
+  }
+
+  /* RULE */
+  .rule { display: flex; align-items: center; gap: 0.75rem; margin: 1.75rem 0; opacity: 0.35; }
+  .rule-line { flex: 1; height: 1px; background: var(--ink-muted); }
+  .rule-dot { width: 5px; height: 5px; background: var(--green); transform: rotate(45deg); flex-shrink: 0; }
+
+  /* CLOSING — returns to dark to bookend the page with the masthead */
+  .closing {
+    background: var(--bg-dark);
+    border-top: 3px solid var(--green-bright);
+    padding: 4rem 2.5rem;
+    text-align: center;
+  }
+
+  .closing-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: 1rem;
+  }
+
+  .closing h2 {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 1rem;
+  }
+
+  .closing p { max-width: 560px; margin: 0 auto 0.75rem; color: rgba(255,255,255,0.5); font-style: italic; }
+  .closing-sig { font-family: 'Crimson Pro', serif; font-style: italic; font-size: 1.1rem; color: var(--green-bright); margin-top: 2rem; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .hero-header { grid-template-columns: 1fr; }
+    .hero-meta { text-align: left; }
+    .pathway { grid-template-columns: 1fr; }
+    .path-col { border-right: none; border-bottom: 1px solid var(--border); }
+    .path-col::after { display: none; }
+    .panel-wrap { padding: 1.75rem 1.25rem; }
+    .info-grid { grid-template-columns: 1fr; }
+    .info-cell { border-right: none; border-bottom: 1px solid var(--border); }
+    .info-cell:last-child { border-bottom: none; }
+    .masthead { flex-direction: column; align-items: flex-start; padding: 0.75rem 1.25rem; min-height: auto; }
+    .masthead-left { border-right: none; padding-right: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<nav class="masthead">
+  <div class="masthead-left">
+    <div class="masthead-eyebrow">CHEM 100 &mdash; Chemistry in Society</div>
+    <div class="masthead-divider"></div>
+    <div class="masthead-course">Carson-Newman University</div>
+  </div>
+  <div class="masthead-right">
+    <div class="masthead-tag">Welcome Brief &nbsp;&bull;&nbsp; Spring 2026 &nbsp;&bull;&nbsp; Dr. Keenan</div>
+  </div>
+</nav>
+
+<!-- HERO HEADER -->
+<div class="hero-header">
+  <div>
+    <div class="hero-eyebrow">CHEM 100 &mdash; Bracket City Investigation &mdash; Week 1 Briefing</div>
+    <h1 class="hero-title">Welcome to<br>Bracket City.</h1>
+    <div class="hero-subtitle">
+      Food Safety Application
+      <span>&bull;</span>
+      Chemistry in Context
+      <span>&bull;</span>
+      Community Impact
+      <span>&bull;</span>
+      Discovery-Based Learning
+    </div>
+  </div>
+  <div class="hero-meta">
+    Welcome Brief<br>
+    Version 2.0<br>
+    Carson-Newman University
+  </div>
+</div>
+
+<!-- SNAPSHOT BAR -->
+<div class="info-grid" style="border-top:none; border-left:none; border-right:none;">
+  <div class="info-cell">
+    <div class="info-cell-label">Assessment Format</div>
+    <div class="info-cell-value">5 Labs &plus; 2 Workbooks &plus; Final</div>
+  </div>
+  <div class="info-cell">
+    <div class="info-cell-label">Traditional Exams</div>
+    <div class="info-cell-value" style="color:#c0392b;">None</div>
+  </div>
+  <div class="info-cell">
+    <div class="info-cell-label">Total Course Points</div>
+    <div class="info-cell-value">600 pts</div>
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<div class="tab-nav" id="tabNav">
+  <button class="tab-btn active" onclick="switchTab('situation',this)"><span class="tab-num">01</span>The Situation</button>
+  <button class="tab-btn" onclick="switchTab('missions',this)"><span class="tab-num">02</span>Five Missions</button>
+  <button class="tab-btn" onclick="switchTab('structure',this)"><span class="tab-num">03</span>Course Structure</button>
+  <button class="tab-btn" onclick="switchTab('pathway',this)"><span class="tab-num">04</span>Assessment Pathway</button>
+  <button class="tab-btn" onclick="switchTab('checklist',this)"><span class="tab-num">05</span>Week 1 Checklist</button>
+</div>
+
+<!-- PANEL 01: SITUATION -->
+<div class="tab-panel active" id="panel-situation">
+  <div class="panel-wrap">
+    <div class="s-tag">Situation Report</div>
+    <h2 class="s-title">What Is Happening in Bracket City?</h2>
+
+    <p>Bracket City is a community facing a series of interconnected food safety emergencies. The city's food bank serves over 5,000 residents, including children, seniors, and families who depend on it for nutritional support. Over the next 7.5 weeks, you will serve as the investigating chemist assigned to this case.</p>
+
+    <p>This is not a memorization course. There are no traditional exams. Every assignment you complete produces a real product&mdash;a safety recommendation, a contamination report, a community recipe&mdash;that matters to Bracket City's residents. The chemistry you engage with in each chapter provides the analytical tools you need to investigate each crisis.</p>
+
+    <div class="mission-card">
+      <div class="mission-card-label">Bracket City &mdash; Mission Briefing</div>
+      <div class="mission-card-title">Your Role: Food Safety Chemist</div>
+      <p>You have been assigned to Bracket City's Department of Health. Multiple food safety crises have emerged simultaneously, and you are part of the investigative team. Each mission builds on the last. The evidence you collect in Mission 1 informs Mission 2. Your recommendations accumulate into a final case file presented at the end of the semester.</p>
+    </div>
+
+    <div class="rule"><div class="rule-line"></div><div class="rule-dot"></div><div class="rule-line"></div></div>
+
+    <div class="s-tag">Real-World Context &mdash; Why This Matters</div>
+    <p>Food insecurity affects 1 in 7 Americans, and food banks are often the last line of defense for vulnerable populations. Food fraud, heavy metal contamination, agricultural runoff, and inadequate water quality are documented, ongoing public health problems&mdash;not hypothetical scenarios invented for a classroom.</p>
+    <p>The chemistry concepts in this course are the same tools used by actual food safety regulators, public health chemists, and environmental scientists. You will use them the same way: to collect data, analyze evidence, and make recommendations that protect people.</p>
+
+  </div>
+</div>
+
+<!-- PANEL 02: MISSIONS -->
+<div class="tab-panel" id="panel-missions">
+  <div class="panel-wrap">
+    <div class="s-tag">The Investigation</div>
+    <h2 class="s-title">Five Missions. Five Crises. One Semester.</h2>
+
+    <p>Each lab is a chapter in the same ongoing investigation. Missions are sequenced intentionally&mdash;concepts from earlier cases appear in later ones. Engage with the chapter content <em>before</em> each lab. The chemistry is your investigative toolkit.</p>
+
+    <div class="missions" id="missionsTimeline">
+
+      <div class="mission-row">
+        <div class="mission-left"><div class="mission-dot">01</div><div class="mission-line"></div></div>
+        <div class="mission-right">
+          <div class="mission-name">Food Fraud Scandal</div>
+          <div class="mission-desc">Multiple liquid food shipments have arrived mislabeled or potentially adulterated. Watered-down milk and fake honey have entered the supply chain. You will detect adulteration using density as a physical fingerprint unique to each pure substance.</div>
+          <div class="mission-tag">Chapter 1 &mdash; Density, Matter Classification &amp; Physical Properties</div>
+        </div>
+      </div>
+
+      <div class="mission-row">
+        <div class="mission-left"><div class="mission-dot">02</div><div class="mission-line"></div></div>
+        <div class="mission-right">
+          <div class="mission-name">Heavy Metal Contamination</div>
+          <div class="mission-desc">Toxic metals have been detected in incoming food shipments. You must use the periodic table to distinguish essential nutrient elements from dangerous contaminants, and evaluate whether fortified or whole foods better protect Bracket City's most vulnerable residents.</div>
+          <div class="mission-tag">Chapter 2 &mdash; Periodic Table, Elements &amp; Nutritional Chemistry</div>
+        </div>
+      </div>
+
+      <div class="mission-row">
+        <div class="mission-left"><div class="mission-dot">03</div><div class="mission-line"></div></div>
+        <div class="mission-right">
+          <div class="mission-name">Agricultural Chemical Scare</div>
+          <div class="mission-desc">Runoff from nearby farms may have introduced chemical compounds into the food supply. Molecular structure and polarity determine how these compounds behave in biological systems and whether they pose a health risk at detected concentrations.</div>
+          <div class="mission-tag">Chapter 3 &mdash; Molecular Structure, Bonding &amp; Polarity</div>
+        </div>
+      </div>
+
+      <div class="mission-row">
+        <div class="mission-left"><div class="mission-dot">04</div><div class="mission-line"></div></div>
+        <div class="mission-right">
+          <div class="mission-name">Water Treatment Challenge</div>
+          <div class="mission-desc">The food bank is expanding its meal program to serve 5,000 residents. Water quality must be verified and treatment solutions evaluated before the expanded program can launch safely.</div>
+          <div class="mission-tag">Chapter 4 &mdash; Solutions, Concentration &amp; Water Quality</div>
+        </div>
+      </div>
+
+      <div class="mission-row">
+        <div class="mission-left"><div class="mission-dot">05</div><div class="mission-line"></div></div>
+        <div class="mission-right">
+          <div class="mission-name">Community Kitchen Crisis</div>
+          <div class="mission-desc">Families receiving food bank support have no ovens and limited stoves. You will develop safe, nutritious no-cook recipes for the Bracket City Community Cookbook, using AI as an investigative tool&mdash;and critically evaluating its output against human-tested recipes.</div>
+          <div class="mission-tag">Chapter 5 &mdash; Solubility, Polarity, Electrolytes &amp; AI Evaluation</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 03: STRUCTURE -->
+<div class="tab-panel" id="panel-structure">
+  <div class="panel-wrap">
+    <div class="s-tag">Course Design</div>
+    <h2 class="s-title">How This Course Works</h2>
+
+    <p>No traditional exams. No passive homework sets. Everything you produce connects directly to Bracket City. Expand each section to understand how the components work together.</p>
+
+    <div class="accord-list">
+
+      <div class="accord-item">
+        <div class="accord-header" onclick="toggleAccord(this)">
+          <div class="accord-num">01</div>
+          <div class="accord-title">Chapter Content &mdash; Your Investigative Toolkit</div>
+          <div class="accord-icon">+</div>
+        </div>
+        <div class="accord-body">
+          <div class="accord-inner">
+            <p>Each chapter in Canvas contains the chemistry background required to complete the associated mission. This content is not supplementary reading&mdash;it is the analytical foundation for your lab work and workbook problems.</p>
+            <p>The sequence within each module is intentional: <strong style="color:var(--ink);">Chapter content first &rarr; Lab investigation &rarr; Workbook application.</strong> Students who engage with chapter content before the lab find the analysis questions significantly more tractable and produce stronger conclusions.</p>
+            <p>If you find yourself stuck on an analysis question in a lab, return to the chapter. The conceptual answer is there.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accord-item">
+        <div class="accord-header" onclick="toggleAccord(this)">
+          <div class="accord-num">02</div>
+          <div class="accord-title">Labs (Missions 1&ndash;5) &mdash; Hands-On Investigation</div>
+          <div class="accord-icon">+</div>
+        </div>
+        <div class="accord-body">
+          <div class="accord-inner">
+            <p>All five labs are conducted in your home or dorm room using household materials: a food scale, kitchen liquids, marshmallows and toothpicks, pH strips, and pantry ingredients. No campus lab time required.</p>
+            <p>Every lab submission requires completed data tables, written analysis questions, a written conclusion, and photographs documenting your setup and results. Photographs are not optional&mdash;they verify that you conducted the investigation.</p>
+            <p>Handwritten calculations are required for all quantitative work. Typed calculations receive half credit. Units must appear in every numerical answer; missing units result in point deductions.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accord-item">
+        <div class="accord-header" onclick="toggleAccord(this)">
+          <div class="accord-num">03</div>
+          <div class="accord-title">Integrated Workbooks &mdash; Concept Application</div>
+          <div class="accord-icon">+</div>
+        </div>
+        <div class="accord-body">
+          <div class="accord-inner">
+            <p>Workbooks are hosted in Canvas alongside chapter content and completed after the relevant labs. They replace traditional exams by requiring you to apply chemistry concepts to new Bracket City scenarios.</p>
+            <p><strong style="color:var(--ink);">Workbook A (Chapters 1&ndash;2):</strong> Density, matter classification, the periodic table, and element identification as applied to food safety scenarios from Missions 1 and 2.</p>
+            <p><strong style="color:var(--ink);">Workbook B (Chapters 3&ndash;4):</strong> Molecular structure, polarity, solutions, and concentration as applied to the contamination and water quality cases in Missions 3 and 4.</p>
+            <p>Each workbook uses a choice-based format. You select which problem sets to complete to reach the required point total, directing your own focus within the content.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accord-item">
+        <div class="accord-header" onclick="toggleAccord(this)">
+          <div class="accord-num">04</div>
+          <div class="accord-title">AI Integration &mdash; Tool, Not Substitute</div>
+          <div class="accord-icon">+</div>
+        </div>
+        <div class="accord-body">
+          <div class="accord-inner">
+            <p>This course treats AI as a professional tool requiring critical judgment. Knowing when and how to use AI responsibly is an increasingly important skill in any scientific or technical career.</p>
+            <p><span class="pill pill-green">Allowed</span> Lab 5 recipe generation, research brainstorming, data organization (cite tool used)</p>
+            <p><span class="pill pill-red">Restricted</span> All calculations, data analysis, lab conclusions, workbook problem sets</p>
+            <p><span class="pill pill-amber">Required</span> Lab 2 discussion board synthesis &mdash; must cite the AI tool used</p>
+            <p>In Lab 5 you will directly compare an AI-generated recipe to a human-tested recipe, evaluating which is safer, more accurate, and better suited to Bracket City's constraints. This is applied critical evaluation, not policy compliance.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accord-item">
+        <div class="accord-header" onclick="toggleAccord(this)">
+          <div class="accord-num">05</div>
+          <div class="accord-title">Collaboration &mdash; Real Scientists Work Together</div>
+          <div class="accord-icon">+</div>
+        </div>
+        <div class="accord-body">
+          <div class="accord-inner">
+            <p>Finding a lab partner is encouraged. You can share materials, collect data together, and discuss findings. Sharing a food scale cuts costs. Two sets of measurements improve data quality.</p>
+            <p>Each student submits their own individual lab report and workbook. Your written analysis, conclusions, and calculations must represent your own thinking. Copied or fully AI-generated submissions without proper disclosure receive a zero.</p>
+            <p>Discussion boards in Labs 2 and 5 are collaborative by design. You will need your classmates' data to complete the full synthesis&mdash;no individual can analyze all 52 food bank inventory items alone. This mirrors how professional food safety investigations actually function.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 04: PATHWAY -->
+<div class="tab-panel" id="panel-pathway">
+  <div class="panel-wrap">
+    <div class="s-tag">Assessment Structure</div>
+    <h2 class="s-title">Your Semester Pathway</h2>
+
+    <p>All assessments are application-based and directly connected to the Bracket City investigation. The course builds in three phases, each producing a concrete product tied to the case.</p>
+
+    <div class="pathway">
+      <div class="path-col">
+        <div class="path-label">Labs 1&ndash;2 + Workbook A</div>
+        <div class="path-name">Component A</div>
+        <div class="path-desc">Chapters 1&ndash;2<br>Density &bull; Periodic Table<br>Matter &bull; Elements in Food</div>
+        <div class="path-pts">100 pts &mdash; 16.7%</div>
+      </div>
+      <div class="path-col">
+        <div class="path-label">Labs 3&ndash;4 + Workbook B</div>
+        <div class="path-name">Component B</div>
+        <div class="path-desc">Chapters 3&ndash;4<br>Molecular Structure &bull; Polarity<br>Solutions &bull; Water Quality</div>
+        <div class="path-pts">100 pts &mdash; 16.7%</div>
+      </div>
+      <div class="path-col">
+        <div class="path-label">Lab 5 + Final Presentation</div>
+        <div class="path-name">Component C</div>
+        <div class="path-desc">Chapter 5 + All Concepts<br>Solubility &bull; AI Evaluation<br>Community Cookbook</div>
+        <div class="path-pts">105 pts &mdash; 17.5%</div>
+      </div>
+    </div>
+
+    <div class="rule"><div class="rule-line"></div><div class="rule-dot"></div><div class="rule-line"></div></div>
+
+    <div class="s-tag">Full Grade Distribution</div>
+    <div class="info-grid" style="margin-top:1rem;">
+      <div class="info-cell">
+        <div class="info-cell-label">Labs / Missions (5 total)</div>
+        <div class="info-cell-value">235 pts &mdash; 39.2%</div>
+      </div>
+      <div class="info-cell">
+        <div class="info-cell-label">Components A + B + C</div>
+        <div class="info-cell-value">305 pts &mdash; 50.8%</div>
+      </div>
+      <div class="info-cell">
+        <div class="info-cell-label">Discussion Boards + Quiz</div>
+        <div class="info-cell-value">60 pts &mdash; 10.0%</div>
+      </div>
+    </div>
+
+    <div class="mission-card amber" style="margin-top:1.75rem;">
+      <div class="mission-card-label">Submission Policies</div>
+      <div class="mission-card-title">What Affects Your Grade</div>
+      <p>Handwritten calculations are required; typed calculations receive 50% credit with resubmission allowed. Missing units on any numerical answer result in a 0.5 pt deduction per problem. Photographs are required in every lab and cannot be retroactively awarded. Copied or undisclosed AI-generated submissions receive a zero.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 05: CHECKLIST -->
+<div class="tab-panel" id="panel-checklist">
+  <div class="panel-wrap">
+    <div class="s-tag">Week 1 Action Items</div>
+    <h2 class="s-title">Before This Week Ends</h2>
+
+    <p>Complete all required items before your section's Week 1 deadline. Click each item to track your progress.</p>
+
+    <ul class="chk-list" id="chkList">
+
+      <li class="chk-item" onclick="toggleCheck(this)">
+        <div class="chk-box"></div>
+        <div class="chk-label"><strong>Read the Bracket City Introduction</strong> &mdash; available in the Week 1 Module. Navigate through all pages using the links at the bottom of each page. This establishes your role and the full case context before any lab work begins.</div>
+        <div class="chk-priority pri-critical">Critical</div>
+      </li>
+
+      <li class="chk-item" onclick="toggleCheck(this)">
+        <div class="chk-box"></div>
+        <div class="chk-label"><strong>Order or purchase a digital food scale</strong> &mdash; must measure in grams. Required for Lab 1 in Week 2. Confirm it will arrive before your lab deadline. Widely available for under $15.</div>
+        <div class="chk-priority pri-critical">Critical</div>
+      </li>
+
+      <li class="chk-item" onclick="toggleCheck(this)">
+        <div class="chk-box"></div>
+        <div class="chk-label"><strong>Complete the Syllabus Quiz</strong> &mdash; located in Canvas. Covers grading policies, submission requirements, academic integrity, and course structure. Required before Week 1 closes.</div>
+        <div class="chk-priority pri-required">Required</div>
+      </li>
+
+      <li class="chk-item" onclick="toggleCheck(this)">
+        <div class="chk-box"></div>
+        <div class="chk-label"><strong>Post your Introduction Discussion</strong> &mdash; respond to at least 2 prompts, include a photo or visual element, and reply meaningfully to two classmates. Lab partner search is optional but recommended.</div>
+        <div class="chk-priority pri-required">Required</div>
+      </li>
+
+      <li class="chk-item" onclick="toggleCheck(this)">
+        <div class="chk-box"></div>
+        <div class="chk-label"><strong>Submit material verification</strong> &mdash; upload confirmation or a photo showing you have ordered or obtained your food scale. This is a graded submission.</div>
+        <div class="chk-priority pri-required">Required</div>
+      </li>
+
+      <li class="chk-item" onclick="toggleCheck(this)">
+        <div class="chk-box"></div>
+        <div class="chk-label"><strong>Engage with Chapter 1 content</strong> &mdash; Properties of Matter, Classification, and Density. This is the conceptual foundation for Lab 1. Students who complete the chapter before the lab consistently produce stronger analysis and conclusions.</div>
+        <div class="chk-priority pri-lab">For Lab 1</div>
+      </li>
+
+      <li class="chk-item" onclick="toggleCheck(this)">
+        <div class="chk-box"></div>
+        <div class="chk-label"><strong>Gather clear cups from home</strong> &mdash; used in the Lab 1 density column demonstration. Plastic or glass, any size works. No purchase necessary.</div>
+        <div class="chk-priority pri-lab">For Lab 1</div>
+      </li>
+
+    </ul>
+
+    <div class="chk-progress"><div class="chk-bar" id="chkBar"></div></div>
+    <div class="chk-prog-label" id="chkLabel">0 of 7 complete</div>
+
+    <div class="rule"><div class="rule-line"></div><div class="rule-dot"></div><div class="rule-line"></div></div>
+
+    <div class="mission-card">
+      <div class="mission-card-label">A Note on Course Materials</div>
+      <div class="mission-card-title">Materials Are Released Progressively</div>
+      <p>Some materials for later weeks are still being finalized. Week 1 and the Lab 1 module are complete and available now. Everything else will be posted before it is needed&mdash;nothing will be missing when an assignment is due. Think of it like a real investigation: new evidence and resources emerge as the case develops.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSING -->
+<div class="closing">
+  <div class="closing-eyebrow">CHEM 100 &mdash; Bracket City Investigation &mdash; Spring 2026</div>
+  <h2>Bracket City Is Counting on You.</h2>
+  <p>Chemistry can change how you see the world. Over the next 7.5 weeks, you will conduct five investigations, produce evidence-based recommendations, and contribute to a community in need.</p>
+  <div class="closing-sig">&mdash; Dr. Keenan</div>
+</div>
+
+<script>
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    btn.classList.add('active');
+    if (id === 'missions') setTimeout(animateMissions, 80);
+  }
+
+  function toggleAccord(header) {
+    const item = header.closest('.accord-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.accord-item.open').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  function toggleCheck(li) {
+    li.classList.toggle('checked');
+    li.querySelector('.chk-box').textContent = li.classList.contains('checked') ? 'x' : '';
+    const total = document.querySelectorAll('#chkList .chk-item').length;
+    const done  = document.querySelectorAll('#chkList .chk-item.checked').length;
+    document.getElementById('chkBar').style.width = (done / total * 100) + '%';
+    document.getElementById('chkLabel').textContent = done + ' of ' + total + ' complete';
+  }
+
+  function animateMissions() {
+    document.querySelectorAll('.mission-row').forEach((r, i) => {
+      setTimeout(() => r.classList.add('visible'), i * 110);
+    });
+  }
+
+  // Trigger mission animation if missions tab is first shown
+  const mObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) animateMissions();
+  }, { threshold: 0.1 });
+  mObs.observe(document.getElementById('panel-missions'));
+</script>
+
+</body>
+</html>
