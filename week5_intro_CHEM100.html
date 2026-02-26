@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 5 — CHEM 100</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg:           #f0ebe0;
+    --bg-mid:       #e8e2d6;
+    --bg-dark:      #1c2b3a;
+    --border:       rgba(28,43,58,0.11);
+    --border-mid:   rgba(28,43,58,0.17);
+    --ink:          #1a2028;
+    --ink-mid:      #3c4a58;
+    --ink-muted:    #7a8794;
+    --green:        #4d8c6f;
+    --green-bright: #7ab799;
+    --green-pale:   rgba(77,140,111,0.08);
+    --green-border: rgba(77,140,111,0.25);
+    --amber:        #9c5a3c;
+    --amber-pale:   rgba(156,90,60,0.09);
+    --amber-border: rgba(156,90,60,0.28);
+    --red:          #a63c30;
+    --red-pale:     rgba(166,60,48,0.07);
+    --red-border:   rgba(166,60,48,0.24);
+    --white:        #ffffff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 19px;
+    line-height: 1.72;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 3rem;
+  }
+
+  /* HEADER */
+  .page-header {
+    background: var(--bg-dark);
+    border-bottom: 3px solid var(--green-bright);
+    padding: 2.25rem 2.5rem 2rem;
+  }
+
+  .header-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header h1 {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.08;
+  }
+
+  /* BODY */
+  .body { padding: 0 2.5rem; }
+  .body-inner { max-width: 900px; margin: 0 auto; }
+
+  .s-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin: 2rem 0 0.3rem;
+  }
+
+  h2 {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 0.85rem;
+  }
+
+  p { color: var(--ink-mid); margin-bottom: 0.85rem; }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--ink); }
+  em { color: var(--ink-mid); }
+  a { color: var(--green); text-decoration: none; border-bottom: 1px solid var(--green-border); }
+  a:hover { border-bottom-color: var(--green); }
+
+  /* CALLOUTS */
+  .callout {
+    border-left: 3px solid;
+    padding: 1.1rem 1.4rem;
+    margin: 1.5rem 0;
+  }
+
+  .callout-green { background: var(--green-pale);  border-color: var(--green); }
+  .callout-amber { background: var(--amber-pale);  border-color: var(--amber); }
+  .callout-red   { background: var(--red-pale);    border-color: var(--red); }
+  .callout-slate { background: rgba(28,43,58,0.05); border-color: rgba(28,43,58,0.3); }
+
+  .callout-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 0.45rem;
+  }
+
+  .callout-green .callout-label { color: var(--green); }
+  .callout-amber .callout-label { color: var(--amber); }
+  .callout-red   .callout-label { color: var(--red); }
+  .callout-slate .callout-label { color: var(--ink-muted); }
+  .callout p { font-size: 1rem; margin-bottom: 0.5rem; }
+
+  /* DIAMOND LIST */
+  ul.dlist { list-style: none; padding: 0; margin: 0.75rem 0; }
+
+  ul.dlist li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 1rem;
+    color: var(--ink-mid);
+  }
+
+  ul.dlist li:last-child { border-bottom: none; }
+
+  ul.dlist li::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    min-width: 5px;
+    background: var(--green);
+    transform: rotate(45deg);
+    margin-top: 0.56rem;
+    flex-shrink: 0;
+  }
+
+  /* RECAP GRID */
+  .recap-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+
+  .recap-card {
+    background: var(--white);
+    border: 1px solid var(--border-mid);
+    border-top: 3px solid var(--green);
+    padding: 1.1rem;
+  }
+
+  .recap-card:nth-child(2) { border-top-color: var(--amber); }
+  .recap-card:nth-child(3) { border-top-color: var(--ink-muted); }
+
+  .recap-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 0.35rem;
+  }
+
+  .recap-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+  }
+
+  .recap-body { font-size: 1rem; color: var(--ink-mid); line-height: 1.55; }
+
+  /* CASE CARDS */
+  .case-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+
+  .case-card {
+    background: var(--white);
+    border: 1px solid var(--border-mid);
+    border-left: 3px solid var(--red);
+    padding: 1.1rem;
+  }
+
+  .case-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.3rem;
+  }
+
+  .case-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+  }
+
+  .case-body { font-size: 1rem; color: var(--ink-mid); line-height: 1.55; }
+
+  /* TIMELINE */
+  .timeline { margin: 1.25rem 0; }
+
+  .timeline-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 0 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .timeline-day {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    padding: 0.7rem 1rem 0.7rem 0;
+    border-right: 2px solid var(--amber-border);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .timeline-tasks { padding: 0.4rem 0 0.4rem 0.25rem; }
+  .timeline-tasks ul.dlist { margin: 0; }
+  .timeline-tasks ul.dlist li { padding: 0.25rem 0; font-size: 1rem; }
+
+  /* OBJECTIVES */
+  ol.objlist {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0;
+    counter-reset: obj;
+  }
+
+  ol.objlist li {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 1rem;
+    color: var(--ink-mid);
+    counter-increment: obj;
+  }
+
+  ol.objlist li:last-child { border-bottom: none; }
+
+  ol.objlist li::before {
+    content: counter(obj, decimal-leading-zero);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--green);
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+    min-width: 1.6rem;
+  }
+
+  /* ASSIGNMENTS TABLE */
+  .assignments {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 1rem;
+  }
+
+  .assignments thead th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.57rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    background: var(--bg-mid);
+    padding: 0.65rem 1rem;
+    text-align: left;
+    border: 1px solid var(--border-mid);
+    font-weight: 500;
+  }
+
+  .assignments thead th:nth-child(1) { border-top: 3px solid var(--green); }
+  .assignments thead th:nth-child(2) { border-top: 3px solid var(--amber); }
+  .assignments thead th:nth-child(3) { border-top: 3px solid var(--ink-muted); }
+
+  .assignments tbody td {
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--ink-mid);
+    vertical-align: top;
+  }
+
+  .assignments tbody tr:nth-child(even) td { background: #fafaf8; }
+
+  .col-pts {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--amber);
+  }
+
+  .pts-note {
+    display: block;
+    font-size: 0.6rem;
+    color: var(--ink-muted);
+    margin-top: 0.15rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .col-due {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+
+  .row-total td {
+    background: var(--bg-mid) !important;
+    border-top: 2px solid var(--green-border) !important;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--green);
+    padding: 0.7rem 1rem;
+  }
+
+  /* FAQ */
+  .faq { margin: 1.25rem 0; }
+
+  .faq-item {
+    border: 1px solid var(--border);
+    background: var(--white);
+    margin-bottom: 0.5rem;
+  }
+
+  .faq-q {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    padding: 0.85rem 1.1rem;
+    border-left: 3px solid var(--green);
+    font-family: 'Crimson Pro', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+
+  .faq-q::before {
+    content: 'Q';
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    color: var(--green);
+    flex-shrink: 0;
+  }
+
+  .faq-a {
+    padding: 0 1.1rem 0.9rem 2.5rem;
+    font-size: 1rem;
+    color: var(--ink-mid);
+    border-left: 3px solid var(--green-border);
+  }
+
+  /* IT BLOCK */
+  .it-block { border: 1px solid var(--border-mid); margin-top: 1.75rem; overflow: hidden; }
+
+  .it-header {
+    background: var(--bg-dark);
+    padding: 0.65rem 1.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+  }
+
+  .it-body { background: var(--white); padding: 1rem 1.25rem; }
+  .it-body a { color: var(--green); }
+
+  /* RULE */
+  .rule { display: flex; align-items: center; gap: 0.75rem; margin: 2rem 0; opacity: 0.28; }
+  .rule-line { flex: 1; height: 1px; background: var(--ink-muted); }
+  .rule-dot  { width: 5px; height: 5px; min-width: 5px; background: var(--green); transform: rotate(45deg); }
+
+  /* FOOTER */
+  .page-footer {
+    background: var(--bg-dark);
+    border-top: 3px solid var(--green-bright);
+    padding: 1.75rem 2.5rem;
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .page-footer p {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.6);
+    margin: 0;
+  }
+
+  .footer-sig {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    color: var(--green-bright);
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  .cn-footer {
+    background: var(--bg-dark);
+    border-top: 1px solid rgba(255,255,255,0.07);
+    padding: 1.1rem 2.5rem;
+  }
+
+  .cn-footer p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.57rem;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.28);
+    margin: 0;
+    line-height: 1.8;
+    text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .body { padding: 0 1.25rem; }
+    .recap-grid, .case-grid { grid-template-columns: 1fr; }
+    .timeline-row { grid-template-columns: 1fr; }
+    .timeline-day { text-align: left; border-right: none; border-bottom: 1px solid var(--amber-border); padding-right: 0; padding-bottom: 0.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="header-eyebrow">CHEM 100 &mdash; Chemistry in Society &mdash; Week 5</div>
+  <h1>Reactions, Calculations<br>&amp; Water Quality.</h1>
+</div>
+
+<div class="body">
+<div class="body-inner">
+
+  <!-- MISSION BRIEFING -->
+  <div class="callout callout-red" style="margin-top:1.75rem;">
+    <div class="callout-label">Bracket City &mdash; Urgent Briefing</div>
+    <p>You&rsquo;ve identified the molecular structures. Now the critical question is <strong>how much</strong>. State inspectors need quantitative analysis &mdash; reaction yields, neutralization feasibility, contamination spread modeled through chemical equations. The Food Bank cannot distribute anything until the numbers confirm safety. You need to master stoichiometry now.</p>
+  </div>
+
+  <!-- I — RECAP -->
+  <div class="s-tag">Section I</div>
+  <h2>What You Accomplished Last Week</h2>
+
+  <div class="recap-grid">
+    <div class="recap-card">
+      <div class="recap-label">Mission 3 &mdash; Complete</div>
+      <div class="recap-title">Lab 3: Chemical Structures of Food</div>
+      <div class="recap-body">You built 3D molecular models of both beneficial food compounds and toxic contaminants, and used VSEPR theory to analyze their geometry and behavior.</div>
+    </div>
+    <div class="recap-card">
+      <div class="recap-label">Content</div>
+      <div class="recap-title">Chapter 3 Lecture &amp; Guided Notes</div>
+      <div class="recap-body">Lewis structures, VSEPR theory, molecular geometry, polarity, and the &ldquo;like dissolves like&rdquo; rule &mdash; the structural tools that explain <em>why</em> toxins behave as they do.</div>
+    </div>
+    <div class="recap-card">
+      <div class="recap-label">Workbook</div>
+      <div class="recap-title">Chemistry Workbook 3 &mdash; Component B</div>
+      <div class="recap-body">You began Chapter 3 application problems, selecting from the tile menu and building analytical practice with molecular structure concepts.</div>
+    </div>
+  </div>
+
+  <p style="margin-top:0.75rem;">Your molecular analysis revealed <strong>why</strong> toxins are dangerous. This week you quantify the threat.</p>
+
+  <div class="rule"><div class="rule-line"></div><div class="rule-dot"></div><div class="rule-line"></div></div>
+
+  <!-- II — THIS WEEK -->
+  <div class="s-tag">Section II</div>
+  <h2>This Week&rsquo;s Mission: Water Quality Testing</h2>
+
+  <p>The primary work this week is <strong>Mission 4 &mdash; Lab 4</strong>, a hands-on water quality investigation where you simulate contaminated water samples and test physical purification methods. In parallel, <strong>Chemistry Workbook 4 &mdash; Component B</strong> applies Chapter 4 stoichiometry concepts to the contamination calculations the Food Bank needs.</p>
+
+  <div class="callout callout-green">
+    <div class="callout-label">Discussion Board &mdash; Student Resource</div>
+    <p>The Discussion Board this week is a peer learning space for sharing water testing observations, comparing purification results, and discussing how the stoichiometry concepts connect to the Bracket City water scenarios. Use it to check your reasoning before finalizing your report.</p>
+  </div>
+
+  <div class="rule"><div class="rule-line"></div><div class="rule-dot"></div><div class="rule-line"></div></div>
+
+  <!-- BRACKET CITY CASES -->
+  <div class="s-tag">Bracket City &mdash; Active Cases</div>
+  <h2>Three Water Quality Scenarios</h2>
+  <p>Your Lab 4 investigation and Workbook 4 calculations center on these three confirmed situations. The chemistry you apply this week directly informs whether the Food Bank can safely operate.</p>
+
+  <div class="case-grid">
+    <div class="case-card">
+      <div class="case-num">Case 1 &mdash; Food Bank Well Water</div>
+      <div class="case-title">Simulated Contamination Sample</div>
+      <div class="case-body">The Food Bank&rsquo;s well water shows visible cloudiness and an oily surface film. Your lab creates a simulated sample with known contaminants to test purification methods and calculate concentration relative to EPA safe limits.</div>
+    </div>
+    <div class="case-card">
+      <div class="case-num">Case 2 &mdash; Food Bank Bottled Water Supply</div>
+      <div class="case-title">Bottled Versus Tap Water Decision</div>
+      <div class="case-body">A donor has offered to fund either a bottled water supply or a tap water filtration system for the Food Bank kitchen. Inspectors must compare the dissolved solid content, mineral composition, and safety records of both sources to make an evidence-based recommendation &mdash; a decision that affects every meal prepared on site.</div>
+    </div>
+    <div class="case-card">
+      <div class="case-num">Case 3 &mdash; Community Kitchen Water Supply</div>
+      <div class="case-title">Electrolytes &amp; Water Safety for Food Preparation</div>
+      <div class="case-body">Water used in the community kitchen must meet food-grade standards for dissolved electrolytes. Recent testing flagged elevated sodium and chloride ion concentrations from a nearby road salt runoff event. Inspectors need to evaluate the dissolved ion data and determine whether the water is safe for cooking and drinking by vulnerable populations.</div>
+    </div>
+    <div class="case-card">
+      <div class="case-num">Case 4 &mdash; Food Bank Well Water</div>
+      <div class="case-title">Hard Water &amp; Dissolved Ionic Compounds</div>
+      <div class="case-body">The Food Bank&rsquo;s well water has a visible mineral residue on cookware and equipment. Testing confirms elevated concentrations of dissolved calcium and magnesium ions &mdash; hallmarks of hard water. Inspectors must calculate the dissolved ion concentration in ppm and determine whether the water meets safe limits for food preparation before the kitchen can reopen.</div>
+    </div>
+  </div>
+
+  <div class="rule"><div class="rule-line"></div><div class="rule-dot"></div><div class="rule-line"></div></div>
+
+  <!-- III — DUE -->
+  <div class="s-tag">Section III</div>
+  <h2>What Is Due This Week</h2>
+  <p>All assignments due <strong>Sunday of Week 5 at 11:59 PM.</strong></p>
+
+  <table class="assignments">
+    <thead>
+      <tr>
+        <th style="width:52%;">Assignment</th>
+        <th style="width:22%;">Points</th>
+        <th style="width:26%;">Due</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>Lab 3: Full Written Report</strong>
+          &mdash; Complete analysis of molecular models from Week 4; data tables, VSEPR geometry, polarity analysis, and conclusion
+        </td>
+        <td class="col-pts">
+          See Lab 3
+          <span class="pts-note">started Week 4</span>
+        </td>
+        <td class="col-due">End of Week 5<br>11:59 PM</td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Lab 4: Water Quality Testing</strong>
+          &mdash; Simulated contamination sample, settling, filtration, dilution calculations, and purification analysis
+        </td>
+        <td class="col-pts">
+          See Lab 4
+          <span class="pts-note">report due following week</span>
+        </td>
+        <td class="col-due">End of Week 5<br>11:59 PM</td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Discussion Board &mdash; Week 5</strong>
+          &mdash; Share water testing observations; respond to classmates; use as a peer learning resource
+        </td>
+        <td class="col-pts">5 pts</td>
+        <td class="col-due">End of Week 5<br>11:59 PM</td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Begin Chemistry Workbook 4 &mdash; Component B</strong>
+          &mdash; Select Chapter 4 application problems; focus on stoichiometry and water chemistry calculations
+        </td>
+        <td class="col-pts">
+          0 pts this week
+          <span class="pts-note">due with Component B</span>
+        </td>
+        <td class="col-due">Start this week</td>
+      </tr>
+      <tr class="row-total">
+        <td colspan="3">Lab 3 full report due end of Week 5 &mdash; Lab 4 report due end of Week 6</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="rule"><div class="rule-line"></div><div class="rule-dot"></div><div class="rule-line"></div></div>
+
+  <!-- IV — TIMELINE -->
+  <div class="s-tag">Section IV</div>
+  <h2>Suggested Weekly Timeline</h2>
+
+  <div class="timeline">
+    <div class="timeline-row">
+      <div class="timeline-day">Mon &ndash; Tue</div>
+      <div class="timeline-tasks">
+        <ul class="dlist">
+          <li>Watch Chapter 4 lecture videos and complete guided notes (GN04A and GN04B)</li>
+          <li>Finalize and submit Lab 3 full written report</li>
+          <li>Begin Lab 4 &mdash; prepare simulated water sample and complete settling test</li>
+        </ul>
+      </div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-day">Wed &ndash; Thu</div>
+      <div class="timeline-tasks">
+        <ul class="dlist">
+          <li>Continue Lab 4 &mdash; filtration test and dilution calculations</li>
+          <li>Post to the Discussion Board and respond to at least one classmate</li>
+          <li>Begin Chemistry Workbook 4 &mdash; Component B application problems</li>
+        </ul>
+      </div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-day">Fri &ndash; Sat</div>
+      <div class="timeline-tasks">
+        <ul class="dlist">
+          <li>Complete Lab 4 analysis questions and verify all calculations</li>
+          <li>Write your conclusion connecting purification results to the Bracket City water scenarios</li>
+          <li>Continue Chemistry Workbook 4 problems</li>
+        </ul>
+      </div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-day">Sunday</div>
+      <div class="timeline-tasks">
+        <ul class="dlist">
+          <li>Submit Lab 4 data and Discussion Board post by 11:59 PM</li>
+          <li>Confirm all photos are uploaded and calculations are double-checked</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule"><div class="rule-line"></div><div class="rule-dot"></div><div class="rule-line"></div></div>
+
+  <!-- V — OBJECTIVES -->
+  <div class="s-tag">Section V</div>
+  <h2>Learning Objectives</h2>
+  <p>By the end of Week 5, you will be able to:</p>
+
+  <ol class="objlist">
+    <li>Balance chemical equations using atom counting and conservation of mass</li>
+    <li>Identify five reaction types: synthesis, decomposition, single replacement, double replacement, combustion</li>
+    <li>Write balanced equations for reactions relevant to food chemistry and water treatment</li>
+    <li>Use mole ratios from balanced equations to calculate amounts of reactants and products</li>
+    <li>Convert between grams, moles, and number of molecules using molar mass and Avogadro&rsquo;s number</li>
+    <li>Apply stoichiometry to calculate theoretical yields and quantities needed for reactions</li>
+    <li>Determine limiting reactants when given amounts of multiple reactants</li>
+    <li>Calculate contaminant concentrations in ppm and evaluate against EPA safe limits</li>
+  </ol>
+
+  <div class="rule"><div class="rule-line"></div><div class="rule-dot"></div><div class="rule-line"></div></div>
+
+  <!-- VI — FAQ -->
+  <div class="s-tag">Section VI</div>
+  <h2>Common Questions</h2>
+
+  <div class="faq">
+    <div class="faq-item">
+      <div class="faq-q">I have both Lab 3 and Lab 4 work this week &mdash; how do I manage the load?</div>
+      <div class="faq-a">Lab 3 data is already collected from last week &mdash; this week you are writing the report. Treat it as a Monday or Tuesday task so the rest of the week is dedicated to Lab 4. The timeline above is structured with this sequence in mind. If Lab 3 still needs significant work, prioritize that before starting Lab 4 experiments.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What materials do I need for Lab 4?</div>
+      <div class="faq-a">Lab 4 uses common household materials &mdash; salt, sugar, vegetable oil, flour, a food scale, coffee filters, and measuring cups. Most of these were already on the Week 1 materials list. Check the Lab 4 instructions for the complete list and quantities before you begin.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How does the stoichiometry in Workbook 4 connect to Lab 4?</div>
+      <div class="faq-a">Lab 4 gives you the experimental side &mdash; what physical methods can and cannot remove from water. Workbook 4 gives you the mathematical side &mdash; calculating how much of a substance is present and what reactions would be needed to neutralize or remove it. Together they give you a complete picture of the water quality problem facing Bracket City.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">When is the full Lab 4 report due?</div>
+      <div class="faq-a">The data tables and calculations are due at the end of Week 5. The full written report is due at the end of <strong>Week 6</strong>, giving you time to write a thorough analysis after completing the experimental work.</div>
+    </div>
+  </div>
+
+  <div class="rule"><div class="rule-line"></div><div class="rule-dot"></div><div class="rule-line"></div></div>
+
+  <!-- HELP -->
+  <div class="s-tag">Getting Help</div>
+  <h2>Questions?</h2>
+
+  <ul class="dlist">
+    <li><strong>Email Dr. Keenan</strong> &mdash; for lab concerns, access issues, or personal questions</li>
+    <li><strong>Discussion Board</strong> &mdash; for general questions your classmates can answer</li>
+    <li><strong>Office Hours</strong> &mdash; posted in Canvas; drop in anytime, no appointment needed</li>
+  </ul>
+
+  <div class="it-block">
+    <div class="it-header">IT Assistance &mdash; Carson-Newman University</div>
+    <div class="it-body">
+      <ul class="dlist">
+        <li><strong>Help Desk:</strong> Submit tickets to <a href="mailto:ithelpdesk@cn.edu">ithelpdesk@cn.edu</a></li>
+        <li><strong>Phone:</strong> (865) 471-3506</li>
+        <li><strong>Technical support:</strong> <a href="https://www.cn.edu/life-at-c-n/information-technology-services/" target="_blank" rel="noopener">C-N Information Technology Page</a></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <p>The numbers you calculate this week determine what Bracket City can safely eat and drink.</p>
+  <div class="footer-sig">&mdash; Dr. Keenan</div>
+</div>
+
+<div class="cn-footer">
+  <p>&copy; Carson-Newman University &nbsp;&bull;&nbsp; 1646 Russell Avenue, Jefferson City, TN 37760 &nbsp;&bull;&nbsp; v2026.02.26</p>
+</div>
+
+</body>
+</html>
