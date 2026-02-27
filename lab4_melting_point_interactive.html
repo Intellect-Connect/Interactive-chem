@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Melting Point Determination | CHEM 103L Lab 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#1a1a2e;--paper:#faf8f4;--cream:#f2ede3;--rule:#d4c9b0;
+  --accent:#7b1fa2;--accent-light:#f3e5f5;--accent-dark:#4a0072;
+  --red:#c0392b;--red-light:#f9ebea;--blue:#1a4a7a;--blue-light:#e8f0f9;
+  --gold:#b8860b;--gold-light:#fdf6e3;--orange:#e65100;--orange-light:#fff3e0;
+  --canvas-bg:#fffef9;--border:#c8bfa8;--shadow:0 2px 12px rgba(26,26,46,0.08);
+  --green:#6a1b9a;--green-light:#f3e5f5;--purple:#5b2d8e;--purple-light:#f0eaf8;
+  --teal:#1565c0;--teal-light:#e3f0fc;--teal-dark:#0d47a1;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#e0ddd6;
+  background-image:radial-gradient(ellipse at 15% 10%,rgba(123,31,162,.07) 0%,transparent 50%),
+  radial-gradient(ellipse at 85% 90%,rgba(26,74,122,.05) 0%,transparent 50%);
+  color:var(--ink);min-height:100vh;padding-bottom:44px;}
+.lab-header{background:var(--ink);background-image:linear-gradient(135deg,rgba(123,31,162,.18) 0%,transparent 60%),
+  repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.02) 39px,rgba(255,255,255,.02) 40px),
+  repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.02) 39px,rgba(255,255,255,.02) 40px);
+  border-bottom:3px solid #ce93d8;}
+.header-inner{max-width:960px;margin:0 auto;padding:28px 40px 22px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;}
+.lab-tag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#ce93d8;margin-bottom:8px;}
+.lab-title{font-family:'Source Serif 4',serif;font-size:26px;font-weight:600;color:#fff;line-height:1.25;margin-bottom:6px;}
+.lab-subtitle{font-size:13px;color:rgba(255,255,255,.5);font-style:italic;}
+.header-meta{text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);line-height:1.8;flex-shrink:0;}
+.student-bar{background:#fff;border-bottom:1px solid var(--rule);}
+.student-bar-inner{max-width:960px;margin:0 auto;padding:16px 40px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:16px;}
+.field-group label{display:block;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:4px;}
+.field-group input{width:100%;border:1px solid var(--border);border-radius:3px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;}
+.field-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(123,31,162,.1);}
+.tab-nav-wrap{background:var(--ink);border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:100;}
+.tab-nav{max-width:960px;margin:0 auto;padding:0 10px;display:flex;gap:0;flex-wrap:wrap;}
+.tab-btn{padding:12px 14px;background:transparent;border:none;color:rgba(255,255,255,.45);font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all .18s;letter-spacing:.02em;white-space:nowrap;position:relative;top:2px;}
+.tab-btn:hover{color:rgba(255,255,255,.75);}
+.tab-btn.active{color:#ce93d8;border-bottom-color:#ce93d8;}
+.tab-num{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;margin-right:5px;opacity:.7;}
+.tab-panel{display:none;}.tab-panel.active{display:block;}
+.main{max-width:960px;margin:0 auto;padding:28px 40px 48px;}
+.scenario-banner{background:var(--ink);border-radius:4px;padding:20px 24px;margin-bottom:24px;border-left:4px solid #ce93d8;
+  background-image:radial-gradient(ellipse at right,rgba(206,147,216,.06) 0%,transparent 70%);}
+.scenario-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#ce93d8;margin-bottom:8px;}
+.scenario-title{font-family:'Source Serif 4',serif;font-size:18px;font-weight:600;color:#fff;margin-bottom:8px;}
+.scenario-body{font-size:13.5px;color:rgba(255,255,255,.65);line-height:1.7;}
+.scenario-body strong{color:#ce93d8;}
+.section-card{background:var(--paper);border:1px solid var(--border);border-radius:4px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;}
+.section-header{padding:14px 24px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:14px;background:var(--cream);}
+.section-num{width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.section-title{font-family:'Source Serif 4',serif;font-size:17px;font-weight:600;color:var(--ink);}
+.section-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:3px;flex-shrink:0;}
+.badge-purple{background:var(--purple-light);color:var(--purple);}
+.badge-blue{background:var(--blue-light);color:var(--blue);}
+.badge-gold{background:var(--gold-light);color:var(--gold);}
+.badge-red{background:var(--red-light);color:var(--red);}
+.section-body{padding:24px;}
+.ref-box{background:var(--blue-light);border:1px solid rgba(26,74,122,.18);border-left:4px solid var(--blue);border-radius:3px;padding:14px 16px;margin-bottom:18px;font-size:13.5px;line-height:1.7;}
+.ref-box-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;}
+.ref-box-gold{background:var(--gold-light);border-color:rgba(184,134,11,.2);border-left-color:var(--gold);}
+.ref-box-gold .ref-box-title{color:var(--gold);}
+.ref-box-purple{background:var(--purple-light);border-color:rgba(91,45,142,.2);border-left-color:var(--purple);}
+.ref-box-purple .ref-box-title{color:var(--purple);}
+.ref-box-red{background:var(--red-light);border-color:rgba(192,57,43,.2);border-left-color:var(--red);}
+.ref-box-red .ref-box-title{color:var(--red);}
+.q-block{margin-bottom:22px;padding-bottom:22px;border-bottom:1px dashed var(--rule);}
+.q-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.q-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:5px;}
+.q-text{font-size:14px;line-height:1.65;color:var(--ink);margin-bottom:10px;font-weight:500;}
+.q-sub{font-size:13.5px;color:#555;margin:6px 0 10px 0;line-height:1.65;}
+textarea.open-response{width:100%;border:1px solid var(--border);border-radius:3px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.65;color:var(--ink);background:#fff;resize:vertical;min-height:90px;outline:none;transition:border-color .2s,box-shadow .2s;}
+textarea.open-response:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,74,122,.1);}
+.ai-btn{margin-top:10px;padding:7px 18px;background:transparent;border:1px solid var(--accent);border-radius:3px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.08em;cursor:pointer;transition:all .15s;}
+.ai-btn:hover{background:var(--accent);color:#fff;}
+.ai-btn:disabled{opacity:.5;cursor:not-allowed;}
+.ai-feedback-area{margin-top:10px;padding:14px 16px;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:3px;font-size:13.5px;line-height:1.7;display:none;color:var(--ink);}
+.ai-feedback-area.visible{display:block;}
+.data-table-wrap{overflow-x:auto;margin:16px 0;}
+.data-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.data-table th{padding:10px 14px;border-bottom:2px solid var(--ink);text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.08em;background:var(--cream);color:var(--ink);}
+.data-table td{padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:middle;text-align:center;}
+.data-table td.label-cell{font-weight:600;color:#333;font-size:13px;text-align:left;}
+.data-table input[type="number"]{width:110px;border:1px solid var(--border);border-radius:3px;padding:6px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;background:#fff;color:var(--ink);outline:none;transition:border-color .2s;}
+.data-table input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,74,122,.1);}
+.data-table input.valid{border-color:var(--accent);background:var(--accent-light);}
+.data-table input.invalid{border-color:var(--red);background:var(--red-light);}
+.data-table td.computed-cell{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-light);}
+.data-table td.computed-cell.blank{color:#bbb;background:var(--cream);font-weight:400;}
+.data-table td.computed-cell.broad{color:var(--red);background:var(--red-light);}
+.data-table td.computed-cell.sharp{color:#1b5e20;background:#e8f5e9;}
+.substance-table{width:100%;border-collapse:collapse;font-size:13px;}
+.substance-table th{padding:8px 14px;background:var(--ink);color:#ce93d8;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.12em;text-align:left;}
+.substance-table td{padding:8px 14px;border-bottom:1px solid var(--rule);font-size:13px;}
+.substance-table td.mp-val{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);text-align:right;}
+.substance-table tr:nth-child(even) td{background:var(--cream);}
+.mixture-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0;}
+.mixture-row label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#888;letter-spacing:.1em;text-transform:uppercase;}
+.mixture-row input[type="text"]{border:1px solid var(--border);border-radius:3px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;color:var(--ink);outline:none;flex:1;min-width:140px;transition:border-color .2s;}
+.mixture-row input[type="text"]:focus{border-color:var(--accent);}
+.unknown-selector{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0;padding:14px 16px;background:var(--accent-light);border:1px solid rgba(123,31,162,.2);border-radius:4px;}
+.unknown-selector label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);}
+.unknown-selector input{border:1px solid rgba(123,31,162,.3);border-radius:3px;padding:7px 12px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);background:#fff;outline:none;width:120px;}
+.unknown-selector span{font-size:12.5px;color:#666;font-style:italic;}
+#identification-result{margin-top:14px;padding:14px 18px;border-radius:4px;font-size:14px;line-height:1.65;display:none;}
+#identification-result.show{display:block;}
+#identification-result.match{background:#e8f5e9;border-left:4px solid #2e7d32;color:#1b5e20;}
+#identification-result.possible{background:var(--gold-light);border-left:4px solid var(--gold);color:var(--gold);}
+#identification-result.no-match{background:var(--red-light);border-left:4px solid var(--red);color:var(--red);}
+.step-list{counter-reset:step-counter;list-style:none;padding:0;}
+.step-item{counter-increment:step-counter;display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--rule);}
+.step-item:last-child{border-bottom:none;}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#fff;background:var(--accent);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-text{font-size:13.5px;line-height:1.7;color:var(--ink);}
+.step-note{background:var(--accent-light);color:var(--accent);border-left:2px solid var(--accent);padding:6px 10px;margin-top:6px;border-radius:2px;font-size:12.5px;}
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px;}
+.concept-card{background:#fff;border:1px solid var(--border);border-radius:4px;padding:14px 16px;border-top:3px solid var(--accent);}
+.concept-card-title{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+.concept-card p{font-size:13px;line-height:1.65;color:#444;}
+.nav-row{display:flex;justify-content:space-between;margin-top:28px;padding-top:20px;border-top:1px solid var(--rule);}
+.nav-btn{padding:10px 22px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
+.nav-btn-primary{background:var(--accent);color:#fff;}
+.nav-btn-primary:hover{background:var(--accent-dark);}
+.nav-btn-secondary{background:var(--cream);color:var(--ink);border:1px solid var(--border);}
+.nav-btn-secondary:hover{background:var(--rule);}
+.val-msg{display:none;margin-top:10px;padding:10px 14px;border-radius:3px;font-size:13px;line-height:1.5;}
+.val-msg.show{display:block;}
+.val-msg.ok{background:var(--accent-light);color:var(--accent);border-left:3px solid var(--accent);}
+.val-msg.warn{background:var(--gold-light);color:var(--gold);border-left:3px solid var(--gold);}
+.val-msg.err{background:var(--red-light);color:var(--red);border-left:3px solid var(--red);}
+.submit-section{background:var(--ink);border-radius:4px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;margin:24px 0;}
+.submit-info{color:rgba(255,255,255,.6);font-size:13px;line-height:1.6;}
+.submit-info strong{color:#fff;display:block;margin-bottom:4px;font-size:15px;}
+.submit-main-btn{background:var(--accent);color:#fff;border:none;padding:13px 28px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;flex-shrink:0;}
+.submit-main-btn:hover{background:var(--accent-dark);}
+.submit-main-btn:disabled{opacity:.55;cursor:not-allowed;}
+.score-panel{background:var(--paper);border:1px solid var(--border);border-radius:4px;box-shadow:var(--shadow);overflow:hidden;display:none;margin-bottom:20px;}
+.score-panel.visible{display:block;}
+.score-header{background:var(--ink);padding:18px 24px;}
+.score-header h3{font-family:'Source Serif 4',serif;color:#fff;font-size:17px;}
+.score-bar-wrap{margin-top:10px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
+.score-bar{height:100%;border-radius:3px;width:0%;transition:width 1s ease;}
+.score-body{padding:20px 24px;}
+.ref-card{border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:12px;}
+.ref-card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--cream);cursor:pointer;user-select:none;border-bottom:1px solid transparent;transition:background .15s;}
+.ref-card-header:hover{background:#ede8df;}
+.ref-card-header.open{border-bottom-color:var(--rule);background:#fff;}
+.ref-card-title{font-family:'Source Serif 4',serif;font-size:15px;font-weight:600;color:var(--ink);}
+.ref-card-icon{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);font-weight:700;}
+.ref-concept-icon{width:32px;height:32px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;margin-right:10px;flex-shrink:0;}
+.ref-card-body{display:none;padding:16px 18px;background:#fff;font-size:13.5px;line-height:1.75;color:#444;}
+.ref-card-body.open{display:block;}
+.ref-card-body p{margin-bottom:10px;}
+.ref-card-body p:last-child{margin-bottom:0;}
+#save-status-bar{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--ink);border-top:2px solid #ce93d8;padding:8px 24px;display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.55);gap:16px;transform:translateY(100%);transition:transform .3s ease;}
+#save-status-bar.visible{transform:translateY(0);}
+#save-status-bar .save-dot{width:7px;height:7px;border-radius:50%;background:#ce93d8;flex-shrink:0;transition:background .3s;}
+#save-status-bar .save-dot.saving{background:#ffd54f;animation:pulse .8s infinite;}
+#save-status-bar .save-dot.saved{background:#81c784;}
+#save-status-bar .save-dot.error{background:#ef9a9a;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+#save-status-bar .save-msg{flex:1;}
+#save-status-bar .save-actions{display:flex;gap:10px;}
+.save-action-btn{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;border-radius:3px;cursor:pointer;transition:all .15s;letter-spacing:.05em;}
+.save-action-btn:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);}
+.save-action-btn.danger:hover{border-color:#ef9a9a;color:#ef9a9a;}
+@media(max-width:700px){.student-bar-inner{grid-template-columns:1fr 1fr;}.concept-grid{grid-template-columns:1fr;}.main{padding:20px 16px 40px;}.header-inner{padding:24px 20px 18px;flex-direction:column;align-items:flex-start;}.submit-section{flex-direction:column;align-items:stretch;}}
+</style>
+</head>
+<body>
+
+<div id="save-status-bar">
+  <div class="save-dot" id="save-dot"></div>
+  <div class="save-msg" id="save-msg">Auto-save ready</div>
+  <div class="save-actions">
+    <button class="save-action-btn" onclick="saveNow()">Save now</button>
+    <button class="save-action-btn" id="reset-attempts-btn"
+      onclick="resetAttemptsOnly()"
+      style="display:none;border-color:#ce93d8;color:#ce93d8;">Reset Attempts</button>
+    <button class="save-action-btn danger" onclick="confirmClearSave()">Clear saved data</button>
+  </div>
+</div>
+
+<header class="lab-header">
+  <div class="header-inner">
+    <div>
+      <div class="lab-tag">CHEM 103L &nbsp;&mdash;&nbsp; General Chemistry I Lab</div>
+      <div class="lab-title">Lab 4: Melting Point Determination</div>
+      <div class="lab-subtitle">Identifying unknown solids through physical property measurement</div>
+    </div>
+    <div class="header-meta"><div>Lab 4</div><div>CHEM 103L</div><div>General Chemistry I</div></div>
+  </div>
+</header>
+
+<div class="student-bar">
+  <div class="student-bar-inner">
+    <div class="field-group"><label>Your Name (Last, First)</label><input type="text" id="student-name" placeholder="e.g. Smith, Jordan" autocomplete="off"></div>
+    <div class="field-group"><label>Lab Section</label><input type="text" id="student-section" placeholder="e.g. 103L-02" autocomplete="off"></div>
+    <div class="field-group"><label>Team Member 2</label><input type="text" id="member2" placeholder="Last, First" autocomplete="off"></div>
+    <div class="field-group"><label>Team Member 3</label><input type="text" id="member3" placeholder="Last, First" autocomplete="off"></div>
+    <div class="field-group"><label>Start Date</label><input type="date" id="start-date"></div>
+  </div>
+</div>
+
+<div class="tab-nav-wrap">
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab(1)"><span class="tab-num">01</span> Purpose</button>
+    <button class="tab-btn" onclick="switchTab(2)"><span class="tab-num">02</span> Background</button>
+    <button class="tab-btn" onclick="switchTab(3)"><span class="tab-num">03</span> Procedure</button>
+    <button class="tab-btn" onclick="switchTab(4)"><span class="tab-num">04</span> Data Tables</button>
+    <button class="tab-btn" onclick="switchTab(5)"><span class="tab-num">05</span> Analysis</button>
+    <button class="tab-btn" onclick="switchTab(6)"><span class="tab-num">06</span> Conclusions</button>
+    <button class="tab-btn" onclick="switchTab(7)"><span class="tab-num">REF</span> Reference</button>
+  </nav>
+</div>
+
+<div id="tab-1" class="tab-panel active"><div class="main">
+  <div class="scenario-banner">
+    <div class="scenario-label">Lab Scenario &mdash; Physical Properties &amp; Identification</div>
+    <div class="scenario-title">What makes a melting point useful for identifying a substance?</div>
+    <div class="scenario-body">Every pure substance has a characteristic melting point &mdash; a narrow, reproducible temperature at which it transitions from solid to liquid. In this lab you will measure the melting point of a <strong>known compound</strong> (naphthalene) to practice the technique, then measure an <strong>unknown solid</strong> and use its melting point to narrow down its identity. Finally, you will prepare a <strong>mixture</strong> of your unknown and your best candidate &mdash; if the melting points match, the mixture test confirms your identification.</div>
+  </div>
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">I</div><div class="section-title">Purpose of Lab</div><span class="section-badge badge-purple">1&ndash;2 Sentences</span></div>
+    <div class="section-body">
+      <div class="ref-box"><div class="ref-box-title">Writing a Purpose Statement</div>
+        <p>A purpose statement identifies <em>what</em> you are doing and <em>why</em> it matters scientifically. Name the technique, the property being measured, and the goal (identify an unknown substance). Use 1&ndash;2 complete sentences. Do not describe the entire procedure here.</p></div>
+      <div class="q-label">Purpose Statement</div>
+      <div class="q-text">Write your purpose statement below. Use grammatically correct sentences (1&ndash;2 maximum).</div>
+      <textarea class="open-response" id="purpose-text" rows="4" placeholder="The objective of this experiment is to ..."></textarea>
+      <button class="ai-btn" onclick="getAIFeedback('purpose')" id="ai-btn-purpose">Get Feedback</button>
+      <div class="ai-feedback-area" id="ai-feedback-purpose"></div>
+      <div class="nav-row"><div></div><button class="nav-btn nav-btn-primary" onclick="switchTab(2)">Next: Background &rarr;</button></div>
+    </div>
+  </div>
+</div></div>
+
+<div id="tab-2" class="tab-panel"><div class="main">
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">II</div><div class="section-title">Background</div><span class="section-badge badge-blue">Key Concepts</span></div>
+    <div class="section-body">
+      <div class="concept-grid">
+        <div class="concept-card"><div class="concept-card-title">Melting Point</div><p>The temperature at which a solid and its liquid coexist in equilibrium. A <strong>pure substance</strong> melts over a narrow range (0.5&ndash;1.0 &deg;C). An <strong>impure substance</strong> melts lower and over a broader range.</p></div>
+        <div class="concept-card"><div class="concept-card-title">Melting Point Range</div><p>Recorded as <em>start</em> (first drop of liquid) to <em>end</em> (last crystal disappears). Sharp range = pure. Broad range (&gt;2 &deg;C) = impurity or mixture.</p></div>
+        <div class="concept-card"><div class="concept-card-title">Mixed Melting Point</div><p>Same compound + same compound = no change. Different compound mixed in = melting point drops and broadens. This <em>mixed melting point depression</em> is the definitive identity test.</p></div>
+        <div class="concept-card"><div class="concept-card-title">Physical Property</div><p>Melting point is an <em>intensive</em> property &mdash; it does not depend on sample size. It is a characteristic &ldquo;fingerprint&rdquo; of the substance.</p></div>
+        <div class="concept-card"><div class="concept-card-title">Heating Rate</div><p>Heat too fast and you overshoot the melting point. Slow to ~1&ndash;2 &deg;C/min as you approach the expected value. Two runs allow technique refinement.</p></div>
+        <div class="concept-card"><div class="concept-card-title">Identity Confirmation</div><p>Identification requires two criteria: (1) experimental m.p. matches Table 1 within &plusmn;2 &deg;C, AND (2) the mixture test produces a sharp, unchanged melting point.</p></div>
+      </div>
+      <div class="ref-box ref-box-gold" style="margin-top:20px;">
+        <div class="ref-box-title">Table 1 &mdash; Reference Melting Points</div>
+        <p style="margin-bottom:12px;">Your unknown substance has a melting point below 100 &deg;C. Use the values below to identify your unknown after measuring it.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <table class="substance-table">
+            <thead><tr><th>Substance</th><th style="text-align:right;">m.p. (&deg;C)</th></tr></thead>
+            <tbody>
+              <tr><td>p-dichlorobenzene</td><td class="mp-val">54</td></tr>
+              <tr><td>myristic acid</td><td class="mp-val">55</td></tr>
+              <tr><td>stearyl alcohol</td><td class="mp-val">60</td></tr>
+              <tr><td>palmitic acid</td><td class="mp-val">62</td></tr>
+              <tr><td>diphenyl</td><td class="mp-val">69</td></tr>
+              <tr><td>stearic acid</td><td class="mp-val">70</td></tr>
+            </tbody>
+          </table>
+          <table class="substance-table">
+            <thead><tr><th>Substance</th><th style="text-align:right;">m.p. (&deg;C)</th></tr></thead>
+            <tbody>
+              <tr><td>acetamide</td><td class="mp-val">78</td></tr>
+              <tr><td><strong>naphthalene</strong> (known)</td><td class="mp-val">80</td></tr>
+              <tr><td>acetoacetanilide</td><td class="mp-val">83</td></tr>
+              <tr><td>imidazole</td><td class="mp-val">87</td></tr>
+              <tr><td>m-dinitrobenzene</td><td class="mp-val">90</td></tr>
+              <tr><td>potassium alum</td><td class="mp-val">91</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="nav-btn nav-btn-secondary" onclick="switchTab(1)">&larr; Back</button>
+        <button class="nav-btn nav-btn-primary" onclick="switchTab(3)">Next: Procedure &rarr;</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div id="tab-3" class="tab-panel"><div class="main">
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">III</div><div class="section-title">Procedure</div><span class="section-badge badge-blue">Step by Step</span></div>
+    <div class="section-body">
+      <div class="ref-box ref-box-red" style="margin-bottom:18px;">
+        <div class="ref-box-title">Safety</div>
+        <p>Naphthalene is volatile with a strong odor &mdash; work in a fume hood or well-ventilated area. Avoid inhalation and skin contact. Unknown solids should be treated as potentially irritating until identified. The melting point apparatus becomes hot &mdash; allow surfaces to cool before handling.</p>
+      </div>
+      <ol class="step-list">
+        <li class="step-item"><div class="step-num">1</div><div class="step-text"><strong>Load the capillary tube.</strong> Press the open end into a small pile of dry solid several times to pack a 2&ndash;3 mm plug into the closed end. Tap gently on the bench to settle the sample. <div class="step-note">A tightly packed, 2&ndash;3 mm plug gives the sharpest results. A loose or oversized sample gives a broad, inaccurate range.</div></div></li>
+        <li class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Insert into the melting point apparatus.</strong> Place the capillary in the sample well. Set the starting temperature approximately 10&ndash;15 &deg;C below the expected melting point.</div></li>
+        <li class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Heat rapidly, then slowly.</strong> Increase temperature quickly until ~10 &deg;C below the expected melting point, then slow the rate to 1&ndash;2 &deg;C/min. <div class="step-note">Slow heating near the melting point is critical. Fast heating causes the thermometer to lag and gives a reading that is too high.</div></div></li>
+        <li class="step-item"><div class="step-num">4</div><div class="step-text"><strong>Record start and end of melting.</strong> Note the temperature when the first drop of liquid appears (start) and when the last crystal disappears (end). This is your melting point range.</div></li>
+        <li class="step-item"><div class="step-num">5</div><div class="step-text"><strong>Cool and run a second trial.</strong> Let temperature drop at least 10 &deg;C below the melting point before loading a new capillary. Run a second trial with the same technique.</div></li>
+        <li class="step-item"><div class="step-num">6</div><div class="step-text"><strong>Repeat for the unknown solid.</strong> Follow steps 1&ndash;5 for your assigned unknown sample.</div></li>
+        <li class="step-item"><div class="step-num">7</div><div class="step-text"><strong>Prepare and measure the mixture.</strong> Mix roughly equal amounts of the unknown and your best candidate from Table 1. Grind in a mortar, load a new capillary, and measure the melting point. A sharp, unchanged melting point confirms identity; a depressed or broad melting point means the compounds are different. <div class="step-note">If two or three candidates are close in melting point, prepare a separate mixture for each.</div></div></li>
+      </ol>
+      <div class="nav-row">
+        <button class="nav-btn nav-btn-secondary" onclick="switchTab(2)">&larr; Back</button>
+        <button class="nav-btn nav-btn-primary" onclick="switchTab(4)">Next: Data Tables &rarr;</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div id="tab-4" class="tab-panel"><div class="main">
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">IV</div><div class="section-title">Data Tables</div><span class="section-badge badge-gold">Enter Lab Data</span></div>
+    <div class="section-body">
+
+      <div class="section-header" style="margin: 0 -24px 20px; padding: 12px 24px; border-top: none; border-bottom: 1px solid var(--rule); background: var(--cream);">
+  <div class="section-num" style="background:var(--gold);">A</div>
+  <div class="section-title" style="font-size:15px;">Part A &mdash; Known Solid: Naphthalene</div>
+  <span class="section-badge badge-gold" style="margin-left:auto;">Literature m.p. = 80 &deg;C</span>
+</div>
+
+      <div class="ref-box"><div class="ref-box-title">Instructions</div>
+              <p>Record start and end temperatures for each run. The melting point range and average are calculated automatically. Compare to the literature value of <strong>80 &deg;C</strong>. A sharp range is 0.5&ndash;1.0 &deg;C. Ranges broader than 2 &deg;C indicate the heating rate was too fast.</p></div>
+            <div class="data-table-wrap">
+              <table class="data-table">
+                <thead><tr><th>Run</th><th>Start (&deg;C)</th><th>End (&deg;C)</th><th>Range (&deg;C)</th><th>Avg m.p. (&deg;C)</th><th>Literature (&deg;C)</th></tr></thead>
+                <tbody>
+                  <tr><td class="label-cell">Run 1</td>
+                    <td><input type="number" id="k-start-1" placeholder="--.-" step="0.1" oninput="calcKnown()"></td>
+                    <td><input type="number" id="k-end-1"   placeholder="--.-" step="0.1" oninput="calcKnown()"></td>
+                    <td id="k-range-1" class="computed-cell blank">&mdash;</td>
+                    <td id="k-avg-1"   class="computed-cell blank">&mdash;</td>
+                    <td style="text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);">80</td></tr>
+                  <tr><td class="label-cell">Run 2</td>
+                    <td><input type="number" id="k-start-2" placeholder="--.-" step="0.1" oninput="calcKnown()"></td>
+                    <td><input type="number" id="k-end-2"   placeholder="--.-" step="0.1" oninput="calcKnown()"></td>
+                    <td id="k-range-2" class="computed-cell blank">&mdash;</td>
+                    <td id="k-avg-2"   class="computed-cell blank">&mdash;</td>
+                    <td style="text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);">80</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="known-msg" class="val-msg"></div>
+            <div class="q-block" style="margin-top:24px;">
+              <div class="q-label">Question 1</div>
+              <div class="q-text">How does your measured melting point compare with the literature value of 80 &deg;C for naphthalene?</div>
+              <div class="q-sub">Report the specific difference between your experimental average and the literature value. Is the difference within experimental error? What factors could account for any discrepancy?</div>
+              <textarea class="open-response" id="q1-text" rows="4" placeholder="My measured melting point for naphthalene was approximately ___ &deg;C, which is ___ &deg;C (above / below / equal to) the literature value of 80 &deg;C ..."></textarea>
+              <button class="ai-btn" onclick="getAIFeedback('q1')" id="ai-btn-q1">Get Feedback</button>
+              <div class="ai-feedback-area" id="ai-feedback-q1"></div>
+            </div>
+            <div class="q-block">
+              <div class="q-label">Question 2</div>
+              <div class="q-text">Account for any difference between your two experimentally determined melting point runs.</div>
+              <div class="q-sub">Were your two runs consistent with each other? If they differed, what procedural reasons could explain the difference &mdash; heating rate, sample packing, apparatus not fully cooled, etc.?</div>
+              <textarea class="open-response" id="q2-text" rows="4" placeholder="My two runs gave melting points of ___ &deg;C and ___ &deg;C. The difference between runs was ___ &deg;C ..."></textarea>
+              <button class="ai-btn" onclick="getAIFeedback('q2')" id="ai-btn-q2">Get Feedback</button>
+              <div class="ai-feedback-area" id="ai-feedback-q2"></div>
+            </div>
+
+      <div class="section-header" style="margin: 0 -24px 20px; padding: 12px 24px; border-top: none; border-bottom: 1px solid var(--rule); background: var(--cream);">
+  <div class="section-num" style="background:var(--purple);">B</div>
+  <div class="section-title" style="font-size:15px;">Part B &mdash; Unknown Solid</div>
+  <span class="section-badge badge-purple" style="margin-left:auto;">Identification</span>
+</div>
+
+      <div class="unknown-selector">
+              <label>Unknown ID Number:</label>
+              <input type="text" id="unknown-id" placeholder="e.g. 14" autocomplete="off" oninput="scheduleSave()">
+              <span>Enter your assigned unknown number from your instructor.</span>
+            </div>
+            <div class="ref-box"><div class="ref-box-title">Instructions</div>
+              <p>Measure the melting point of your unknown solid for two runs. Compare to <strong>Table 1</strong> on the Background tab. List all candidates within &plusmn;3 &deg;C of your measured value &mdash; the mixture test in Part C will distinguish between them.</p></div>
+            <div class="data-table-wrap">
+              <table class="data-table">
+                <thead><tr><th>Run</th><th>Start (&deg;C)</th><th>End (&deg;C)</th><th>Range (&deg;C)</th><th>Avg m.p. (&deg;C)</th></tr></thead>
+                <tbody>
+                  <tr><td class="label-cell">Run 1</td>
+                    <td><input type="number" id="u-start-1" placeholder="--.-" step="0.1" oninput="calcUnknown()"></td>
+                    <td><input type="number" id="u-end-1"   placeholder="--.-" step="0.1" oninput="calcUnknown()"></td>
+                    <td id="u-range-1" class="computed-cell blank">&mdash;</td>
+                    <td id="u-avg-1"   class="computed-cell blank">&mdash;</td></tr>
+                  <tr><td class="label-cell">Run 2</td>
+                    <td><input type="number" id="u-start-2" placeholder="--.-" step="0.1" oninput="calcUnknown()"></td>
+                    <td><input type="number" id="u-end-2"   placeholder="--.-" step="0.1" oninput="calcUnknown()"></td>
+                    <td id="u-range-2" class="computed-cell blank">&mdash;</td>
+                    <td id="u-avg-2"   class="computed-cell blank">&mdash;</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="unknown-msg" class="val-msg"></div>
+            <div id="identification-result"></div>
+            <div class="q-block" style="margin-top:24px;">
+              <div class="q-label">Question 3</div>
+              <div class="q-text">Compare your experimental melting point to the substances in Table 1. Which substance(s) could possibly be your unknown? Explain your reasoning.</div>
+              <div class="q-sub">Identify all substances in Table 1 whose melting point is within &plusmn;2&ndash;3 &deg;C of your measured average. If multiple candidates are close, list all of them &mdash; the mixture test will distinguish between them.</div>
+              <textarea class="open-response" id="q3-text" rows="5" placeholder="My unknown solid had a measured melting point of approximately ___ &deg;C. Comparing to Table 1, the substance(s) closest to this value are ..."></textarea>
+              <button class="ai-btn" onclick="getAIFeedback('q3')" id="ai-btn-q3">Get Feedback</button>
+              <div class="ai-feedback-area" id="ai-feedback-q3"></div>
+            </div>
+
+      <div class="section-header" style="margin: 0 -24px 20px; padding: 12px 24px; border-top: none; border-bottom: 1px solid var(--rule); background: var(--cream);">
+  <div class="section-num" style="background:var(--red);">C</div>
+  <div class="section-title" style="font-size:15px;">Part C &mdash; Melting Point of Mixtures</div>
+  <span class="section-badge badge-red" style="margin-left:auto;">Confirmation Test</span>
+</div>
+
+      <div class="ref-box"><div class="ref-box-title">How the Mixture Test Works</div>
+              <p>Mix equal amounts of your <strong>unknown</strong> and a <strong>known candidate</strong> from Table 1. Grind thoroughly. Measure the melting point.</p>
+              <p style="margin-top:8px;"><strong>Same compound:</strong> Melting point stays sharp and at the same temperature as the unknown alone.</p>
+              <p style="margin-top:4px;"><strong>Different compound:</strong> Melting point drops and the range broadens (melting point depression). The mixture melts lower and over a wider interval.</p>
+              <p style="margin-top:8px;">If two or three candidates are close in temperature, prepare a separate mixture trial for each one.</p></div>
+
+            <div class="q-block">
+              <div class="q-label">Trial 1</div>
+              <div class="mixture-row">
+                <label>Unknown ID:</label><input type="text" id="mix-unknown-1" placeholder="Unknown #___" oninput="calcMixture(1)">
+                <label>Candidate (Known):</label><input type="text" id="mix-additive-1" placeholder="e.g. naphthalene" oninput="calcMixture(1)">
+              </div>
+              <div class="data-table-wrap">
+                <table class="data-table">
+                  <thead><tr><th>Trial</th><th>Start (&deg;C)</th><th>End (&deg;C)</th><th>Range (&deg;C)</th><th>Sharp or Broad?</th></tr></thead>
+                  <tbody>
+                    <tr><td class="label-cell">Trial 1</td>
+                      <td><input type="number" id="m-start-1" placeholder="--.-" step="0.1" oninput="calcMixture(1)"></td>
+                      <td><input type="number" id="m-end-1"   placeholder="--.-" step="0.1" oninput="calcMixture(1)"></td>
+                      <td id="m-range-1" class="computed-cell blank">&mdash;</td>
+                      <td id="m-sharp-1" class="computed-cell blank">&mdash;</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div id="mix-result-1" class="val-msg" style="margin-top:8px;"></div>
+            </div>
+
+            <div class="q-block">
+              <div class="q-label">Trial 2 <span style="font-weight:400;text-transform:none;font-family:'DM Sans',sans-serif;color:#888;font-size:12px;">(if needed)</span></div>
+              <div class="mixture-row">
+                <label>Unknown ID:</label><input type="text" id="mix-unknown-2" placeholder="Unknown #___" oninput="calcMixture(2)">
+                <label>Candidate (Known):</label><input type="text" id="mix-additive-2" placeholder="e.g. naphthalene" oninput="calcMixture(2)">
+              </div>
+              <div class="data-table-wrap">
+                <table class="data-table">
+                  <thead><tr><th>Trial</th><th>Start (&deg;C)</th><th>End (&deg;C)</th><th>Range (&deg;C)</th><th>Sharp or Broad?</th></tr></thead>
+                  <tbody>
+                    <tr><td class="label-cell">Trial 2</td>
+                      <td><input type="number" id="m-start-2" placeholder="--.-" step="0.1" oninput="calcMixture(2)"></td>
+                      <td><input type="number" id="m-end-2"   placeholder="--.-" step="0.1" oninput="calcMixture(2)"></td>
+                      <td id="m-range-2" class="computed-cell blank">&mdash;</td>
+                      <td id="m-sharp-2" class="computed-cell blank">&mdash;</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div id="mix-result-2" class="val-msg" style="margin-top:8px;"></div>
+            </div>
+
+            <div class="q-block">
+              <div class="q-label">Trial 3 <span style="font-weight:400;text-transform:none;font-family:'DM Sans',sans-serif;color:#888;font-size:12px;">(if needed)</span></div>
+              <div class="mixture-row">
+                <label>Unknown ID:</label><input type="text" id="mix-unknown-3" placeholder="Unknown #___" oninput="calcMixture(3)">
+                <label>Candidate (Known):</label><input type="text" id="mix-additive-3" placeholder="e.g. naphthalene" oninput="calcMixture(3)">
+              </div>
+              <div class="data-table-wrap">
+                <table class="data-table">
+                  <thead><tr><th>Trial</th><th>Start (&deg;C)</th><th>End (&deg;C)</th><th>Range (&deg;C)</th><th>Sharp or Broad?</th></tr></thead>
+                  <tbody>
+                    <tr><td class="label-cell">Trial 3</td>
+                      <td><input type="number" id="m-start-3" placeholder="--.-" step="0.1" oninput="calcMixture(3)"></td>
+                      <td><input type="number" id="m-end-3"   placeholder="--.-" step="0.1" oninput="calcMixture(3)"></td>
+                      <td id="m-range-3" class="computed-cell blank">&mdash;</td>
+                      <td id="m-sharp-3" class="computed-cell blank">&mdash;</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div id="mix-result-3" class="val-msg" style="margin-top:8px;"></div>
+            </div>
+
+            <div id="final-identity-box" class="ref-box ref-box-purple" style="display:none;margin-top:16px;">
+              <div class="ref-box-title">Identity Confirmed</div>
+              <p id="final-identity-text"></p>
+            </div>
+            <div class="nav-row">
+              <button class="nav-btn nav-btn-secondary" onclick="switchTab(4)">&larr; Back</button>
+              <button class="nav-btn nav-btn-primary" onclick="switchTab(5)">Next: Analysis &rarr;</button>
+            </div>
+
+    </div>
+  </div>
+</div></div>
+
+<div id="tab-5" class="tab-panel"><div class="main">
+
+  <div class="section-card">
+    <div class="section-header"><div class="section-num" style="background:var(--purple);">V</div><div class="section-title">Experimental Results Summary</div><span class="section-badge badge-purple">Q1&ndash;Q3</span></div>
+    <div class="section-body">
+      <div class="ref-box ref-box-gold"><div class="ref-box-title">Writing Strong Analysis</div>
+        <p>The most useful analysis responses connect your actual data to the chemistry. When you reference the specific temperatures you measured, the Table 1 values you compared them to, and what you observed in the mixture test, your reasoning becomes much easier to follow &mdash; both for your instructor and for yourself. Write in complete sentences as if you are explaining your findings to a fellow student who wasn&rsquo;t in the lab with you.</p></div>
+
+      <div class="q-block">
+        <div class="q-label">Results Summary</div>
+        <div class="q-text">Summarize your measurements from Q1&ndash;Q3. Include your melting points for the known and unknown solids, how they compared to Table 1, and what the mixture test results indicated.</div>
+        <textarea class="open-response" id="summary-text" rows="6" placeholder="For naphthalene (known), I measured a melting point of ___ &deg;C compared to the literature value of 80 &deg;C. For the unknown solid (ID ___), I measured ___ &deg;C. Based on Table 1, the closest match was ... The mixture test confirmed/did not confirm this identity because ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('summary')" id="ai-btn-summary">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-summary"></div>
+      </div>
+    </div>
+  </div>
+
+  <hr style="border:none;border-top:2px dashed var(--border);margin:28px 0;">
+
+  <div class="section-card">
+    <div class="section-header"><div class="section-num" style="background:var(--red);">VI</div><div class="section-title">Data Analysis &mdash; Mixture Trials</div><span class="section-badge badge-red">Identity Determination</span></div>
+    <div class="section-body">
+      <div class="q-block">
+        <div class="q-label">Question 4 &mdash; Mixture Trial 1</div>
+        <div class="q-text">Is the melting point of your Trial 1 mixture the same as the melting point of your unknown? Based on this result, what is (or is not) the identity of your unknown?</div>
+        <div class="q-sub">A <strong>sharp</strong> mixture melting point at the same temperature as the unknown = same compound. A <strong>broad or depressed</strong> melting point = different compounds.</div>
+        <textarea class="open-response" id="q4-text" rows="4" placeholder="The melting point of Mixture 1 (unknown + ___) was ___ &deg;C with a range of ___ &deg;C. This is (sharp / broad). Therefore, the unknown (is / is not) ___ because ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('q4')" id="ai-btn-q4">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-q4"></div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Question 5 &mdash; Mixture Trial 2 <span style="font-weight:400;text-transform:none;font-family:'DM Sans',sans-serif;color:#888;font-size:12px;">(if applicable)</span></div>
+        <div class="q-text">If you performed a second mixture trial, describe its result and what it indicates about the identity of your unknown.</div>
+        <textarea class="open-response" id="q5-text" rows="4" placeholder="The melting point of Mixture 2 (unknown + ___) was ___ &deg;C ... (or 'Not applicable &mdash; one mixture trial was sufficient.')"></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('q5')" id="ai-btn-q5">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-q5"></div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Question 6 &mdash; Final Identification</div>
+        <div class="q-text">Based on all your evidence &mdash; the unknown melting point, comparison to Table 1, and mixture test results &mdash; what is the identity of your unknown compound? Justify your answer with specific data.</div>
+        <textarea class="open-response" id="q6-text" rows="5" placeholder="Based on the evidence: (1) my unknown melted at ___ &deg;C, (2) this matches ___ in Table 1 (literature m.p. ___ &deg;C), and (3) the mixture with ___ produced a sharp melting point of ___ &deg;C. Therefore, the identity of my unknown is ..."></textarea>
+        <button class="ai-btn" onclick="getAIFeedback('q6')" id="ai-btn-q6">Get Feedback</button>
+        <div class="ai-feedback-area" id="ai-feedback-q6"></div>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn nav-btn-secondary" onclick="switchTab(4)">&larr; Back</button>
+        <button class="nav-btn nav-btn-primary" onclick="switchTab(6)">Next: Conclusions &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+<div id="tab-6" class="tab-panel"><div class="main">
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">VII</div><div class="section-title">Summary / Conclusions</div><span class="section-badge badge-purple">3 Sentences Max</span></div>
+    <div class="section-body">
+      <div class="ref-box"><div class="ref-box-title">Writing a Strong Conclusion</div>
+        <p>A good conclusion for this lab tells a short, clear story in three sentences or fewer: what technique you used, what you found (the identity of your unknown and the evidence that led you there), and what that tells you about the value of melting point as a tool for identifying substances. Mentioning one thing that could have introduced uncertainty in your measurements shows scientific maturity &mdash; it doesn&rsquo;t weaken your conclusion, it strengthens it.</p></div>
+      <div class="q-label">Conclusion</div>
+      <div class="q-text">Write a brief summary of what was done, explain your results, and draw a conclusion. Maximum 3 sentences.</div>
+      <textarea class="open-response" id="conclusion-text" rows="5" placeholder="In this experiment, the melting point determination technique was used to ... The unknown solid (ID ___) was identified as ___ based on ... Sources of experimental error include ..."></textarea>
+      <button class="ai-btn" onclick="getAIFeedback('conclusion')" id="ai-btn-conclusion">Get Feedback</button>
+      <div class="ai-feedback-area" id="ai-feedback-conclusion"></div>
+
+      <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--rule);">
+        <div class="q-label" style="margin-bottom:8px;">Notes to Instructor</div>
+        <textarea class="open-response" id="notes-to-prof" rows="3" placeholder="Optional: equipment issues, data anomalies, or anything your instructor should know before grading."></textarea>
+      </div>
+
+      <div class="submit-section" id="submit-section" style="margin-top:28px;">
+        <div class="submit-info" id="submit-info">
+          <strong>Ready to Submit?</strong>
+          Confirm all sections are complete. You have <strong id="subs-remaining-text">2 submissions</strong> available. Use your first submission to see feedback, revise, then submit a final time for your grade.
+        </div>
+        <button class="submit-main-btn" onclick="submitLab()" id="submit-btn">Submit Lab 4 &mdash; Attempt 1 of 2</button>
+      </div>
+
+      <div class="score-panel" id="score-panel-1" style="display:none;">
+        <div class="score-header">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <h3 style="margin:0;">Attempt 1 &mdash; Feedback &amp; Score</h3>
+            <span id="score-badge-1" style="font-family:monospace;font-size:12px;padding:4px 12px;border-radius:3px;background:rgba(255,255,255,.1);color:#ce93d8;"></span>
+          </div>
+          <div class="score-bar-wrap" style="margin-top:10px;"><div class="score-bar" id="score-bar-1" style="background:#ce93d8;width:0%;"></div></div>
+        </div>
+        <div class="score-body" id="score-body-1"></div>
+      </div>
+
+      <div id="revision-prompt" style="display:none;margin:20px 0;padding:16px 20px;background:var(--gold-light);border:1px solid var(--gold);border-radius:4px;border-left:4px solid var(--gold);">
+        <div style="font-family:monospace;font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--gold);margin-bottom:6px;">REVISION OPPORTUNITY</div>
+        <p style="margin:0;font-size:14px;line-height:1.65;">Review the rubric feedback above. Go back through your responses and improve any sections that lost points. When ready, submit your final attempt below.</p>
+      </div>
+
+      <div class="score-panel" id="score-panel-2" style="display:none;">
+        <div class="score-header">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <h3 style="margin:0;">Attempt 2 &mdash; Final Score</h3>
+            <span id="score-badge-2" style="font-family:monospace;font-size:12px;padding:4px 12px;border-radius:3px;background:rgba(255,255,255,.1);color:#ce93d8;"></span>
+          </div>
+          <div class="score-bar-wrap" style="margin-top:10px;"><div class="score-bar" id="score-bar-2" style="background:#ce93d8;width:0%;"></div></div>
+        </div>
+        <div class="score-body" id="score-body-2"></div>
+      </div>
+
+    </div>
+  </div>
+</div></div>
+
+<div id="tab-7" class="tab-panel"><div class="main">
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">REF</div><div class="section-title">Reference &mdash; Key Concepts &amp; Formulas</div><span class="section-badge badge-blue">Study Aid</span></div>
+    <div class="section-body">
+      <div class="ref-box" style="margin-bottom:20px;"><div class="ref-box-title">How to Use This Reference</div>
+        <p>Click any card to expand it. Use these concepts while completing your data tables and analysis questions. All information comes from your course material &mdash; you do not need external sources to complete this lab.</p></div>
+
+      <div class="ref-card">
+        <div class="ref-card-header" onclick="toggleRefCard('mp')">
+          <div style="display:flex;align-items:center;">
+            <div class="ref-concept-icon" style="background:var(--accent-light);color:var(--accent);">m.p.</div>
+            <div class="ref-card-title">Melting Point &amp; Purity</div>
+          </div>
+          <span class="ref-card-icon" id="ref-icon-mp">+</span>
+        </div>
+        <div class="ref-card-body" id="ref-body-mp">
+          <p>The melting point is the temperature at which the solid and liquid phases of a substance coexist in equilibrium. It is an <em>intensive</em> property &mdash; it does not depend on the amount of substance.</p><p><strong>Pure substance:</strong> Melts sharply over 0.5&ndash;1.0 &deg;C. This narrow range is the hallmark of high purity.</p><p><strong>Impure substance or mixture:</strong> Melts lower than the pure compound and over a broader range (often 5&ndash;10 &deg;C or more). Impurities disrupt the crystal lattice, lowering the melting point (freezing point depression).</p><p>A melting point can confirm the identity of a known substance, assess purity, and (combined with mixture testing) identify an unknown.</p>
+        </div>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-card-header" onclick="toggleRefCard('range')">
+          <div style="display:flex;align-items:center;">
+            <div class="ref-concept-icon" style="background:var(--blue-light);color:var(--blue);">&Delta;T</div>
+            <div class="ref-card-title">Recording a Melting Point Range</div>
+          </div>
+          <span class="ref-card-icon" id="ref-icon-range">+</span>
+        </div>
+        <div class="ref-card-body" id="ref-body-range">
+          <p>Always record melting point as a <strong>range</strong>: from the temperature at which the <em>first drop of liquid</em> appears to the temperature at which the <em>last crystal disappears</em>.</p><p><strong>Sharp range (0.5&ndash;1.0 &deg;C):</strong> Pure substance.</p><p><strong>Moderate range (1&ndash;2 &deg;C):</strong> Acceptable for introductory labs.</p><p><strong>Broad range (&gt;2 &deg;C):</strong> Impurity, contamination, a mixture, or too-fast heating.</p><p>The <em>average</em> (midpoint of start and end) is used to compare against literature values.</p>
+        </div>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-card-header" onclick="toggleRefCard('mixed')">
+          <div style="display:flex;align-items:center;">
+            <div class="ref-concept-icon" style="background:var(--gold-light);color:var(--gold);">MIX</div>
+            <div class="ref-card-title">Mixed Melting Point Test</div>
+          </div>
+          <span class="ref-card-icon" id="ref-icon-mixed">+</span>
+        </div>
+        <div class="ref-card-body" id="ref-body-mixed">
+          <p>The mixed melting point test distinguishes between two substances with the same or similar melting points.</p><p><strong>Procedure:</strong> Mix roughly equal amounts of unknown and candidate known compound. Grind well in a mortar. Load into a capillary and measure the melting point of the mixture.</p><p>&#9656; Same compound &rarr; mixture melts at the <em>same temperature</em> with a <em>sharp range</em>.</p><p>&#9656; Different compound &rarr; mixture melts at a <em>lower temperature</em> with a <em>broad range</em> (melting point depression).</p><p>This test is conclusive even when two different substances happen to have very similar melting points.</p>
+        </div>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-card-header" onclick="toggleRefCard('error')">
+          <div style="display:flex;align-items:center;">
+            <div class="ref-concept-icon" style="background:var(--red-light);color:var(--red);">ERR</div>
+            <div class="ref-card-title">Sources of Error</div>
+          </div>
+          <span class="ref-card-icon" id="ref-icon-error">+</span>
+        </div>
+        <div class="ref-card-body" id="ref-body-error">
+          <p><strong>Too-fast heating rate:</strong> Most common error. The thermometer lags behind the true sample temperature, giving a reading that is too high.</p><p><strong>Apparatus not cooled between runs:</strong> Starting Run 2 before cooling at least 10 &deg;C below the melting point gives inaccurate results.</p><p><strong>Loosely packed sample:</strong> Air gaps in the capillary cause erratic, broad melting ranges.</p><p><strong>Sample contamination:</strong> Even small amounts of a different substance lower and broaden the melting point.</p><p><strong>Wet sample:</strong> Residual moisture lowers the melting point.</p><p><strong>Thermometer calibration:</strong> Uncalibrated thermometers introduce systematic error &mdash; this is why your two runs should agree with <em>each other</em> even if both deviate from the literature value.</p>
+        </div>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-card-header" onclick="toggleRefCard('t1ref')">
+          <div style="display:flex;align-items:center;">
+            <div class="ref-concept-icon" style="background:var(--accent-light);color:var(--accent);">T1</div>
+            <div class="ref-card-title">Table 1 &mdash; Quick Reference</div>
+          </div>
+          <span class="ref-card-icon" id="ref-icon-t1ref">+</span>
+        </div>
+        <div class="ref-card-body" id="ref-body-t1ref">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <table class="substance-table">
+              <thead><tr><th>Substance</th><th style="text-align:right;">m.p. (&deg;C)</th></tr></thead>
+              <tbody>
+                <tr><td>p-dichlorobenzene</td><td class="mp-val">54</td></tr>
+                <tr><td>myristic acid</td><td class="mp-val">55</td></tr>
+                <tr><td>stearyl alcohol</td><td class="mp-val">60</td></tr>
+                <tr><td>palmitic acid</td><td class="mp-val">62</td></tr>
+                <tr><td>diphenyl</td><td class="mp-val">69</td></tr>
+                <tr><td>stearic acid</td><td class="mp-val">70</td></tr>
+              </tbody>
+            </table>
+            <table class="substance-table">
+              <thead><tr><th>Substance</th><th style="text-align:right;">m.p. (&deg;C)</th></tr></thead>
+              <tbody>
+                <tr><td>acetamide</td><td class="mp-val">78</td></tr>
+                <tr><td><strong>naphthalene</strong></td><td class="mp-val">80</td></tr>
+                <tr><td>acetoacetanilide</td><td class="mp-val">83</td></tr>
+                <tr><td>imidazole</td><td class="mp-val">87</td></tr>
+                <tr><td>m-dinitrobenzene</td><td class="mp-val">90</td></tr>
+                <tr><td>potassium alum</td><td class="mp-val">91</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="nav-btn nav-btn-secondary" onclick="switchTab(6)">&larr; Back to Conclusions</button>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var SHEETS_ENDPOINT   = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+var AI_PROXY_ENDPOINT = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+var SAVE_KEY          = 'chem103l_lab4_v1';
+var SUBMIT_COUNT_KEY  = 'chem103l_lab4_v1_subcount';
+
+var SAVE_FIELDS = [
+  'student-name','student-section','member2','member3','start-date','unknown-id',
+  'purpose-text',
+  'k-start-1','k-end-1','k-start-2','k-end-2',
+  'u-start-1','u-end-1','u-start-2','u-end-2',
+  'm-start-1','m-end-1','mix-additive-1','mix-unknown-1',
+  'm-start-2','m-end-2','mix-additive-2','mix-unknown-2',
+  'm-start-3','m-end-3','mix-additive-3','mix-unknown-3',
+  'q1-text','q2-text','q3-text','q4-text','q5-text','q6-text',
+  'summary-text','conclusion-text','notes-to-prof'
+];
+
+var _saveTimer = null, _saveBarTimer = null;
+
+function setSaveStatus(state, msg) {
+  var dot = document.getElementById('save-dot');
+  var msgEl = document.getElementById('save-msg');
+  var bar = document.getElementById('save-status-bar');
+  if (!dot || !msgEl || !bar) return;
+  dot.className = 'save-dot ' + state;
+  msgEl.textContent = msg;
+  bar.classList.add('visible');
+  clearTimeout(_saveBarTimer);
+  if (state === 'saved') _saveBarTimer = setTimeout(function() { bar.classList.remove('visible'); }, 4000);
+}
+function collectFormData() {
+  var data = {};
+  SAVE_FIELDS.forEach(function(id) { var el = document.getElementById(id); if (el) data[id] = el.value; });
+  return data;
+}
+function saveNow() {
+  setSaveStatus('saving', 'Saving\u2026');
+  try {
+    var data = collectFormData();
+    data['_savedAt'] = new Date().toISOString();
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    setSaveStatus('saved', 'All work saved \u2014 ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
+  } catch(e) { setSaveStatus('error', 'Save failed: ' + e.message); }
+}
+function scheduleSave() {
+  setSaveStatus('saving', 'Unsaved changes\u2026');
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(saveNow, 1200);
+}
+function restoreSavedData() {
+  try {
+    var raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    var data = JSON.parse(raw);
+    var count = 0;
+    SAVE_FIELDS.forEach(function(id) {
+      if (data[id] === undefined) return;
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.value = data[id]; count++;
+    });
+    calcKnown(); calcUnknown(); calcMixture(1); calcMixture(2); calcMixture(3);
+    if (count > 0) {
+      var ts = data['_savedAt'] ? new Date(data['_savedAt']).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : 'previously';
+      setSaveStatus('saved', count + ' fields restored from ' + ts);
+      clearTimeout(_saveBarTimer);
+      _saveBarTimer = setTimeout(function() { document.getElementById('save-status-bar').classList.remove('visible'); }, 7000);
+    }
+    return count > 0;
+  } catch(e) { return false; }
+}
+function confirmClearSave() {
+  if (confirm('Clear all saved data for Lab 4? This cannot be undone. Submitted data in Google Sheets is not affected.')) {
+    localStorage.removeItem(SAVE_KEY); localStorage.removeItem(SUBMIT_COUNT_KEY);
+    setSaveStatus('saved', 'Saved data cleared \u2014 form is blank for a new student');
+  }
+}
+function attachAutoSaveListeners() {
+  SAVE_FIELDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', scheduleSave);
+    el.addEventListener('change', scheduleSave);
+  });
+}
+
+function switchTab(idx) {
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  var panel = document.getElementById('tab-' + idx);
+  if (panel) panel.classList.add('active');
+  var btns = document.querySelectorAll('.tab-btn');
+  if (btns[idx - 1]) btns[idx - 1].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function calcMpRow(startId, endId, rangeId, avgId) {
+  var s = parseFloat(document.getElementById(startId).value);
+  var e = parseFloat(document.getElementById(endId).value);
+  var rangeEl = document.getElementById(rangeId);
+  var avgEl   = document.getElementById(avgId);
+  if (!rangeEl || !avgEl) return null;
+  if (isNaN(s) || isNaN(e)) {
+    rangeEl.textContent = '\u2014'; rangeEl.className = 'computed-cell blank';
+    avgEl.textContent   = '\u2014'; avgEl.className   = 'computed-cell blank';
+    return null;
+  }
+  if (e < s) {
+    rangeEl.textContent = 'Error: end < start'; rangeEl.className = 'computed-cell';
+    rangeEl.style.color = 'var(--red)';
+    avgEl.textContent = '\u2014'; avgEl.className = 'computed-cell blank';
+    return null;
+  }
+  var range = (e - s).toFixed(1);
+  var avg   = ((s + e) / 2).toFixed(1);
+  rangeEl.textContent = range;
+  rangeEl.className = 'computed-cell ' + (parseFloat(range) <= 1.5 ? 'sharp' : (parseFloat(range) > 2 ? 'broad' : ''));
+  rangeEl.style.color = '';
+  avgEl.textContent = avg; avgEl.className = 'computed-cell';
+  return { start: s, end: e, range: parseFloat(range), avg: parseFloat(avg) };
+}
+
+function calcKnown() {
+  var r1 = calcMpRow('k-start-1','k-end-1','k-range-1','k-avg-1');
+  var r2 = calcMpRow('k-start-2','k-end-2','k-range-2','k-avg-2');
+  var msg = document.getElementById('known-msg');
+  if (!r1 && !r2) { msg.classList.remove('show'); return; }
+  var lines = [];
+  [r1, r2].forEach(function(r, i) {
+    if (!r) return;
+    var diff = Math.abs(r.avg - 80).toFixed(1);
+    var sharpness = r.range <= 1.0 ? 'sharp (\u2713)' : r.range <= 2.0 ? 'acceptable' : 'broad \u2014 slow heating rate';
+    lines.push('Run ' + (i+1) + ': avg ' + r.avg + ' \u00b0C | \u0394 from 80 = ' + diff + ' \u00b0C | range ' + r.range + ' \u00b0C \u2014 ' + sharpness);
+  });
+  msg.className = 'val-msg show ok';
+  msg.innerHTML = lines.join('<br>');
+  scheduleSave();
+}
+
+var SUBSTANCES = [
+  {name:'p-dichlorobenzene',mp:54},{name:'myristic acid',mp:55},
+  {name:'stearyl alcohol',mp:60},{name:'palmitic acid',mp:62},
+  {name:'diphenyl',mp:69},{name:'stearic acid',mp:70},
+  {name:'acetamide',mp:78},{name:'naphthalene',mp:80},
+  {name:'acetoacetanilide',mp:83},{name:'imidazole',mp:87},
+  {name:'m-dinitrobenzene',mp:90},{name:'potassium alum',mp:91}
+];
+
+function calcUnknown() {
+  var r1 = calcMpRow('u-start-1','u-end-1','u-range-1','u-avg-1');
+  var r2 = calcMpRow('u-start-2','u-end-2','u-range-2','u-avg-2');
+  var msg = document.getElementById('unknown-msg');
+  var idBox = document.getElementById('identification-result');
+  if (!r1 && !r2) { msg.classList.remove('show'); idBox.style.display = 'none'; return; }
+  var avgs = [r1, r2].filter(Boolean).map(function(r) { return r.avg; });
+  var measuredAvg = avgs.reduce(function(a, b) { return a + b; }, 0) / avgs.length;
+  var matches = SUBSTANCES.filter(function(s) { return Math.abs(s.mp - measuredAvg) <= 3; });
+  var close   = SUBSTANCES.filter(function(s) { return Math.abs(s.mp - measuredAvg) > 3 && Math.abs(s.mp - measuredAvg) <= 6; });
+  msg.className = 'val-msg show ok';
+  msg.innerHTML = avgs.map(function(a, i) { return 'Run ' + (i+1) + ': ' + a.toFixed(1) + ' \u00b0C'; }).join(' | ') + ' | Combined avg: ' + measuredAvg.toFixed(1) + ' \u00b0C';
+  idBox.style.display = 'block';
+  if (matches.length > 0) {
+    idBox.className = 'show ' + (matches.length === 1 ? 'match' : 'possible');
+    idBox.innerHTML = '<strong>Table 1 match' + (matches.length > 1 ? 'es' : '') + ' (\u00b13 \u00b0C):</strong> ' +
+      matches.map(function(s) { return s.name + ' (' + s.mp + ' \u00b0C)'; }).join(', ') +
+      (close.length ? '<br><span style="font-size:12px;">Also within \u00b16 \u00b0C: ' + close.map(function(s) { return s.name; }).join(', ') + '</span>' : '') +
+      '<br><span style="font-size:12px;margin-top:4px;display:block;">Proceed to Part C (Mixture Test) to confirm identity.</span>';
+  } else if (close.length > 0) {
+    idBox.className = 'show possible';
+    idBox.innerHTML = '<strong>Possible match (\u00b16 \u00b0C):</strong> ' + close.map(function(s) { return s.name + ' (' + s.mp + ' \u00b0C)'; }).join(', ') +
+      '<br><span style="font-size:12px;">Difference is larger than expected \u2014 check technique and re-run if possible.</span>';
+  } else {
+    idBox.className = 'show no-match';
+    idBox.innerHTML = '<strong>No Table 1 match found.</strong> Measured average (' + measuredAvg.toFixed(1) + ' \u00b0C) does not correspond to any listed substance within \u00b16 \u00b0C. Check measurements and technique.';
+  }
+  scheduleSave();
+}
+
+function getUnknownAvg() {
+  var a1 = parseFloat(document.getElementById('u-avg-1').textContent);
+  var a2 = parseFloat(document.getElementById('u-avg-2').textContent);
+  if (!isNaN(a1) && !isNaN(a2)) return (a1 + a2) / 2;
+  if (!isNaN(a1)) return a1;
+  if (!isNaN(a2)) return a2;
+  return null;
+}
+
+function calcMixture(n) {
+  var s = parseFloat(document.getElementById('m-start-' + n).value);
+  var e = parseFloat(document.getElementById('m-end-' + n).value);
+  var rangeEl = document.getElementById('m-range-' + n);
+  var sharpEl = document.getElementById('m-sharp-' + n);
+  var resEl   = document.getElementById('mix-result-' + n);
+  if (isNaN(s) || isNaN(e)) {
+    rangeEl.textContent = '\u2014'; rangeEl.className = 'computed-cell blank';
+    sharpEl.textContent = '\u2014'; sharpEl.className = 'computed-cell blank';
+    resEl.classList.remove('show'); return;
+  }
+  if (e < s) { rangeEl.textContent = 'Error'; rangeEl.className = 'computed-cell'; rangeEl.style.color = 'var(--red)'; return; }
+  var range = (e - s).toFixed(1);
+  rangeEl.textContent = range;
+  rangeEl.className = 'computed-cell ' + (parseFloat(range) <= 1.5 ? 'sharp' : 'broad');
+  rangeEl.style.color = '';
+  var uAvg    = getUnknownAvg();
+  var mixAvg  = (s + e) / 2;
+  var isSharp = parseFloat(range) <= 1.5;
+  var isSameTemp = uAvg !== null && Math.abs(mixAvg - uAvg) <= 2;
+  sharpEl.textContent = isSharp ? 'Sharp' : 'Broad';
+  sharpEl.className   = 'computed-cell ' + (isSharp ? 'sharp' : 'broad');
+  var additive = (document.getElementById('mix-additive-' + n).value || 'candidate').trim();
+  resEl.classList.add('show');
+  if (isSharp && isSameTemp) {
+    resEl.className = 'val-msg show ok';
+    resEl.innerHTML = '<strong>Sharp, unchanged melting point</strong> \u2014 mixture with <em>' + additive + '</em> confirms the unknown and ' + additive + ' are the <strong>same compound</strong>.';
+    var fb = document.getElementById('final-identity-box');
+    var ft = document.getElementById('final-identity-text');
+    if (fb && ft) { fb.style.display = 'block'; ft.textContent = 'Unknown confirmed as ' + additive + '. Mixture melted sharply at ' + mixAvg.toFixed(1) + ' \u00b0C (range ' + range + ' \u00b0C), identical to the unknown alone.'; }
+  } else {
+    resEl.className = 'val-msg show warn';
+    resEl.innerHTML = '<strong>' + (isSharp ? 'Sharp but different temperature' : 'Broad range') + '</strong> \u2014 mixture with <em>' + additive + '</em> shows melting point depression. The unknown is likely <strong>not</strong> ' + additive + '. Try the next candidate.';
+  }
+  scheduleSave();
+}
+
+// ===== OFF-TASK DETECTION =====
+var OFF_TASK_PATTERNS = [
+  /i (have no idea|don.t know|don.t care|hate|don.t like|am bored)/i,
+  /this (lab|class|course|experiment) is (boring|stupid|dumb|pointless)/i,
+  /chemistry (is|sucks|is boring|is stupid)/i,
+  /^(idk|idc|n\/a|na|none|nothing|no idea|whatever|lol)[.!?]*$/i,
+  /lorem ipsum/i, /asdf|qwerty|aaaa+|zzzz+/i,
+];
+var CHEM_KEYWORDS = [
+  /melting.?point|freezing|solidif/i,/temperature|rang|sharp|broad/i,
+  /naphthalene|unknown|pure|impure/i,/mixture|depress|identif/i,
+  /run [12]|trial [123]/i,/literature|table|substance/i,
+];
+var OFF_TASK_TOPICS = {
+  purpose:    'the purpose of the melting point determination experiment',
+  q1:         'comparing your measured melting point to the 80 \u00b0C literature value for naphthalene',
+  q2:         'accounting for differences between your two experimental runs',
+  q3:         'identifying possible matches for your unknown solid using Table 1',
+  q4:         'whether the mixture melting point confirms the identity of your unknown',
+  q5:         'the result of your second mixture trial',
+  q6:         'the final identification of your unknown compound based on all evidence',
+  summary:    'a summary of your experimental observations from Q1\u2013Q3',
+  conclusion: 'your conclusions about the melting point technique and unknown identity'
+};
+function isOffTask(txt) {
+  if (OFF_TASK_PATTERNS.some(function(p) { return p.test(txt); })) return true;
+  if (txt.split(/\s+/).length < 6) return !CHEM_KEYWORDS.some(function(p) { return p.test(txt); });
+  return false;
+}
+
+// ===== AI =====
+var AI_SYSTEM = 'You are a General Chemistry I lab instructor at Carson-Newman University, a Christian liberal arts university. Every student who writes a response is making a genuine effort — meet them with warmth, encouragement, and specific insight. Use plain conversational language appropriate for introductory college chemistry. Never use bullet points. Keep feedback to 3-5 sentences. For strong responses: affirm what the student did well and extend their thinking one step further — there is always something worth celebrating. For responses that are on the right track but incomplete: start by acknowledging the good thinking that is present, then ask one guiding question that nudges them toward what is missing — never tell them directly what is wrong or what the correct answer is. For responses with a scientific misconception: gently reframe with a question (e.g., "What do you think would happen if...") that helps them reason toward the accurate idea — the goal is discovery, not correction. For off-task responses (complaints, jokes, or content unrelated to chemistry): respond warmly — acknowledge that this does not yet address the chemistry, restate what is being asked in simple encouraging terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. IMPORTANT — AI-generated text: if the response uses unusually formal phrasing, perfectly structured arguments, or hedging language like "it is worth noting" or "in conclusion" without a personal student voice, it may have been AI-generated. If so, respond only with: It looks like this response may have been drafted with some outside help — and that is okay, but I would love to hear your own thinking here. Even a rough, imperfect answer in your own words tells me so much more about what you understand. What would you say if you were just explaining this to a friend?';
+
+var AI_PROMPTS = {
+  purpose: function(txt) { return 'CHEM 103L Lab 4 \u2014 Melting Point Determination\nStudent purpose statement:\n\n"' + txt + '"\n\nA strong purpose statement for this lab names the technique (melting point determination), identifies what physical property is being measured, and states the goal (identifying an unknown solid). Respond with genuine warmth. Affirm whatever the student got right, then ask one open question that helps them think about anything they may have left out. Do not list what is missing \u2014 guide them toward it through curiosity.'; },
+  q1: function(txt) { return 'CHEM 103L Lab 4 \u2014 Q1: Comparing measured naphthalene melting point to the literature value of 80\u00b0C\nStudent response:\n\n"' + txt + '"\n\nA strong response reports a specific measured value, notes the difference from 80\u00b0C, and offers a thoughtful reason for any gap (heating rate, thermometer placement, packing tightness). An agreement within 2\u20133\u00b0C is excellent work for introductory lab. Begin with something genuine you can affirm about their response, then ask one question that encourages them to think more specifically or deeply about their data. Never tell them the correct value or what they got wrong.'; },
+  q2: function(txt) { return 'CHEM 103L Lab 4 \u2014 Q2: Comparing the two naphthalene runs\nStudent response:\n\n"' + txt + '"\n\nA strong response compares the two specific run values and reflects on what procedural factors (like heating rate, how well the apparatus cooled between runs, or how tightly the sample was packed) could explain any difference between them. Start by affirming what they noticed, then ask one question that deepens their thinking about the experimental technique. Guide \u2014 do not correct.'; },
+  q3: function(txt) { return 'CHEM 103L Lab 4 \u2014 Q3: Identifying unknown solid candidates from Table 1\nStudent response:\n\n"' + txt + '"\n\nA strong response reports the unknown\u2019s measured melting point, identifies Table 1 substances whose values fall within about 2\u20133\u00b0C, and recognizes that multiple candidates may remain and that the mixture test will distinguish them. Affirm the reasoning the student has shown, then ask one encouraging question that helps them think about what to do if more than one candidate matches. Do not name the correct substance or tell them their candidates are wrong.'; },
+  q4: function(txt) { return 'CHEM 103L Lab 4 \u2014 Q4: Interpreting the first mixture trial\nStudent response:\n\n"' + txt + '"\n\nA strong response states the mixture\u2019s melting point and range, interprets whether it was sharp (suggesting identical compounds) or broad and depressed (suggesting different compounds), and draws a conclusion about the unknown\u2019s identity. The key scientific idea here is melting point depression: impurities lower and broaden the melting range. Affirm what the student understood about this, then ask one question that encourages them to connect the shape of the melting curve to their conclusion. Never state whether their conclusion is right or wrong.'; },
+  q5: function(txt) { return 'CHEM 103L Lab 4 \u2014 Q5: Second mixture trial (if performed)\nStudent response:\n\n"' + txt + '"\n\nIf the student writes N/A or indicates one trial was sufficient, affirm that as a valid and confident scientific judgment \u2014 knowing when you have enough evidence is a real skill. If they did run a second trial, affirm the care they took, then ask one question that helps them connect this trial\u2019s result to their overall conclusion. Keep the tone light and encouraging throughout.'; },
+  q6: function(txt) { return 'CHEM 103L Lab 4 \u2014 Q6: Final identification of the unknown compound\nStudent response:\n\n"' + txt + '"\n\nThis is the culminating question of the lab. A strong response names the unknown compound, cites specific data (measured m.p., the Table 1 match, and the mixture test result), and explains why the combination of evidence is more convincing than any single measurement alone. Respond with genuine enthusiasm for what they discovered. Affirm the evidence-based thinking they showed, then ask one question that deepens their understanding of why both the melting point match AND the mixture test are needed. Do not confirm or deny the identity they named.'; },
+  summary: function(txt) { return 'CHEM 103L Lab 4 \u2014 Experimental Results Summary\nStudent response:\n\n"' + txt + '"\n\nA strong summary includes specific values for the naphthalene known (Part A), the unknown solid (Part B), a Table 1 comparison, and the mixture test outcome (Part C). Begin by affirming what the student captured well in their summary. If anything is vague or missing, ask one open question that invites them to be more specific \u2014 for example, asking them to include the actual temperatures they measured. Guide gently and never tell them what is incomplete.'; },
+  conclusion: function(txt) { return 'CHEM 103L Lab 4 \u2014 Conclusion (3 sentences max)\nStudent response:\n\n"' + txt + '"\n\nA strong conclusion names the technique, states the identity of the unknown with the evidence that supports it, and draws a broader insight about using physical properties for identification or acknowledges a source of experimental uncertainty. Affirm the student\u2019s scientific thinking warmly. If their conclusion could be stronger, ask one encouraging question \u2014 such as what they learned about the reliability of melting point as a tool, or what they might do differently. Do not critique the writing; focus on the chemistry ideas.'; }
+};
+
+function getAIFeedback(qid) {
+  var textMap = { purpose:'purpose-text', q1:'q1-text', q2:'q2-text', q3:'q3-text', q4:'q4-text', q5:'q5-text', q6:'q6-text', summary:'summary-text', conclusion:'conclusion-text' };
+  var textEl = document.getElementById(textMap[qid]);
+  if (!textEl) return;
+  var txt = textEl.value.trim();
+  if (!txt || txt.length < 10) { alert('Please write a response before requesting feedback.'); return; }
+  var btn = document.getElementById('ai-btn-' + qid);
+  var feedbackEl = document.getElementById('ai-feedback-' + qid);
+  feedbackEl.classList.add('visible');
+  if (isOffTask(txt)) {
+    feedbackEl.style.borderLeftColor = 'var(--gold)'; feedbackEl.style.background = 'var(--gold-light)';
+    feedbackEl.innerHTML = 'It looks like this response might not quite address the chemistry question yet \u2014 and that\u2019s okay, just give it another try! This question is asking about <em>' + (OFF_TASK_TOPICS[qid] || 'the chemistry idea in this section') + '</em>. Check the Background or Reference tab if you\u2019d like a refresher, then write what you actually think \u2014 even an uncertain answer is a great place to start.';
+    return;
+  }
+  feedbackEl.style.borderLeftColor = ''; feedbackEl.style.background = '';
+  if (!AI_PROXY_ENDPOINT || AI_PROXY_ENDPOINT === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
+    feedbackEl.style.borderLeftColor = 'var(--gold)'; feedbackEl.style.background = 'var(--gold-light)';
+    feedbackEl.textContent = 'AI feedback is not yet active \u2014 your instructor has not connected the feedback service. Your written response is saved and will be reviewed manually.';
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Analyzing\u2026';
+  feedbackEl.textContent = 'Reviewing your response\u2026';
+  feedbackEl.style.borderLeftColor = ''; feedbackEl.style.background = '';
+  fetch(AI_PROXY_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ action:'feedback', system:AI_SYSTEM, prompt: AI_PROMPTS[qid](txt) })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var fb = data.result === 'success' ? data.feedback : ('Feedback unavailable: ' + (data.message || 'unknown error'));
+    var isApiOffTask = /does not address|genuine answer|re-read the prompt/i.test(fb);
+    feedbackEl.style.borderLeftColor = isApiOffTask ? 'var(--red)' : (data.result !== 'success' ? 'var(--gold)' : '');
+    feedbackEl.style.background      = isApiOffTask ? 'var(--red-light)' : (data.result !== 'success' ? 'var(--gold-light)' : '');
+    feedbackEl.textContent = fb;
+    btn.disabled = false; btn.textContent = 'Get Feedback';
+  })
+  .catch(function() {
+    feedbackEl.style.borderLeftColor = 'var(--gold)'; feedbackEl.style.background = 'var(--gold-light)';
+    feedbackEl.textContent = 'Could not reach the feedback service. Your response is saved and will be reviewed by your instructor.';
+    btn.disabled = false; btn.textContent = 'Get Feedback';
+  });
+}
+
+function toggleRefCard(id) {
+  var body   = document.getElementById('ref-body-' + id);
+  var icon   = document.getElementById('ref-icon-' + id);
+  var header = body ? body.previousElementSibling : null;
+  if (!body) return;
+  var isOpen = body.classList.contains('open');
+  body.classList.toggle('open');
+  if (header) header.classList.toggle('open');
+  if (icon) icon.textContent = isOpen ? '+' : '\u2212';
+}
+
+// ===== SCORING =====
+function norm(txt) { return (txt||'').toLowerCase().replace(/\s+/g,' ').trim(); }
+function anyMatch(txt, patterns) { return patterns.some(function(p) { return p.test(txt); }); }
+function hasSubstance(txt, min) { return txt.trim().split(/\s+/).filter(Boolean).length >= (min||8); }
+
+var KNOWN_SUBSTANCE_NAMES = [
+  'p-dichlorobenzene','dichlorobenzene','myristic acid','myristic',
+  'stearyl alcohol','palmitic acid','palmitic','diphenyl','stearic acid','stearic',
+  'acetamide','naphthalene','acetoacetanilide','imidazole',
+  'm-dinitrobenzene','dinitrobenzene','potassium alum','alum'
+];
+
+function getKnownAvg() {
+  var a1 = parseFloat(document.getElementById('k-avg-1').textContent);
+  var a2 = parseFloat(document.getElementById('k-avg-2').textContent);
+  if (!isNaN(a1) && !isNaN(a2)) return (a1+a2)/2;
+  return !isNaN(a1) ? a1 : (!isNaN(a2) ? a2 : null);
+}
+function getMixtureData(n) {
+  var s = parseFloat(document.getElementById('m-start-'+n).value);
+  var e = parseFloat(document.getElementById('m-end-'+n).value);
+  if (isNaN(s)||isNaN(e)||e<s) return null;
+  return {start:s,end:e,range:e-s,avg:(s+e)/2,additive:(document.getElementById('mix-additive-'+n).value||'').trim()};
+}
+
+function scoreSubmission() {
+  var score = 0, total = 0;
+  var details = [], breakdown = [];
+
+  // PURPOSE (5 pts)
+  total += 5;
+  var purpose = norm(document.getElementById('purpose-text').value);
+  var pScore = 0, pNotes = [];
+  if (!hasSubstance(purpose,8)) { pNotes.push('too brief \u2014 write 1\u20132 complete sentences'); }
+  else {
+    if (/melting.?point|physical property|m\.p\./i.test(purpose)) { pScore+=2; pNotes.push('melting point as physical property identified (+2)'); } else pNotes.push('melting point or physical property not named');
+    if (/unknown|identify|identif|determin/i.test(purpose))       { pScore+=2; pNotes.push('goal of identifying unknown stated (+2)'); }       else pNotes.push('goal (identify unknown) not stated');
+    if (/technique|method|capillary|apparatus|procedure/i.test(purpose)) { pScore+=1; pNotes.push('technique named (+1)'); } else pNotes.push('technique not named');
+  }
+  score += pScore; details.push('Purpose: '+pScore+'/5');
+  breakdown.push({label:'Purpose', earned:pScore, possible:5, notes:pNotes});
+
+  // KNOWN SOLID DATA (15 pts)
+  total += 15;
+  var kScore = 0, kNotes = [];
+  var kAvg = getKnownAvg();
+  var kFilled = ['k-start-1','k-end-1','k-start-2','k-end-2'].filter(function(id){return document.getElementById(id).value!=='';}).length;
+  if (kFilled===4)       {kScore+=6; kNotes.push('both naphthalene runs recorded (+6)');}
+  else if (kFilled>=2)   {kScore+=3; kNotes.push('only one run complete (+3)');}
+  else kNotes.push('no naphthalene data entered');
+  if (kAvg!==null) {
+    var kd = Math.abs(kAvg-80);
+    if (kd<=3)     {kScore+=5; kNotes.push('average within 3 \u00b0C of literature value (+5)');}
+    else if (kd<=5){kScore+=3; kNotes.push('average within 5 \u00b0C of literature value (+3)');}
+    else kNotes.push('average more than 5 \u00b0C from 80 \u00b0C \u2014 check technique');
+  } else kNotes.push('cannot assess accuracy \u2014 enter temperature data');
+  var r1 = parseFloat(document.getElementById('k-range-1').textContent);
+  var r2 = parseFloat(document.getElementById('k-range-2').textContent);
+  var sr = [r1,r2].filter(function(r){return !isNaN(r)&&r<=1.5;}).length;
+  if (sr===2)       {kScore+=4; kNotes.push('both runs sharp (\u22641.5 \u00b0C) (+4)');}
+  else if (sr===1)  {kScore+=2; kNotes.push('one run sharp (+2) \u2014 slow heating rate more near m.p.');}
+  else if (!isNaN(r1)||!isNaN(r2)) kNotes.push('both ranges broad \u2014 slow heating rate near melting point');
+  score += kScore; details.push('Known Solid: '+kScore+'/15');
+  breakdown.push({label:'Known Solid', earned:kScore, possible:15, notes:kNotes});
+
+  // UNKNOWN SOLID DATA (10 pts)
+  total += 10;
+  var uScore = 0, uNotes = [];
+  var uFilled = ['u-start-1','u-end-1','u-start-2','u-end-2'].filter(function(id){return document.getElementById(id).value!=='';}).length;
+  if (uFilled===4)       {uScore+=4; uNotes.push('both unknown runs recorded (+4)');}
+  else if (uFilled>=2)   {uScore+=2; uNotes.push('only one run complete (+2)');}
+  else uNotes.push('no unknown data entered');
+  if (document.getElementById('unknown-id').value.trim()) {uScore+=1; uNotes.push('unknown ID recorded (+1)');} else uNotes.push('unknown ID not recorded');
+  var ur1 = parseFloat(document.getElementById('u-range-1').textContent);
+  var ur2 = parseFloat(document.getElementById('u-range-2').textContent);
+  var usr = [ur1,ur2].filter(function(r){return !isNaN(r)&&r<=2.0;}).length;
+  if (usr===2)       {uScore+=3; uNotes.push('both unknown runs sharp (+3)');}
+  else if (usr===1)  {uScore+=2; uNotes.push('one run sharp (+2)');}
+  else if (!isNaN(ur1)||!isNaN(ur2)) uNotes.push('unknown ranges broad \u2014 check technique');
+  var ua1 = parseFloat(document.getElementById('u-avg-1').textContent);
+  var ua2 = parseFloat(document.getElementById('u-avg-2').textContent);
+  if (!isNaN(ua1)&&!isNaN(ua2)) {
+    if (Math.abs(ua1-ua2)<=3) {uScore+=2; uNotes.push('two runs agree within 3 \u00b0C (+2)');} else uNotes.push('runs differ >3 \u00b0C \u2014 check technique or re-run');
+  }
+  score += uScore; details.push('Unknown Solid: '+uScore+'/15');
+  breakdown.push({label:'Unknown Solid', earned:uScore, possible:15, notes:uNotes});
+
+  // MIXTURE DATA (10 pts)
+  total += 10;
+  var mScore = 0, mNotes = [];
+  var mixDone = [1,2,3].filter(function(n){return getMixtureData(n)!==null;});
+  var uAvg = getUnknownAvg();
+  if (mixDone.length===0) { mNotes.push('no mixture data entered'); }
+  else {
+    mScore += Math.min(4, mixDone.length*2);
+    mNotes.push(mixDone.length+' mixture trial(s) recorded (+'+Math.min(4,mixDone.length*2)+')');
+    if (mixDone.some(function(n){return document.getElementById('mix-additive-'+n).value.trim().length>2;})) {mScore+=2; mNotes.push('candidate substances named (+2)');} else mNotes.push('candidate substance not named');
+    var confirmed = mixDone.some(function(n){var m=getMixtureData(n); return m&&m.range<=1.5&&(uAvg===null||Math.abs(m.avg-uAvg)<=2);});
+    if (confirmed) {mScore+=4; mNotes.push('sharp mixture confirms identity (+4)');} 
+    else { var anySharp=mixDone.some(function(n){var m=getMixtureData(n);return m&&m.range<=1.5;}); if(anySharp){mScore+=2;mNotes.push('sharp mixture but temp offset (+2)');} else mNotes.push('no sharp mixture recorded \u2014 mixture test not confirmed'); }
+  }
+  score += mScore; details.push('Mixture Test: '+mScore+'/10');
+  breakdown.push({label:'Mixture Test', earned:mScore, possible:10, notes:mNotes});
+
+  // Q1 Known Comparison (5 pts)
+  total += 5;
+  var q1 = norm(document.getElementById('q1-text').value);
+  var q1Score=0, q1Notes=[];
+  if (!hasSubstance(q1,8)) { q1Notes.push('too brief'); }
+  else {
+    if (/\d+\.?\d*\s*[oc]/i.test(q1))                         {q1Score+=2; q1Notes.push('specific temperature cited (+2)');} else q1Notes.push('specific temperature not cited');
+    if (/80|literature|accepted|known/i.test(q1))              {q1Score+=1; q1Notes.push('literature value referenced (+1)');} else q1Notes.push('literature value 80 \u00b0C not referenced');
+    if (/differ|error|calibr|heat|rate|technique/i.test(q1))  {q1Score+=2; q1Notes.push('discrepancy explained (+2)');} else q1Notes.push('no explanation for discrepancy');
+  }
+  score+=q1Score; details.push('Q1 (Known): '+q1Score+'/5');
+  breakdown.push({label:'Q1 \u2014 Known', earned:q1Score, possible:5, notes:q1Notes});
+
+  // Q2 Run Comparison (5 pts)
+  total += 5;
+  var q2 = norm(document.getElementById('q2-text').value);
+  var q2Score=0, q2Notes=[];
+  if (!hasSubstance(q2,8)) { q2Notes.push('too brief'); }
+  else {
+    if (/run [12]|first|second/i.test(q2))               {q2Score+=2; q2Notes.push('both runs referenced (+2)');} else q2Notes.push('both runs not referenced');
+    if (/agree|consist|differ|same|close/i.test(q2))     {q2Score+=1; q2Notes.push('consistency assessed (+1)');} else q2Notes.push('consistency not assessed');
+    if (/heat|cool|pack|technique|error|rate/i.test(q2)) {q2Score+=2; q2Notes.push('procedural reason discussed (+2)');} else q2Notes.push('procedural reason not discussed');
+  }
+  score+=q2Score; details.push('Q2 (Runs): '+q2Score+'/5');
+  breakdown.push({label:'Q2 \u2014 Runs', earned:q2Score, possible:5, notes:q2Notes});
+
+  // Q3 Candidates (10 pts)
+  total += 10;
+  var q3 = norm(document.getElementById('q3-text').value);
+  var q3Score=0, q3Notes=[];
+  if (!hasSubstance(q3,10)) { q3Notes.push('too brief'); }
+  else {
+    if (/\d+\.?\d*\s*[oc]/i.test(q3))                {q3Score+=3; q3Notes.push('measured temperature cited (+3)');} else q3Notes.push('measured temperature not cited');
+    var q3names = KNOWN_SUBSTANCE_NAMES.filter(function(s){return q3.indexOf(s)>=0;});
+    if (q3names.length>=1) {q3Score+=4; q3Notes.push('candidate named: '+q3names.slice(0,2).join(', ')+' (+4)');} else q3Notes.push('no substance name found \u2014 cite Table 1 by name');
+    if (/table|match|close|within|compar/i.test(q3)) {q3Score+=3; q3Notes.push('comparison to Table 1 made (+3)');} else q3Notes.push('Table 1 comparison not explicit');
+  }
+  score+=q3Score; details.push('Q3 (Candidates): '+q3Score+'/10');
+  breakdown.push({label:'Q3 \u2014 Candidates', earned:q3Score, possible:10, notes:q3Notes});
+
+  // Q4 Mixture Analysis (10 pts)
+  total += 10;
+  var q4 = norm(document.getElementById('q4-text').value);
+  var q4Score=0, q4Notes=[];
+  if (!hasSubstance(q4,8)) { q4Notes.push('too brief'); }
+  else {
+    if (/sharp|narrow|broad|widen|depress|rang/i.test(q4))               {q4Score+=3; q4Notes.push('range character described (+3)');} else q4Notes.push('sharp/broad character not described');
+    if (/same|identical|confirm|match|different|not .{0,10} same/i.test(q4)) {q4Score+=3; q4Notes.push('identity conclusion drawn (+3)');} else q4Notes.push('no clear identity conclusion');
+    if (/\d+\.?\d*\s*[oc]/i.test(q4))                                    {q4Score+=2; q4Notes.push('specific temperature cited (+2)');} else q4Notes.push('specific temperature not cited');
+    var q4names=KNOWN_SUBSTANCE_NAMES.filter(function(s){return q4.indexOf(s)>=0;});
+    if (q4names.length>=1) {q4Score+=2; q4Notes.push('substance named (+2)');} else q4Notes.push('substance name not cited');
+  }
+  score+=q4Score; details.push('Q4 (Mixture): '+q4Score+'/10');
+  breakdown.push({label:'Q4 \u2014 Mixture', earned:q4Score, possible:10, notes:q4Notes});
+
+  // Q6 Final ID (10 pts)
+  total += 10;
+  var q6 = norm(document.getElementById('q6-text').value);
+  var q6Score=0, q6Notes=[];
+  if (!hasSubstance(q6,10)) { q6Notes.push('too brief \u2014 this is the most important question'); }
+  else {
+    var q6names=KNOWN_SUBSTANCE_NAMES.filter(function(s){return q6.indexOf(s)>=0;});
+    if (q6names.length>=1) {q6Score+=4; q6Notes.push('unknown identified: '+q6names[0]+' (+4)');} else q6Notes.push('unknown not identified by name');
+    if (/\d+\.?\d*\s*[oc]/i.test(q6))                          {q6Score+=2; q6Notes.push('specific temperature evidence cited (+2)');} else q6Notes.push('specific temperature not cited');
+    if (/mixture|sharp|confirm|test/i.test(q6))                {q6Score+=3; q6Notes.push('mixture test cited as evidence (+3)');} else q6Notes.push('mixture test not cited');
+    if (/table|literature|known|reference/i.test(q6))          {q6Score+=1; q6Notes.push('Table 1 comparison cited (+1)');} else q6Notes.push('Table 1 comparison not cited');
+  }
+  score+=q6Score; details.push('Q6 (Final ID): '+q6Score+'/15');
+  breakdown.push({label:'Q6 \u2014 Final ID', earned:q6Score, possible:15, notes:q6Notes});
+
+  // CONCLUSION (5 pts)
+  total += 5;
+  var conc = norm(document.getElementById('conclusion-text').value);
+  var cScore=0, cNotes=[];
+  if (!hasSubstance(conc,8)) { cNotes.push('too brief'); }
+  else {
+    if (/melting.?point|physical property|technique|method/i.test(conc)) {cScore+=1; cNotes.push('technique named (+1)');} else cNotes.push('technique not named');
+    var cn=KNOWN_SUBSTANCE_NAMES.filter(function(s){return conc.indexOf(s)>=0;});
+    if (cn.length>=1) {cScore+=2; cNotes.push('identity stated: '+cn[0]+' (+2)');} else cNotes.push('identity of unknown not stated');
+    if (/mixture|confirm|evidence|sharp|test/i.test(conc)) {cScore+=2; cNotes.push('mixture test evidence cited (+2)');} else cNotes.push('mixture test not referenced');
+  }
+  score+=cScore; details.push('Conclusion: '+cScore+'/10');
+  breakdown.push({label:'Conclusion', earned:cScore, possible:10, notes:cNotes});
+
+  return { score:score, total:total, percent:Math.round((score/total)*100), details:details, breakdown:breakdown };
+}
+
+// ===== 2-ATTEMPT SUBMIT =====
+function getSubmissionCount() { try { return parseInt(localStorage.getItem(SUBMIT_COUNT_KEY)||'0',10); } catch(e){return 0;} }
+function setSubmissionCount(n) { try { localStorage.setItem(SUBMIT_COUNT_KEY,String(n)); } catch(e){} }
+
+function buildDtSummary() {
+  var parts = [];
+  var kA=getKnownAvg(), uA=getUnknownAvg();
+  if(kA!==null) parts.push('Naphthalene avg: '+kA.toFixed(1)+' \u00b0C');
+  if(uA!==null) parts.push('Unknown avg: '+uA.toFixed(1)+' \u00b0C');
+  [1,2,3].forEach(function(n){var m=getMixtureData(n); if(m) parts.push('Mix'+n+'('+m.additive+'): '+m.avg.toFixed(1)+' \u00b0C range '+m.range.toFixed(1));});
+  return parts.join(' | ');
+}
+
+function submitLab() {
+  var name=document.getElementById('student-name').value.trim();
+  var section=document.getElementById('student-section').value.trim();
+  if (!name||!section) { alert('Please enter your name and lab section before submitting.'); return; }
+  var count=getSubmissionCount();
+  if (count>=2) { alert('You have used both submissions. Contact your instructor if you need an additional attempt.'); return; }
+  var attemptNum=count+1;
+  var result=scoreSubmission();
+  var btn=document.getElementById('submit-btn');
+  btn.disabled=true; btn.textContent='Submitting attempt '+attemptNum+' of 2\u2026';
+  var _members4=[document.getElementById('member2').value,document.getElementById('member3').value].filter(Boolean).join('; ');
+  var _details4=result.details.join ? result.details.join(' | ') : (result.details||'');
+
+  var payload={
+    action  :'submit',
+    course  :'chem103l',
+    lab     :'Lab 4',
+    name    :name,
+    section :section,
+    members :_members4,
+    start_date:document.getElementById('start-date').value||'',
+    attempt :attemptNum,
+    score   :result.score,
+    percent :result.percent,
+    obs1    :document.getElementById('unknown-id').value||'',
+    purpose :document.getElementById('purpose-text').value||'',
+    q1      :document.getElementById('q1-text').value||'',
+    q2      :document.getElementById('q2-text').value||'',
+    q3      :document.getElementById('q3-text').value||'',
+    q4      :document.getElementById('q4-text').value||'',
+    q5      :document.getElementById('q5-text').value||'',
+    q6      :document.getElementById('q6-text').value||'',
+    conclusion:document.getElementById('conclusion-text').value||'',
+    notes   :document.getElementById('notes-to-prof').value||'',
+    data_table:buildDtSummary(),
+    details :_details4
+  };
+
+  sendToSheets4(payload, function(){onSubmitSuccess(attemptNum,result);});
+}
+
+function sendToSheets4(payload, onSuccess){
+  var xhr=new XMLHttpRequest();
+  xhr.open('POST',SHEETS_ENDPOINT,true);
+  xhr.setRequestHeader('Content-Type','text/plain');
+  xhr.onload=function(){onSuccess();};
+  xhr.onerror=function(){onSuccess();};
+  xhr.send(JSON.stringify(payload));
+}
+
+
+function showSubmitError4(msg){
+  var el=document.getElementById('submit-error-msg');
+  if(!el){
+    el=document.createElement('div');
+    el.id='submit-error-msg';
+    el.style.cssText='margin:12px 0;padding:12px 16px;background:#ffebee;border:1px solid #ef9a9a;border-radius:6px;color:#b71c1c;font-size:0.9rem;font-family:monospace;white-space:pre-wrap;';
+    var btn=document.getElementById('submit-btn');
+    if(btn&&btn.parentNode)btn.parentNode.insertBefore(el,btn.nextSibling);
+  }
+  el.textContent='Submission error: '+msg;
+  el.style.display='block';
+}
+
+function onSubmitSuccess(attemptNum,result,offline) {
+  setSubmissionCount(attemptNum);
+  try {
+    var raw=localStorage.getItem(SAVE_KEY);
+    var data=raw?JSON.parse(raw):collectFormData();
+    data['_attempt'+attemptNum+'_result']=result;
+    localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+  } catch(e){}
+  showScorePanel(attemptNum,result);
+  var btn=document.getElementById('submit-btn');
+  var infoEl=document.getElementById('submit-info');
+  if (attemptNum===1) {
+    document.getElementById('revision-prompt').style.display='block';
+    btn.disabled=false; btn.textContent='Submit Final Attempt \u2014 Attempt 2 of 2'; btn.style.background='var(--accent-dark)';
+    if(infoEl) infoEl.innerHTML='<strong>Attempt 1 recorded'+(offline?' (offline)':'')+'. </strong>Review the feedback, revise your responses, then submit your final attempt. <strong style="color:var(--red);">Attempt 2 is your final grade.</strong>';
+    document.getElementById('subs-remaining-text').textContent='1 submission remaining';
+  } else {
+    btn.disabled=true; btn.textContent='Both submissions used';
+    document.getElementById('revision-prompt').style.display='none';
+    if(infoEl) infoEl.innerHTML='<strong>Both submissions recorded'+(offline?' (offline)':'')+'. </strong>Your final score is shown below.';
+    document.getElementById('subs-remaining-text').textContent='0 submissions remaining';
+  }
+}
+
+function buildScoreHtml(result,attemptNum) {
+  var isFinal=(attemptNum===2);
+  var label=result.percent>=85?'Excellent':result.percent>=70?'Good':(isFinal?'Needs Improvement':'Needs Revision');
+  var html='<p style="font-size:16px;font-weight:700;margin-bottom:4px;">Score: '+result.score+' / '+result.total+' &nbsp;('+result.percent+'%) &mdash; '+label+'</p>';
+  if (!isFinal) html+='<p style="font-size:13px;color:var(--gold);margin-bottom:16px;font-weight:600;">&#9656; Items marked with a pencil can be improved. Revise, then submit your final attempt.</p>';
+  else html+='<p style="font-size:13px;color:#888;margin-bottom:16px;">This is your final recorded score.</p>';
+  html+='<table style="width:100%;border-collapse:collapse;font-size:13px;">';
+  html+='<thead><tr><th style="text-align:left;padding:6px 10px;background:var(--ink);color:#ce93d8;font-family:monospace;font-size:10px;letter-spacing:.1em;">Section</th><th style="text-align:center;padding:6px 10px;background:var(--ink);color:#ce93d8;font-family:monospace;font-size:10px;letter-spacing:.1em;">Score</th><th style="text-align:left;padding:6px 10px;background:var(--ink);color:#ce93d8;font-family:monospace;font-size:10px;letter-spacing:.1em;">'+(isFinal?'Final Rubric':'What to Improve')+'</th></tr></thead><tbody>';
+  result.breakdown.forEach(function(row,idx) {
+    var pct=row.earned/row.possible;
+    var bc=pct>=0.85?'#7b1fa2':pct>=0.6?'#b8860b':'#c0392b';
+    var rowBg=idx%2===0?'#fff':'var(--cream)';
+    var notesHtml=row.notes.map(function(n) {
+      var isOk=n.indexOf('not ')===-1&&n.indexOf('missing')===-1&&n.indexOf('brief')===-1&&n.indexOf('no ')===-1&&n.indexOf('exceeds')===-1&&n.indexOf('broad')===-1&&n.indexOf('check')===-1&&n.indexOf('only ')===-1&&n.indexOf('differ')===-1;
+      var icon=isOk?'&#10003;':(isFinal?'&#9656;':'&#9998;');
+      var col=isOk?'#2e7d32':(isFinal?'#b8860b':'#c0392b');
+      return '<span style="display:block;color:'+col+';margin-bottom:3px;font-weight:'+(isOk?'400':'600')+';">'+icon+' '+n+'</span>';
+    }).join('');
+    html+='<tr style="background:'+rowBg+';'+(pct<1.0&&!isFinal?' border-left:3px solid #ffd54f;':'')+'">';
+    html+='<td style="padding:10px;font-weight:600;border-bottom:1px solid var(--rule);white-space:nowrap;">'+row.label+'</td>';
+    html+='<td style="padding:10px;text-align:center;border-bottom:1px solid var(--rule);"><div style="font-family:monospace;font-weight:700;font-size:14px;color:'+bc+';">'+row.earned+'/'+row.possible+'</div><div style="height:4px;background:#e0e0e0;border-radius:2px;width:60px;margin:4px auto 0;"><div style="height:4px;background:'+bc+';border-radius:2px;width:'+Math.round(pct*100)+'%;"></div></div></td>';
+    html+='<td style="padding:10px;border-bottom:1px solid var(--rule);font-size:12px;line-height:1.7;">'+notesHtml+'</td></tr>';
+  });
+  html+='</tbody></table>';
+  html+='<p style="margin-top:14px;font-size:12px;color:#888;font-style:italic;">'+(isFinal?'Final score recorded. Contact your instructor for grade disputes.':'Attempt 1 recorded. Edit your responses, then submit your final attempt.')+'</p>';
+  return html;
+}
+
+function showScorePanel(attemptNum,result) {
+  var panel=document.getElementById('score-panel-'+attemptNum);
+  if (!panel) return;
+  panel.style.display='block'; panel.classList.add('visible');
+  var badge=document.getElementById('score-badge-'+attemptNum);
+  if (badge) badge.textContent=result.score+'/'+result.total+' ('+result.percent+'%)';
+  var bar=document.getElementById('score-bar-'+attemptNum);
+  if (bar) { bar.style.background=result.percent>=85?'#ce93d8':result.percent>=70?'#ffd54f':'#ef9a9a'; bar.style.width='0%'; setTimeout(function(){bar.style.width=result.percent+'%';},120); }
+  var body=document.getElementById('score-body-'+attemptNum);
+  if (body) body.innerHTML=buildScoreHtml(result,attemptNum);
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function restoreSubmissionState() {
+  var count=getSubmissionCount();
+  if (count===0) return;
+  var btn=document.getElementById('submit-btn');
+  var infoEl=document.getElementById('submit-info');
+  try {
+    var raw=localStorage.getItem(SAVE_KEY);
+    var data=raw?JSON.parse(raw):null;
+    if (data&&data['_attempt1_result']) showScorePanel(1,data['_attempt1_result']);
+    document.getElementById('revision-prompt').style.display='block';
+    document.getElementById('subs-remaining-text').textContent=count===1?'1 submission remaining':'0 submissions remaining';
+    if (count===1) {
+      btn.disabled=false; btn.textContent='Submit Final Attempt \u2014 Attempt 2 of 2'; btn.style.background='var(--accent-dark)';
+      if(infoEl) infoEl.innerHTML='<strong>Attempt 1 already recorded.</strong> Review the feedback, revise, then submit your final attempt. <strong style="color:var(--red);">Attempt 2 is your final grade.</strong>';
+    } else if (count>=2) {
+      if (data&&data['_attempt2_result']) { document.getElementById('revision-prompt').style.display='none'; showScorePanel(2,data['_attempt2_result']); }
+      btn.disabled=true; btn.textContent='Both submissions used';
+      if(infoEl) infoEl.innerHTML='<strong>Both submissions recorded.</strong> Your final score is shown below.';
+    }
+  } catch(e){}
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    restoreSavedData();
+    attachAutoSaveListeners();
+    restoreSubmissionState();
+  }, 150);
+});
+
+// ── SHIFT-HELD RESET BUTTON ──────────────────────────────────────────────────
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Shift') {
+    var btn = document.getElementById('reset-attempts-btn');
+    if (btn) btn.style.display = 'inline-block';
+    var bar = document.getElementById('save-status-bar');
+    if (bar) bar.classList.add('visible');
+  }
+});
+document.addEventListener('keyup', function(e) {
+  if (e.key === 'Shift') {
+    var btn = document.getElementById('reset-attempts-btn');
+    if (btn) btn.style.display = 'none';
+  }
+});
+function resetAttemptsOnly() {
+  // 1. Remove submission counter
+  try { localStorage.removeItem(SUBMIT_COUNT_KEY); } catch(e) {}
+
+  // 2. Remove stored attempt results from SAVE_KEY so restoreSubmissionState()
+  //    does not re-lock the button on the next page load
+  try {
+    var raw = localStorage.getItem(SAVE_KEY);
+    if (raw) {
+      var saved = JSON.parse(raw);
+      delete saved['_attempt1_result'];
+      delete saved['_attempt2_result'];
+      localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+    }
+  } catch(e) {}
+
+  // 3. Reset all UI elements immediately (no page reload needed)
+  var btn    = document.getElementById('submit-btn');
+  var infoEl = document.getElementById('submit-info');
+  var revEl  = document.getElementById('revision-prompt');
+  var remEl  = document.getElementById('subs-remaining-text');
+  var p1     = document.getElementById('score-panel-1');
+  var p2     = document.getElementById('score-panel-2');
+
+  if (btn)   { btn.disabled = false; btn.textContent = 'Submit Lab 4 — Attempt 1 of 2'; btn.style.background = ''; }
+  if (infoEl) infoEl.innerHTML = '<strong>Ready to Submit?</strong> Submission counter reset. You have <strong id="subs-remaining-text">2 submissions</strong> available.';
+  if (revEl)  revEl.style.display = 'none';
+  if (remEl)  remEl.textContent = '2 submissions';
+  if (p1)    { p1.style.display = 'none'; p1.classList.remove('visible'); }
+  if (p2)    { p2.style.display = 'none'; p2.classList.remove('visible'); }
+
+  setSaveStatus('saved', 'Submission counter reset — Attempt 1 of 2 ready');
+}
+</script>
+</body>
+</html>
