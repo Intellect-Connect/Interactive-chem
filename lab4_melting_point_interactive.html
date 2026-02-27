@@ -990,7 +990,7 @@ function getAIFeedback(qid) {
     return;
   }
   feedbackEl.style.borderLeftColor = ''; feedbackEl.style.background = '';
-  if (!AI_PROXY_ENDPOINT || AI_PROXY_ENDPOINT === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
+  if (!AI_PROXY_ENDPOINT) {
     feedbackEl.style.borderLeftColor = 'var(--gold)'; feedbackEl.style.background = 'var(--gold-light)';
     feedbackEl.textContent = 'AI feedback is not yet active \u2014 your instructor has not connected the feedback service. Your written response is saved and will be reviewed manually.';
     return;
@@ -998,23 +998,29 @@ function getAIFeedback(qid) {
   btn.disabled = true; btn.textContent = 'Analyzing\u2026';
   feedbackEl.textContent = 'Reviewing your response\u2026';
   feedbackEl.style.borderLeftColor = ''; feedbackEl.style.background = '';
-  fetch(AI_PROXY_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ action:'feedback', system:AI_SYSTEM, prompt: AI_PROMPTS[qid](txt) })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    var fb = data.result === 'success' ? data.feedback : ('Feedback unavailable: ' + (data.message || 'unknown error'));
-    var isApiOffTask = /does not address|genuine answer|re-read the prompt/i.test(fb);
-    feedbackEl.style.borderLeftColor = isApiOffTask ? 'var(--red)' : (data.result !== 'success' ? 'var(--gold)' : '');
-    feedbackEl.style.background      = isApiOffTask ? 'var(--red-light)' : (data.result !== 'success' ? 'var(--gold-light)' : '');
-    feedbackEl.textContent = fb;
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', AI_PROXY_ENDPOINT, true);
+  xhr.setRequestHeader('Content-Type', 'text/plain');
+  xhr.onload = function() {
+    try {
+      var data = JSON.parse(xhr.responseText);
+      var fb = data.result === 'success' ? data.feedback : ('Feedback unavailable: ' + (data.message || 'unknown error'));
+      var isApiOffTask = /does not address|genuine answer|re-read the prompt/i.test(fb);
+      feedbackEl.style.borderLeftColor = isApiOffTask ? 'var(--red)' : (data.result !== 'success' ? 'var(--gold)' : '');
+      feedbackEl.style.background      = isApiOffTask ? 'var(--red-light)' : (data.result !== 'success' ? 'var(--gold-light)' : '');
+      feedbackEl.textContent = fb;
+    } catch(e) {
+      feedbackEl.style.borderLeftColor = 'var(--gold)'; feedbackEl.style.background = 'var(--gold-light)';
+      feedbackEl.textContent = 'Could not parse the feedback response. Your work is saved and will be reviewed by your instructor.';
+    }
     btn.disabled = false; btn.textContent = 'Get Feedback';
-  })
-  .catch(function() {
+  };
+  xhr.onerror = function() {
     feedbackEl.style.borderLeftColor = 'var(--gold)'; feedbackEl.style.background = 'var(--gold-light)';
     feedbackEl.textContent = 'Could not reach the feedback service. Your response is saved and will be reviewed by your instructor.';
     btn.disabled = false; btn.textContent = 'Get Feedback';
-  });
+  };
+  xhr.send(JSON.stringify({ action: 'feedback', system: AI_SYSTEM, prompt: AI_PROMPTS[qid](txt) }));
 }
 
 function toggleRefCard(id) {
