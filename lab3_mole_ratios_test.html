@@ -1786,8 +1786,8 @@
 <script>
 // ===== CONFIGURATION =====
 // Replace with your deployed Google Apps Script Web App URL
-var SHEETS_ENDPOINT   = 'https://script.google.com/macros/s/AKfycbz74CBaQlkLC7VwtSqKr_kHqS9Oe8RcowYO27-fzTCl8GXEMMo7moVKOsoBCL2Pw3MBwg/exec';
-var AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbz74CBaQlkLC7VwtSqKr_kHqS9Oe8RcowYO27-fzTCl8GXEMMo7moVKOsoBCL2Pw3MBwg/exec';
+var SHEETS_ENDPOINT   = 'https://script.google.com/macros/s/AKfycbxyBTY3R1qmFVml3k4AWB0cBSjJ7uRWaQxQo2arcbP3zEhDtg4Eim36p1SHfBMKqf9oqQ/exec';
+var AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxyBTY3R1qmFVml3k4AWB0cBSjJ7uRWaQxQo2arcbP3zEhDtg4Eim36p1SHfBMKqf9oqQ/exec';
 
 // ===== TRIAL DATA =====
 var TRIALS = [
@@ -2275,29 +2275,29 @@ function getCanvasDataURL(id) {
 }
 
 // ===== AI FEEDBACK =====
-var AI_SYSTEM = 'You are a General Chemistry I lab instructor at a university reviewing student lab responses. Before giving feedback, assess whether the student has made a genuine attempt to answer the chemistry question. If the response is off-task (complaining, random text, jokes, nonsense, expressions of disengagement, or content unrelated to chemistry), respond ONLY with: "This response does not address the chemistry question. Please re-read the prompt and write a genuine answer about [restate the topic in a few words]. Your grade depends on a real attempt." Do not give chemistry feedback on off-task responses. For genuine attempts: (1) be specific to the student response, (2) be scientifically accurate at the introductory college level, (3) be supportive and constructive. Keep feedback to 3-5 sentences. Affirm correct and complete answers clearly. For incomplete answers, identify what is missing without giving away the answer. Flag significant scientific errors. Do not repeat the student words back verbatim. Focus on chemical reasoning, not grammar.';
+var AI_SYSTEM = 'You are a General Chemistry I lab instructor at Carson-Newman University giving feedback on student lab work for CHEM 103L. Your students are pre-health, pre-science, and STEM-track students developing scientific reasoning skills. Hold them to a high standard — and deliver that standard with warmth, encouragement, and a focus on discovery. Tone and length: Use clear, precise scientific language appropriate for introductory college chemistry. No bullet points. No markdown. Keep feedback to 4-5 sentences. Be encouraging and specific — never dismissive. For strong responses: Affirm the quality of the scientific reasoning explicitly. Identify the specific element that demonstrates good thinking, then extend their understanding by one step — a connection to a concept coming later in the course, a real-world application, or a question that deepens the analysis. For incomplete responses: Begin by acknowledging what the student correctly identified or reasoned. Then ask one targeted guiding question that points toward the missing component — whether that is a missing unit, an unconsidered source of error, an unstated assumption, or an incomplete comparison to a theoretical value. Do not state the answer. Frame the incompleteness as a natural next step in their reasoning. For responses with a scientific misconception: Reframe gently using a question that exposes the contradiction within their own reasoning ("If that were true, what would you expect to observe when...?"). Help the student catch the error themselves. Do not lecture; guide. For off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly but clearly. Acknowledge that this does not yet address the science, restate the question in plain terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. AI-detection: If the response uses unusually formal or sophisticated phrasing inconsistent with an introductory lab student\'s voice — perfectly structured paragraphs, hedging language such as "it is worth noting," "in conclusion," or "furthermore," or arguments that address every possible angle with no hesitation or personal uncertainty — it may have been AI-generated. If so, respond only with: This response reads like it may have been drafted with AI assistance. I want to see your own scientific thinking here — your reasoning process matters more than a polished answer. Please rewrite this in your own words. What is your actual interpretation of the data or concept, even if you are uncertain?';
 
 var AI_PROMPTS = {
   purpose: function(txt) {
-    return 'A General Chemistry I student wrote this purpose statement for a lab on determining mole ratios using the method of continuous variations with OCl- and S2O3 2-:\n\n"' + txt + '"\n\nEvaluate whether the purpose: (1) identifies what is being measured, (2) names the method used (continuous variations or calorimetry), and (3) states what will be determined (the mole ratio). Provide brief, targeted feedback.';
+    return 'A CHEM 103L student wrote this purpose statement for a lab on determining mole ratios using the method of continuous variations with OCl- and S2O3 2-:\n\n"' + txt + '"\n\nEvaluate whether the purpose: (1) identifies what is being determined (the stoichiometric mole ratio), (2) names the method (continuous variations / calorimetry), and (3) conveys why maximum temperature change reveals the stoichiometric point. Do not give the answer outright — if an element is missing, ask a guiding question.';
   },
   obs1: function(txt) {
-    return 'A student described the appearance of 0.050 M NaOCl and 0.050 M Na2S2O3 solutions:\n\n"' + txt + '"\n\nBoth solutions should be colorless and clear (dilute aqueous solutions). NaOCl may have a faint chlorine/bleach odor. Evaluate whether the student\'s observation is scientifically consistent and appropriately detailed for a lab report.';
+    return 'A CHEM 103L student described the appearance of 0.050 M NaOCl and 0.050 M Na2S2O3 solutions:\n\n"' + txt + '"\n\nBoth solutions should be colorless and clear (dilute aqueous solutions). NaOCl may have a faint chlorine/bleach odor. Evaluate whether the observation is accurate and sufficiently detailed (color, clarity, any odor noted) for a formal lab report. If key observations are absent, ask the student what else they might have noticed rather than listing what is missing.';
   },
   obs2: function(txt) {
-    return 'A student described what happened when OCl- and S2O3 2- were mixed:\n\n"' + txt + '"\n\nThe reaction is exothermic, so temperature should increase quickly upon mixing. The mixture should remain colorless or become slightly cloudy. Evaluate whether the observation describes the expected exothermic behavior and is appropriately detailed.';
+    return 'A CHEM 103L student described what happened when OCl- and S2O3 2- were mixed:\n\n"' + txt + '"\n\nThe reaction is exothermic, so temperature should increase quickly upon mixing. The mixture should remain colorless or become slightly cloudy. Evaluate whether the student described the temperature change, the visual appearance, and whether their language is consistent with an exothermic reaction. If the exothermic nature is absent from the description, guide them toward it with a question rather than stating it directly.';
   },
   obs3: function(txt) {
-    return 'A student described which trial gave the greatest temperature change in the method of continuous variations experiment:\n\n"' + txt + '"\n\nThe balanced equation is 4 OCl- + S2O3 2- -> products, so the maximum delta-T should occur near trial 6 (8 mL OCl- / 2 mL S2O3 2-) because that is the 4:1 ratio. Assess whether the student\'s observation aligns with this expectation and is clearly explained.';
+    return 'A CHEM 103L student identified which trial produced the greatest temperature change in the method of continuous variations experiment:\n\n"' + txt + '"\n\nThe balanced equation is 4 OCl- + S2O3 2- -> products, so the maximum delta-T should occur near trial 6 (8 mL OCl- / 2 mL S2O3 2-) because that is the 4:1 ratio. Evaluate whether the student correctly identified the trial with peak delta-T and whether they connected this to the concept of the stoichiometric point (neither reactant limiting). Do not reveal the correct trial number — guide them to reason from their own data.';
   },
   q1: function(txt) {
     return 'A CHEM 103L student determined the mole ratio from this analysis:\n\n"' + txt + '"\n\nThe actual mole ratio is 4 OCl- : 1 S2O3 2- (from the balanced equation 4 OCl- + S2O3 2- -> products). Evaluate: (1) whether the student correctly identified the maximum delta-T trial, (2) whether they correctly equated the volume ratio to the mole ratio (valid because equal molarities), and (3) whether the final ratio is expressed correctly as a whole-number ratio. Provide constructive feedback.';
   },
   q2: function(txt) {
-    return 'A first-semester General Chemistry student (limited stoichiometry background) answered this question: "Both solutions had the same concentration (0.050 M). Why does this matter for comparing volumes? Use moles = M x V to explain."\n\nStudent response: "' + txt + '"\n\nEvaluate whether the student: (1) correctly uses n = M x V to connect concentration, volume, and moles, (2) explains that equal concentrations make the volume ratio equal to the mole ratio, and (3) addresses what they would need to do differently if concentrations were unequal. Give encouraging, specific feedback appropriate for an introductory student. Do not expect advanced language — reward correct reasoning even if simply expressed.';
+    return 'A CHEM 103L student (first-semester, limited stoichiometry background) answered this question: "Both solutions had the same concentration (0.050 M). Why does this matter for comparing volumes? Use moles = M x V to explain."\n\nStudent response: "' + txt + '"\n\nEvaluate whether the student: (1) correctly uses n = M x V to connect concentration, volume, and moles, (2) explains that equal concentrations make the volume ratio equal to the mole ratio, and (3) addresses what they would need to do differently if concentrations were unequal. Give encouraging, specific feedback appropriate for an introductory student. Do not expect advanced language — reward correct reasoning even if simply expressed.';
   },
   q3: function(txt) {
-    return 'A first-semester General Chemistry student answered this question about limiting reactants in a continuous variations experiment (OCl- + S2O3 2-, mole ratio 4:1, stoichiometric volume = 8 mL OCl- / 2 mL S2O3 2-).\n\nStudent response: "' + txt + '"\n\nEvaluate whether the student: (1) correctly identifies OCl- as limiting when its volume is small (trials 1-3, less than ~80% of total), (2) correctly identifies S2O3 2- as limiting when OCl- volume is large (trials 5-7), and (3) recognizes that the maximum delta-T trial has neither reactant limiting. The student has limited stoichiometry experience — reward correct logical reasoning about "running out first" even without formal limiting-reactant language. Point out any trial-specific errors gently and clearly.';
+    return 'A CHEM 103L student answered this question about limiting reactants in a continuous variations experiment (OCl- + S2O3 2-, mole ratio 4:1, stoichiometric volume = 8 mL OCl- / 2 mL S2O3 2-).\n\nStudent response: "' + txt + '"\n\nEvaluate whether the student: (1) correctly identifies OCl- as limiting when its volume is small (trials 1-3, less than ~80% of total), (2) correctly identifies S2O3 2- as limiting when OCl- volume is large (trials 5-7), and (3) recognizes that the maximum delta-T trial has neither reactant limiting. The student has limited stoichiometry experience — reward correct logical reasoning about "running out first" even without formal limiting-reactant language. Point out any trial-specific errors gently and clearly.';
   },
   q4: function(txt) {
     return 'A CHEM 103L student compared their experimental mole ratio to the known equation 4 OCl- + S2O3 2- -> 4 Cl- + SO4 2- + SO3 2- + 2H+:\n\n"' + txt + '"\n\nEvaluate whether: (1) the student correctly identified the expected 4:1 ratio from the balanced equation, (2) they compared their experimental ratio to 4:1 meaningfully, and (3) if there is a discrepancy, they offered a reasonable explanation (experimental error, difficulty identifying exact peak temperature, heat loss). Assess scientific reasoning quality.';
@@ -2306,60 +2306,6 @@ var AI_PROMPTS = {
     return 'A CHEM 103L student wrote this conclusion (max 3 sentences) for the mole ratios lab:\n\n"' + txt + '"\n\nA strong conclusion should state: (1) the method used (continuous variations / calorimetry), (2) the experimental mole ratio determined, and (3) comparison to the known 4:1 ratio from the balanced equation and whether it agrees. Evaluate whether all three elements are present, the conclusion is concise (3 sentences max), and the reasoning is sound. Flag any scientific inaccuracies.';
   }
 };
-
-// Off-task patterns checked CLIENT-SIDE before the API is ever called.
-// Catches: disengagement, profanity, gibberish, complaints, meta-commentary.
-var OFF_TASK_PATTERNS = [
-  /i (have no idea|don.t know|don.t care|hate|don.t like|am bored)/i,
-  /this (lab|class|course|experiment) is (boring|stupid|dumb|pointless|hard|terrible|awful)/i,
-  /chemistry (is|sucks|is boring|is hard|is stupid)/i,
-  /i (can.t|cannot) (do this|answer|understand)/i,
-  /^(idk|idc|n\/a|na|none|nothing|no idea|whatever|lol|lmao|wtf|who cares)[.!?]*$/i,
-  /lorem ipsum/i,
-  /asdf|qwerty|aaaa+|zzzz+/i,
-  /(fuck|shit|ass|crap|damn|hell)[^a-z]/i,
-  /not going to (answer|do this|try)/i,
-  /just (give me|want) (the|a) (grade|answer|point)/i,
-];
-
-// Topic keywords — at least one should appear in a genuine chemistry response
-var CHEMISTRY_KEYWORDS = [
-  /temperature|delta.?t|heat|exotherm/i,
-  /mole|ratio|stoichiom|continu|variat/i,
-  /ocl|hypochlor|thiosulf|s2o3|reactant|product/i,
-  /volume|molarity|concentrat|solution/i,
-  /limiting|excess|balanced|equation/i,
-  /color|clear|colorless|appearance|mix/i,
-  /trial|data|result|experiment|measur/i,
-  /error|uncertaint|source|accurate/i,
-];
-
-var OFF_TASK_TOPICS = {
-  purpose:    'the purpose of the continuous variations experiment',
-  obs1:       'the appearance of the OCl⁻ and S₂O₃²⁻ solutions before mixing',
-  obs2:       'what you observed when the two solutions were mixed',
-  obs3:       'which trial produced the greatest temperature change',
-  q1:         'determining the mole ratio from your data',
-  q2:         'why equal molarities matter for comparing volumes',
-  q3:         'identifying the limiting reactant in each trial',
-  q4:         'comparing your experimental result to the balanced equation',
-  conclusion: 'your conclusion about the mole ratio you determined'
-};
-
-function isOffTask(txt, qid) {
-  var lower = txt.toLowerCase().trim();
-
-  // Hard off-task patterns
-  if (OFF_TASK_PATTERNS.some(function(p) { return p.test(lower); })) return true;
-
-  // Very short AND no chemistry keywords = likely off-task
-  if (lower.split(/\s+/).length < 6) {
-    var hasChemistry = CHEMISTRY_KEYWORDS.some(function(p) { return p.test(lower); });
-    if (!hasChemistry) return true;
-  }
-
-  return false;
-}
 
 function getAIFeedback(qid) {
   var textMap = {
@@ -2370,45 +2316,16 @@ function getAIFeedback(qid) {
   var textEl = document.getElementById(textMap[qid]);
   if (!textEl) return;
   var txt = textEl.value.trim();
-
-  if (!txt || txt.length < 10) {
-    alert('Please write a response before requesting feedback.');
+  if (!txt || txt.length < 15) {
+    alert('Please write a response of at least 15 characters before requesting feedback.');
     return;
   }
-
   var btn = document.getElementById('ai-btn-' + qid);
   var feedbackEl = document.getElementById('ai-feedback-' + qid);
-  feedbackEl.classList.add('visible');
-
-  // ── Client-side off-task check ──────────────────────────────────────────
-  if (isOffTask(txt, qid)) {
-    var topic = OFF_TASK_TOPICS[qid] || 'the chemistry question';
-    feedbackEl.style.borderLeftColor = 'var(--red)';
-    feedbackEl.style.background = 'var(--red-light)';
-    feedbackEl.innerHTML = '<strong style="color:var(--red);">Response does not address the question.</strong><br>' +
-      'Please re-read the prompt and write a genuine response about <em>' + topic + '</em>. ' +
-      'Your grade on this section depends on a real attempt. ' +
-      'If you are unsure where to start, check the Background tab or the Reference tab for help.';
-    return;
-  }
-
-  // Reset feedback styling in case a previous attempt was flagged
-  feedbackEl.style.borderLeftColor = '';
-  feedbackEl.style.background = '';
-
-  // ── Endpoint not configured ─────────────────────────────────────────────
-  if (!AI_PROXY_ENDPOINT || AI_PROXY_ENDPOINT === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
-    feedbackEl.style.borderLeftColor = 'var(--gold)';
-    feedbackEl.style.background = 'var(--gold-light)';
-    feedbackEl.textContent = 'AI feedback is not yet active — your instructor has not connected the feedback service. Your written response has been saved and will be reviewed manually.';
-    return;
-  }
-
   btn.disabled = true;
-  btn.textContent = 'Analyzing…';
-  feedbackEl.textContent = 'Reviewing your response…';
-  feedbackEl.style.borderLeftColor = '';
-  feedbackEl.style.background = '';
+  btn.textContent = 'Analyzing...';
+  feedbackEl.classList.add('visible');
+  feedbackEl.textContent = 'Getting feedback from your instructor...';
 
   var promptFn = AI_PROMPTS[qid];
   var prompt = promptFn ? promptFn(txt) : txt;
@@ -2421,29 +2338,15 @@ function getAIFeedback(qid) {
   .then(function(r) { return r.json(); })
   .then(function(data) {
     if (data.result === 'success') {
-      // Check if the API itself flagged the response as off-task
-      var fb = data.feedback || '';
-      var isApiOffTask = /does not address|not address|off.task|re-read the prompt|genuine answer/i.test(fb);
-      if (isApiOffTask) {
-        feedbackEl.style.borderLeftColor = 'var(--red)';
-        feedbackEl.style.background = 'var(--red-light)';
-      } else {
-        feedbackEl.style.borderLeftColor = '';
-        feedbackEl.style.background = '';
-      }
-      feedbackEl.textContent = fb;
+      feedbackEl.textContent = data.feedback;
     } else {
-      feedbackEl.style.borderLeftColor = 'var(--gold)';
-      feedbackEl.style.background = 'var(--gold-light)';
       feedbackEl.textContent = 'Feedback unavailable: ' + (data.feedback || data.message || 'Unknown error');
     }
     btn.disabled = false;
     btn.textContent = 'Get Feedback';
   })
-  .catch(function() {
-    feedbackEl.style.borderLeftColor = 'var(--gold)';
-    feedbackEl.style.background = 'var(--gold-light)';
-    feedbackEl.textContent = 'Could not reach the feedback service. Check your internet connection. Your written response is saved and will be reviewed by your instructor.';
+  .catch(function(err) {
+    feedbackEl.textContent = 'Network error. Check that your Apps Script endpoint is configured.';
     btn.disabled = false;
     btn.textContent = 'Get Feedback';
   });
