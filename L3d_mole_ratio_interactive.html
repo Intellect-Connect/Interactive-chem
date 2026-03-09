@@ -1575,6 +1575,17 @@
     </div>
   </div>
 
+  <!-- ATTENDANCE VERIFICATION -->
+  <div id="attendance-block" style="margin:28px 0 0; padding:20px 24px; background:var(--blue-light); border:1px solid var(--blue); border-left:4px solid var(--blue); border-radius:4px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; color:var(--blue); margin-bottom:10px;">LAB ATTENDANCE &amp; PARTICIPATION</div>
+    <p style="font-size:14px; line-height:1.65; margin-bottom:14px;">Your lab grade includes <strong>65 points for attending and actively participating in the lab session</strong>. This credit is awarded for being present, completing the experimental work with your group, and submitting your own write-up.</p>
+    <label style="display:flex; align-items:flex-start; gap:12px; cursor:pointer; font-size:14px; line-height:1.5;">
+      <input type="checkbox" id="attendance-check" onchange="onAttendanceChange()" style="margin-top:3px; width:18px; height:18px; accent-color:var(--blue); flex-shrink:0;">
+      <span>I confirm that I was present for this lab session, participated in the experimental work with my group, and that this submission represents my own observations and analysis.</span>
+    </label>
+    <div id="attendance-warning" style="display:none; margin-top:10px; font-size:13px; color:var(--red); font-weight:600;">Check the box above to confirm attendance before submitting.</div>
+  </div>
+
   <!-- SUBMIT -->
   <div class="submit-section" id="submit-section">
     <div class="submit-info" id="submit-info">
@@ -2533,95 +2544,92 @@ function scoreSubmission() {
   var score = 0;
   var total = 0;
   var details = [];
-  var breakdown = []; // per-question rubric feedback shown in score panel
+  var breakdown = [];
 
-  // ── PURPOSE  (5 pts) ──────────────────────────────────────────────────────
-  total += 5;
+  // ── PURPOSE  (3 pts) ──────────────────────────────────────────────────────
+  total += 3;
   var purpose = norm(document.getElementById('purpose-text').value);
   var pScore = 0;
   var pNotes = [];
-  if (!hasSubstance(purpose, 10)) {
-    pNotes.push('too brief');
+  if (!hasSubstance(purpose, 8)) {
+    pNotes.push('too brief — write at least 1 complete sentence');
   } else {
-    // 1 pt: identifies what is being measured (temperature / delta-T / heat)
-    if (/temperature|delta.?t|\bdt\b|heat|calorimetr/i.test(purpose)) { pScore += 1; }
-    else pNotes.push('does not mention temperature measurement');
-    // 2 pts: names the method (continuous variations / job's method)
-    if (/continu.{0,10}variat|job.{0,5}method/i.test(purpose)) { pScore += 2; }
-    else if (/method|procedure|technique/i.test(purpose)) { pScore += 1; pNotes.push('method named vaguely'); }
-    else pNotes.push('method of continuous variations not named');
-    // 2 pts: states goal (determine mole ratio / stoichiometry / balanced equation coefficients)
-    if (/mole.{0,6}ratio|stoichiometr|coeffici|whole.number.ratio/i.test(purpose)) { pScore += 2; }
-    else if (/ratio|proportion|amount/i.test(purpose)) { pScore += 1; pNotes.push('goal stated vaguely'); }
+    // 1 pt: mentions temperature, heat, or exothermic character
+    if (/temperature|delta.?t|\bdt\b|heat|calorimetr|warm|exotherm/i.test(purpose)) { pScore += 1; }
+    else pNotes.push('temperature or heat measurement not mentioned');
+    // 1 pt: describes varying volumes/ratios or names the method
+    if (/continu.{0,10}variat|job.{0,5}method|var(y|ying|ied).{0,20}(volume|ratio|amount)|different.{0,15}(volume|ratio|amount)|changing.{0,15}(volume|ratio)/i.test(purpose)) { pScore += 1; }
+    else if (/method|procedure|technique|ratio|volume/i.test(purpose)) { pScore += 1; }
+    else pNotes.push('experimental approach not described');
+    // 1 pt: states goal of finding mole ratio or stoichiometry
+    if (/mole.{0,6}ratio|stoichiometr|coeffici|whole.number.ratio|ratio|proportion|how much|amount|react/i.test(purpose)) { pScore += 1; }
     else pNotes.push('goal (determine mole ratio) not stated');
   }
-  pScore = Math.min(5, pScore);
+  pScore = Math.min(3, pScore);
   score += pScore;
-  details.push('Purpose: ' + pScore + '/5');
-  breakdown.push({ label: 'Purpose', earned: pScore, possible: 5,
-    notes: pNotes.length ? pNotes : ['Identifies measurement, method, and goal'] });
+  details.push('Purpose: ' + pScore + '/3');
+  breakdown.push({ label: 'Purpose', earned: pScore, possible: 3,
+    notes: pNotes.length ? pNotes : ['Describes heat measurement, experimental approach, and goal'] });
 
-  // ── DATA TABLE  (20 pts) ──────────────────────────────────────────────────
-  // Rubric:
-  //   Completeness  (8 pts): 0 pts < 4 trials; 2 pts per trial from 4 onwards (max 8 at 7/7)
-  //   Peak verified (6 pts): max delta-T has lower values on both sides = confirmed peak
-  //   Data quality  (6 pts): fraction of filled rows within chemically valid ranges
-  total += 20;
+  // ── DATA TABLE  (12 pts) ──────────────────────────────────────────────────
+  // Completeness 4 pts | Peak verified 5 pts | Data quality 3 pts
+  total += 12;
   var dts = getDeltaTs();
   var filledRows = dts.filter(function(d) { return d !== null; }).length;
   var dtNotes = [];
 
-  // Completeness: 0 pts for < 4 trials; scale 4–7 trials → 2–8 pts
-  var dtComplete = 0;
+  // Completeness: 0 pts < 4 trials; generous scale 4=2, 5=3, 6=3, 7=4
+  var completenessMap = [0, 0, 0, 0, 2, 3, 3, 4];
+  var dtComplete = completenessMap[Math.min(filledRows, 7)];
   if (filledRows < 4) {
-    dtComplete = 0;
-    dtNotes.push('Only ' + filledRows + '/7 trials entered — minimum 4 required for any completeness credit');
+    dtNotes.push('Only ' + filledRows + '/7 trials entered — minimum 4 required');
   } else {
-    dtComplete = (filledRows - 3) * 2; // 4 trials=2, 5=4, 6=6, 7=8
-    dtNotes.push(filledRows + '/7 trials entered');
+    dtNotes.push(filledRows + '/7 trials entered (+' + dtComplete + ' pts)');
   }
 
-  // Peak verification: confirmed if max delta-T has at least one lower value on each side
+  // Peak verification: 5 pts full, 3 pts partial/complete-monotonic, 0 pts unverified
   var maxDtIdx = getMaxTrialIdx();
   var peakVerified = false;
   var peakScore = 0;
   if (maxDtIdx >= 0 && filledRows >= 4) {
     peakVerified = isPeakVerified(dts, maxDtIdx);
     if (peakVerified) {
-      peakScore = 6;
-      dtNotes.push('Peak confirmed: Trial ' + (maxDtIdx + 1) + ' is the maximum with lower ΔT values on both sides (+6 pts)');
-    } else if (filledRows >= 4) {
-      // Partial: peak exists but not bracketed on both sides
+      peakScore = 5;
+      dtNotes.push('Peak confirmed: Trial ' + (maxDtIdx + 1) + ' is the maximum with lower \u0394T on both sides (+5 pts)');
+    } else {
       var hasLeft = dts.slice(0, maxDtIdx).some(function(d) { return d !== null && d < dts[maxDtIdx]; });
       var hasRight = dts.slice(maxDtIdx + 1).some(function(d) { return d !== null && d < dts[maxDtIdx]; });
       if (hasLeft || hasRight) {
         peakScore = 3;
-        dtNotes.push('Peak partially confirmed (lower ΔT on only one side) — add trials on the ' + (!hasLeft ? 'left (lower OCl⁻ volumes)' : 'right (higher OCl⁻ volumes)') + ' to fully verify (+3 pts)');
+        dtNotes.push('Peak partially confirmed (lower \u0394T on one side only) — add a trial on the ' + (!hasLeft ? 'left (lower OCl\u207b volumes)' : 'right (higher OCl\u207b volumes)') + ' to fully verify (+3 pts)');
+      } else if (filledRows === 7) {
+        peakScore = 3;
+        dtNotes.push('All 7 trials entered with a clear trend (+3 pts) — to confirm the peak fully, at least one trial on each side of Trial ' + (maxDtIdx + 1) + ' should show a lower \u0394T.');
       } else {
         peakScore = 0;
-        dtNotes.push('Peak not verified — no lower ΔT values on either side of Trial ' + (maxDtIdx + 1) + ' yet (+0 pts)');
+        dtNotes.push('Peak not bracketed — enter trials on both sides of Trial ' + (maxDtIdx + 1) + ' with lower \u0394T values to confirm the maximum');
       }
     }
-  } else if (filledRows < 4) {
-    dtNotes.push('Peak verification requires ≥4 trials');
+  } else if (filledRows > 0 && filledRows < 4) {
+    dtNotes.push('Peak verification requires \u22654 trials');
   }
 
-  // Data quality: fraction of filled rows in chemically realistic range
+  // Data quality: Ti 16-32 °C, ΔT 0.2-20 °C
   var validRows = 0;
   dts.forEach(function(dt, i) {
     if (dt === null) return;
     var ti = parseFloat(document.getElementById('ti-' + i).value);
-    if (ti >= 18 && ti <= 30 && dt >= 0.3 && dt <= 15) validRows++;
+    if (ti >= 16 && ti <= 32 && dt >= 0.2 && dt <= 20) validRows++;
   });
-  var dtQuality = filledRows > 0 ? Math.round((validRows / filledRows) * 6) : 0;
+  var dtQuality = filledRows > 0 ? Math.round((validRows / filledRows) * 3) : 0;
   if (filledRows > 0) {
-    dtNotes.push(validRows + '/' + filledRows + ' rows pass range check (Tᵢ 18–30 °C, ΔT 0.3–15 °C)');
+    dtNotes.push(validRows + '/' + filledRows + ' rows pass range check (T\u1d35 16\u201332 \u00b0C, \u0394T 0.2\u201320 \u00b0C) (+' + dtQuality + ' pts)');
   }
 
-  var dtScore = Math.min(20, dtComplete + peakScore + dtQuality);
+  var dtScore = Math.min(12, dtComplete + peakScore + dtQuality);
   score += dtScore;
-  details.push('Data Table (' + filledRows + '/7 trials, peak ' + (peakVerified ? 'verified' : 'unverified') + '): ' + dtScore + '/20');
-  breakdown.push({ label: 'Data Table', earned: dtScore, possible: 20, notes: dtNotes });
+  details.push('Data Table (' + filledRows + '/7 trials, peak ' + (peakVerified ? 'verified' : 'unverified') + '): ' + dtScore + '/12');
+  breakdown.push({ label: 'Data Table', earned: dtScore, possible: 12, notes: dtNotes });
 
   // ── OBSERVATIONS  (10 pts) ────────────────────────────────────────────────
   total += 10;
@@ -2631,297 +2639,145 @@ function scoreSubmission() {
   var obsScore = 0;
   var obsNotes = [];
 
-  // Obs 1 (3 pts): describes both solutions — colorless/clear expected; mentions at least one solution property
-  if (hasSubstance(obs1, 6)) {
-    if (/colorless|clear|transparen|no color|colour/i.test(obs1)) obsScore += 2;
-    else if (/color|colour|appear|look/i.test(obs1)) { obsScore += 1; obsNotes.push('Obs 1: color/appearance noted but not described as colorless'); }
-    else obsNotes.push('Obs 1: appearance not described');
-    if (/ocl|hypochlor|bleach|thiosulf|s2o3|both solution/i.test(obs1)) obsScore += 1;
-    else obsNotes.push('Obs 1: both solutions not distinguished');
-  } else { obsNotes.push('Obs 1: insufficient detail'); }
+  // Obs 1 (3 pts)
+  if (hasSubstance(obs1, 5)) {
+    if (/colorless|clear|transparen|no color|colour|water.{0,10}like|looks like water/i.test(obs1)) { obsScore += 2; }
+    else if (/color|colour|appear|look|white|yellow|pale/i.test(obs1)) { obsScore += 1; obsNotes.push('Obs 1: appearance described but colorless/clear not stated'); }
+    else obsNotes.push('Obs 1: solution appearance not described');
+    if (/ocl|hypochlor|bleach|thiosulf|s2o3|both|each|two solution/i.test(obs1)) { obsScore += 1; }
+    else obsNotes.push('Obs 1: distinguish both solutions individually');
+  } else { obsNotes.push('Obs 1: too brief — describe what each solution looks like'); }
 
-  // Obs 2 (4 pts): describes mixing behavior — exothermic (temperature rises), any color/clarity change
-  if (hasSubstance(obs2, 6)) {
-    if (/temperature.{0,20}(rose|rose|increas|went up|warm|hot|rise)/i.test(obs2) ||
-        /(warm|hot|heat|exotherm)/i.test(obs2)) { obsScore += 2; }
-    else if (/temperature|delta.?t|change/i.test(obs2)) { obsScore += 1; obsNotes.push('Obs 2: temperature change noted vaguely'); }
-    else obsNotes.push('Obs 2: exothermic temperature rise not mentioned');
-    if (/color|colour|clear|cloudly|precipit|appear/i.test(obs2)) obsScore += 1;
-    else obsNotes.push('Obs 2: visual change upon mixing not noted');
-    if (/rapid|quick|fast|immediate|slow|gradual|rate/i.test(obs2)) obsScore += 1;
-    else obsNotes.push('Obs 2: rate of temperature change not described');
-  } else { obsNotes.push('Obs 2: insufficient detail'); }
+  // Obs 2 (4 pts)
+  if (hasSubstance(obs2, 5)) {
+    if (/temperature.{0,30}(rose|increas|went up|warm|hot|rise|went higher|got|higher)|warm|hot|heat|exotherm|fizzed.{0,20}until|until.{0,20}(level|stop|cool|equilibr|stabiliz)/i.test(obs2)) { obsScore += 2; }
+    else if (/temperature|delta.?t|change|react/i.test(obs2)) { obsScore += 1; obsNotes.push('Obs 2: temperature change mentioned but rising/warming not clearly stated'); }
+    else obsNotes.push('Obs 2: temperature rise upon mixing not described');
+    if (/color|colour|clear|cloud|precipit|appear|mix|solution|same|no change|unchanged|still/i.test(obs2)) { obsScore += 1; }
+    else obsNotes.push('Obs 2: note any visual changes (or lack thereof) when solutions are mixed');
+    if (/rapid|quick|fast|immediate|slow|gradual|rate|all trial|similar|same for|consistent|level.{0,5}off|plateau|stabiliz|stopped.{0,5}ris|settled|until/i.test(obs2)) { obsScore += 1; }
+    else obsNotes.push('Obs 2: describe how quickly temperature changed, or whether all trials behaved similarly');
+  } else { obsNotes.push('Obs 2: too brief — describe what happened when you mixed the solutions'); }
 
-  // Obs 3 (3 pts): identifies which trial had greatest delta-T; connects to stoichiometric ratio
-  if (hasSubstance(obs3, 6)) {
+  // Obs 3 (3 pts)
+  if (hasSubstance(obs3, 5)) {
     var maxIdx = getMaxTrialIdx();
-    var maxTrialNum = maxIdx + 1;
-    // Accept if student mentions correct trial number OR correct volume (8 mL OCl or 80%)
-    var trialRe = new RegExp('trial\\s*' + maxTrialNum + '|\\b' + maxTrialNum + '\\b', 'i');
-    var volRe = /8\s*ml|8\.0\s*ml|80\s*%|80%|8:2|trial\s*[67]/i;
-    if (maxIdx >= 0 && (trialRe.test(obs3) || volRe.test(obs3))) { obsScore += 2; }
-    else if (/greatest|largest|maximum|highest|most/i.test(obs3)) { obsScore += 1; obsNotes.push('Obs 3: greatest ΔT noted but trial not clearly identified'); }
-    else obsNotes.push('Obs 3: trial with greatest ΔT not identified');
-    if (/stoichiometr|ratio|equal|proportional|expect|consistent|continu|variat/i.test(obs3)) obsScore += 1;
-    else obsNotes.push('Obs 3: connection to stoichiometric expectation not made');
-  } else { obsNotes.push('Obs 3: insufficient detail'); }
+    var foundTrial = false;
+    if (maxIdx >= 0) {
+      var maxTrialNum = maxIdx + 1;
+      var trialRe = new RegExp('trial\\s*' + maxTrialNum + '|\\b' + maxTrialNum + '\\b', 'i');
+      var mOcl = TRIALS[maxIdx].ocl;
+      var volRe = new RegExp(mOcl.toFixed(0) + '\\s*ml|' + mOcl.toFixed(1) + '\\s*ml', 'i');
+      if (trialRe.test(obs3) || volRe.test(obs3)) { foundTrial = true; }
+    }
+    if (foundTrial || /greatest|largest|maximum|highest|most|biggest|peak/i.test(obs3)) { obsScore += 2; }
+    else obsNotes.push('Obs 3: identify which trial had the greatest temperature change');
+    if (/stoichiometr|ratio|equal|proportional|expect|consistent|continu|variat|reaction|balanced|support/i.test(obs3)) { obsScore += 1; }
+    else obsNotes.push('Obs 3: connect the trial with the greatest \u0394T to the stoichiometric ratio or your expectation');
+  } else { obsNotes.push('Obs 3: too brief — identify which trial produced the greatest temperature change and explain what it means'); }
 
   obsScore = Math.min(10, obsScore);
   score += obsScore;
   details.push('Observations: ' + obsScore + '/10');
   breakdown.push({ label: 'Observations', earned: obsScore, possible: 10,
-    notes: obsNotes.length ? obsNotes : ['All three observations complete and chemically accurate'] });
+    notes: obsNotes.length ? obsNotes : ['All three observations complete and chemically connected'] });
 
-  // ── Q1: MOLE RATIO DETERMINATION  (10 pts) ────────────────────────────────
-  total += 10;
+  // ── ANALYSIS — Q1–Q4  (5 pts total) ──────────────────────────────────────
+  // Q1=2, Q2=1, Q3=1, Q4=1
+  // Philosophy: any genuine attempt at each question earns most of the available points.
+  total += 5;
+  var analysisScore = 0;
+  var analysisNotes = [];
+
+  // Q1 (2 pts): mole ratio determination — correct trial + stated ratio
   var q1 = norm(document.getElementById('q1-text').value);
-  var q1Score = 0;
-  var q1Notes = [];
-
-  if (!hasSubstance(q1, 8)) {
-    q1Notes.push('Response too brief — show your work');
+  if (!hasSubstance(q1, 6)) {
+    analysisNotes.push('Q1: blank or too brief — identify the peak trial and state the mole ratio');
   } else {
-    // 2 pts: identifies the correct max delta-T trial from their own data
+    var q1pts = 0;
     var mIdx = getMaxTrialIdx();
     if (mIdx >= 0) {
       var mTrial = mIdx + 1;
-      var mOcl = TRIALS[mIdx].ocl;
-      var mS = TRIALS[mIdx].s2o3;
+      var mOclV = TRIALS[mIdx].ocl;
       var trialMentioned = new RegExp('trial\\s*' + mTrial + '|\\b' + mTrial + '\\b', 'i').test(q1);
-      var volMentioned = new RegExp(mOcl.toFixed(0) + '\\s*ml|' + mOcl.toFixed(1) + '\\s*ml', 'i').test(q1);
-      if (trialMentioned || volMentioned) { q1Score += 2; }
-      else { q1Notes.push('Correct max ΔT trial not clearly identified in response'); }
+      var volMentioned = new RegExp(mOclV.toFixed(0) + '\\s*ml|' + mOclV.toFixed(1) + '\\s*ml', 'i').test(q1);
+      if (trialMentioned || volMentioned || /greatest|largest|maximum|highest|peak/i.test(q1)) { q1pts += 1; }
+      else analysisNotes.push('Q1: identify which trial had the greatest \u0394T');
     } else {
-      // No data entered — can still check for conceptual language
-      if (/greatest|largest|maximum|highest|delta.?t/i.test(q1)) q1Score += 1;
-      q1Notes.push('No data entered — cannot verify trial identification');
+      if (/greatest|largest|maximum|highest|delta.?t/i.test(q1)) { q1pts += 1; }
+      else analysisNotes.push('Q1: identify the peak trial');
     }
-
-    // 3 pts: correctly equates volume ratio to mole ratio (because equal molarities)
-    if (/volume.{0,20}(equal|same|ratio)|molarity.{0,30}equal|m.{0,5}=.{0,5}m|equal.{0,10}molar|same.{0,10}concentrat/i.test(q1)) {
-      q1Score += 3;
-    } else if (/volume.{0,10}ratio|n\s*=\s*m|mole.{0,5}=.{0,5}volume/i.test(q1)) {
-      q1Score += 2; q1Notes.push('Volume=mole ratio stated but equal molarity justification missing');
-    } else {
-      q1Notes.push('Justification that volume ratio = mole ratio (equal molarities) not stated');
-    }
-
-    // 3 pts: correct final ratio expressed — accept 4:1, 8:2, 4/1, "four to one", or integer multiples
-    if (/\b4\s*:\s*1\b|\b8\s*:\s*2\b|\b4\s*to\s*1\b|four.{0,6}one|4\/1/i.test(q1)) {
-      q1Score += 3;
-    } else if (/ratio|\d+\s*:\s*\d+/i.test(q1)) {
-      q1Score += 1; q1Notes.push('A ratio is stated but 4:1 (or equivalent 8:2) not found — check your calculation');
-    } else {
-      q1Notes.push('Final mole ratio (4:1 or 8:2) not stated');
-    }
-
-    // 2 pts: shows arithmetic / references n = M × V or equivalent calculation
-    if (/n\s*=\s*m|moles\s*=|mol\s*=|m\s*×\s*v|m\s*x\s*v|0\.05|0\.050|calculated|calculation|arithmetic/i.test(q1)) {
-      q1Score += 2;
-    } else {
-      q1Notes.push('Arithmetic / n = M×V calculation not shown');
-    }
+    if (/\b4\s*:\s*1\b|\b8\s*:\s*2\b|\b4\s*to\s*1\b|four.{0,6}one|4\/1|\d+\s*:\s*\d+|ratio.{0,20}(is|was|found|got)/i.test(q1)) { q1pts += 1; }
+    else analysisNotes.push('Q1: state the mole ratio numerically (e.g., 4:1)');
+    analysisScore += q1pts;
   }
 
-  q1Score = Math.min(10, q1Score);
-  score += q1Score;
-  details.push('Q1 (Mole Ratio): ' + q1Score + '/10');
-  breakdown.push({ label: 'Q1 — Mole Ratio', earned: q1Score, possible: 10,
-    notes: q1Notes.length ? q1Notes : ['Correct trial identified, justification complete, ratio 4:1 stated, arithmetic shown'] });
-
-  // ── Q2: EQUAL MOLARITIES DISCUSSION  (10 pts) ─────────────────────────────
-  total += 10;
+  // Q2 (1 pt): equal molarities — any genuine explanation
   var q2 = norm(document.getElementById('q2-text').value);
-  var q2Score = 0;
-  var q2Notes = [];
-
-  if (!hasSubstance(q2, 10)) {
-    q2Notes.push('Response too brief');
+  if (!hasSubstance(q2, 6)) {
+    analysisNotes.push('Q2: blank or too brief — explain why equal molarities matter');
+  } else if (/molar|concentrat|volume|ratio|n\s*=|moles/i.test(q2)) {
+    analysisScore += 1;
   } else {
-    // 3 pts: states that equal molarities allow volume ratio = mole ratio
-    if (/equal.{0,15}molar.{0,30}volume.{0,15}ratio|volume.{0,15}ratio.{0,30}equal.{0,15}molar|same.{0,15}concentrat.{0,40}volume/i.test(q2)) {
-      q2Score += 3;
-    } else if (/volume.{0,10}ratio|equal.{0,10}molar|same.{0,10}concentrat/i.test(q2)) {
-      q2Score += 2; q2Notes.push('Connection between equal molarity and volume ratio partially stated');
-    } else {
-      q2Notes.push('Core relationship (equal M → volume ratio = mole ratio) not explained');
-    }
-
-    // 3 pts: addresses what happens if molarities are DIFFERENT — must use n = M×V
-    if (/(different|unequal|not equal).{0,30}molar.{0,60}(calculat|n\s*=|moles|correct|account|adjust)/i.test(q2) ||
-        /n\s*=\s*m.{0,5}v|moles\s*=\s*molarity/i.test(q2)) {
-      q2Score += 3;
-    } else if (/(different|unequal).{0,20}molar/i.test(q2)) {
-      q2Score += 1; q2Notes.push('Different molarities acknowledged but correction method (n=M×V) not described');
-    } else {
-      q2Notes.push('Does not address what to do if molarities are different');
-    }
-
-    // 2 pts: correct conclusion — equal molarities simplify but are not strictly required
-    if (/(not|not strictly|not absolutely).{0,20}(necessary|required)|simplif|convenient|still work.{0,20}different|can.{0,20}still/i.test(q2)) {
-      q2Score += 2;
-    } else if (/necessary|required|important/i.test(q2)) {
-      q2Score += 1; q2Notes.push('Conclusion on necessity stated but nuance (simplifies, not strictly required) missing');
-    } else {
-      q2Notes.push('No clear conclusion on whether equal molarities are necessary');
-    }
-
-    // 2 pts: mentions n = M × V explicitly or uses correct formula language
-    if (/n\s*=\s*m|n\s*=\s*molarity|moles\s*=\s*m|mol\s*=\s*m|n\s*=\s*c/i.test(q2)) {
-      q2Score += 2;
-    } else {
-      q2Notes.push('n = M×V relationship not explicitly referenced');
-    }
+    analysisNotes.push('Q2: explain the relationship between equal molarities and the volume ratio');
   }
 
-  q2Score = Math.min(10, q2Score);
-  score += q2Score;
-  details.push('Q2 (Equal Molarities): ' + q2Score + '/10');
-  breakdown.push({ label: 'Q2 — Equal Molarities', earned: q2Score, possible: 10,
-    notes: q2Notes.length ? q2Notes : ['Full explanation: equal M → vol=mole ratio, different M requires n=M×V, conclusion on necessity'] });
-
-  // ── Q3: LIMITING REACTANT  (10 pts) ──────────────────────────────────────
-  total += 10;
+  // Q3 (1 pt): limiting reactant — any genuine identification
   var q3 = norm(document.getElementById('q3-text').value);
-  var q3Score = 0;
-  var q3Notes = [];
-
-  if (!hasSubstance(q3, 12)) {
-    q3Notes.push('Response too brief — identify limiting reactant for at least 3 trials');
+  if (!hasSubstance(q3, 6)) {
+    analysisNotes.push('Q3: blank or too brief — identify limiting reactants across trials');
+  } else if (/limiting|runs out|used up|not enough|excess/i.test(q3)) {
+    analysisScore += 1;
   } else {
-    // 2 pts: defines or correctly uses "limiting reactant" concept
-    if (/limiting.{0,15}(reactant|reagent).{0,60}(run out|consumed|less than|smaller|used up|depleted)/i.test(q3) ||
-        /(run out|consumed first|used up).{0,40}limiting/i.test(q3)) {
-      q3Score += 2;
-    } else if (/limiting.{0,15}(reactant|reagent)/i.test(q3)) {
-      q3Score += 1; q3Notes.push('Limiting reactant named but not defined/explained');
-    } else {
-      q3Notes.push('Limiting reactant concept not clearly articulated');
-    }
-
-    // 3 pts: correctly identifies OCl- as limiting in low-OCl- trials (trials 1–3, vol < 8 mL OCl-)
-    if (/(trial.{0,5}[123]|2\s*ml|3\s*ml|4\s*ml).{0,60}(ocl|hypochlor|ocl.{0,3}limit)|ocl.{0,20}limit.{0,40}(trial.{0,5}[123]|small|low)/i.test(q3)) {
-      q3Score += 3;
-    } else if (/ocl.{0,20}limit/i.test(q3)) {
-      q3Score += 2; q3Notes.push('OCl⁻ identified as limiting in some trials but specific trials not clearly stated');
-    } else {
-      q3Notes.push('OCl⁻ as limiting reactant in low-volume trials not identified');
-    }
-
-    // 3 pts: correctly identifies S2O3 as limiting in high-OCl- trials (trials 5–7, vol > 8 mL OCl-)
-    if (/(trial.{0,5}[567]|6\s*ml|7\s*ml|8\s*ml).{0,60}(s2o3|thiosulf|s.{0,3}limit)|s2o3.{0,20}limit.{0,40}(trial.{0,5}[567]|high|large)/i.test(q3) ||
-        /(thiosulf|s2o3|s.{0,3}2.{0,3}o.{0,3}3).{0,30}limit/i.test(q3)) {
-      q3Score += 3;
-    } else if (/(thiosulf|s2o3).{0,20}limit/i.test(q3)) {
-      q3Score += 2; q3Notes.push('S₂O₃²⁻ as limiting identified but high-volume trials not clearly specified');
-    } else {
-      q3Notes.push('S₂O₃²⁻ as limiting reactant in high-OCl⁻ trials not identified');
-    }
-
-    // 2 pts: correctly states max delta-T trial has NO limiting reactant / stoichiometric proportion
-    if (/(no limiting|neither|stoichiometr|exact.{0,10}(ratio|proportion)|both.{0,20}(consumed|used|react))/i.test(q3)) {
-      q3Score += 2;
-    } else {
-      q3Notes.push('Max ΔT trial — neither reactant is limiting — not addressed');
-    }
+    analysisNotes.push('Q3: identify which reactant is limiting in each trial');
   }
 
-  q3Score = Math.min(10, q3Score);
-  score += q3Score;
-  details.push('Q3 (Limiting Reactant): ' + q3Score + '/10');
-  breakdown.push({ label: 'Q3 — Limiting Reactant', earned: q3Score, possible: 10,
-    notes: q3Notes.length ? q3Notes : ['Concept defined, OCl⁻ limiting in low trials, S₂O₃²⁻ limiting in high trials, stoichiometric trial identified'] });
-
-  // ── Q4: COMPARISON TO BALANCED EQUATION  (10 pts) ────────────────────────
-  total += 10;
+  // Q4 (1 pt): comparison — any genuine comparison to balanced equation
   var q4 = norm(document.getElementById('q4-text').value);
-  var q4Score = 0;
-  var q4Notes = [];
-
-  if (!hasSubstance(q4, 10)) {
-    q4Notes.push('Response too brief');
+  if (!hasSubstance(q4, 6)) {
+    analysisNotes.push('Q4: blank or too brief — compare your result to the balanced equation');
+  } else if (/match|agree|differ|consistent|ratio|equation|balanced|error|result|found|4:1|8:2/i.test(q4)) {
+    analysisScore += 1;
   } else {
-    // 2 pts: states the known ratio from the balanced equation (4:1)
-    if (/\b4\s*:\s*1\b|\b4\s*ocl.{0,10}1\s*s|four.{0,6}(one|1)|balanced.{0,20}(equation|rxn).{0,30}4/i.test(q4)) {
-      q4Score += 2;
-    } else if (/balanced.{0,20}equation|actual.{0,20}ratio|known.{0,20}ratio/i.test(q4)) {
-      q4Score += 1; q4Notes.push('Balanced equation referenced but 4:1 ratio not stated explicitly');
-    } else {
-      q4Notes.push('Known 4:1 ratio from balanced equation not stated');
-    }
-
-    // 2 pts: states their experimental ratio (whatever they found)
-    if (/experiment.{0,30}(ratio|result|found|got|determin|calcul|gave)|my.{0,20}ratio|result.{0,20}(was|is|gave)/i.test(q4)) {
-      q4Score += 2;
-    } else if (/\d+\s*:\s*\d+/i.test(q4)) {
-      q4Score += 1; q4Notes.push('A ratio is mentioned but not explicitly labeled as experimental result');
-    } else {
-      q4Notes.push('Experimental ratio not explicitly stated');
-    }
-
-    // 3 pts: makes a direct comparison (match / does not match) with reasoning
-    if (/(match|agree|consistent|confirm|support).{0,60}(ratio|equation|result|experiment|4:1|4 to 1)/i.test(q4) ||
-        /(does not match|no match|disagree|inconsistent|differ).{0,60}(ratio|equation|result)/i.test(q4)) {
-      q4Score += 3;
-    } else if (/match|agree|confirm|differ/i.test(q4)) {
-      q4Score += 2; q4Notes.push('Agreement/disagreement stated but comparison lacks reasoning');
-    } else {
-      q4Notes.push('Direct comparison (match or does not match) between experimental and actual ratio not made');
-    }
-
-    // 3 pts: if results differ OR in all cases — discusses experimental error / uncertainty
-    if (/error|uncertaint|heat loss|imprecis|inaccura|volume.{0,15}(measur|pipet|graduated)|temperature.{0,20}(reading|peak|plateau|equilibr)|evaporation|mixing/i.test(q4)) {
-      q4Score += 3;
-    } else if (/error|uncertainty/i.test(q4)) {
-      q4Score += 1; q4Notes.push('Error mentioned but specific sources not identified');
-    } else {
-      q4Notes.push('Sources of experimental error not discussed (heat loss, volume measurement, peak temperature identification)');
-    }
+    analysisNotes.push('Q4: compare your experimental ratio to the known balanced equation');
   }
 
-  q4Score = Math.min(10, q4Score);
-  score += q4Score;
-  details.push('Q4 (Balanced Equation): ' + q4Score + '/10');
-  breakdown.push({ label: 'Q4 — Comparison to Balanced Equation', earned: q4Score, possible: 10,
-    notes: q4Notes.length ? q4Notes : ['Known 4:1 ratio stated, experimental ratio reported, direct comparison made, error sources discussed'] });
+  analysisScore = Math.min(5, analysisScore);
+  score += analysisScore;
+  details.push('Analysis (Q1\u2013Q4): ' + analysisScore + '/5');
+  breakdown.push({ label: 'Analysis (Q1\u2013Q4)', earned: analysisScore, possible: 5,
+    notes: analysisNotes.length ? analysisNotes : ['All four analysis questions addressed'] });
 
-  // ── CONCLUSION  (10 pts) ──────────────────────────────────────────────────
-  total += 10;
+  // ── CONCLUSION  (5 pts) ──────────────────────────────────────────────────
+  total += 5;
   var conc = norm(document.getElementById('conclusion-text').value);
   var cScore = 0;
   var cNotes = [];
 
-  if (!hasSubstance(conc, 10)) {
-    cNotes.push('Too brief — aim for 2–3 complete sentences');
+  if (!hasSubstance(conc, 8)) {
+    cNotes.push('Too brief — write 2\u20133 sentences summarizing what you did and found');
   } else {
-    // 2 pts: names the method used
-    if (/continu.{0,10}variat|job.{0,5}method/i.test(conc)) { cScore += 2; }
-    else if (/calorimetr|temperature|method/i.test(conc)) { cScore += 1; cNotes.push('Method referenced vaguely — name "continuous variations"'); }
-    else cNotes.push('Method (continuous variations) not named in conclusion');
+    // 1 pt: names or describes the method
+    if (/continu.{0,10}variat|job.{0,5}method|var(y|ying|ied).{0,20}(volume|ratio|amount)|calorimetr|temperature|method|different.{0,15}(volume|ratio)/i.test(conc)) { cScore += 1; }
+    else cNotes.push('Name or describe the experimental method');
 
-    // 3 pts: states the experimental mole ratio found
-    if (/\b4\s*:\s*1\b|\b8\s*:\s*2\b|four.{0,6}one|4\/1/i.test(conc)) { cScore += 3; }
-    else if (/ratio.{0,20}(found|determin|obtain|experiment|result)/i.test(conc)) { cScore += 1; cNotes.push('Ratio mentioned but 4:1 (or 8:2) not explicitly stated'); }
-    else cNotes.push('Experimental mole ratio (4:1) not stated in conclusion');
+    // 2 pts: states the mole ratio found
+    if (/\b4\s*:\s*1\b|\b8\s*:\s*2\b|four.{0,6}one|4\/1/i.test(conc)) { cScore += 2; }
+    else if (/\d+\s*:\s*\d+|ratio.{0,30}(found|determin|obtain|result|experiment|was|is)/i.test(conc)) { cScore += 1; cNotes.push('A ratio is mentioned — state it as 4:1 explicitly'); }
+    else cNotes.push('State the mole ratio you found (e.g., 4:1)');
 
-    // 3 pts: compares to known equation and draws conclusion
-    if (/(match|agree|confirm|consistent|support|equal).{0,60}(balanced|known|actual|equation|literature)/i.test(conc) ||
-        /(balanced|known|actual|equation).{0,60}(match|agree|confirm|consistent)/i.test(conc)) { cScore += 3; }
-    else if (/balanced|equation|actual|known/i.test(conc)) { cScore += 1; cNotes.push('Balanced equation referenced but comparison conclusion not drawn'); }
-    else cNotes.push('Comparison to known balanced equation not made in conclusion');
-
-    // 2 pts: within 3-sentence limit (approximate — we check word count as proxy)
-    var words = conc.trim().split(/\s+/).length;
-    if (words <= 80) { cScore += 2; }
-    else if (words <= 120) { cScore += 1; cNotes.push('Conclusion is longer than 3 sentences — tighten your writing'); }
-    else cNotes.push('Exceeds 3-sentence maximum — conclusion must be concise');
+    // 2 pts: compares to balanced equation or draws a conclusion
+    if (/(match|agree|confirm|consistent|support|equal|same).{0,80}(balanced|known|actual|equation|literature|theoretical|accepted)/i.test(conc) ||
+        /(balanced|known|actual|equation|theoretical|accepted).{0,80}(match|agree|confirm|consistent|equal|same)/i.test(conc)) { cScore += 2; }
+    else if (/balanced|equation|actual|known|theoretical|confirm|support|shows|result|found/i.test(conc)) { cScore += 1; cNotes.push('Reference the balanced equation and state whether your result matched'); }
+    else cNotes.push('Compare your result to the balanced equation');
   }
 
-  cScore = Math.min(10, cScore);
+  cScore = Math.min(5, cScore);
   score += cScore;
-  details.push('Conclusion: ' + cScore + '/10');
-  breakdown.push({ label: 'Conclusion', earned: cScore, possible: 10,
-    notes: cNotes.length ? cNotes : ['Method named, 4:1 ratio stated, comparison to balanced equation drawn, concise (≤3 sentences)'] });
+  details.push('Conclusion: ' + cScore + '/5');
+  breakdown.push({ label: 'Conclusion', earned: cScore, possible: 5,
+    notes: cNotes.length ? cNotes : ['Method named, 4:1 ratio stated, result compared to balanced equation'] });
 
   return {
     score: score,
@@ -2968,6 +2824,16 @@ function submitLab() {
     return;
   }
 
+  // Attendance check
+  var attended = document.getElementById('attendance-check') && document.getElementById('attendance-check').checked;
+  var warnEl = document.getElementById('attendance-warning');
+  if (!attended) {
+    if (warnEl) warnEl.style.display = 'block';
+    document.getElementById('attendance-check').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (warnEl) warnEl.style.display = 'none';
+
   var count = getSubmissionCount();
   if (count >= 2) {
     alert('You have used both submissions for this lab. Contact your instructor if you need an additional attempt.');
@@ -2975,10 +2841,24 @@ function submitLab() {
   }
 
   var attemptNum = count + 1;
-  var result = scoreSubmission();
+  var rawResult = scoreSubmission();
+
+  // Add attendance credit: 65 pts base + raw score out of 35 = total out of 100
+  var ATTENDANCE_PTS = 65;
+  var result = {
+    score: rawResult.score + ATTENDANCE_PTS,
+    total: rawResult.total + ATTENDANCE_PTS,
+    rawScore: rawResult.score,
+    rawTotal: rawResult.total,
+    percent: Math.round((rawResult.score + ATTENDANCE_PTS) / (rawResult.total + ATTENDANCE_PTS) * 100),
+    details: rawResult.details,
+    breakdown: rawResult.breakdown,
+    attended: true
+  };
+
   var btn = document.getElementById('submit-btn');
   btn.disabled = true;
-  btn.textContent = 'Submitting attempt ' + attemptNum + ' of 2…';
+  btn.textContent = 'Submitting attempt ' + attemptNum + ' of 2\u2026';
 
   var payload = {
     action: 'submit',
@@ -2994,6 +2874,9 @@ function submitLab() {
     ].filter(Boolean).join('; '),
     score: result.score,
     total: result.total,
+    raw_score: result.rawScore,
+    raw_total: result.rawTotal,
+    attended: result.attended ? 'yes' : 'no',
     percent: result.percent,
     data_table: buildDtSummary(),
     obs_1: document.getElementById('obs-1').value || '',
@@ -3056,8 +2939,15 @@ function onSubmitSuccess(attemptNum, result, offline) {
 function buildScoreHtml(result, attemptNum) {
   var isFinal = (attemptNum === 2);
   var label = result.percent >= 85 ? 'Excellent' : result.percent >= 70 ? 'Good' : (isFinal ? 'Needs Improvement' : 'Needs Revision');
+
   var html = '<p style="font-size:16px; font-weight:700; margin-bottom:4px;">Score: ' +
     result.score + ' / ' + result.total + ' &nbsp;(' + result.percent + '%) &mdash; ' + label + '</p>';
+
+  // Show attendance + raw breakdown
+  html += '<div style="display:flex; gap:16px; flex-wrap:wrap; margin:8px 0 14px; font-size:13px;">' +
+    '<span style="background:var(--blue-light); color:var(--blue); border:1px solid var(--blue); padding:3px 10px; border-radius:3px; font-weight:600;">Attendance &amp; Participation: 65/65</span>' +
+    '<span style="background:var(--accent-light); color:var(--accent); border:1px solid var(--accent); padding:3px 10px; border-radius:3px; font-weight:600;">Lab Work: ' + result.rawScore + '/35</span>' +
+  '</div>';
 
   if (!isFinal) {
     html += '<p style="font-size:13px; color:var(--gold); margin-bottom:16px; font-weight:600;">&#9656; Review the items marked below. Revise your responses, then submit your final attempt for your best possible grade.</p>';
@@ -3266,6 +3156,12 @@ for (var _i = 0; _i < 7; _i++) {
 var _saveTimer = null;
 var _saveBarTimer = null;
 
+function onAttendanceChange() {
+  var checked = document.getElementById('attendance-check') && document.getElementById('attendance-check').checked;
+  var warnEl = document.getElementById('attendance-warning');
+  if (warnEl) warnEl.style.display = checked ? 'none' : 'none'; // hide warning once checked
+}
+
 function setSaveStatus(state, msg) {
   var dot = document.getElementById('save-dot');
   var msgEl = document.getElementById('save-msg');
@@ -3289,6 +3185,9 @@ function collectFormData() {
     var el = document.getElementById(id);
     if (el) data[id] = el.value;
   });
+  // Save attendance checkbox state
+  var attCheck = document.getElementById('attendance-check');
+  if (attCheck) data['_attendance_checked'] = attCheck.checked;
   return data;
 }
 
@@ -3362,6 +3261,10 @@ function restoreSavedData() {
         img.src = dataUrl;
       });
     }
+
+    // Restore attendance checkbox
+    var attCheck = document.getElementById('attendance-check');
+    if (attCheck && data['_attendance_checked']) { attCheck.checked = true; }
 
     if (restoredCount > 0) {
       var ts = data['_savedAt'] ? new Date(data['_savedAt']).toLocaleString([], {
