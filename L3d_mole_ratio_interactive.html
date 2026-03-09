@@ -1017,9 +1017,6 @@
   <div class="save-msg" id="save-msg">Auto-save ready</div>
   <div class="save-actions">
     <button class="save-action-btn" onclick="saveNow()">Save now</button>
-    <button class="save-action-btn" id="reset-attempts-btn"
-      onclick="resetAttemptsOnly()"
-      style="display:none;border-color:#ce93d8;color:#ce93d8;">Reset Attempts</button>
     <button class="save-action-btn danger" onclick="confirmClearSave()">Clear saved data</button>
   </div>
 </div>
@@ -1312,7 +1309,7 @@
 
       <div class="ref-box">
         <div class="ref-box-title">Instructions</div>
-        <p>Enter your measured temperatures in the white input cells. The <span style="color:var(--blue); font-weight:600;">&Delta;T column</span> will be calculated automatically. Record values to the nearest 0.1 &deg;C. The volume of OCl<sup>&ndash;</sup> and S<sub>2</sub>O<sub>3</sub><sup>2&ndash;</sup> are pre-filled &mdash; total volume = 10.0 mL per trial.</p>
+        <p>The volume columns are editable &mdash; enter the actual volumes you dispensed during lab. Both values in each row must sum to exactly 10.0 mL (the total solution volume per trial); the row will flag any deviation in red. The <span style="color:var(--blue); font-weight:600;">&Delta;T column</span> and scatter plot update automatically as you enter temperature data. Record all temperatures to the nearest 0.1 &deg;C.</p>
         <p style="margin-top:8px;"><strong>Minimum requirement for full credit:</strong> Complete at least <strong>4 trials</strong> that include a clear maximum &Delta;T <em>with at least one lower value on each side</em> of the peak. This confirms the maximum is real, not an outlier. The status indicator below the table will update live as you enter data.</p>
       </div>
 
@@ -1789,8 +1786,8 @@
 <script>
 // ===== CONFIGURATION =====
 // Replace with your deployed Google Apps Script Web App URL
-var SHEETS_ENDPOINT   = 'https://script.google.com/macros/s/AKfycbxyBTY3R1qmFVml3k4AWB0cBSjJ7uRWaQxQo2arcbP3zEhDtg4Eim36p1SHfBMKqf9oqQ/exec';
-var AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxyBTY3R1qmFVml3k4AWB0cBSjJ7uRWaQxQo2arcbP3zEhDtg4Eim36p1SHfBMKqf9oqQ/exec';
+var SHEETS_ENDPOINT   = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+var AI_PROXY_ENDPOINT = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
 
 // ===== TRIAL DATA =====
 var TRIALS = [
@@ -1823,14 +1820,68 @@ function buildDataTable() {
     tr.id = 'row-' + i;
     tr.innerHTML =
       '<td class="label-cell">' + (i + 1) + '</td>' +
-      '<td class="label-cell" style="font-family:\'JetBrains Mono\',monospace;">' + t.ocl.toFixed(1) + '</td>' +
-      '<td class="label-cell" style="font-family:\'JetBrains Mono\',monospace;">' + t.s2o3.toFixed(1) + '</td>' +
+      '<td style="padding:6px 8px;"><input type="number" id="vol-ocl-' + i + '" value="' + t.ocl.toFixed(1) + '" placeholder="-.--" step="0.1" min="0.1" max="9.9" oninput="onVolumeChange(' + i + ')" style="width:72px;"><span id="vol-err-' + i + '" style="display:none;font-size:10px;color:var(--red);font-family:\'JetBrains Mono\',monospace;display:none;margin-top:2px;"></span></td>' +
+      '<td style="padding:6px 8px;"><input type="number" id="vol-s2o3-' + i + '" value="' + t.s2o3.toFixed(1) + '" placeholder="-.--" step="0.1" min="0.1" max="9.9" oninput="onVolumeChange(' + i + ')" style="width:72px;"></td>' +
       '<td><input type="number" id="ti-' + i + '" placeholder="--.-" step="0.1" oninput="calcDeltaT(' + i + ')"></td>' +
       '<td><input type="number" id="tf-' + i + '" placeholder="--.-" step="0.1" oninput="calcDeltaT(' + i + ')"></td>' +
       '<td class="computed-cell" id="dt-' + i + '">&mdash;</td>';
     tbody.appendChild(tr);
   });
   buildRatioBars();
+}
+
+// Called when a volume input changes — syncs TRIALS array, validates total, recalculates
+function onVolumeChange(i) {
+  var oclInput  = document.getElementById('vol-ocl-'  + i);
+  var s2o3Input = document.getElementById('vol-s2o3-' + i);
+  var ocl  = parseFloat(oclInput.value);
+  var s2o3 = parseFloat(s2o3Input.value);
+
+  // Clear prior validation styles
+  oclInput.classList.remove('valid', 'invalid');
+  s2o3Input.classList.remove('valid', 'invalid');
+  oclInput.title  = '';
+  s2o3Input.title = '';
+
+  if (isNaN(ocl) || isNaN(s2o3)) {
+    // Don't update TRIALS yet; just redraw
+    updateRatioBars();
+    updateMaxTrialMsg();
+    scheduleSave();
+    return;
+  }
+
+  var total = Math.round((ocl + s2o3) * 10) / 10;
+
+  if (Math.abs(total - 10.0) > 0.05) {
+    oclInput.classList.add('invalid');
+    s2o3Input.classList.add('invalid');
+    oclInput.title  = 'V(OCl\u207b) + V(S\u2082O\u2083\u00b2\u207b) must equal 10.0 mL (currently ' + total.toFixed(1) + ' mL).';
+    s2o3Input.title = oclInput.title;
+    showVolError(i, total);
+  } else {
+    oclInput.classList.add('valid');
+    s2o3Input.classList.add('valid');
+    hideVolError(i);
+    // Update the live TRIALS array
+    TRIALS[i].ocl  = ocl;
+    TRIALS[i].s2o3 = s2o3;
+  }
+
+  updateRatioBars();
+  updateMaxTrialMsg();
+  scheduleSave();
+}
+
+function showVolError(i, total) {
+  var cell = document.getElementById('vol-err-' + i);
+  if (!cell) return;
+  cell.textContent = 'Sum = ' + total.toFixed(1) + ' mL (need 10.0)';
+  cell.style.display = 'block';
+}
+function hideVolError(i) {
+  var cell = document.getElementById('vol-err-' + i);
+  if (cell) cell.style.display = 'none';
 }
 
 function calcDeltaT(i) {
@@ -2918,66 +2969,54 @@ function submitLab() {
   }
 
   var count = getSubmissionCount();
+  if (count >= 2) {
+    alert('You have used both submissions for this lab. Contact your instructor if you need an additional attempt.');
+    return;
+  }
+
   var attemptNum = count + 1;
   var result = scoreSubmission();
   var btn = document.getElementById('submit-btn');
   btn.disabled = true;
   btn.textContent = 'Submitting attempt ' + attemptNum + ' of 2…';
 
-  var _members = [
-    document.getElementById('member2').value,
-    document.getElementById('member3').value
-  ].filter(Boolean).join('; ');
-
   var payload = {
-    action  : 'submit',
-    course  : 'chem103l',
-    lab     : 'Lab 3',
-    name    : name,
-    section : section,
-    members : _members,
-    start_date : document.getElementById('start-date').value || '',
-    attempt : attemptNum,
-    score   : result.score,
-    percent : result.percent,
-    obs1    : document.getElementById('obs-1').value || '',
-    obs2    : document.getElementById('obs-2').value || '',
-    obs3    : document.getElementById('obs-3').value || '',
-    purpose : document.getElementById('purpose-text').value || '',
-    q1      : document.getElementById('q1-text').value || '',
-    q2      : document.getElementById('q2-text').value || '',
-    q3      : document.getElementById('q3-text').value || '',
-    q4      : document.getElementById('q4-text').value || '',
-    conclusion : document.getElementById('conclusion-text').value || '',
-    notes   : document.getElementById('notes-to-prof') ? (document.getElementById('notes-to-prof').value || '') : '',
-    data_table : buildDtSummary(),
-    details : result.details
+    action: 'submit',
+    timestamp: new Date().toISOString(),
+    name: name,
+    section: section,
+    start_date: document.getElementById('start-date').value || '',
+    submit_date: new Date().toLocaleDateString(),
+    attempt: attemptNum,
+    members: [
+      document.getElementById('member2').value,
+      document.getElementById('member3').value
+    ].filter(Boolean).join('; '),
+    score: result.score,
+    total: result.total,
+    percent: result.percent,
+    data_table: buildDtSummary(),
+    obs_1: document.getElementById('obs-1').value || '',
+    obs_2: document.getElementById('obs-2').value || '',
+    obs_3: document.getElementById('obs-3').value || '',
+    purpose: document.getElementById('purpose-text').value || '',
+    q1: document.getElementById('q1-text').value || '',
+    q2: document.getElementById('q2-text').value || '',
+    q3: document.getElementById('q3-text').value || '',
+    q4: document.getElementById('q4-text').value || '',
+    conclusion: document.getElementById('conclusion-text').value || '',
+    notes: document.getElementById('notes-to-prof') ? (document.getElementById('notes-to-prof').value || '') : '',
+    details: result.details
   };
 
-  sendToSheets(payload, function() { onSubmitSuccess(attemptNum, result); });
-}
-
-function sendToSheets(payload, onSuccess) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', SHEETS_ENDPOINT, true);
-  xhr.setRequestHeader('Content-Type', 'text/plain');
-  xhr.onload = function() { onSuccess(); };
-  xhr.onerror = function() { onSuccess(); };
-  xhr.send(JSON.stringify(payload));
-}
-
-
-function showSubmitError(msg) {
-  var el = document.getElementById('submit-error-msg');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'submit-error-msg';
-    el.style.cssText = 'margin:12px 0;padding:12px 16px;background:#ffebee;border:1px solid #ef9a9a;border-radius:6px;color:#b71c1c;font-size:0.9rem;font-family:monospace;white-space:pre-wrap;';
-    var btn = document.getElementById('submit-btn');
-    if (btn && btn.parentNode) btn.parentNode.insertBefore(el, btn.nextSibling);
-  }
-  el.textContent = 'Submission error: ' + msg;
-  el.style.display = 'block';
+  fetch(SHEETS_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function() { onSubmitSuccess(attemptNum, result); })
+  .catch(function() { onSubmitSuccess(attemptNum, result, true); });
 }
 
 function onSubmitSuccess(attemptNum, result, offline) {
@@ -3005,12 +3044,12 @@ function onSubmitSuccess(attemptNum, result, offline) {
     if (infoEl) infoEl.innerHTML = '<strong>Attempt 1 recorded' + (offline ? ' (offline)' : '') + '.</strong> Review the feedback below, revise your responses above, then submit your final attempt when ready. <strong style="color:var(--red);">Attempt 2 is your final grade.</strong>';
     document.getElementById('subs-remaining-text').textContent = '1 submission remaining';
   } else {
-    // Testing mode — no lockout
-    btn.disabled = false;
-    btn.textContent = 'Submit Again (Testing Mode)';
+    // Both submissions used
+    btn.disabled = true;
+    btn.textContent = 'Both submissions used';
     document.getElementById('revision-prompt').style.display = 'none';
-    if (infoEl) infoEl.innerHTML = '<strong>Submission ' + attemptNum + ' recorded' + (offline ? ' (offline)' : '') + '.</strong> Testing mode — unlimited submissions.';
-    document.getElementById('subs-remaining-text').textContent = 'unlimited (testing)';
+    if (infoEl) infoEl.innerHTML = '<strong>Both submissions recorded' + (offline ? ' (offline)' : '') + '.</strong> Your final score is shown below. Contact your instructor if you have questions.';
+    document.getElementById('subs-remaining-text').textContent = '0 submissions remaining';
   }
 }
 
@@ -3134,10 +3173,10 @@ function restoreSubmissionState() {
       document.getElementById('subs-remaining-text').textContent = '1 submission remaining';
       if (infoEl) infoEl.innerHTML = '<strong>Attempt 1 already recorded.</strong> Review the feedback, revise your responses, then submit your final attempt. <strong style="color:var(--red);">Attempt 2 is your final grade.</strong>';
     } else {
-      btn.disabled = false;
-      btn.textContent = 'Submit Again (Testing Mode)';
-      document.getElementById('subs-remaining-text').textContent = 'unlimited (testing)';
-      if (infoEl) infoEl.innerHTML = '<strong>Testing mode — submissions unlimited.</strong>';
+      btn.disabled = true;
+      btn.textContent = 'Both submissions used';
+      document.getElementById('subs-remaining-text').textContent = '0 submissions remaining';
+      if (infoEl) infoEl.innerHTML = '<strong>Both submissions recorded.</strong> Your final score is shown below. Contact your instructor if you have questions.';
       // Restore attempt 2 score too
       try {
         var raw2 = localStorage.getItem(SAVE_KEY);
@@ -3216,10 +3255,12 @@ var SAVE_FIELDS = [
   'q1-text', 'q2-text', 'q3-text', 'q4-text',
   'conclusion-text'
 ];
-// Temperature inputs: ti-0 through ti-6, tf-0 through tf-6
+// Temperature and volume inputs
 for (var _i = 0; _i < 7; _i++) {
   SAVE_FIELDS.push('ti-' + _i);
   SAVE_FIELDS.push('tf-' + _i);
+  SAVE_FIELDS.push('vol-ocl-'  + _i);
+  SAVE_FIELDS.push('vol-s2o3-' + _i);
 }
 
 var _saveTimer = null;
@@ -3295,10 +3336,14 @@ function restoreSavedData() {
       if (!el) return;
       el.value = data[id];
       restoredCount++;
-      // Trigger dependent calculations for temperature fields
+      // Trigger dependent calculations for temperature and volume fields
       if (id.startsWith('ti-') || id.startsWith('tf-')) {
-        var idx = parseInt(id.split('-')[1]);
-        calcDeltaT(idx);
+        var tidx = parseInt(id.split('-')[1]);
+        calcDeltaT(tidx);
+      }
+      if (id.startsWith('vol-ocl-') || id.startsWith('vol-s2o3-')) {
+        var vidx = parseInt(id.split('-').pop());
+        onVolumeChange(vidx);
       }
     });
 
@@ -3356,55 +3401,6 @@ function attachAutoSaveListeners() {
 var _origSwitchTab = typeof switchTab === 'function' ? switchTab : null;
 // We'll hook into it after it's defined — see the DOMContentLoaded block below.
 
-
-// ── SHIFT-HELD RESET BUTTON ──────────────────────────────────────────────────
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Shift') {
-    var btn = document.getElementById('reset-attempts-btn');
-    if (btn) btn.style.display = 'inline-block';
-    var bar = document.getElementById('save-status-bar');
-    if (bar) bar.classList.add('visible');
-  }
-});
-document.addEventListener('keyup', function(e) {
-  if (e.key === 'Shift') {
-    var btn = document.getElementById('reset-attempts-btn');
-    if (btn) btn.style.display = 'none';
-  }
-});
-function resetAttemptsOnly() {
-  // 1. Remove submission counter
-  try { localStorage.removeItem(SUBMIT_COUNT_KEY); } catch(e) {}
-
-  // 2. Remove stored attempt results from SAVE_KEY so restoreSubmissionState()
-  //    does not re-lock the button on the next page load
-  try {
-    var raw = localStorage.getItem(SAVE_KEY);
-    if (raw) {
-      var saved = JSON.parse(raw);
-      delete saved['_attempt1_result'];
-      delete saved['_attempt2_result'];
-      localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
-    }
-  } catch(e) {}
-
-  // 3. Reset all UI elements immediately (no page reload needed)
-  var btn    = document.getElementById('submit-btn');
-  var infoEl = document.getElementById('submit-info');
-  var revEl  = document.getElementById('revision-prompt');
-  var remEl  = document.getElementById('subs-remaining-text');
-  var p1     = document.getElementById('score-panel-1');
-  var p2     = document.getElementById('score-panel-2');
-
-  if (btn)   { btn.disabled = false; btn.textContent = 'Submit Lab 3 — Attempt 1 of 2'; btn.style.background = ''; }
-  if (infoEl) infoEl.innerHTML = '<strong>Ready to Submit?</strong> Submission counter reset. You have <strong id="subs-remaining-text">2 submissions</strong> available.';
-  if (revEl)  revEl.style.display = 'none';
-  if (remEl)  remEl.textContent = '2 submissions';
-  if (p1)    { p1.style.display = 'none'; p1.classList.remove('visible'); }
-  if (p2)    { p2.style.display = 'none'; p2.classList.remove('visible'); }
-
-  setSaveStatus('saved', 'Submission counter reset — Attempt 1 of 2 ready');
-}
 </script>
 </body>
 </html>
