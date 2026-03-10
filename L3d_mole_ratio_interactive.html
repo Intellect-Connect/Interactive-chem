@@ -108,41 +108,11 @@
   }
 
   /* STUDENT BAR */
-  .student-bar {
-    background: var(--cream);
-    border-bottom: 1px solid var(--rule);
-  }
-  .student-bar-inner {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 16px 40px;
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-    gap: 16px;
-  }
-  .field-group label {
-    display: block;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #888;
-    margin-bottom: 4px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .field-group input {
-    width: 100%;
-    border: none;
-    border-bottom: 1.5px solid var(--border);
-    background: transparent;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    padding: 4px 0;
-    color: var(--ink);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .field-group input:focus { border-color: var(--accent); }
+  .student-bar{background:#fff;border-bottom:1px solid var(--rule);}
+  .student-bar-inner{max-width:960px;margin:0 auto;padding:16px 40px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:16px;}
+  .field-group label{display:block;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:4px;}
+  .field-group input{width:100%;border:1px solid var(--border);border-radius:3px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;}
+  .field-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(123,31,162,.1);}
 
 
   /* TAB NAV */
@@ -1033,11 +1003,11 @@
       <input type="text" id="student-section" placeholder="e.g. 103L-02" autocomplete="off">
     </div>
     <div class="field-group">
-      <label>Team Member 2 (Last, First)</label>
+      <label>Team Member 2</label>
       <input type="text" id="member2" placeholder="Last, First" autocomplete="off">
     </div>
     <div class="field-group">
-      <label>Team Member 3 (Last, First)</label>
+      <label>Team Member 3</label>
       <input type="text" id="member3" placeholder="Last, First" autocomplete="off">
     </div>
     <div class="field-group">
