@@ -1303,7 +1303,7 @@
       <div id="ratio-vis-wrap" style="margin-top:24px;">
         <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--blue); margin-bottom:4px;">Live &Delta;T vs. Volume Scatter Plot</div>
         <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#999; margin-bottom:8px; letter-spacing:0.05em;">Trials are plotted by V(OCl&ndash;) volume, not by trial number &mdash; T-labels show which trial each point belongs to.</div>
-        <div style="background:#fff; border:1px solid var(--border); border-radius:4px; padding:16px 16px 10px;">
+        <div style="background:#fff; border:1px solid var(--border); border-radius:4px; padding:8px 0 4px;">
           <canvas id="scatter-plot" style="display:block; width:100%; min-height:420px;"></canvas>
           <div style="display:flex; gap:20px; margin-top:10px; flex-wrap:wrap; align-items:center;">
             <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555;">
@@ -1999,7 +1999,7 @@ function drawScatterPlot() {
   ctx.scale(dpr, dpr);
 
   // Margins — left generous for y-labels; top generous so point annotations clear the edge
-  var ml = 58, mr = 32, mt = 44, mb = 64;
+  var ml = 58, mr = 16, mt = 44, mb = 64;
   var pw = cssW - ml - mr;
   var cssH = 420;
   canvas.height = cssH * dpr;
