@@ -564,17 +564,6 @@ textarea.open-response:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(
         <textarea class="open-response" id="notes-to-prof" rows="3" placeholder="Optional: equipment issues, data anomalies, or anything your instructor should know before grading."></textarea>
       </div>
 
-      <!-- ATTENDANCE VERIFICATION -->
-      <div id="attendance-block" style="margin:28px 0 0; padding:20px 24px; background:var(--blue-light); border:1px solid var(--blue); border-left:4px solid var(--blue); border-radius:4px;">
-        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; color:var(--blue); margin-bottom:10px;">LAB ATTENDANCE &amp; PARTICIPATION</div>
-        <p style="font-size:14px; line-height:1.65; margin-bottom:14px;">Your lab grade includes <strong>65 points for attending and actively participating in the lab session</strong>. This credit is awarded for being present, completing the experimental work with your group, and submitting your own write-up.</p>
-        <label style="display:flex; align-items:flex-start; gap:12px; cursor:pointer; font-size:14px; line-height:1.5;">
-          <input type="checkbox" id="attendance-check" onchange="onAttendanceChange()" style="margin-top:3px; width:18px; height:18px; accent-color:var(--blue); flex-shrink:0;">
-          <span>I confirm that I was present for this lab session, participated in the experimental work with my group, and that this submission represents my own observations and analysis.</span>
-        </label>
-        <div id="attendance-warning" style="display:none; margin-top:10px; font-size:13px; color:var(--red); font-weight:600;">Check the box above to confirm attendance before submitting.</div>
-      </div>
-
       <div class="submit-section" id="submit-section" style="margin-top:28px;">
         <div class="submit-info" id="submit-info">
           <strong>Ready to Submit?</strong>
@@ -750,8 +739,6 @@ function setSaveStatus(state, msg) {
 function collectFormData() {
   var data = {};
   SAVE_FIELDS.forEach(function(id) { var el = document.getElementById(id); if (el) data[id] = el.value; });
-  var attCheck = document.getElementById('attendance-check');
-  if (attCheck) data['_attendance_checked'] = attCheck.checked;
   return data;
 }
 function saveNow() {
@@ -781,8 +768,6 @@ function restoreSavedData() {
       el.value = data[id]; count++;
     });
     calcKnown(); calcUnknown(); calcMixture(1); calcMixture(2); calcMixture(3);
-    var attCheck = document.getElementById('attendance-check');
-    if (attCheck && data['_attendance_checked']) attCheck.checked = true;
     if (count > 0) {
       var ts = data['_savedAt'] ? new Date(data['_savedAt']).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : 'previously';
       setSaveStatus('saved', count + ' fields restored from ' + ts);
@@ -976,7 +961,7 @@ function isOffTask(txt) {
 }
 
 // ===== AI =====
-var AI_SYSTEM = 'You are a General Chemistry I lab instructor at Carson-Newman University, a Christian liberal arts university. Every student who writes a response is making a genuine effort — meet them with warmth, encouragement, and specific insight. Use plain conversational language appropriate for introductory college chemistry. Never use bullet points. Keep feedback to 3-5 sentences. For strong responses: affirm what the student did well and extend their thinking one step further — there is always something worth celebrating. For responses that are on the right track but incomplete: start by acknowledging the good thinking that is present, then ask one guiding question that nudges them toward what is missing — never tell them directly what is wrong or what the correct answer is. For responses with a scientific misconception: gently reframe with a question (e.g., "What do you think would happen if...") that helps them reason toward the accurate idea — the goal is discovery, not correction. For off-task responses (complaints, jokes, or content unrelated to chemistry): respond warmly — acknowledge that this does not yet address the chemistry, restate what is being asked in simple encouraging terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. IMPORTANT — AI-generated text: if the response uses unusually formal phrasing, perfectly structured arguments, or hedging language like "it is worth noting" or "in conclusion" without a personal student voice, it may have been AI-generated. If so, respond only with: It looks like this response may have been drafted with some outside help — and that is okay, but I would love to hear your own thinking here. Even a rough, imperfect answer in your own words tells me so much more about what you understand. What would you say if you were just explaining this to a friend?';
+var AI_SYSTEM = 'You are a General Chemistry I lab instructor at Carson-Newman University, a Christian liberal arts university. Every student who writes a response is making a genuine effort — meet them with warmth, encouragement, and specific insight. Use plain conversational language appropriate for introductory college chemistry. Never use bullet points. Keep feedback to 3-5 sentences. For strong responses: affirm what the student did well and extend their thinking one step further — there is always something worth celebrating. For responses that are on the right track but incomplete: start by acknowledging the good thinking that is present, then ask one guiding question that nudges them toward what is missing — never tell them directly what is wrong or what the correct answer is. For responses with a scientific misconception: gently reframe with a question (e.g., "What do you think would happen if...") that helps them reason toward the accurate idea — the goal is discovery, not correction. For off-task responses (complaints, jokes, or content unrelated to chemistry): respond warmly — acknowledge that this does not yet address the chemistry, restate what is being asked in simple encouraging terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. IMPORTANT — AI-generated text: if the response uses unusually formal phrasing, perfectly structured arguments, or hedging language like "it is worth noting" or "in conclusion" without a personal student voice, it may have been AI-generated. If so, respond only with: It looks like this response may have been drafted with some outside help — and that is okay, but I would love to hear your own thinking here. Even a rough, imperfect answer in your own words tells me so much more about what you understand. What would you say if you were just explaining this to a friend? Vocabulary level: If the student uses vocabulary significantly beyond first-semester college chemistry — graduate-level terms, upper-division concepts not yet covered such as detailed reaction mechanisms, Le Chatelier analysis, thermodynamic cycle calculations, or quantum chemistry — acknowledge their curiosity warmly and redirect. Say something like: That kind of thinking will serve you really well as you continue in chemistry — but for this lab, let us make sure your answer is grounded in the first-semester concepts we have covered. How would you explain this same idea using the vocabulary from this lab?';
 
 var AI_PROMPTS = {
   purpose: function(txt) { return 'CHEM 103L Lab 4 \u2014 Melting Point Determination\nStudent purpose statement:\n\n"' + txt + '"\n\nA strong purpose statement for this lab names the technique (melting point determination), identifies what physical property is being measured, and states the goal (identifying an unknown solid). Respond with genuine warmth. Affirm whatever the student got right, then ask one open question that helps them think about anything they may have left out. Do not list what is missing \u2014 guide them toward it through curiosity.'; },
@@ -1020,8 +1005,9 @@ function getAIFeedback(qid) {
     try {
       var data = JSON.parse(xhr.responseText);
       var fb = data.result === 'success' ? data.feedback : ('Feedback unavailable: ' + (data.message || 'unknown error'));
-      feedbackEl.style.borderLeftColor = data.result !== 'success' ? 'var(--gold)' : '';
-      feedbackEl.style.background      = data.result !== 'success' ? 'var(--gold-light)' : '';
+      var isApiOffTask = /does not address|genuine answer|re-read the prompt/i.test(fb);
+      feedbackEl.style.borderLeftColor = isApiOffTask ? 'var(--red)' : (data.result !== 'success' ? 'var(--gold)' : '');
+      feedbackEl.style.background      = isApiOffTask ? 'var(--red-light)' : (data.result !== 'success' ? 'var(--gold-light)' : '');
       feedbackEl.textContent = fb;
     } catch(e) {
       feedbackEl.style.borderLeftColor = 'var(--gold)'; feedbackEl.style.background = 'var(--gold-light)';
@@ -1077,181 +1063,166 @@ function scoreSubmission() {
   var score = 0, total = 0;
   var details = [], breakdown = [];
 
-  // ── PURPOSE  (3 pts) ──────────────────────────────────────────────────────
-  total += 3;
+  // PURPOSE (5 pts)
+  total += 5;
   var purpose = norm(document.getElementById('purpose-text').value);
   var pScore = 0, pNotes = [];
-  if (!hasSubstance(purpose, 8)) {
-    pNotes.push('too brief \u2014 write 1\u20132 complete sentences');
-  } else {
-    if (/melting.?point|physical property|m\.p\.|melt/i.test(purpose))       { pScore += 1; } else pNotes.push('melting point not mentioned');
-    if (/unknown|identify|identif|determin/i.test(purpose))                  { pScore += 1; } else pNotes.push('goal (identify unknown) not stated');
-    if (/technique|method|capillary|apparatus|procedure|mix|mixture/i.test(purpose)) { pScore += 1; } else pNotes.push('technique or method not named');
+  if (!hasSubstance(purpose,8)) { pNotes.push('too brief \u2014 write 1\u20132 complete sentences'); }
+  else {
+    if (/melting.?point|physical property|m\.p\./i.test(purpose)) { pScore+=2; pNotes.push('melting point as physical property identified (+2)'); } else pNotes.push('melting point or physical property not named');
+    if (/unknown|identify|identif|determin/i.test(purpose))       { pScore+=2; pNotes.push('goal of identifying unknown stated (+2)'); }       else pNotes.push('goal (identify unknown) not stated');
+    if (/technique|method|capillary|apparatus|procedure/i.test(purpose)) { pScore+=1; pNotes.push('technique named (+1)'); } else pNotes.push('technique not named');
   }
-  pScore = Math.min(3, pScore);
-  score += pScore; details.push('Purpose: ' + pScore + '/3');
-  breakdown.push({ label: 'Purpose', earned: pScore, possible: 3, notes: pNotes.length ? pNotes : ['Technique named, goal stated, melting point identified'] });
+  score += pScore; details.push('Purpose: '+pScore+'/5');
+  breakdown.push({label:'Purpose', earned:pScore, possible:5, notes:pNotes});
 
-  // ── KNOWN SOLID (NAPHTHALENE)  (9 pts) ────────────────────────────────────
-  // Completeness 4 | Accuracy 3 | Sharpness 2
-  total += 9;
+  // KNOWN SOLID DATA (15 pts)
+  total += 15;
   var kScore = 0, kNotes = [];
-  var kFilled = ['k-start-1','k-end-1','k-start-2','k-end-2'].filter(function(id) { return document.getElementById(id).value !== ''; }).length;
-  if (kFilled === 4)      { kScore += 4; kNotes.push('both naphthalene runs recorded (+4)'); }
-  else if (kFilled >= 2)  { kScore += 2; kNotes.push('one naphthalene run complete (+2)'); }
-  else                    { kNotes.push('no naphthalene data entered'); }
-
   var kAvg = getKnownAvg();
-  if (kAvg !== null) {
-    var kd = Math.abs(kAvg - 80);
-    if      (kd <= 3) { kScore += 3; kNotes.push('average within 3 \u00b0C of 80 \u00b0C literature value (+3)'); }
-    else if (kd <= 5) { kScore += 2; kNotes.push('average within 5 \u00b0C of 80 \u00b0C (+2)'); }
-    else if (kd <= 8) { kScore += 1; kNotes.push('average within 8 \u00b0C of 80 \u00b0C (+1) \u2014 check heating rate near melting point'); }
-    else              { kNotes.push('average more than 8 \u00b0C from 80 \u00b0C \u2014 review technique'); }
-  } else { kNotes.push('cannot assess accuracy \u2014 enter temperature data'); }
-
+  var kFilled = ['k-start-1','k-end-1','k-start-2','k-end-2'].filter(function(id){return document.getElementById(id).value!=='';}).length;
+  if (kFilled===4)       {kScore+=6; kNotes.push('both naphthalene runs recorded (+6)');}
+  else if (kFilled>=2)   {kScore+=3; kNotes.push('only one run complete (+3)');}
+  else kNotes.push('no naphthalene data entered');
+  if (kAvg!==null) {
+    var kd = Math.abs(kAvg-80);
+    if (kd<=3)     {kScore+=5; kNotes.push('average within 3 \u00b0C of literature value (+5)');}
+    else if (kd<=5){kScore+=3; kNotes.push('average within 5 \u00b0C of literature value (+3)');}
+    else kNotes.push('average more than 5 \u00b0C from 80 \u00b0C \u2014 check technique');
+  } else kNotes.push('cannot assess accuracy \u2014 enter temperature data');
   var r1 = parseFloat(document.getElementById('k-range-1').textContent);
   var r2 = parseFloat(document.getElementById('k-range-2').textContent);
-  var sr = [r1, r2].filter(function(r) { return !isNaN(r) && r <= 2.0; }).length;
-  if      (sr === 2)              { kScore += 2; kNotes.push('both runs sharp (\u22642.0 \u00b0C range) (+2)'); }
-  else if (sr === 1)              { kScore += 1; kNotes.push('one run sharp (+1) \u2014 slow the heating rate near the melting point for both trials'); }
-  else if (!isNaN(r1) || !isNaN(r2)) { kNotes.push('both ranges broad \u2014 slow the heating rate near the melting point'); }
+  var sr = [r1,r2].filter(function(r){return !isNaN(r)&&r<=1.5;}).length;
+  if (sr===2)       {kScore+=4; kNotes.push('both runs sharp (\u22641.5 \u00b0C) (+4)');}
+  else if (sr===1)  {kScore+=2; kNotes.push('one run sharp (+2) \u2014 slow heating rate more near m.p.');}
+  else if (!isNaN(r1)||!isNaN(r2)) kNotes.push('both ranges broad \u2014 slow heating rate near melting point');
+  score += kScore; details.push('Known Solid: '+kScore+'/15');
+  breakdown.push({label:'Known Solid', earned:kScore, possible:15, notes:kNotes});
 
-  kScore = Math.min(9, kScore);
-  score += kScore; details.push('Known Solid: ' + kScore + '/9');
-  breakdown.push({ label: 'Known Solid', earned: kScore, possible: 9, notes: kNotes });
-
-  // ── UNKNOWN SOLID  (8 pts) ────────────────────────────────────────────────
-  // Completeness 3 | ID recorded 1 | Sharpness 2 | Run agreement 2
-  total += 8;
+  // UNKNOWN SOLID DATA (10 pts)
+  total += 10;
   var uScore = 0, uNotes = [];
-  var uFilled = ['u-start-1','u-end-1','u-start-2','u-end-2'].filter(function(id) { return document.getElementById(id).value !== ''; }).length;
-  if (uFilled === 4)      { uScore += 3; uNotes.push('both unknown runs recorded (+3)'); }
-  else if (uFilled >= 2)  { uScore += 1; uNotes.push('one unknown run complete (+1)'); }
-  else                    { uNotes.push('no unknown temperature data entered'); }
-
-  if (document.getElementById('unknown-id').value.trim()) { uScore += 1; uNotes.push('unknown ID recorded (+1)'); }
-  else { uNotes.push('unknown ID not recorded'); }
-
+  var uFilled = ['u-start-1','u-end-1','u-start-2','u-end-2'].filter(function(id){return document.getElementById(id).value!=='';}).length;
+  if (uFilled===4)       {uScore+=4; uNotes.push('both unknown runs recorded (+4)');}
+  else if (uFilled>=2)   {uScore+=2; uNotes.push('only one run complete (+2)');}
+  else uNotes.push('no unknown data entered');
+  if (document.getElementById('unknown-id').value.trim()) {uScore+=1; uNotes.push('unknown ID recorded (+1)');} else uNotes.push('unknown ID not recorded');
   var ur1 = parseFloat(document.getElementById('u-range-1').textContent);
   var ur2 = parseFloat(document.getElementById('u-range-2').textContent);
-  var usr = [ur1, ur2].filter(function(r) { return !isNaN(r) && r <= 2.0; }).length;
-  if      (usr === 2)               { uScore += 2; uNotes.push('both unknown runs sharp (+2)'); }
-  else if (usr === 1)               { uScore += 1; uNotes.push('one run sharp (+1)'); }
-  else if (!isNaN(ur1) || !isNaN(ur2)) { uNotes.push('unknown ranges broad \u2014 check heating rate'); }
-
+  var usr = [ur1,ur2].filter(function(r){return !isNaN(r)&&r<=2.0;}).length;
+  if (usr===2)       {uScore+=3; uNotes.push('both unknown runs sharp (+3)');}
+  else if (usr===1)  {uScore+=2; uNotes.push('one run sharp (+2)');}
+  else if (!isNaN(ur1)||!isNaN(ur2)) uNotes.push('unknown ranges broad \u2014 check technique');
   var ua1 = parseFloat(document.getElementById('u-avg-1').textContent);
   var ua2 = parseFloat(document.getElementById('u-avg-2').textContent);
-  if (!isNaN(ua1) && !isNaN(ua2)) {
-    if (Math.abs(ua1 - ua2) <= 3) { uScore += 2; uNotes.push('two runs agree within 3 \u00b0C (+2)'); }
-    else                          { uNotes.push('runs differ >3 \u00b0C \u2014 a third trial would strengthen your identification'); }
+  if (!isNaN(ua1)&&!isNaN(ua2)) {
+    if (Math.abs(ua1-ua2)<=3) {uScore+=2; uNotes.push('two runs agree within 3 \u00b0C (+2)');} else uNotes.push('runs differ >3 \u00b0C \u2014 check technique or re-run');
   }
+  score += uScore; details.push('Unknown Solid: '+uScore+'/15');
+  breakdown.push({label:'Unknown Solid', earned:uScore, possible:15, notes:uNotes});
 
-  uScore = Math.min(8, uScore);
-  score += uScore; details.push('Unknown Solid: ' + uScore + '/8');
-  breakdown.push({ label: 'Unknown Solid', earned: uScore, possible: 8, notes: uNotes });
-
-  // ── MIXTURE TEST  (5 pts) ─────────────────────────────────────────────────
-  // Completeness 2 | Candidate named 1 | Identity confirmed 2
-  total += 5;
+  // MIXTURE DATA (10 pts)
+  total += 10;
   var mScore = 0, mNotes = [];
-  var mixDone = [1,2,3].filter(function(n) { return getMixtureData(n) !== null; });
+  var mixDone = [1,2,3].filter(function(n){return getMixtureData(n)!==null;});
   var uAvg = getUnknownAvg();
-  if (mixDone.length === 0) {
-    mNotes.push('no mixture data entered');
-  } else {
-    mScore += Math.min(2, mixDone.length);
-    mNotes.push(mixDone.length + ' mixture trial(s) recorded (+' + Math.min(2, mixDone.length) + ')');
-    if (mixDone.some(function(n) { return document.getElementById('mix-additive-' + n).value.trim().length > 2; })) {
-      mScore += 1; mNotes.push('candidate substance named (+1)');
-    } else { mNotes.push('name a candidate substance for each mixture trial'); }
-    var confirmed = mixDone.some(function(n) {
-      var m = getMixtureData(n);
-      return m && m.range <= 2.0 && (uAvg === null || Math.abs(m.avg - uAvg) <= 3);
-    });
-    if (confirmed) {
-      mScore += 2; mNotes.push('sharp mixture confirms identity (+2)');
-    } else {
-      var anySharp = mixDone.some(function(n) { var m = getMixtureData(n); return m && m.range <= 2.0; });
-      if (anySharp) { mScore += 1; mNotes.push('sharp mixture but temperature offset (+1) \u2014 check that you mixed equal amounts of unknown and candidate'); }
-      else { mNotes.push('no sharp mixture recorded \u2014 a sharp range with the correct candidate confirms identity'); }
-    }
+  if (mixDone.length===0) { mNotes.push('no mixture data entered'); }
+  else {
+    mScore += Math.min(4, mixDone.length*2);
+    mNotes.push(mixDone.length+' mixture trial(s) recorded (+'+Math.min(4,mixDone.length*2)+')');
+    if (mixDone.some(function(n){return document.getElementById('mix-additive-'+n).value.trim().length>2;})) {mScore+=2; mNotes.push('candidate substances named (+2)');} else mNotes.push('candidate substance not named');
+    var confirmed = mixDone.some(function(n){var m=getMixtureData(n); return m&&m.range<=1.5&&(uAvg===null||Math.abs(m.avg-uAvg)<=2);});
+    if (confirmed) {mScore+=4; mNotes.push('sharp mixture confirms identity (+4)');} 
+    else { var anySharp=mixDone.some(function(n){var m=getMixtureData(n);return m&&m.range<=1.5;}); if(anySharp){mScore+=2;mNotes.push('sharp mixture but temp offset (+2)');} else mNotes.push('no sharp mixture recorded \u2014 mixture test not confirmed'); }
   }
-  mScore = Math.min(5, mScore);
-  score += mScore; details.push('Mixture Test: ' + mScore + '/5');
-  breakdown.push({ label: 'Mixture Test', earned: mScore, possible: 5, notes: mNotes });
+  score += mScore; details.push('Mixture Test: '+mScore+'/10');
+  breakdown.push({label:'Mixture Test', earned:mScore, possible:10, notes:mNotes});
 
-  // ── ANALYSIS  Q1\u2013Q6  (5 pts total: Q1=1, Q2=1, Q3=1, Q4=1, Q6=1) ──────────
-  // Note: Q5 is observational/data-entry; only written analysis questions scored here.
+  // Q1 Known Comparison (5 pts)
   total += 5;
-  var aScore = 0, aNotes = [];
-
-  // Q1 Known comparison (1 pt)
   var q1 = norm(document.getElementById('q1-text').value);
-  if (!hasSubstance(q1, 6)) { aNotes.push('Q1: too brief \u2014 compare your result to 80 \u00b0C'); }
-  else if (/\d+\.?\d*|80|literature|accepted|known|close|differ|match|within/i.test(q1)) { aScore += 1; }
-  else { aNotes.push('Q1: reference a temperature value or compare to the literature value'); }
+  var q1Score=0, q1Notes=[];
+  if (!hasSubstance(q1,8)) { q1Notes.push('too brief'); }
+  else {
+    if (/\d+\.?\d*\s*[oc]/i.test(q1))                         {q1Score+=2; q1Notes.push('specific temperature cited (+2)');} else q1Notes.push('specific temperature not cited');
+    if (/80|literature|accepted|known/i.test(q1))              {q1Score+=1; q1Notes.push('literature value referenced (+1)');} else q1Notes.push('literature value 80 \u00b0C not referenced');
+    if (/differ|error|calibr|heat|rate|technique/i.test(q1))  {q1Score+=2; q1Notes.push('discrepancy explained (+2)');} else q1Notes.push('no explanation for discrepancy');
+  }
+  score+=q1Score; details.push('Q1 (Known): '+q1Score+'/5');
+  breakdown.push({label:'Q1 \u2014 Known', earned:q1Score, possible:5, notes:q1Notes});
 
-  // Q2 Run comparison (1 pt)
+  // Q2 Run Comparison (5 pts)
+  total += 5;
   var q2 = norm(document.getElementById('q2-text').value);
-  if (!hasSubstance(q2, 6)) { aNotes.push('Q2: too brief \u2014 compare your two runs'); }
-  else if (/run|first|second|both|agree|differ|consist|same|close|similar|each/i.test(q2)) { aScore += 1; }
-  else { aNotes.push('Q2: compare the two runs \u2014 did they agree? What might explain any difference?'); }
+  var q2Score=0, q2Notes=[];
+  if (!hasSubstance(q2,8)) { q2Notes.push('too brief'); }
+  else {
+    if (/run [12]|first|second/i.test(q2))               {q2Score+=2; q2Notes.push('both runs referenced (+2)');} else q2Notes.push('both runs not referenced');
+    if (/agree|consist|differ|same|close/i.test(q2))     {q2Score+=1; q2Notes.push('consistency assessed (+1)');} else q2Notes.push('consistency not assessed');
+    if (/heat|cool|pack|technique|error|rate/i.test(q2)) {q2Score+=2; q2Notes.push('procedural reason discussed (+2)');} else q2Notes.push('procedural reason not discussed');
+  }
+  score+=q2Score; details.push('Q2 (Runs): '+q2Score+'/5');
+  breakdown.push({label:'Q2 \u2014 Runs', earned:q2Score, possible:5, notes:q2Notes});
 
-  // Q3 Candidates from Table 1 (1 pt)
+  // Q3 Candidates (10 pts)
+  total += 10;
   var q3 = norm(document.getElementById('q3-text').value);
-  if (!hasSubstance(q3, 6)) { aNotes.push('Q3: too brief \u2014 name candidate substances from Table 1'); }
+  var q3Score=0, q3Notes=[];
+  if (!hasSubstance(q3,10)) { q3Notes.push('too brief'); }
   else {
-    var q3names = KNOWN_SUBSTANCE_NAMES.filter(function(s) { return q3.indexOf(s) >= 0; });
-    if (q3names.length >= 1 || /table|match|close|within|compar|candidate|substance/i.test(q3)) { aScore += 1; }
-    else { aNotes.push('Q3: name at least one candidate substance whose melting point matches yours'); }
+    if (/\d+\.?\d*\s*[oc]/i.test(q3))                {q3Score+=3; q3Notes.push('measured temperature cited (+3)');} else q3Notes.push('measured temperature not cited');
+    var q3names = KNOWN_SUBSTANCE_NAMES.filter(function(s){return q3.indexOf(s)>=0;});
+    if (q3names.length>=1) {q3Score+=4; q3Notes.push('candidate named: '+q3names.slice(0,2).join(', ')+' (+4)');} else q3Notes.push('no substance name found \u2014 cite Table 1 by name');
+    if (/table|match|close|within|compar/i.test(q3)) {q3Score+=3; q3Notes.push('comparison to Table 1 made (+3)');} else q3Notes.push('Table 1 comparison not explicit');
   }
+  score+=q3Score; details.push('Q3 (Candidates): '+q3Score+'/10');
+  breakdown.push({label:'Q3 \u2014 Candidates', earned:q3Score, possible:10, notes:q3Notes});
 
-  // Q4 Mixture interpretation (1 pt)
+  // Q4 Mixture Analysis (10 pts)
+  total += 10;
   var q4 = norm(document.getElementById('q4-text').value);
-  if (!hasSubstance(q4, 6)) { aNotes.push('Q4: too brief \u2014 interpret the mixture result'); }
-  else if (/sharp|narrow|broad|widen|depress|rang|confirm|same|identical|different|match|mixture/i.test(q4)) { aScore += 1; }
-  else { aNotes.push('Q4: describe what a sharp or broad mixture range tells you about the identity'); }
-
-  // Q6 Final identification (1 pt)
-  var q6 = norm(document.getElementById('q6-text').value);
-  if (!hasSubstance(q6, 6)) { aNotes.push('Q6: too brief \u2014 state your final identification with evidence'); }
+  var q4Score=0, q4Notes=[];
+  if (!hasSubstance(q4,8)) { q4Notes.push('too brief'); }
   else {
-    var q6names = KNOWN_SUBSTANCE_NAMES.filter(function(s) { return q6.indexOf(s) >= 0; });
-    if (q6names.length >= 1 || /unknown|identif|conclud|determin|result|found|evidence/i.test(q6)) { aScore += 1; }
-    else { aNotes.push('Q6: state the identity of your unknown and cite the evidence'); }
+    if (/sharp|narrow|broad|widen|depress|rang/i.test(q4))               {q4Score+=3; q4Notes.push('range character described (+3)');} else q4Notes.push('sharp/broad character not described');
+    if (/same|identical|confirm|match|different|not .{0,10} same/i.test(q4)) {q4Score+=3; q4Notes.push('identity conclusion drawn (+3)');} else q4Notes.push('no clear identity conclusion');
+    if (/\d+\.?\d*\s*[oc]/i.test(q4))                                    {q4Score+=2; q4Notes.push('specific temperature cited (+2)');} else q4Notes.push('specific temperature not cited');
+    var q4names=KNOWN_SUBSTANCE_NAMES.filter(function(s){return q4.indexOf(s)>=0;});
+    if (q4names.length>=1) {q4Score+=2; q4Notes.push('substance named (+2)');} else q4Notes.push('substance name not cited');
   }
+  score+=q4Score; details.push('Q4 (Mixture): '+q4Score+'/10');
+  breakdown.push({label:'Q4 \u2014 Mixture', earned:q4Score, possible:10, notes:q4Notes});
 
-  aScore = Math.min(5, aScore);
-  score += aScore; details.push('Analysis (Q1\u2013Q6): ' + aScore + '/5');
-  breakdown.push({ label: 'Analysis (Q1\u2013Q6)', earned: aScore, possible: 5,
-    notes: aNotes.length ? aNotes : ['All analysis questions addressed with evidence'] });
+  // Q6 Final ID (10 pts)
+  total += 10;
+  var q6 = norm(document.getElementById('q6-text').value);
+  var q6Score=0, q6Notes=[];
+  if (!hasSubstance(q6,10)) { q6Notes.push('too brief \u2014 this is the most important question'); }
+  else {
+    var q6names=KNOWN_SUBSTANCE_NAMES.filter(function(s){return q6.indexOf(s)>=0;});
+    if (q6names.length>=1) {q6Score+=4; q6Notes.push('unknown identified: '+q6names[0]+' (+4)');} else q6Notes.push('unknown not identified by name');
+    if (/\d+\.?\d*\s*[oc]/i.test(q6))                          {q6Score+=2; q6Notes.push('specific temperature evidence cited (+2)');} else q6Notes.push('specific temperature not cited');
+    if (/mixture|sharp|confirm|test/i.test(q6))                {q6Score+=3; q6Notes.push('mixture test cited as evidence (+3)');} else q6Notes.push('mixture test not cited');
+    if (/table|literature|known|reference/i.test(q6))          {q6Score+=1; q6Notes.push('Table 1 comparison cited (+1)');} else q6Notes.push('Table 1 comparison not cited');
+  }
+  score+=q6Score; details.push('Q6 (Final ID): '+q6Score+'/15');
+  breakdown.push({label:'Q6 \u2014 Final ID', earned:q6Score, possible:15, notes:q6Notes});
 
-  // ── CONCLUSION  (5 pts) ──────────────────────────────────────────────────
+  // CONCLUSION (5 pts)
   total += 5;
   var conc = norm(document.getElementById('conclusion-text').value);
-  var cScore = 0, cNotes = [];
-  if (!hasSubstance(conc, 8)) {
-    cNotes.push('too brief \u2014 write 2\u20133 sentences covering technique, result, and evidence');
-  } else {
-    // 1 pt: names technique
-    if (/melting.?point|physical property|technique|method|capillary/i.test(conc)) { cScore += 1; }
-    else { cNotes.push('name the technique used (melting point determination)'); }
-    // 2 pts: states identity of unknown
-    var cn = KNOWN_SUBSTANCE_NAMES.filter(function(s) { return conc.indexOf(s) >= 0; });
-    if (cn.length >= 1) { cScore += 2; cNotes.push('unknown identified: ' + cn[0]); }
-    else if (/unknown|identif|determin|found|result|substance|compound/i.test(conc)) { cScore += 1; cNotes.push('identification described \u2014 name the specific substance'); }
-    else { cNotes.push('state the identity of the unknown substance'); }
-    // 2 pts: cites mixture test or temperature evidence
-    if (/mixture|confirm|evidence|sharp|test|temperature|match|agree/i.test(conc)) { cScore += 2; }
-    else { cNotes.push('cite evidence from the mixture test or temperature data'); }
+  var cScore=0, cNotes=[];
+  if (!hasSubstance(conc,8)) { cNotes.push('too brief'); }
+  else {
+    if (/melting.?point|physical property|technique|method/i.test(conc)) {cScore+=1; cNotes.push('technique named (+1)');} else cNotes.push('technique not named');
+    var cn=KNOWN_SUBSTANCE_NAMES.filter(function(s){return conc.indexOf(s)>=0;});
+    if (cn.length>=1) {cScore+=2; cNotes.push('identity stated: '+cn[0]+' (+2)');} else cNotes.push('identity of unknown not stated');
+    if (/mixture|confirm|evidence|sharp|test/i.test(conc)) {cScore+=2; cNotes.push('mixture test evidence cited (+2)');} else cNotes.push('mixture test not referenced');
   }
-  cScore = Math.min(5, cScore);
-  score += cScore; details.push('Conclusion: ' + cScore + '/5');
-  breakdown.push({ label: 'Conclusion', earned: cScore, possible: 5,
-    notes: cNotes.length ? cNotes : ['Technique named, unknown identified, evidence cited'] });
+  score+=cScore; details.push('Conclusion: '+cScore+'/10');
+  breakdown.push({label:'Conclusion', earned:cScore, possible:10, notes:cNotes});
 
-  return { score: score, total: total, percent: Math.round((score / total) * 100), details: details.join(' | '), breakdown: breakdown };
+  return { score:score, total:total, percent:Math.round((score/total)*100), details:details, breakdown:breakdown };
 }
 
 // ===== 2-ATTEMPT SUBMIT =====
@@ -1267,42 +1238,14 @@ function buildDtSummary() {
   return parts.join(' | ');
 }
 
-function onAttendanceChange() {
-  var warnEl = document.getElementById('attendance-warning');
-  if (warnEl) warnEl.style.display = 'none';
-}
-
 function submitLab() {
   var name=document.getElementById('student-name').value.trim();
   var section=document.getElementById('student-section').value.trim();
   if (!name||!section) { alert('Please enter your name and lab section before submitting.'); return; }
-
-  var attended = document.getElementById('attendance-check') && document.getElementById('attendance-check').checked;
-  var warnEl = document.getElementById('attendance-warning');
-  if (!attended) {
-    if (warnEl) warnEl.style.display = 'block';
-    document.getElementById('attendance-check').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
-  if (warnEl) warnEl.style.display = 'none';
-
   var count=getSubmissionCount();
   if (count>=2) { alert('You have used both submissions. Contact your instructor if you need an additional attempt.'); return; }
   var attemptNum=count+1;
-  var rawResult=scoreSubmission();
-
-  var ATTENDANCE_PTS = 65;
-  var result = {
-    score:    rawResult.score + ATTENDANCE_PTS,
-    total:    rawResult.total + ATTENDANCE_PTS,
-    rawScore: rawResult.score,
-    rawTotal: rawResult.total,
-    percent:  Math.round((rawResult.score + ATTENDANCE_PTS) / (rawResult.total + ATTENDANCE_PTS) * 100),
-    details:  rawResult.details,
-    breakdown: rawResult.breakdown,
-    attended: true
-  };
-
+  var result=scoreSubmission();
   var btn=document.getElementById('submit-btn');
   btn.disabled=true; btn.textContent='Submitting attempt '+attemptNum+' of 2\u2026';
   var _members4=[document.getElementById('member2').value,document.getElementById('member3').value].filter(Boolean).join('; ');
@@ -1318,10 +1261,6 @@ function submitLab() {
     start_date:document.getElementById('start-date').value||'',
     attempt :attemptNum,
     score   :result.score,
-    total   :result.total,
-    raw_score :result.rawScore,
-    raw_total :result.rawTotal,
-    attended  :result.attended ? 'yes' : 'no',
     percent :result.percent,
     obs1    :document.getElementById('unknown-id').value||'',
     purpose :document.getElementById('purpose-text').value||'',
@@ -1391,10 +1330,6 @@ function buildScoreHtml(result,attemptNum) {
   var isFinal=(attemptNum===2);
   var label=result.percent>=85?'Excellent':result.percent>=70?'Good':(isFinal?'Needs Improvement':'Needs Revision');
   var html='<p style="font-size:16px;font-weight:700;margin-bottom:4px;">Score: '+result.score+' / '+result.total+' &nbsp;('+result.percent+'%) &mdash; '+label+'</p>';
-  html += '<div style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 14px;font-size:13px;">'
-    + '<span style="background:var(--blue-light);color:var(--blue);border:1px solid var(--blue);padding:3px 10px;border-radius:3px;font-weight:600;">Attendance &amp; Participation: 65/65</span>'
-    + '<span style="background:var(--accent-light);color:var(--accent);border:1px solid var(--accent);padding:3px 10px;border-radius:3px;font-weight:600;">Lab Work: '+result.rawScore+'/35</span>'
-    + '</div>';
   if (!isFinal) html+='<p style="font-size:13px;color:var(--gold);margin-bottom:16px;font-weight:600;">&#9656; Items marked with a pencil can be improved. Revise, then submit your final attempt.</p>';
   else html+='<p style="font-size:13px;color:#888;margin-bottom:16px;">This is your final recorded score.</p>';
   html+='<table style="width:100%;border-collapse:collapse;font-size:13px;">';
