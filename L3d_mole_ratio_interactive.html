@@ -2014,17 +2014,17 @@ function drawScatterPlot() {
   // Set pixel dimensions
   var dpr = window.devicePixelRatio || 1;
   var cssW = canvas.offsetWidth;
-  var cssH = 260;
   canvas.width  = cssW * dpr;
-  canvas.height = cssH * dpr;
-  canvas.style.height = cssH + 'px';
 
   var ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
 
   // Margins
-  var ml = 52, mr = 24, mt = 18, mb = 44;
+  var ml = 52, mr = 28, mt = 18, mb = 56;
   var pw = cssW - ml - mr;
+  var cssH = 276;
+  canvas.height = cssH * dpr;
+  canvas.style.height = cssH + 'px';
   var ph = cssH - mt - mb;
 
   // Clear
@@ -2039,8 +2039,8 @@ function drawScatterPlot() {
     }
   });
 
-  // Axis ranges
-  var xMin = 1.5, xMax = 8.5;
+  // Axis ranges — x spans 1–9 mL to cover all valid student volume combinations
+  var xMin = 1.0, xMax = 9.0;
   var yRaw = points.map(function(p) { return p.y; });
   var yMaxData = yRaw.length > 0 ? Math.max.apply(null, yRaw) : 5;
   var yMin = 0;
@@ -2065,14 +2065,14 @@ function drawScatterPlot() {
     ctx.lineTo(ml + pw, gy);
     ctx.stroke();
   }
-  // Vertical grid at each trial x-value
-  TRIALS.forEach(function(t) {
-    var gx = toX(t.ocl);
+  // Vertical grid at every integer mL from 1 to 9
+  for (var xv = 1; xv <= 9; xv++) {
+    var gx = toX(xv);
     ctx.beginPath();
     ctx.moveTo(gx, mt);
     ctx.lineTo(gx, mt + ph);
     ctx.stroke();
-  });
+  }
 
   // Axes
   ctx.strokeStyle = '#c8bfa8';
@@ -2103,19 +2103,31 @@ function drawScatterPlot() {
   ctx.fillText('\u0394T (\u00b0C)', 0, 0);
   ctx.restore();
 
-  // X axis labels
+  // X axis labels — integer mL values 1–9 with trial indicators for actual data positions
   ctx.textAlign = 'center';
   ctx.fillStyle = '#888';
   ctx.font = '600 10px JetBrains Mono, monospace';
-  TRIALS.forEach(function(t, i) {
-    var gx = toX(t.ocl);
-    ctx.fillText(t.ocl.toFixed(1), gx, mt + ph + 14);
-    // Trial number below
-    ctx.fillStyle = '#bbb';
-    ctx.font = '500 9px JetBrains Mono, monospace';
-    ctx.fillText('T' + (i + 1), gx, mt + ph + 26);
+
+  // Draw integer mL scale labels across full range
+  for (var xv = 1; xv <= 9; xv++) {
+    var gx = toX(xv);
+    // Clamp so labels near the y-axis don't render behind it
+    var labelX = Math.max(ml + 10, Math.min(ml + pw - 10, gx));
+    ctx.textAlign = 'center';
     ctx.fillStyle = '#888';
     ctx.font = '600 10px JetBrains Mono, monospace';
+    ctx.fillText(xv + '.0', labelX, mt + ph + 14);
+  }
+
+  // Draw trial number (T1–T7) below the actual student-entered x position
+  TRIALS.forEach(function(t, i) {
+    var gx = toX(t.ocl);
+    if (gx < ml || gx > ml + pw) return; // skip if outside plot
+    var labelX = Math.max(ml + 10, Math.min(ml + pw - 10, gx));
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#bbb';
+    ctx.font = '500 9px JetBrains Mono, monospace';
+    ctx.fillText('T' + (i + 1), labelX, mt + ph + 26);
   });
 
   // X axis title
@@ -2144,9 +2156,27 @@ function drawScatterPlot() {
     return;
   }
 
-  // Find max
+  // Find max — only annotate if it's a meaningful, genuine peak
   var maxDt = Math.max.apply(null, points.map(function(p) { return p.y; }));
-  var maxPoint = points.filter(function(p) { return p.y === maxDt; })[0];
+  // Require: (a) maxDt is positive and non-trivial, (b) point is a local maximum
+  // (at least one adjacent trial has a lower ΔT), preventing edge-monotone or spike false-flags
+  var sortedByX = points.slice().sort(function(a, b) { return a.x - b.x; });
+  var maxPoint = null;
+  if (maxDt >= 0.3) {
+    var candidate = points.filter(function(p) { return p.y === maxDt; })[0];
+    if (candidate) {
+      var xi = sortedByX.findIndex(function(p) { return p.x === candidate.x; });
+      var prev = xi > 0 ? sortedByX[xi - 1] : null;
+      var next = xi < sortedByX.length - 1 ? sortedByX[xi + 1] : null;
+      // Accept as peak if: has a neighbor on at least one side that is lower,
+      // AND the max is meaningfully above the median (not a flat dataset with a noise spike)
+      var allY = points.map(function(p) { return p.y; }).sort(function(a,b){return a-b;});
+      var median = allY[Math.floor(allY.length / 2)];
+      var isPeak = (prev && prev.y < candidate.y) || (next && next.y < candidate.y);
+      var isMeaningful = maxDt > median * 1.05 || maxDt - median >= 0.2;
+      if (isPeak && isMeaningful) maxPoint = candidate;
+    }
+  }
 
   // Draw connecting line through points (sorted by x)
   var sorted = points.slice().sort(function(a, b) { return a.x - b.x; });
@@ -2256,10 +2286,19 @@ function initCanvas(id) {
 }
 
 function getPos(canvas, e) {
+  // e.offsetX/Y are relative to the target element and correctly account for
+  // scroll position, CSS transforms, and devicePixelRatio scaling — reliable for
+  // both mouse and stylus (pointer) events.
+  if (e.offsetX !== undefined) {
+    return { x: e.offsetX, y: e.offsetY };
+  }
+  // Fallback for older browsers
   var rect = canvas.getBoundingClientRect();
+  var scaleX = canvas.offsetWidth  / rect.width;
+  var scaleY = canvas.offsetHeight / rect.height;
   return {
-    x: (e.clientX - rect.left),
-    y: (e.clientY - rect.top)
+    x: (e.clientX - rect.left) * scaleX,
+    y: (e.clientY - rect.top)  * scaleY
   };
 }
 
@@ -2340,35 +2379,35 @@ function getCanvasDataURL(id) {
 }
 
 // ===== AI FEEDBACK =====
-var AI_SYSTEM = 'You are a General Chemistry I lab instructor at Carson-Newman University, a Christian liberal arts university. Every student who writes a response is making a genuine effort \u2014 meet them with warmth, encouragement, and specific insight. Use plain conversational language appropriate for introductory college chemistry. Never use bullet points. Keep feedback to 3\u20135 sentences. For strong responses: affirm what the student did well and extend their thinking one step further \u2014 there is always something worth celebrating. For responses that are on the right track but incomplete: start by acknowledging the good thinking that is present, then ask one guiding question that nudges them toward what is missing \u2014 never tell them directly what is wrong or what the correct answer is. For responses with a scientific misconception: gently reframe with a question (e.g., \u201cWhat do you think would happen if\u2026\u201d) that helps them reason toward the accurate idea \u2014 the goal is discovery, not correction. For off-task responses (complaints, jokes, or content unrelated to chemistry): respond warmly \u2014 acknowledge that this does not yet address the chemistry, restate what is being asked in simple encouraging terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. IMPORTANT \u2014 AI-generated text: if the response uses unusually formal phrasing, perfectly structured arguments, or hedging language like \u201cit is worth noting\u201d or \u201cin conclusion\u201d without a personal student voice, it may have been AI-generated. If so, respond only with: It looks like this response may have been drafted with some outside help \u2014 and that is okay, but I would love to hear your own thinking here. Even a rough, imperfect answer in your own words tells me so much more about what you understand. What would you say if you were just explaining this to a friend?';
+var AI_SYSTEM = 'You are a General Chemistry I lab instructor at a university reviewing student lab responses. Before giving feedback, assess whether the student has made a genuine attempt to answer the chemistry question. If the response is off-task (complaining, random text, jokes, nonsense, expressions of disengagement, or content unrelated to chemistry), respond ONLY with: "This response does not address the chemistry question. Please re-read the prompt and write a genuine answer about [restate the topic in a few words]. Your grade depends on a real attempt." Do not give chemistry feedback on off-task responses. For genuine attempts: (1) be specific to the student response, (2) be scientifically accurate at the introductory college level, (3) be supportive and constructive. Keep feedback to 3-5 sentences. Affirm correct and complete answers clearly. For incomplete answers, identify what is missing without giving away the answer. Flag significant scientific errors. Do not repeat the student words back verbatim. Focus on chemical reasoning, not grammar.';
 
 var AI_PROMPTS = {
   purpose: function(txt) {
-    return 'CHEM 103L Lab 3 \u2014 Mole Ratios by Continuous Variations\nStudent purpose statement:\n\n"' + txt + '"\n\nA strong purpose statement for this lab names the experimental approach (method of continuous variations or calorimetry), identifies what is being measured (temperature change / heat released), and states what will be determined (the mole ratio of OCl\u207b to S\u2082O\u2083\u00b2\u207b). Respond with genuine warmth. Affirm whatever the student captured well, then ask one open question that helps them think about anything they may have left out. Do not list what is missing \u2014 guide them toward it through curiosity.';
+    return 'A General Chemistry I student wrote this purpose statement for a lab on determining mole ratios using the method of continuous variations with OCl- and S2O3 2-:\n\n"' + txt + '"\n\nEvaluate whether the purpose: (1) identifies what is being measured, (2) names the method used (continuous variations or calorimetry), and (3) states what will be determined (the mole ratio). Provide brief, targeted feedback.';
   },
   obs1: function(txt) {
-    return 'CHEM 103L Lab 3 \u2014 Observation 1: Appearance of solutions before mixing\nStudent response:\n\n"' + txt + '"\n\nBoth solutions are dilute and aqueous. NaOCl (bleach) is typically colorless to very faintly yellow; Na\u2082S\u2082O\u2083 is colorless and clear. A strong observation distinguishes the two solutions individually and describes their appearance specifically. Begin by affirming what the student noticed. If there is more they could add, ask one encouraging question that invites them to look more carefully or be more specific \u2014 without telling them what they should have seen.';
+    return 'A student described the appearance of 0.050 M NaOCl and 0.050 M Na2S2O3 solutions:\n\n"' + txt + '"\n\nBoth solutions should be colorless and clear (dilute aqueous solutions). NaOCl may have a faint chlorine/bleach odor. Evaluate whether the student\'s observation is scientifically consistent and appropriately detailed for a lab report.';
   },
   obs2: function(txt) {
-    return 'CHEM 103L Lab 3 \u2014 Observation 2: What happened when the solutions were mixed\nStudent response:\n\n"' + txt + '"\n\nThe reaction is exothermic, so the temperature rises noticeably after mixing. The solution typically stays colorless or becomes very slightly cloudy. A strong observation describes the temperature behavior and any visible changes. Affirm the observations the student made, then ask one question that deepens their thinking about what they noticed \u2014 for example, whether the temperature rise was rapid or gradual, or whether all trials looked the same. Guide gently; do not tell them what they missed.';
+    return 'A student described what happened when OCl- and S2O3 2- were mixed:\n\n"' + txt + '"\n\nThe reaction is exothermic, so temperature should increase quickly upon mixing. The mixture should remain colorless or become slightly cloudy. Evaluate whether the observation describes the expected exothermic behavior and is appropriately detailed.';
   },
   obs3: function(txt) {
-    return 'CHEM 103L Lab 3 \u2014 Observation 3: Which trial had the greatest \u0394T\nStudent response:\n\n"' + txt + '"\n\nThe balanced equation is 4 OCl\u207b + S\u2082O\u2083\u00b2\u207b \u2192 products, so the maximum \u0394T should occur near the 4:1 volume ratio (Trial 6: 8 mL OCl\u207b / 2 mL S\u2082O\u2083\u00b2\u207b). A strong response names the trial and connects it to what it means about the stoichiometric ratio. Affirm what the student identified, then ask one question that encourages them to think about why that particular trial produced the largest temperature change. Do not tell them the correct trial or whether their answer is right.';
+    return 'A student described which trial gave the greatest temperature change in the method of continuous variations experiment:\n\n"' + txt + '"\n\nThe balanced equation is 4 OCl- + S2O3 2- -> products, so the maximum delta-T should occur near trial 6 (8 mL OCl- / 2 mL S2O3 2-) because that is the 4:1 ratio. Assess whether the student\'s observation aligns with this expectation and is clearly explained.';
   },
   q1: function(txt) {
-    return 'CHEM 103L Lab 3 \u2014 Q1: Determining the mole ratio from data\nStudent response:\n\n"' + txt + '"\n\nA strong response identifies the trial with the highest \u0394T, explains that equal molarities mean the volume ratio equals the mole ratio, and states the ratio as a simplified whole number (4:1). Begin with something genuine you can affirm \u2014 even a partially correct answer reflects real thinking. Then ask one encouraging question that helps the student think more carefully about their data or their reasoning. Do not tell them the correct ratio or confirm whether theirs is right.';
+    return 'A CHEM 103L student determined the mole ratio from this analysis:\n\n"' + txt + '"\n\nThe actual mole ratio is 4 OCl- : 1 S2O3 2- (from the balanced equation 4 OCl- + S2O3 2- -> products). Evaluate: (1) whether the student correctly identified the maximum delta-T trial, (2) whether they correctly equated the volume ratio to the mole ratio (valid because equal molarities), and (3) whether the final ratio is expressed correctly as a whole-number ratio. Provide constructive feedback.';
   },
   q2: function(txt) {
-    return 'CHEM 103L Lab 3 \u2014 Q2: Why equal molarities matter\nStudent response:\n\n"' + txt + '"\n\nA strong response uses n = M \u00d7 V to explain that when two solutions share the same molarity, the ratio of their volumes is the same as the ratio of their moles \u2014 making it possible to read the mole ratio directly from the volumes. This is a first-semester student with limited stoichiometry background, so reward correct reasoning even when simply expressed. Affirm the chemical thinking the student showed, then ask one question that encourages them to think about what they would need to do differently if the concentrations were unequal. Guide through curiosity, not correction.';
+    return 'A first-semester General Chemistry student (limited stoichiometry background) answered this question: "Both solutions had the same concentration (0.050 M). Why does this matter for comparing volumes? Use moles = M x V to explain."\n\nStudent response: "' + txt + '"\n\nEvaluate whether the student: (1) correctly uses n = M x V to connect concentration, volume, and moles, (2) explains that equal concentrations make the volume ratio equal to the mole ratio, and (3) addresses what they would need to do differently if concentrations were unequal. Give encouraging, specific feedback appropriate for an introductory student. Do not expect advanced language — reward correct reasoning even if simply expressed.';
   },
   q3: function(txt) {
-    return 'CHEM 103L Lab 3 \u2014 Q3: Limiting reactants across trials\nStudent response:\n\n"' + txt + '"\n\nIn this experiment, OCl\u207b is limiting in trials with low OCl\u207b volume (trials 1\u20133), S\u2082O\u2083\u00b2\u207b is limiting in trials with high OCl\u207b volume (trials 5\u20137), and the stoichiometric trial has neither reactant limiting. A student who reasons about which chemical \u201cruns out first\u201d is demonstrating the core concept even without formal limiting-reactant language. Affirm the reasoning they showed, then ask one question that helps them think about a specific trial they may not have addressed or a connection they could make more clearly. Do not tell them which trials are correct or incorrect.';
+    return 'A first-semester General Chemistry student answered this question about limiting reactants in a continuous variations experiment (OCl- + S2O3 2-, mole ratio 4:1, stoichiometric volume = 8 mL OCl- / 2 mL S2O3 2-).\n\nStudent response: "' + txt + '"\n\nEvaluate whether the student: (1) correctly identifies OCl- as limiting when its volume is small (trials 1-3, less than ~80% of total), (2) correctly identifies S2O3 2- as limiting when OCl- volume is large (trials 5-7), and (3) recognizes that the maximum delta-T trial has neither reactant limiting. The student has limited stoichiometry experience — reward correct logical reasoning about "running out first" even without formal limiting-reactant language. Point out any trial-specific errors gently and clearly.';
   },
   q4: function(txt) {
-    return 'CHEM 103L Lab 3 \u2014 Q4: Comparing experimental result to the balanced equation\nStudent response:\n\n"' + txt + '"\n\nThe balanced equation 4 OCl\u207b + S\u2082O\u2083\u00b2\u207b \u2192 4 Cl\u207b + SO\u2084\u00b2\u207b + SO\u2083\u00b2\u207b + 2H\u207a gives a 4:1 mole ratio. A strong response states the expected ratio, compares it to the student\u2019s experimental result, and reflects on what might explain any difference. Affirm the comparison the student made, then ask one question that helps them think about what sources of uncertainty could have affected their result. Do not confirm or deny whether their ratio matches the equation.';
+    return 'A CHEM 103L student compared their experimental mole ratio to the known equation 4 OCl- + S2O3 2- -> 4 Cl- + SO4 2- + SO3 2- + 2H+:\n\n"' + txt + '"\n\nEvaluate whether: (1) the student correctly identified the expected 4:1 ratio from the balanced equation, (2) they compared their experimental ratio to 4:1 meaningfully, and (3) if there is a discrepancy, they offered a reasonable explanation (experimental error, difficulty identifying exact peak temperature, heat loss). Assess scientific reasoning quality.';
   },
   conclusion: function(txt) {
-    return 'CHEM 103L Lab 3 \u2014 Conclusion (3 sentences max)\nStudent response:\n\n"' + txt + '"\n\nA strong conclusion names the method used (continuous variations / calorimetry), states the experimental mole ratio found, and compares it to the 4:1 ratio from the balanced equation. Affirm the student\u2019s scientific thinking warmly \u2014 a conclusion that captures even two of these three elements reflects real understanding. If their conclusion could be stronger, ask one encouraging question \u2014 such as whether they connected their result to the balanced equation, or what they would add if they had one more sentence. Do not critique the writing; focus on the chemistry ideas.';
+    return 'A CHEM 103L student wrote this conclusion (max 3 sentences) for the mole ratios lab:\n\n"' + txt + '"\n\nA strong conclusion should state: (1) the method used (continuous variations / calorimetry), (2) the experimental mole ratio determined, and (3) comparison to the known 4:1 ratio from the balanced equation and whether it agrees. Evaluate whether all three elements are present, the conclusion is concise (3 sentences max), and the reasoning is sound. Flag any scientific inaccuracies.';
   }
 };
 
@@ -2447,10 +2486,13 @@ function getAIFeedback(qid) {
 
   // ── Client-side off-task check ──────────────────────────────────────────
   if (isOffTask(txt, qid)) {
-    var topic = OFF_TASK_TOPICS[qid] || 'the chemistry idea in this section';
-    feedbackEl.style.borderLeftColor = 'var(--gold)';
-    feedbackEl.style.background = 'var(--gold-light)';
-    feedbackEl.innerHTML = 'It looks like this response might not quite address the chemistry question yet \u2014 and that\u2019s okay, just give it another try! This question is asking about <em>' + topic + '</em>. Check the Background or Reference tab if you\u2019d like a refresher, then write what you actually think \u2014 even an uncertain answer is a great place to start.';
+    var topic = OFF_TASK_TOPICS[qid] || 'the chemistry question';
+    feedbackEl.style.borderLeftColor = 'var(--red)';
+    feedbackEl.style.background = 'var(--red-light)';
+    feedbackEl.innerHTML = '<strong style="color:var(--red);">Response does not address the question.</strong><br>' +
+      'Please re-read the prompt and write a genuine response about <em>' + topic + '</em>. ' +
+      'Your grade on this section depends on a real attempt. ' +
+      'If you are unsure where to start, check the Background tab or the Reference tab for help.';
     return;
   }
 
@@ -2483,9 +2525,17 @@ function getAIFeedback(qid) {
   .then(function(r) { return r.json(); })
   .then(function(data) {
     if (data.result === 'success') {
-      feedbackEl.style.borderLeftColor = '';
-      feedbackEl.style.background = '';
-      feedbackEl.textContent = data.feedback || '';
+      // Check if the API itself flagged the response as off-task
+      var fb = data.feedback || '';
+      var isApiOffTask = /does not address|not address|off.task|re-read the prompt|genuine answer/i.test(fb);
+      if (isApiOffTask) {
+        feedbackEl.style.borderLeftColor = 'var(--red)';
+        feedbackEl.style.background = 'var(--red-light)';
+      } else {
+        feedbackEl.style.borderLeftColor = '';
+        feedbackEl.style.background = '';
+      }
+      feedbackEl.textContent = fb;
     } else {
       feedbackEl.style.borderLeftColor = 'var(--gold)';
       feedbackEl.style.background = 'var(--gold-light)';
@@ -3087,6 +3137,10 @@ document.addEventListener('DOMContentLoaded', function() {
     initCanvas('q3');
   }, 200);
 
+  // Wire up autosave listeners and restore any previously saved data
+  attachAutoSaveListeners();
+  restoreSavedData();
+
   // Reinit canvases when their tabs become visible
   var origSwitch = window.switchTab;
   window.switchTab = function(idx) {
@@ -3099,6 +3153,10 @@ document.addEventListener('DOMContentLoaded', function() {
         initCanvas('q1');
         initCanvas('q3');
       }, 100);
+    }
+    // Snapshot canvas drawings before leaving the analysis tab
+    if (idx !== 5) {
+      saveCanvasSnapshots();
     }
   };
 });
