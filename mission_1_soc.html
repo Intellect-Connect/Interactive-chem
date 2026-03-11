@@ -403,6 +403,40 @@
     border-radius: 2px;
   }
 
+  /* INTRINSIC/EXTRINSIC SORT */
+  .prop-chip {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: #fff; border: 2px solid #d4dce8;
+    border-radius: 8px; padding: 10px 12px;
+    cursor: grab; transition: box-shadow 0.15s, border-color 0.15s, opacity 0.2s;
+    user-select: none;
+  }
+  .prop-chip:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.10); border-color: var(--blue); }
+  .prop-chip.prop-selected { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(41,98,178,0.18); }
+  .prop-chip.prop-placed   { opacity: 0.45; cursor: default; pointer-events: none; }
+  .prop-chip.prop-correct  { border-color: #1a6b3c; background: #f0faf4; }
+  .prop-chip.prop-wrong    { border-color: #c0392b; background: #fdf2f2; }
+  .prop-chip-letter {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;
+  }
+  .prop-bin {
+    border: 2px dashed #c8d4e0; border-radius: 8px; overflow: hidden;
+    min-height: 80px; transition: border-color 0.15s, background 0.15s;
+  }
+  .prop-bin.drag-over  { border-color: var(--blue); background: #f0f4fc; border-style: solid; }
+  .prop-bin.tap-target { border-color: var(--blue); border-style: solid; box-shadow: 0 0 0 3px rgba(41,98,178,0.18); }
+  .prop-bin-header { padding: 8px 12px; }
+  .prop-bin-body   { padding: 10px; display: flex; flex-direction: column; gap: 6px; min-height: 50px; }
+  .prop-bin-empty  { font-size: 12px; color: #aaa; font-style: italic; padding: 6px 4px; }
+  .prop-chip-placed {
+    font-size: 12.5px; font-weight: 600; padding: 6px 9px; border-radius: 5px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .prop-chip-placed.correct { background: #e6f5ee; color: #1a6b3c; border: 1px solid #a8d8b8; }
+  .prop-chip-placed.wrong   { background: #fdf2f2; color: #c0392b; border: 1px solid #f0a8a8; }
+
   /* FORMULA BOX */
   .formula-display {
     background: var(--ink);
@@ -1269,18 +1303,19 @@
 <div class="student-bar">
   <div class="student-bar-inner">
     <div class="field-group">
-      <label>Student Name</label>
-      <input type="text" id="studentName" placeholder="Last, First">
+      <label>Your Name (Last, First)</label>
+      <input type="text" id="studentName" placeholder="e.g. Smith, Jordan">
     </div>
     <div class="field-group">
       <label>Lab Section</label>
-      <input type="text" id="labSection" placeholder="e.g. CHEM 100-01">
+      <input type="text" id="labSection" placeholder="e.g. 100-01">
     </div>
     <div class="field-group">
-      <label>Date</label>
-      <input type="text" id="labDate" placeholder="MM/DD/YYYY">
+      <label>Start Date</label>
+      <input type="date" id="labDate">
     </div>
   </div>
+  <div style="text-align:right; padding:2px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#6fcf6f; letter-spacing:0.06em; min-height:14px;"><span id="autosave-status" style="opacity:0; transition:opacity 1s ease;"></span></div>
 </div>
 
 <!-- TAB NAVIGATION -->
@@ -1401,49 +1436,117 @@
 <div id="tab-background" class="tab-panel">
 <main class="main">
 
-  <!-- CLASSIFICATION OF MATTER -->
+  <!-- INTRINSIC VS. EXTRINSIC PROPERTIES -->
   <div class="section-card">
     <div class="section-header">
       <div class="section-num">1</div>
-      <div class="section-title">Classification of Matter</div>
+      <div class="section-title">Intrinsic vs. Extrinsic Properties</div>
       <span class="section-badge badge-blue">Core Concept</span>
     </div>
     <div class="section-body">
-      <p style="font-size:13.5px; color:#555; margin-bottom:18px; line-height:1.65;">All matter can be classified into a hierarchy. Understanding where your food liquids fall in this hierarchy is the first step in today's investigation.</p>
+      <p style="font-size:13.5px; color:#555; margin-bottom:18px; line-height:1.65;">Every substance has measurable properties — but not all properties work the same way. Some depend entirely on <em>what</em> the substance is. Others depend on <em>how much</em> of it you have. This difference is the key to why density can identify a liquid even when its label has been removed.</p>
 
-      <div class="concept-grid">
-        <div class="concept-card">
+      <div class="concept-grid" style="grid-template-columns:1fr 1fr;">
+
+        <div class="concept-card" style="border-top:3px solid var(--blue);">
           <div class="concept-card-icon" style="background:#e8f0f9;">
-            <span style="color:var(--blue); font-weight:700; font-family:JetBrains Mono, monospace; font-size:13px;">E</span>
+            <span style="color:var(--blue); font-weight:700; font-family:'JetBrains Mono',monospace; font-size:13px;">I</span>
           </div>
-          <h4>Element</h4>
-          <p>A pure substance made of only one type of atom. Cannot be broken down into simpler substances by chemical means.</p>
-          <div class="example">Au (gold), O<sub>2</sub> (oxygen gas)</div>
+          <h4>Intrinsic Property <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:400; color:#888; margin-left:4px;">(intensive)</span></h4>
+          <p>Does <strong>not</strong> depend on the size of the sample. The value is the same whether you have a drop or a bucket. Intrinsic properties are unique to a substance — they act as a chemical fingerprint.</p>
+          <div class="example">Density, boiling point, melting point, color, refractive index</div>
         </div>
-        <div class="concept-card">
+
+        <div class="concept-card" style="border-top:3px solid var(--green);">
           <div class="concept-card-icon" style="background:#e8f5ee;">
-            <span style="color:var(--green); font-weight:700; font-family:JetBrains Mono, monospace; font-size:13px;">C</span>
+            <span style="color:var(--green); font-weight:700; font-family:'JetBrains Mono',monospace; font-size:13px;">E</span>
           </div>
-          <h4>Compound</h4>
-          <p>A pure substance made of two or more elements chemically bonded together in a fixed, definite ratio.</p>
-          <div class="example">H<sub>2</sub>O (water), NaCl (table salt), C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> (glucose)</div>
+          <h4>Extrinsic Property <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:400; color:#888; margin-left:4px;">(extensive)</span></h4>
+          <p><strong>Does</strong> depend on the size of the sample. Double the amount of substance and the value doubles too. Extrinsic properties cannot identify a substance on their own.</p>
+          <div class="example">Mass, volume, weight, total calories in a container</div>
         </div>
-        <div class="concept-card">
-          <div class="concept-card-icon" style="background:#fdf6e3;">
-            <span style="color:var(--gold); font-weight:700; font-family:JetBrains Mono, monospace; font-size:13px;">M</span>
+
+      </div>
+
+      <div class="ref-box" style="margin-top:16px; margin-bottom:20px;">
+        <div class="ref-box-title">Why This Matters for Food Safety</div>
+        <p>A 250 mL bottle of olive oil and a 1 L bottle of olive oil have different <strong>masses</strong> and different <strong>volumes</strong> — but they have the <em>same</em> <strong>density</strong>. That consistency is what makes density useful: if the density of the liquid in the bottle does not match the expected value for that product, something has changed — water has been added, a cheaper oil has been substituted, or a contaminant is present.</p>
+        <p style="margin:0;"><strong>Key principle:</strong> You can identify <em>what</em> a substance is using intrinsic properties. You can measure <em>how much</em> you have using extrinsic properties.</p>
+      </div>
+
+      <!-- INTERACTIVE SORT -->
+      <div style="border:2px solid var(--blue); border-radius:8px; overflow:hidden;">
+        <div style="background:var(--blue); padding:11px 18px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#fff; letter-spacing:0.1em; text-transform:uppercase;">Activity &#8212; Classify These Properties</span>
+        </div>
+        <div style="padding:18px; background:#f8f9fc;">
+          <p style="font-size:13.5px; line-height:1.7; color:#1a2a4a; margin-bottom:14px;">Four properties are listed below. Drag each one into the correct bin, or tap a property then tap a bin to place it.</p>
+
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#555; margin-bottom:8px;">Drag or tap to classify:</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;" id="prop-source">
+
+            <div class="prop-chip" draggable="true" id="pchip-bp" data-answer="intrinsic" ondragstart="propDragStart(event)" onclick="propTap('pchip-bp')">
+              <span class="prop-chip-letter" style="background:#e8f0f9; color:var(--blue);">?</span>
+              <div>
+                <div style="font-weight:700; font-size:13px; color:var(--ink); margin-bottom:2px;">Boiling point of water</div>
+                <div style="font-size:11.5px; color:#555; line-height:1.5;">Pure water always boils at 100 &#176;C at sea level &#8212; whether you heat a teaspoon or a full pot.</div>
+              </div>
+            </div>
+
+            <div class="prop-chip" draggable="true" id="pchip-mass" data-answer="extrinsic" ondragstart="propDragStart(event)" onclick="propTap('pchip-mass')">
+              <span class="prop-chip-letter" style="background:#e8f5ee; color:var(--green);">?</span>
+              <div>
+                <div style="font-weight:700; font-size:13px; color:var(--ink); margin-bottom:2px;">Mass of a cooking oil sample</div>
+                <div style="font-size:11.5px; color:#555; line-height:1.5;">A full bottle weighs more than a nearly empty one &#8212; the value changes with the amount present.</div>
+              </div>
+            </div>
+
+            <div class="prop-chip" draggable="true" id="pchip-density" data-answer="intrinsic" ondragstart="propDragStart(event)" onclick="propTap('pchip-density')">
+              <span class="prop-chip-letter" style="background:#e8f0f9; color:var(--blue);">?</span>
+              <div>
+                <div style="font-weight:700; font-size:13px; color:var(--ink); margin-bottom:2px;">Density of honey</div>
+                <div style="font-size:11.5px; color:#555; line-height:1.5;">A single drop of honey has the same density (~1.4 g/mL) as a full jar. Sample size is irrelevant.</div>
+              </div>
+            </div>
+
+            <div class="prop-chip" draggable="true" id="pchip-volume" data-answer="extrinsic" ondragstart="propDragStart(event)" onclick="propTap('pchip-volume')">
+              <span class="prop-chip-letter" style="background:#e8f5ee; color:var(--green);">?</span>
+              <div>
+                <div style="font-weight:700; font-size:13px; color:var(--ink); margin-bottom:2px;">Volume of vinegar in a bottle</div>
+                <div style="font-size:11.5px; color:#555; line-height:1.5;">Pour half out and the volume is halved. How much you have changes the measurement.</div>
+              </div>
+            </div>
+
           </div>
-          <h4>Mixture</h4>
-          <p>A physical combination of two or more pure substances. Composition can vary. Components retain their individual properties.</p>
-          <div class="example">Dish soap, vinegar, vegetable oil, salt water</div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+            <div class="prop-bin" id="pbin-intrinsic" ondragover="event.preventDefault()" ondrop="propDrop(event,'intrinsic')" onclick="propBinTap('intrinsic')">
+              <div class="prop-bin-header" style="background:#e8f0f9; color:var(--blue); border-bottom:2px solid #b8d0e8;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;">Intrinsic</span>
+              </div>
+              <div class="prop-bin-body" id="pbin-intrinsic-body">
+                <div class="prop-bin-empty" id="pbin-intrinsic-empty">Drop here</div>
+              </div>
+            </div>
+            <div class="prop-bin" id="pbin-extrinsic" ondragover="event.preventDefault()" ondrop="propDrop(event,'extrinsic')" onclick="propBinTap('extrinsic')">
+              <div class="prop-bin-header" style="background:#e8f5ee; color:var(--green); border-bottom:2px solid #a8d8b8;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;">Extrinsic</span>
+              </div>
+              <div class="prop-bin-body" id="pbin-extrinsic-body">
+                <div class="prop-bin-empty" id="pbin-extrinsic-empty">Drop here</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <button onclick="propCheck()" style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; background:var(--blue); color:#fff; border:none; border-radius:4px; padding:9px 20px; cursor:pointer;">Check My Answers</button>
+            <button onclick="propReset()" style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; background:#f0f0ec; color:#555; border:1px solid #ccc; border-radius:4px; padding:9px 16px; cursor:pointer;">Reset</button>
+            <span id="prop-score-msg" style="font-size:13px; color:var(--blue); font-weight:600;"></span>
+          </div>
+          <div id="prop-feedback" style="margin-top:14px; font-size:13px; line-height:1.7; display:none;"></div>
         </div>
       </div>
 
-      <div class="ref-box" style="margin-top:16px; margin-bottom:0;">
-        <div class="ref-box-title">Two Types of Mixtures</div>
-        <p><strong>Homogeneous mixture (solution):</strong> Uniform throughout — you cannot see the individual components. Examples: salt water, vinegar, clear apple juice.</p>
-        <p><strong>Heterogeneous mixture:</strong> Not uniform — you can see distinct regions or phases. Examples: Italian salad dressing, chunky salsa, unshaken orange juice.</p>
-        <p><strong>Key test:</strong> Most food liquids you will use today are <em>mixtures</em>, not pure compounds. Even something as simple as tap water is technically a mixture because it contains dissolved minerals. Distilled water is a compound.</p>
-      </div>
     </div>
   </div>
 
@@ -1562,14 +1665,14 @@
       <div class="q-block">
         <div class="q-label">
           <span class="q-num">Q1</span>
-          <span class="q-text">Pure water (H<sub>2</sub>O) consists of hydrogen and oxygen atoms chemically bonded together. Based on this, water is best classified as:</span>
+          <span class="q-text">You measure the density of a bottle of olive oil and get 0.91 g/mL. Your lab partner measures a single drop from the same bottle and also gets 0.91 g/mL. Which statement best explains why both values are the same?</span>
           <span class="q-points">1 pt</span>
         </div>
         <div class="mc-options" id="mc1">
-          <label class="mc-option"><input type="radio" name="mc1" value="A"> An element, because it is a single pure substance</label>
-          <label class="mc-option"><input type="radio" name="mc1" value="B"> A compound, because it is made of two elements chemically bonded in a fixed ratio</label>
-          <label class="mc-option"><input type="radio" name="mc1" value="C"> A homogeneous mixture, because hydrogen and oxygen are uniformly distributed</label>
-          <label class="mc-option"><input type="radio" name="mc1" value="D"> A heterogeneous mixture, because you can see separate components</label>
+          <label class="mc-option"><input type="radio" name="mc1" value="A"> The two measurements were identical because your lab partner copied your technique</label>
+          <label class="mc-option"><input type="radio" name="mc1" value="B"> Density is an intrinsic property — it does not depend on the size of the sample, only on what the substance is</label>
+          <label class="mc-option"><input type="radio" name="mc1" value="C"> A larger sample always has a higher density because it has more mass</label>
+          <label class="mc-option"><input type="radio" name="mc1" value="D"> Density only stays constant in pure compounds; mixtures like olive oil would show variation</label>
         </div>
         <div class="feedback-inline" id="fb-mc1"></div>
       </div>
@@ -1578,14 +1681,14 @@
       <div class="q-block">
         <div class="q-label">
           <span class="q-num">Q2</span>
-          <span class="q-text">A sample of vegetable oil has a density of 0.92 g/mL. A sample of water has a density of 1.00 g/mL. When poured into the same container, which statement is correct?</span>
+          <span class="q-text">Four liquids are poured carefully into the same tall cylinder: corn syrup (1.33 g/mL), glycerin (1.26 g/mL), water (1.00 g/mL), and olive oil (0.91 g/mL). Which liquid will form the top layer?</span>
           <span class="q-points">1 pt</span>
         </div>
         <div class="mc-options" id="mc2">
-          <label class="mc-option"><input type="radio" name="mc2" value="A"> Oil sinks because it is heavier than water</label>
-          <label class="mc-option"><input type="radio" name="mc2" value="B"> Water sinks because it is denser than oil; oil floats on top</label>
-          <label class="mc-option"><input type="radio" name="mc2" value="C"> They will mix completely because they are both liquids</label>
-          <label class="mc-option"><input type="radio" name="mc2" value="D"> Oil sinks because 0.92 is a smaller number than 1.00</label>
+          <label class="mc-option"><input type="radio" name="mc2" value="A"> Corn syrup, because it is the most viscous and rises to the surface</label>
+          <label class="mc-option"><input type="radio" name="mc2" value="B"> Olive oil, because it has the lowest density and is displaced upward by the denser liquids beneath it</label>
+          <label class="mc-option"><input type="radio" name="mc2" value="C"> Water, because it is the most familiar liquid and forms the reference layer</label>
+          <label class="mc-option"><input type="radio" name="mc2" value="D"> Glycerin, because it was poured in second and layers form in order of addition</label>
         </div>
         <div class="feedback-inline" id="fb-mc2"></div>
       </div>
@@ -1594,14 +1697,14 @@
       <div class="q-block">
         <div class="q-label">
           <span class="q-num">Q3</span>
-          <span class="q-text">Dish soap is a surfactant solution — water is the primary component, but it also contains detergent molecules, fragrances, preservatives, and dyes, all uniformly distributed throughout. Dish soap is best classified as:</span>
+          <span class="q-text">A bottle of extra virgin olive oil has a labeled density of approximately 0.91 g/mL. A food safety inspector measures the density of a sample and records 0.97 g/mL. What is the most reasonable scientific interpretation?</span>
           <span class="q-points">1 pt</span>
         </div>
         <div class="mc-options" id="mc3">
-          <label class="mc-option"><input type="radio" name="mc3" value="A"> An element</label>
-          <label class="mc-option"><input type="radio" name="mc3" value="B"> A compound</label>
-          <label class="mc-option"><input type="radio" name="mc3" value="C"> A homogeneous mixture</label>
-          <label class="mc-option"><input type="radio" name="mc3" value="D"> A heterogeneous mixture</label>
+          <label class="mc-option"><input type="radio" name="mc3" value="A"> The measurement is wrong — density cannot change for a liquid stored in a sealed bottle</label>
+          <label class="mc-option"><input type="radio" name="mc3" value="B"> The oil has a naturally wide density range, so 0.97 g/mL is within normal variation for olive oil</label>
+          <label class="mc-option"><input type="radio" name="mc3" value="C"> The oil has likely been adulterated — a denser substance such as water or a lower-grade oil has been added, shifting the measured density away from the expected value</label>
+          <label class="mc-option"><input type="radio" name="mc3" value="D"> Warmer storage temperatures caused the density to increase above the labeled value</label>
         </div>
         <div class="feedback-inline" id="fb-mc3"></div>
       </div>
@@ -2088,14 +2191,14 @@
       <div class="q-block">
         <div class="q-label">
           <span class="q-num">Q1</span>
-          <span class="q-text">Which statement best explains why water is a <em>compound</em> while dish soap is a <em>mixture</em>?</span>
+          <span class="q-text">Your measured density of water from Data Table 2 should be close to 1.00 g/mL. A food safety inspector tests a bottled water sample and records a density of 1.09 g/mL. Which statement best explains what this finding means?</span>
           <span class="q-points">4 pts</span>
         </div>
         <div class="mc-options" id="mc-q1">
-          <label class="mc-option"><input type="radio" name="q1mc" value="A"> Water contains only one type of atom (hydrogen), while dish soap contains many types of atoms</label>
-          <label class="mc-option"><input type="radio" name="q1mc" value="B"> Water is always H₂O — two elements chemically bonded in a fixed ratio — while dish soap is a physical combination of water, surfactants, dyes, and fragrances with no fixed composition</label>
-          <label class="mc-option"><input type="radio" name="q1mc" value="C"> Water is clear and uniform, which makes it a compound, while dish soap is colored, which makes it a mixture</label>
-          <label class="mc-option"><input type="radio" name="q1mc" value="D"> Water can be separated by boiling, so it is a compound; dish soap cannot be separated, so it is a mixture</label>
+          <label class="mc-option"><input type="radio" name="q1mc" value="A"> The reading must reflect instrument error — pure water always measures exactly 1.00 g/mL and cannot deviate</label>
+          <label class="mc-option"><input type="radio" name="q1mc" value="B"> The higher-than-expected density indicates the sample is not pure water — density is an intrinsic property, so a shift away from 1.00 g/mL signals that a denser substance has been introduced, changing the sample's composition</label>
+          <label class="mc-option"><input type="radio" name="q1mc" value="C"> A density of 1.09 g/mL simply means there is more water in the bottle than the label states — a larger sample has a higher density</label>
+          <label class="mc-option"><input type="radio" name="q1mc" value="D"> Temperature changes cause water's density to vary widely, so 1.09 g/mL is probably within the normal range for water stored at a warmer temperature</label>
         </div>
         <div class="feedback-inline" id="fb-q1"></div>
       </div>
@@ -2104,17 +2207,17 @@
       <div class="q-block">
         <div class="q-label">
           <span class="q-num">Q2</span>
-          <span class="q-text">Match each property or observation to its correct type: <strong>Physical Property</strong> or <strong>Chemical Property</strong>.</span>
+          <span class="q-text">The four liquids in this lab each have characteristic properties. For each statement below, decide whether it describes a <strong>physical property</strong> (observable or measurable without changing the substance's chemical identity) or a <strong>chemical property</strong> (involves a change in chemical composition or the formation of a new substance).</span>
           <span class="q-points">3 pts</span>
         </div>
-        <p class="q-hint">Physical properties can be observed or measured without changing the substance's chemical identity. Chemical properties describe how a substance reacts or transforms into a new substance.</p>
+        <p class="q-hint">Physical properties can be measured and the substance remains the same afterward. Chemical properties describe how a substance reacts or is permanently transformed.</p>
         <table class="data-table" style="margin-top:8px;">
           <thead>
             <tr><th style="width:60%;">Property / Observation</th><th>Classification</th></tr>
           </thead>
           <tbody>
             <tr>
-              <td class="label">The density of vegetable oil is approximately 0.92 g/mL</td>
+              <td class="label">The density of vegetable oil is approximately 0.92 g/mL — a value you can measure without changing what the oil is</td>
               <td>
                 <select id="match-1" onchange="checkMatching()">
                   <option value="">-- Select --</option>
@@ -2125,7 +2228,7 @@
               </td>
             </tr>
             <tr>
-              <td class="label">Vegetable oil turns rancid (oxidizes) when exposed to air over time</td>
+              <td class="label">Vegetable oil stored improperly will go rancid as oxygen reacts with its fatty acid chains, permanently producing new odor compounds</td>
               <td>
                 <select id="match-2" onchange="checkMatching()">
                   <option value="">-- Select --</option>
@@ -2136,7 +2239,7 @@
               </td>
             </tr>
             <tr>
-              <td class="label">Syrup/honey is a thick, viscous liquid at room temperature</td>
+              <td class="label">Syrup/honey is noticeably more viscous than water — it flows slowly and resists pouring, a behavior you can observe without altering its composition</td>
               <td>
                 <select id="match-3" onchange="checkMatching()">
                   <option value="">-- Select --</option>
@@ -2147,7 +2250,7 @@
               </td>
             </tr>
             <tr>
-              <td class="label">Sugar in syrup caramelizes (breaks down) when heated above 160°C</td>
+              <td class="label">When heated above 160°C, the sucrose in syrup decomposes into smaller compounds, producing the brown color and complex flavor of caramel — the original sugar is permanently destroyed</td>
               <td>
                 <select id="match-4" onchange="checkMatching()">
                   <option value="">-- Select --</option>
@@ -2158,7 +2261,7 @@
               </td>
             </tr>
             <tr>
-              <td class="label">Water is colorless and transparent</td>
+              <td class="label">Water is colorless, transparent, and has a characteristic density of approximately 1.00 g/mL — all observable without chemically changing the water</td>
               <td>
                 <select id="match-5" onchange="checkMatching()">
                   <option value="">-- Select --</option>
@@ -2169,7 +2272,7 @@
               </td>
             </tr>
             <tr>
-              <td class="label">Dish soap reacts with grease, breaking it into small droplets that rinse away</td>
+              <td class="label">In hard water, dish soap reacts with dissolved calcium or magnesium ions to form an insoluble white solid (soap scum) — a new compound that cannot be converted back to soap without another chemical reaction</td>
               <td>
                 <select id="match-6" onchange="checkMatching()">
                   <option value="">-- Select --</option>
@@ -2188,7 +2291,7 @@
       <div class="q-block">
         <div class="q-label">
           <span class="q-num">Q3</span>
-          <span class="q-text">Rank your five liquids from most dense to least dense based on <em>your experimental measurements</em>. Then compare your ranking to the expected ranking — are they in the same order?</span>
+          <span class="q-text">Rank your four liquids from most dense to least dense based on <em>your experimental measurements</em>. Then compare your ranking to the expected ranking — are they in the same order?</span>
           <span class="q-points">5 pts</span>
         </div>
         <p class="q-hint">Use the density values you calculated in Data Table 2. Your ranking may differ slightly from the expected values due to measurement precision.</p>
@@ -2331,10 +2434,10 @@
       <div class="q-block">
         <div class="q-label">
           <span class="q-num">C</span>
-          <span class="q-text">Write a 3&ndash;4 sentence conclusion. Address: (1) How can measuring density help identify food contamination in Bracket City? (2) Why is the classification of matter important for food safety investigations? (3) One source of error in your measurements and how it might have affected your results.</span>
+          <span class="q-text">Write a 3&ndash;4 sentence conclusion. Address: (1) What your measured density values tell you about the identity of each liquid — why do different liquids produce different density readings? (2) How a density shift away from an expected value could signal contamination in a real food safety situation. (3) One specific source of error in your measurements and which direction it would push your calculated density — too high, too low, or uncertain.</span>
         </div>
         <div class="open-area-wrap">
-          <textarea class="open-textarea" id="open-conclusion" style="min-height:110px;" placeholder="Write your conclusion here. Cover all three required points: density as identification tool, importance of matter classification, and error analysis..."></textarea>
+          <textarea class="open-textarea" id="open-conclusion" style="min-height:110px;" placeholder="Write your conclusion here. Cover all three required points: what your density measurements reveal about each liquid's identity, how a density deviation signals contamination, and a specific source of error with its direction of effect..."></textarea>
           <button class="ai-feedback-btn" onclick="getAIFeedback('conclusion', this)">
             <span class="spinner"></span>Get Feedback
           </button>
@@ -2401,7 +2504,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td class="label">Pre-Lab &mdash; Multiple choice Q1&ndash;Q3 + open response Q4 (density as fingerprint)</td><td style="text-align:center;">5</td></tr>
+          <tr><td class="label">Pre-Lab &mdash; Q1&ndash;Q4 (1 pt each, participation credit)</td><td style="text-align:center;">5</td></tr>
           <tr><td class="label">Data Table 1 &mdash; Classification + reasoning for all four food liquids</td><td style="text-align:center;">5</td></tr>
           <tr><td class="label">Data Table 2 &mdash; Density measurements (volume, masses, calculated densities)</td><td style="text-align:center;">5</td></tr>
           <tr><td class="label">Q1 &mdash; Compound vs. mixture (multiple choice)</td><td style="text-align:center;">4</td></tr>
@@ -2409,14 +2512,14 @@
           <tr><td class="label">Q3 &mdash; Density ranking, most to least dense</td><td style="text-align:center;">5</td></tr>
           <tr><td class="label">Q4 &mdash; True/false: why liquids form distinct layers</td><td style="text-align:center;">4</td></tr>
           <tr><td class="label">Q5 &mdash; Bracket City application: contaminated oil shipment analysis</td><td style="text-align:center;">6</td></tr>
-          <tr><td class="label">Conclusion &mdash; Density as ID tool, matter classification, error analysis</td><td style="text-align:center;">3</td></tr>
+          <tr><td class="label">Conclusion &mdash; Density measurements, contamination application, error analysis</td><td style="text-align:center;">3</td></tr>
           <tr><td class="label">Canvas Photos &mdash; Steps 4, 5, 6, 11, and 13 uploaded to Canvas assignment</td><td style="text-align:center;">10</td></tr>
           <tr style="background:#f0f8f5;"><td class="label" style="font-weight:700;">Total</td><td style="text-align:center; font-weight:700;">50 pts</td></tr>
         </tbody>
       </table>
       <div class="ref-box" style="margin-top:16px; margin-bottom:0;">
         <div class="ref-box-title">About Scoring</div>
-        <p>Multiple choice and dropdown questions are scored automatically on submission. Written responses (Q4 pre-lab, Q5, and the conclusion) are scored on scientific accuracy and completeness — brief responses receive partial credit. Canvas photos are graded separately by your instructor and are not included in your digital score. You have <strong>2 submission attempts</strong> — use your first attempt to see feedback, then revise and submit a final time.</p>
+        <p>Your digital score is out of 40 pts and is recorded automatically on submission. Canvas photos are graded separately by your instructor (10 pts) and are not included here. You have <strong>2 submission attempts</strong> — use your first attempt to review feedback, then revise and submit a final time.</p>
       </div>
     </div>
   </div>
@@ -2494,29 +2597,29 @@ function switchTab(id, btn) {
 const mcAnswers = {
   mc1: {
     correct: 'B',
-    explanation: 'Correct. Water (H2O) is a compound because it consists of hydrogen and oxygen atoms chemically bonded together in a fixed 2:1 ratio. A chemical bond means the atoms cannot be separated by physical means — you would need a chemical reaction (electrolysis) to decompose water into hydrogen and oxygen gas.',
+    explanation: 'Correct. Density is an intrinsic (intensive) property — it describes a ratio of mass to volume that stays constant regardless of sample size. One drop and one liter of the same pure substance have identical densities because the ratio m/V does not change when both numerator and denominator scale together.',
     wrong: {
-      A: 'An element is made of only one kind of atom. Water contains two different kinds of atoms (H and O), so it cannot be an element. Table salt (NaCl) is also not an element for the same reason.',
-      C: 'A mixture contains substances that are physically combined but retain their own properties and can be separated by physical means. In water, H and O are chemically bonded — no physical process separates them. That makes water a compound, not a mixture.',
-      D: 'A heterogeneous mixture would have visibly distinct regions. Water appears uniform (and is uniform at the molecular level), but the key point is that its composition is fixed by chemical bonding, not variable mixing.'
+      A: 'Identical technique would produce consistent measurements for any property, not just density. The reason both values are the same is that density itself does not change with sample size — that is a physical fact about intrinsic properties, independent of who makes the measurement.',
+      C: 'This reverses the relationship. Adding more of a substance increases both mass and volume proportionally, so their ratio (density) stays the same. A larger sample is not denser — it simply has more mass and more volume in equal proportion.',
+      D: 'Density is intrinsic for pure substances and also for homogeneous mixtures with a fixed composition. Olive oil has a consistent composition (triglyceride blend) that produces a stable, characteristic density. Variable composition would shift the density, but that is why density is useful for detecting adulteration.'
     }
   },
   mc2: {
     correct: 'B',
-    explanation: 'Correct. Water (d = 1.00 g/mL) is denser than oil (d ≈ 0.92 g/mL), so water sinks to the bottom and oil floats on top. Density determines relative position — the denser substance always sinks beneath the less dense one in an immiscible mixture.',
+    explanation: 'Correct. In a column of immiscible liquids, the substance with the lowest density rises to the top because the denser liquids beneath it exert enough upward buoyant force to displace it. Olive oil (0.91 g/mL) is less dense than all three others, so it forms the top layer. Corn syrup (1.33 g/mL) settles at the bottom.',
     wrong: {
-      A: 'This confuses "heavier" (total mass) with density. A swimming pool of oil is heavier than a cup of water, but oil still floats on water because density — mass per unit volume — is what matters, not total mass.',
-      C: 'Oil and water are immiscible — they do not mix at the molecular level because water is polar and oil is nonpolar. You can shake them together temporarily, but they will always separate into layers.',
-      D: 'The fact that 0.92 is a smaller number than 1.00 is coincidentally true here, but the reasoning is backward. The substance with the smaller density value is less dense and therefore floats, because it has less mass packed into the same volume.'
+      A: 'Viscosity describes a liquid\'s resistance to flow, not its tendency to rise or sink. A viscous liquid can still sink if it is denser than the liquid below it. Corn syrup is both the most viscous and the densest — it settles at the bottom, not the top.',
+      C: 'Water is the reference density (1.00 g/mL) and falls in the middle of this group — below glycerin (1.26) and corn syrup (1.33), but above olive oil (0.91). It does not form the top layer.',
+      D: 'Layering in a density column is determined entirely by density values, not by the order of addition. If you poured olive oil in first and corn syrup on top, the corn syrup would sink through the olive oil and the layers would reach the same final arrangement.'
     }
   },
   mc3: {
     correct: 'C',
-    explanation: 'Correct. Dish soap is a homogeneous mixture. It contains water, surfactant molecules (like sodium lauryl sulfate), fragrances, dyes, and preservatives — multiple chemically distinct substances physically combined in a uniform solution. Nothing is chemically bonded into a new pure substance, and components retain their individual properties.',
+    explanation: 'Correct. Extra virgin olive oil has a narrow, well-characterized density range of approximately 0.910–0.916 g/mL at room temperature. A measured value of 0.97 g/mL is well outside that range and indicates the presence of a denser substance — most likely water (1.00 g/mL) or a cheaper refined oil — mixed into the product. This kind of adulteration is detectable precisely because density is an intrinsic property: the expected value is stable and reproducible.',
     wrong: {
-      A: 'Elements consist of only one kind of atom. Dish soap contains water, surfactants, fragrances, and dyes — many different types of molecules, not a single element.',
-      B: 'A compound is a pure substance with a fixed chemical formula. Dish soap\'s composition varies by brand and formulation, and its components can be separated physically. That variability and separability rules out compound.',
-      D: 'A heterogeneous mixture has visibly distinct regions you can see without magnification. Dish soap appears completely uniform throughout — it is a homogeneous mixture, specifically a surfactant solution.'
+      A: 'A sealed bottle of liquid does not change in density over time under normal storage conditions. Density is an intrinsic property tied to molecular composition and packing — neither changes simply from sitting on a shelf.',
+      B: 'Extra virgin olive oil has a tightly defined density range (approximately 0.910–0.916 g/mL) set by its fatty acid composition. A reading of 0.97 g/mL is nearly 6% above the upper end of that range — far outside natural variation.',
+      D: 'Warming a liquid causes it to expand, which decreases density (not increases it). If anything, heat would move the reading further from 0.97 g/mL, not toward it. Temperature effects on density also move values in the wrong direction to explain this observation.'
     }
   }
 };
@@ -2815,14 +2918,14 @@ function setValMsg(el, msgEl, level, text) {
 }
 
 // =========================================================
-// Q1 MULTIPLE CHOICE — Compound vs. Mixture
+// Q1 MULTIPLE CHOICE — Density deviation as contamination indicator
 // =========================================================
 const q1Answer = 'B';
 const q1Feedback = {
-  A: 'Not quite. Water (H₂O) contains two types of atoms — hydrogen and oxygen. The key distinction is not the number of atom types, but whether they are chemically bonded in a fixed ratio (compound) or physically combined with variable composition (mixture).',
-  B: 'Correct. Water is always H₂O — a fixed chemical bond between hydrogen and oxygen in a 2:1 ratio. Dish soap contains multiple substances physically combined with no fixed formula, making it a mixture.',
-  C: 'Appearance — color or clarity — does not determine whether something is a compound or mixture. Many mixtures are clear and many compounds are colored. Classification is based on chemical composition.',
-  D: 'This reverses the logic. Mixtures can often be separated by physical means such as boiling or filtering. Compounds require chemical reactions to break apart — they are harder to separate, not easier.'
+  A: 'Instrument error is always worth checking, but a deviation of 0.09 g/mL is far larger than typical measurement uncertainty for a calibrated instrument. More importantly, if density were an unreliable measurement, it would be useless as a food safety tool — the whole point is that a consistent, reproducible value makes deviations meaningful.',
+  B: 'Correct. Density is an intrinsic property — its value is fixed by the identity and composition of the substance, not by the amount present. Pure water is consistently ~1.00 g/mL. A reading of 1.09 g/mL means something denser has been mixed in, shifting the intrinsic property away from water\'s expected value. This is exactly how density works as a contamination fingerprint.',
+  C: 'This is a common misconception that the background directly addresses. Density is an intrinsic property — it does not change when the sample size changes. More water in a bottle gives you a larger mass and a larger volume, but the ratio m/V stays the same. A reading of 1.09 g/mL cannot be explained by bottle size.',
+  D: 'Temperature does affect water\'s density, but only very slightly — water at 20°C is 0.998 g/mL and at 40°C is 0.992 g/mL. A full 20-degree increase shifts density by only 0.006 g/mL. The 0.09 g/mL gap here is roughly 15 times larger than the entire temperature effect across everyday storage conditions.'
 };
 
 document.querySelectorAll('input[name="q1mc"]').forEach(radio => {
@@ -2852,12 +2955,12 @@ const matchAnswers = {
   'match-6': 'chemical'
 };
 const matchFeedback = {
-  'match-1': { physical: 'Correct. Density is measured without changing the oil — it remains vegetable oil after measurement.', chemical: 'Density is measured without altering the oil chemically. It is a physical property.' },
-  'match-2': { chemical: 'Correct. Rancidity is oxidation — a chemical reaction that produces new compounds with different odors and flavors. The oil is permanently changed.', physical: 'Turning rancid is a chemical change — oxygen reacts with fatty acid chains, forming new substances. This is a chemical property.' },
-  'match-3': { physical: 'Correct. Viscosity can be observed without changing the syrup chemically. It is a physical property.', chemical: 'Viscosity is how a substance flows and can be observed without a chemical change. It is a physical property.' },
-  'match-4': { chemical: 'Correct. Caramelization is a chemical reaction — sucrose decomposes into new compounds at high temperature. The original sugar is permanently destroyed.', physical: 'Caramelization creates new substances — the sucrose is permanently broken down by heat. This is a chemical property.' },
-  'match-5': { physical: 'Correct. Color and transparency are observable without changing water chemically. These are physical properties.', chemical: 'Color and transparency can be observed without altering water chemically. They are physical properties.' },
-  'match-6': { chemical: 'Correct. Soap\'s action on grease involves surfactant molecules disrupting fat — a chemical interaction that transforms the system.', physical: 'The way soap acts on grease is best described as a chemical property — surfactants chemically interact with fat molecules to break them apart.' }
+  'match-1': { physical: 'Correct. Measuring density does not change what the oil is — it remains vegetable oil before and after. Density is a physical property you can measure repeatedly without altering the substance.', chemical: 'Density is measured without altering the oil chemically. After measuring, the oil is still vegetable oil with the same molecular composition. This makes density a physical property.' },
+  'match-2': { chemical: 'Correct. Rancidity is oxidation — oxygen molecules react with unsaturated fatty acid chains in the oil, forming new compounds (aldehydes and ketones) responsible for the off-flavor and odor. The original oil molecules are permanently changed.', physical: 'Turning rancid is a chemical change. Oxygen reacts with the fatty acid chains to form entirely new compounds with different structures. Because new substances are produced, this is a chemical property, not a physical one.' },
+  'match-3': { physical: 'Correct. Viscosity describes how a liquid flows and can be observed and compared without any chemical change. After observing that syrup pours slowly, the syrup is still chemically identical to what it was before.', chemical: 'Viscosity is how a liquid resists flow — you can observe it directly without changing the syrup\'s composition. Because no new substance is formed during observation, viscosity is a physical property.' },
+  'match-4': { chemical: 'Correct. Caramelization is a chemical reaction — sucrose (C₁₂H₂₂O₁₁) decomposes under heat into glucose, fructose, and dozens of other compounds that produce the characteristic color and flavor. The original sugar molecules are permanently destroyed and cannot be recovered.', physical: 'Caramelization creates entirely new substances from the original sucrose. The sugar is permanently broken down by heat into different compounds. Because a chemical transformation occurs, this is a chemical property.' },
+  'match-5': { physical: 'Correct. Color, transparency, and density are all observable and measurable without changing water\'s chemical identity. Water is still H₂O after you measure or observe any of these properties.', chemical: 'Color, transparency, and density can all be observed or measured without altering water\'s chemical composition. Water remains H₂O throughout — no new substance is formed. These are physical properties.' },
+  'match-6': { chemical: 'Correct. When soap contacts calcium or magnesium ions in hard water, the fatty acid components react ionically to form calcium or magnesium soap salts — an insoluble white solid (soap scum). A new compound is produced that cannot be converted back to the original soap without another chemical reaction.', physical: 'The formation of soap scum involves a genuine chemical reaction. Calcium or magnesium ions from hard water combine with the fatty acid chains in soap to produce a new, insoluble compound. Because new bonds are formed and a new substance results, this is a chemical property, not a physical one.' }
 };
 
 function checkMatching() {
@@ -3042,7 +3145,7 @@ function checkRanking() {
 // =========================================================
 // AI FEEDBACK ENGINE
 // =========================================================
-var AI_SYSTEM = 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university, giving feedback on student lab work for CHEM 100: Chemistry in Society. Your students are non-majors \u2014 many are encountering college-level science for the first time and some feel nervous about chemistry. Approach every response with genuine warmth and the assumption that the student is trying their best. Tone and length: Use plain, conversational language. No bullet points. No markdown. Keep feedback to 4-5 sentences. Speak like a patient, encouraging teacher \u2014 not a grader. For strong responses: Name specifically what the student got right and connect it to something they will recognize from everyday life. Extend their thinking one step further with a question or observation that sparks curiosity. For incomplete responses: Begin by affirming whatever correct thinking is present, then use a gentle guiding question to nudge them toward what is missing. Never state the answer outright. Frame the gap as something worth discovering, not a mistake to correct. For responses with a scientific misconception: Gently reframe with a question such as \"What do you think would happen if...\" that helps the student reason toward the accurate idea. The goal is discovery, not correction. Never make the student feel foolish. For off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly. Acknowledge that this does not yet answer the question, restate what is being asked in simple, friendly terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. AI-detection: If the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, sophisticated vocabulary inconsistent with a non-major\'s writing, or hedging language such as \"it is worth noting,\" \"furthermore,\" or \"in conclusion,\" it may have been generated by AI. If so, respond only with: This response reads like it may have been drafted with some outside help \u2014 and I understand the temptation, but I want to hear your own voice. Even a rough, imperfect answer in your own words tells me so much more about what you are learning. Please rewrite this the way you would explain it to a friend. What do you actually understand about this topic?';
+var AI_SYSTEM = 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university, giving feedback on student lab work for CHEM 100: Chemistry in Society. Your students are non-majors \u2014 many are encountering college-level science for the first time and some feel nervous about chemistry. Approach every response with genuine warmth and the assumption that the student is trying their best. Tone and length: Use plain, conversational language. No bullet points. No markdown. Keep feedback to 4-5 sentences. Speak like a patient, encouraging teacher \u2014 not a grader. For strong responses: Name specifically what the student got right and connect it to something they will recognize from everyday life. Extend their thinking one step further with a question or observation that sparks curiosity. For incomplete responses: Begin by affirming whatever correct thinking is present, then use a gentle guiding question to nudge them toward what is missing. Never state the answer outright. Frame the gap as something worth discovering, not a mistake to correct. For responses with a scientific misconception: Gently reframe with a question such as \"What do you think would happen if...\" that helps the student reason toward the accurate idea. The goal is discovery, not correction. Never make the student feel foolish. For off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly. Acknowledge that this does not yet answer the question, restate what is being asked in simple, friendly terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. AI-detection: If the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, sophisticated vocabulary inconsistent with a non-major\'s writing, or hedging language such as \"it is worth noting,\" \"furthermore,\" or \"in conclusion,\" it may have been generated by AI. If so, respond only with: This response reads like it may have been drafted with some outside help \u2014 and I understand the temptation, but I want to hear your own voice. Even a rough, imperfect answer in your own words tells me so much more about what you are learning. Please rewrite this the way you would explain it to a friend. What do you actually understand about this topic? Grading principles for written responses: Accept synonymous or informal language if the scientific meaning is accurate — a student who writes \'gets hotter\' instead of \'temperature increases\' is demonstrating the same understanding and should receive full credit. Award partial credit (at least half) when the core concept is present but a detail or step is missing — do not score incomplete reasoning as zero simply because it is not fully developed. Never penalize a student for missing vocabulary if the underlying concept is demonstrated — correct scientific thinking expressed in everyday language is worth full credit. Spelling and grammatical errors should never reduce a score — evaluate scientific accuracy only. For multi-part questions, score each part independently — a wrong conclusion that follows logically from a correct but flawed premise deserves partial credit on the conclusion. When a response is ambiguous, interpret it charitably — assume the most scientifically reasonable reading before marking it incorrect. These are non-science majors; apply a healthy degree of leniency and reward genuine engagement with the material. Vocabulary level: If the student uses chemistry terms clearly beyond what CHEM 100 covers — such as stoichiometry, molarity, enthalpy, reaction mechanisms, or other upper-division concepts not introduced in this course — flag this gently. Do not penalise them; instead say something like: You used some chemistry terms here that go beyond what we have covered so far in CHEM 100 — which shows real curiosity! I want to make sure you can explain this same idea using the vocabulary from our course. Could you try putting this in your own words, using what we have talked about in class?';
 
 const questionContexts = {
   'q4-intro': {
@@ -3050,28 +3153,153 @@ const questionContexts = {
 
 Student response: "{RESPONSE}"
 
-Begin by affirming whatever correct thinking the student shows - even if just partial. A strong response connects density to identification (each substance has a unique, reproducible density regardless of sample size) and links this to detecting contamination. If those ideas are missing or fuzzy, ask one gentle guiding question that points toward them without giving the answer away. Keep feedback to 3-4 sentences. No bullet points.`
+Begin by affirming whatever correct thinking the student shows - even if just partial. A strong response connects density to identification (each substance has a unique, reproducible density regardless of sample size) and links this to detecting contamination. If those ideas are missing or fuzzy, ask one gentle guiding question that points toward them without giving the answer away. Keep feedback to 3-4 sentences. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. No bullet points. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar.`
   },
   q5: {
     prompt: `A CHEM 100 student answered the Bracket City application question: "Pure vegetable oil should have density 0.92 g/mL but measures 1.10 g/mL. What does this mean? What might be contaminating it?"
 
 Student response: "{RESPONSE}"
 
-Start by naming what the student got right - did they connect the higher density to possible contamination or adulteration? A complete response also considers what substance could raise the density to 1.10 g/mL (water at 1.00 is too low; palm oil, mineral oil, or water-based adulterants are plausible) and notes the safety or labeling implication. Affirm whatever reasoning is present, then use one gentle guiding question to nudge toward anything important that is missing. Keep feedback to 4-5 sentences. No bullet points.`
+Start by naming what the student got right - did they connect the higher density to possible contamination or adulteration? A complete response also considers what substance could raise the density to 1.10 g/mL (water at 1.00 is too low; palm oil, mineral oil, or water-based adulterants are plausible) and notes the safety or labeling implication. Affirm whatever reasoning is present, then use one gentle guiding question to nudge toward anything important that is missing. Keep feedback to 4-5 sentences. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. No bullet points. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar.`
   },
   conclusion: {
-    prompt: `A CHEM 100 student wrote this lab conclusion for a food density investigation. A strong conclusion addresses three things: how density helps identify contamination, why classifying matter matters, and a specific source of error.
+    prompt: `A CHEM 100 student wrote this lab conclusion for a food density investigation. A strong conclusion addresses three things: (1) what their measured density values revealed about the identity of each liquid — connecting the idea that density is an intrinsic property unique to each substance; (2) how a shift in density away from an expected value could signal contamination or adulteration in a real food safety context; and (3) one specific source of measurement error and how it would have affected their calculated density value.
 
 Student response: "{RESPONSE}"
 
-Begin by genuinely celebrating what the student got right. If their error analysis is vague (like "I may have measured wrong"), gently invite them to be more specific - what exactly could have gone wrong and why? If any of the three points are missing, ask one warm, curious question to prompt their thinking. Keep feedback to 4-5 sentences. No bullet points.`
+Begin by genuinely celebrating what the student got right. If their error analysis is vague (for example, "I may have measured wrong"), gently invite them to be more specific — what exactly could have gone wrong, and in which direction would it push the density value? If any of the three points are missing, ask one warm, curious question to prompt their thinking without giving the answer away. Keep feedback to 4-5 sentences. Prioritize demonstrated understanding over precise wording — informal language and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. No bullet points.`
   }
 };
+
+// ============================================================
+//  INTRINSIC / EXTRINSIC SORT ACTIVITY
+// ============================================================
+var propSelected = null;
+var propPlacements = {};
+
+var PROP_FEEDBACK = {
+  'pchip-bp':      { name: 'Boiling point of water', correct: 'intrinsic',
+    explain: 'Boiling point is intrinsic — it reflects the strength of intermolecular forces in the substance itself, not the quantity present. Pure water is always 100 \u00b0C at sea level regardless of sample size.' },
+  'pchip-mass':    { name: 'Mass of a cooking oil sample', correct: 'extrinsic',
+    explain: 'Mass is extrinsic — it scales directly with the amount of substance present. A larger sample has more mass; a smaller sample has less. Mass alone cannot tell you which oil you have.' },
+  'pchip-density': { name: 'Density of honey', correct: 'intrinsic',
+    explain: 'Density is intrinsic — it is the ratio of mass to volume, and that ratio stays constant for a given substance at a given temperature regardless of sample size. This is exactly why density works as a chemical fingerprint in this lab.' },
+  'pchip-volume':  { name: 'Volume of vinegar in a bottle', correct: 'extrinsic',
+    explain: 'Volume is extrinsic — it measures how much space the sample occupies, which changes with the amount present. Like mass, volume alone cannot identify a substance.' },
+};
+
+function propDragStart(e) {
+  if (propPlacements[e.currentTarget.id]) { e.preventDefault(); return; }
+  e.dataTransfer.setData('text/plain', e.currentTarget.id);
+  document.querySelectorAll('.prop-bin').forEach(function(b) {
+    b.addEventListener('dragenter', propBinEnter);
+    b.addEventListener('dragleave', propBinLeave);
+  });
+}
+function propBinEnter(e) { e.currentTarget.classList.add('drag-over'); }
+function propBinLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+
+function propDrop(e, binId) {
+  e.preventDefault();
+  var chipId = e.dataTransfer.getData('text/plain');
+  document.querySelectorAll('.prop-bin').forEach(function(b) { b.classList.remove('drag-over'); });
+  propPlace(chipId, binId);
+}
+
+function propTap(chipId) {
+  if (propPlacements[chipId]) return;
+  if (propSelected === chipId) {
+    document.getElementById(chipId).classList.remove('prop-selected');
+    propSelected = null;
+    document.querySelectorAll('.prop-bin').forEach(function(b) { b.classList.remove('tap-target'); });
+    return;
+  }
+  if (propSelected) document.getElementById(propSelected).classList.remove('prop-selected');
+  propSelected = chipId;
+  document.getElementById(chipId).classList.add('prop-selected');
+  document.querySelectorAll('.prop-bin').forEach(function(b) { b.classList.add('tap-target'); });
+}
+
+function propBinTap(binId) {
+  document.querySelectorAll('.prop-bin').forEach(function(b) { b.classList.remove('tap-target'); });
+  if (propSelected) {
+    propPlace(propSelected, binId);
+    var sel = document.getElementById(propSelected);
+    if (sel) sel.classList.remove('prop-selected');
+    propSelected = null;
+  }
+}
+
+function propPlace(chipId, binId) {
+  if (propPlacements[chipId]) return;
+  propPlacements[chipId] = binId;
+  var chip = document.getElementById(chipId);
+  if (chip) chip.classList.add('prop-placed');
+  var body = document.getElementById('pbin-' + binId + '-body');
+  var empty = document.getElementById('pbin-' + binId + '-empty');
+  if (empty) empty.style.display = 'none';
+  var tag = document.createElement('div');
+  tag.className = 'prop-chip-placed';
+  tag.id = 'pplaced-' + chipId;
+  tag.innerHTML = '\u2192 ' + PROP_FEEDBACK[chipId].name;
+  if (body) body.appendChild(tag);
+  document.querySelectorAll('.prop-bin').forEach(function(b) { b.classList.remove('tap-target'); });
+  propSelected = null;
+  if (Object.keys(propPlacements).length === 4) setTimeout(propCheck, 300);
+}
+
+function propCheck() {
+  var correct = 0;
+  var lines = [];
+  Object.keys(PROP_FEEDBACK).forEach(function(chipId) {
+    var data  = PROP_FEEDBACK[chipId];
+    var placed = propPlacements[chipId];
+    var ok = placed === data.correct;
+    if (ok) correct++;
+    var chip = document.getElementById(chipId);
+    if (chip) chip.classList.add(ok ? 'prop-correct' : 'prop-wrong');
+    var tag = document.getElementById('pplaced-' + chipId);
+    if (tag) { tag.classList.add(ok ? 'correct' : 'wrong'); tag.innerHTML = (ok ? '\u2713 ' : '\u2717 ') + data.name; }
+    var color = ok ? '#1a6b3c' : '#c0392b';
+    var label = ok ? 'Correct' : 'Placed in <em>' + placed + '</em> \u2014 correct bin: <em>' + data.correct + '</em>';
+    lines.push('<div style="margin-bottom:10px; padding:8px 12px; border-radius:6px; border-left:3px solid ' + color + '; background:' + (ok ? '#f0faf4' : '#fdf2f2') + ';">' +
+      '<span style="font-weight:700; color:' + color + ';">' + (ok ? '\u2713' : '\u2717') + ' ' + data.name + '</span> \u2014 ' + label + '<br>' +
+      '<span style="font-size:12px; color:#444; line-height:1.6;">' + data.explain + '</span></div>');
+  });
+  var msg = document.getElementById('prop-score-msg');
+  if (msg) msg.textContent = correct + ' / 4 correct';
+  var fb = document.getElementById('prop-feedback');
+  if (fb) {
+    fb.style.display = 'block';
+    fb.innerHTML = '<div style="font-family:\'JetBrains Mono\',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#555; margin-bottom:10px;">Feedback</div>' + lines.join('');
+  }
+}
+
+function propReset() {
+  propPlacements = {};
+  propSelected = null;
+  ['pchip-bp','pchip-mass','pchip-density','pchip-volume'].forEach(function(id) {
+    var c = document.getElementById(id);
+    if (c) c.classList.remove('prop-placed','prop-selected','prop-correct','prop-wrong');
+    var tag = document.getElementById('pplaced-' + id);
+    if (tag) tag.remove();
+  });
+  ['intrinsic','extrinsic'].forEach(function(bin) {
+    var empty = document.getElementById('pbin-' + bin + '-empty');
+    if (empty) empty.style.display = '';
+    var b = document.getElementById('pbin-' + bin);
+    if (b) b.classList.remove('tap-target','drag-over');
+  });
+  var msg = document.getElementById('prop-score-msg');
+  if (msg) msg.textContent = '';
+  var fb = document.getElementById('prop-feedback');
+  if (fb) { fb.style.display = 'none'; fb.innerHTML = ''; }
+}
 
 async function getAIFeedback(qId, btn) {
   const textareaId = qId === 'q4-intro' ? 'open-q4-intro' : 'open-' + qId;
   const response = document.getElementById(textareaId).value.trim();
-  if (!response || response.length < 3) {
+  if (!response || response.length < 15) {
     alert('Please write a response before requesting feedback.');
     return;
   }
@@ -3244,6 +3472,8 @@ function onPhotoConfirmChange() {
 window.addEventListener('DOMContentLoaded', function() {
   updateAttemptStatus();
   buildChecklist();
+  _attachLab1SaveListeners();
+  loadLabState();
 });
 
 // =========================================================
@@ -3277,22 +3507,23 @@ async function submitLab() {
   let total = 40;
   let details = [];
 
-  // Pre-Lab MC Q1, Q2, Q3 (1 pt each) + open Q4-intro (2 pts) = 5 pts
+  // Pre-Lab: graded for participation only (1 pt per question answered, not for accuracy)
+  // MC Q1, Q2, Q3 (1 pt each) + open Q4-intro (1 pt) = 4 pts
   const prelabMCs = [
-    { name: 'mc1', correct: 'B', label: 'Pre-Lab Q1 (Water classification)' },
-    { name: 'mc2', correct: 'B', label: 'Pre-Lab Q2 (Oil vs. water density)' },
-    { name: 'mc3', correct: 'C', label: 'Pre-Lab Q3 (Dish soap classification)' }
+    { name: 'mc1', correct: 'B', label: 'Pre-Lab Q1 (Intrinsic vs. extrinsic properties)' },
+    { name: 'mc2', correct: 'B', label: 'Pre-Lab Q2 (Density column layering)' },
+    { name: 'mc3', correct: 'C', label: 'Pre-Lab Q3 (Density as contamination indicator)' }
   ];
   prelabMCs.forEach(q => {
     const sel = document.querySelector(`input[name="${q.name}"]:checked`);
-    const pts = sel && sel.value === q.correct ? 1 : 0;
+    const pts = sel ? 1 : 0;  // participation: 1 pt for any answer
     score += pts;
-    details.push(q.label + ': ' + pts + '/1' + (!sel ? ' (not attempted)' : pts ? ' (correct)' : ' (incorrect)'));
+    details.push(q.label + ': ' + pts + '/1 (participation)' + (!sel ? ' (not attempted)' : ' (answered)'));
   });
   const q4introVal = document.getElementById('open-q4-intro').value.trim();
-  const q4introPts = q4introVal.length > 80 ? 2 : q4introVal.length > 20 ? 1 : 0;
+  const q4introPts = q4introVal.length > 10 ? 1 : 0;  // participation: 1 pt for any response
   score += q4introPts;
-  details.push('Pre-Lab Q4 (Density as fingerprint): ' + q4introPts + '/2' + (!q4introVal ? ' (not attempted)' : ' (submitted)'));
+  details.push('Pre-Lab Q4 (Density as fingerprint): ' + q4introPts + '/1 (participation)' + (!q4introVal ? ' (not attempted)' : ' (answered)'));
 
   // Data Table 1: Classification + Reasoning (5 pts — 2.5 each half)
   let classScore = 0;
@@ -3312,6 +3543,7 @@ async function submitLab() {
   details.push('Data Table 1 (Classification + Reasoning): ' + dt1pts + '/5 (' + classScore + '/4 classifications, ' + reasonScore + '/4 reasoning correct)');
 
   // Data Table 2: Measurements (5 pts)
+  // 9 fields: volume (1) + cup/full pairs (4) + density entries (4)
   let dataScore = 0;
   const volUsed = parseFloat(document.getElementById('volume-used').value);
   if (!isNaN(volUsed) && volUsed > 0) dataScore++;
@@ -3319,10 +3551,12 @@ async function submitLab() {
     const cup = parseFloat(document.getElementById('cup-' + liq) ? document.getElementById('cup-' + liq).value : '');
     const full = parseFloat(document.getElementById('full-' + liq) ? document.getElementById('full-' + liq).value : '');
     if (!isNaN(cup) && !isNaN(full) && full > cup) dataScore++;
+    const dens = parseFloat(document.getElementById('density-' + liq) ? document.getElementById('density-' + liq).value : '');
+    if (!isNaN(dens) && dens > 0) dataScore++;
   });
-  const dt2pts = Math.min(5, Math.round((dataScore / 6) * 5));
+  const dt2pts = Math.min(5, Math.round((dataScore / 9) * 5));
   score += dt2pts;
-  details.push('Data Table 2 (Measurements): ' + dt2pts + '/5 (' + dataScore + '/6 fields correctly filled)');
+  details.push('Data Table 2 (Measurements): ' + dt2pts + '/5 (' + dataScore + '/9 fields filled)');
 
   // Ranking Q3 (5 pts)
   const ranks = ['rank1','rank2','rank3','rank4'].map(id => document.getElementById(id) ? document.getElementById(id).value : '');
@@ -3336,7 +3570,7 @@ async function submitLab() {
   const q1mc = document.querySelector('input[name="q1mc"]:checked');
   const q1pts = q1mc && q1mc.value === 'B' ? 4 : q1mc ? 1 : 0;
   score += q1pts;
-  details.push('Q1 (Compound vs. Mixture MC): ' + q1pts + '/4' + (!q1mc ? ' (not attempted)' : q1mc.value === 'B' ? ' (correct)' : ' (incorrect)'));
+  details.push('Q1 (Density deviation as contamination indicator): ' + q1pts + '/4' + (!q1mc ? ' (not attempted)' : q1mc.value === 'B' ? ' (correct)' : ' (incorrect)'));
 
   // Q2 Matching (3 pts)
   const matchKeys = ['match-1','match-2','match-3','match-4','match-5','match-6'];
@@ -3356,10 +3590,10 @@ async function submitLab() {
   score += q4pts;
   details.push('Q4 (True/False Density Column): ' + q4pts + '/4 (' + tfTP + '/4 true found, ' + tfFP + ' false selected)');
 
-  // Written Q5 (6 pts), Conclusion (3 pts)
+  // Written Q5 (6 pts), Conclusion (4 pts)
   const writtenQs = [
     { id: 'q5', pts: 6, label: 'Q5 (Bracket City Application)' },
-    { id: 'conclusion', pts: 3, label: 'Conclusion' }
+    { id: 'conclusion', pts: 4, label: 'Conclusion' }
   ];
 
   writtenQs.forEach(q => {
@@ -3471,7 +3705,7 @@ Keep the tone warm, constructive, and specific. Use plain text with section head
       method: 'POST',
       body: JSON.stringify({
         action: 'feedback',
-        system: 'You are an encouraging CHEM 100 instructor providing personalized post-submission feedback. Be warm, specific, and constructive. Use plain text only — no markdown, no bullet points.',
+        system: 'You are an encouraging CHEM 100 instructor providing personalized post-submission feedback to a non-science major who may be encountering chemistry for the first time. Be warm, specific, and constructive. Use plain text only — no markdown, no bullet points. Prioritize demonstrated understanding over precise wording — informal language and rough phrasing are fine as long as the core concept is present. Award partial credit generously. Never penalize for missing vocabulary if the underlying concept is shown. Never deduct for spelling or grammar.',
         prompt: prompt
       })
     });
@@ -3519,6 +3753,113 @@ function showScorePanel(name, score, total, pct, timestamp, details) {
     details.map(d => '<span style="display:block; padding:3px 0; border-bottom:1px dashed var(--rule);">' + d + '</span>').join('') +
     '<div style="margin-top:12px; padding:12px; background:var(--orange-light); border-radius:3px; font-size:12.5px; color:#3e2000; line-height:1.6;"><strong>Reminder:</strong> Submit your density column photo separately through the Canvas assignment. Your written responses have received AI instructor feedback — click "Get Feedback" on any open response to see detailed comments.</div>' +
     '<div id="sheets-status" style="margin-top:12px; font-family:JetBrains Mono,monospace; font-size:11px;"></div>';
+}
+
+// =========================================================
+// AUTO-SAVE SYSTEM (field-level, localStorage)
+// =========================================================
+var LAB1_STATE_KEY = 'chem100_lab1_v1_state';
+var _lab1SaveTimer = null;
+
+function _showSaveStatus(msg) {
+  var el = document.getElementById('autosave-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._fadeTimer);
+  el._fadeTimer = setTimeout(function() { el.style.opacity = '0'; }, 3000);
+}
+
+function saveLabState() {
+  clearTimeout(_lab1SaveTimer);
+  _lab1SaveTimer = setTimeout(function() {
+    try {
+      function gv(id) { var e = document.getElementById(id); return e ? e.value : ''; }
+      function gc(id) { var e = document.getElementById(id); return e ? e.checked : false; }
+      function gr(nm) { var r = document.querySelector('input[name="' + nm + '"]:checked'); return r ? r.value : ''; }
+      function gs(id) { var e = document.getElementById(id); return e ? e.value : ''; }
+      var state = {
+        studentName: gv('studentName'), labSection: gv('labSection'), labDate: gv('labDate'),
+        'open-q4-intro': gv('open-q4-intro'), 'open-q5': gv('open-q5'), 'open-conclusion': gv('open-conclusion'),
+        'volume-used': gv('volume-used'),
+        'cup-water': gv('cup-water'), 'full-water': gv('full-water'), 'density-water': gv('density-water'),
+        'cup-oil': gv('cup-oil'), 'full-oil': gv('full-oil'), 'density-oil': gv('density-oil'),
+        'cup-syrup': gv('cup-syrup'), 'full-syrup': gv('full-syrup'), 'density-syrup': gv('density-syrup'),
+        'cup-soap': gv('cup-soap'), 'full-soap': gv('full-soap'), 'density-soap': gv('density-soap'),
+        'rank1-val': gv('rank1-val'), 'rank2-val': gv('rank2-val'), 'rank3-val': gv('rank3-val'), 'rank4-val': gv('rank4-val'),
+        'class-water': gs('class-water'), 'reason-water': gs('reason-water'),
+        'class-oil': gs('class-oil'), 'reason-oil': gs('reason-oil'),
+        'class-syrup': gs('class-syrup'), 'reason-syrup': gs('reason-syrup'),
+        'class-soap': gs('class-soap'), 'reason-soap': gs('reason-soap'),
+        'match-1': gs('match-1'), 'match-2': gs('match-2'), 'match-3': gs('match-3'),
+        'match-4': gs('match-4'), 'match-5': gs('match-5'), 'match-6': gs('match-6'),
+        'rank1': gs('rank1'), 'rank2': gs('rank2'), 'rank3': gs('rank3'), 'rank4': gs('rank4'),
+        _mc1: gr('mc1'), _mc2: gr('mc2'), _mc3: gr('mc3'), _q1mc: gr('q1mc'),
+        photosConfirmed: gc('canvas-photos-confirmed'),
+        savedAt: Date.now()
+      };
+      localStorage.setItem(LAB1_STATE_KEY, JSON.stringify(state));
+      _showSaveStatus('Saved just now');
+    } catch(e) { /* storage may be unavailable */ }
+  }, 800);
+}
+
+function loadLabState() {
+  try {
+    var raw = localStorage.getItem(LAB1_STATE_KEY);
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    function sv(id, v) { var e = document.getElementById(id); if (e && v !== undefined && v !== '') e.value = v; }
+    function sc(id, v) { var e = document.getElementById(id); if (e) e.checked = !!v; }
+    function sr(nm, v) {
+      if (!v) return;
+      var r = document.querySelector('input[name="' + nm + '"][value="' + v + '"]');
+      if (r) { r.checked = true; r.dispatchEvent(new Event('change')); }
+    }
+    ['studentName','labSection','labDate','open-q4-intro','open-q5','open-conclusion',
+     'volume-used','cup-water','full-water','density-water',
+     'cup-oil','full-oil','density-oil','cup-syrup','full-syrup','density-syrup',
+     'cup-soap','full-soap','density-soap',
+     'rank1-val','rank2-val','rank3-val','rank4-val',
+     'class-water','reason-water','class-oil','reason-oil',
+     'class-syrup','reason-syrup','class-soap','reason-soap',
+     'match-1','match-2','match-3','match-4','match-5','match-6',
+     'rank1','rank2','rank3','rank4'].forEach(function(id) { sv(id, s[id]); });
+    sr('mc1', s._mc1); sr('mc2', s._mc2); sr('mc3', s._mc3); sr('q1mc', s._q1mc);
+    sc('canvas-photos-confirmed', s.photosConfirmed);
+    if (s.savedAt) {
+      var ago = Math.round((Date.now() - s.savedAt) / 60000);
+      _showSaveStatus('Restored — last saved ' + (ago < 1 ? 'just now' : ago + ' min ago'));
+    }
+  } catch(e) { /* corrupt state — silently skip */ }
+}
+
+function clearLabState() {
+  if (!confirm('This will clear all saved progress on this device. Are you sure?')) return;
+  try { localStorage.removeItem(LAB1_STATE_KEY); } catch(e) {}
+  location.reload();
+}
+
+function _attachLab1SaveListeners() {
+  ['studentName','labSection','labDate','open-q4-intro','open-q5','open-conclusion',
+   'volume-used','cup-water','full-water','density-water',
+   'cup-oil','full-oil','density-oil','cup-syrup','full-syrup','density-syrup',
+   'cup-soap','full-soap','density-soap',
+   'rank1-val','rank2-val','rank3-val','rank4-val'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.addEventListener('input', saveLabState); el.addEventListener('change', saveLabState); }
+  });
+  // Selects
+  ['class-water','reason-water','class-oil','reason-oil','class-syrup','reason-syrup',
+   'class-soap','reason-soap','match-1','match-2','match-3','match-4','match-5','match-6',
+   'rank1','rank2','rank3','rank4'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('change', saveLabState);
+  });
+  // Radios and checkboxes
+  document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(function(el) {
+    el.addEventListener('change', saveLabState);
+  });
 }
 </script>
 </body>
