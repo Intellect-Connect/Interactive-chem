@@ -91,6 +91,7 @@ textarea.open-response:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(
 .data-table td.computed-cell{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-light);}
 .data-table td.computed-cell.blank{color:#bbb;background:var(--cream);font-weight:400;}
 .data-table td.computed-cell.broad{color:var(--red);background:var(--red-light);}
+.data-table td.computed-cell.acceptable{color:#b45309;background:#fef3c7;}
 .data-table td.computed-cell.sharp{color:#1b5e20;background:#e8f5e9;}
 .substance-table{width:100%;border-collapse:collapse;font-size:13px;}
 .substance-table th{padding:8px 14px;background:var(--ink);color:#ce93d8;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.12em;text-align:left;}
@@ -924,14 +925,15 @@ function calcMixture(n) {
   if (e < s) { rangeEl.textContent = 'Error'; rangeEl.className = 'computed-cell'; rangeEl.style.color = 'var(--red)'; return; }
   var range = (e - s).toFixed(1);
   rangeEl.textContent = range;
-  rangeEl.className = 'computed-cell ' + (parseFloat(range) <= 1.5 ? 'sharp' : 'broad');
+  rangeEl.className = 'computed-cell ' + (parseFloat(range) <= 1.5 ? 'sharp' : parseFloat(range) <= 2.0 ? 'acceptable' : 'broad');
   rangeEl.style.color = '';
   var uAvg    = getUnknownAvg();
   var mixAvg  = (s + e) / 2;
-  var isSharp = parseFloat(range) <= 1.5;
+  var isSharp = parseFloat(range) <= 2.0;  // matches scoring threshold
   var isSameTemp = uAvg !== null && Math.abs(mixAvg - uAvg) <= 2;
-  sharpEl.textContent = isSharp ? 'Sharp' : 'Broad';
-  sharpEl.className   = 'computed-cell ' + (isSharp ? 'sharp' : 'broad');
+  var rangeF = parseFloat(range);
+  sharpEl.textContent = rangeF <= 1.5 ? 'Sharp' : rangeF <= 2.0 ? 'Acceptable' : 'Broad';
+  sharpEl.className   = 'computed-cell ' + (rangeF <= 1.5 ? 'sharp' : rangeF <= 2.0 ? 'acceptable' : 'broad');
   var additive = (document.getElementById('mix-additive-' + n).value || 'candidate').trim();
   resEl.classList.add('show');
   if (isSharp && isSameTemp) {
@@ -941,8 +943,13 @@ function calcMixture(n) {
     var ft = document.getElementById('final-identity-text');
     if (fb && ft) { fb.style.display = 'block'; ft.textContent = 'Unknown confirmed as ' + additive + '. Mixture melted sharply at ' + mixAvg.toFixed(1) + ' \u00b0C (range ' + range + ' \u00b0C), identical to the unknown alone.'; }
   } else {
+    var rangeF2 = parseFloat(range);
+    var warnLabel = rangeF2 <= 2.0 ? 'Acceptable range, different temperature' : 'Broad range';
+    var warnMsg   = rangeF2 <= 2.0
+      ? 'The melting range is acceptable, but the temperature does not match your unknown \u2014 this candidate is likely not the unknown.'
+      : 'The melting range is broad, suggesting melting point depression \u2014 the unknown is likely a different compound. Try the next candidate.';
     resEl.className = 'val-msg show warn';
-    resEl.innerHTML = '<strong>' + (isSharp ? 'Sharp but different temperature' : 'Broad range') + '</strong> \u2014 mixture with <em>' + additive + '</em> shows melting point depression. The unknown is likely <strong>not</strong> ' + additive + '. Try the next candidate.';
+    resEl.innerHTML = '<strong>' + (isSharp ? 'Sharp but different temperature' : warnLabel) + '</strong> \u2014 ' + warnMsg;
   }
   scheduleSave();
 }
