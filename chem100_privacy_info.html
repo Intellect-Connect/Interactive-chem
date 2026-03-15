@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Use & Privacy — CHEM 100</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:          #1a1a2e;
+      --paper:        #faf8f4;
+      --bg:           #f0ece4;
+      --border:       #c8bfa8;
+      --shadow:       0 2px 12px rgba(26,26,46,0.08);
+      --teal:         #0e6b6b;
+      --teal-light:   #e0f2f2;
+      --teal-dark:    #094f4f;
+      --gold:         #b8860b;
+      --gold-light:   #fdf6e3;
+      --blue:         #1a4a7a;
+      --blue-light:   #e8f0f9;
+      --accent:       #2e7d32;
+      --accent-light: #e8f5e9;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    .page-header {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 32px 28px 28px;
+    }
+    .header-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .lab-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: #6fcf6f;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .page-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.2;
+      color: #fff;
+    }
+    .header-meta {
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.38);
+      line-height: 1.9;
+      flex-shrink: 0;
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--paper);
+    }
+    .card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .card-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .card-body {
+      padding: 20px 22px;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.75;
+    }
+    .card-body p + p { margin-top: 12px; }
+
+    /* color variants */
+    .card-header.teal  { background: var(--teal-light); border-bottom-color: #b2dfdf; }
+    .card-header.teal .card-icon { background: var(--teal); color: #fff; }
+    .card-header.teal .card-title { color: var(--teal-dark); }
+
+    .card-header.blue  { background: var(--blue-light); border-bottom-color: #c5d8ef; }
+    .card-header.blue .card-icon { background: var(--blue); color: #fff; }
+    .card-header.blue .card-title { color: var(--blue); }
+
+    .card-header.gold  { background: var(--gold-light); border-bottom-color: #e8d5a0; }
+    .card-header.gold .card-icon { background: var(--gold); color: #fff; }
+    .card-header.gold .card-title { color: var(--gold); }
+
+    .card-header.green { background: var(--accent-light); border-bottom-color: #c5e1c6; }
+    .card-header.green .card-icon { background: var(--accent); color: #fff; }
+    .card-header.green .card-title { color: var(--accent); }
+
+    .card-header.ink   { background: var(--ink); }
+    .card-header.ink .card-icon { background: rgba(255,255,255,0.15); color: #fff; }
+    .card-header.ink .card-title { color: #fff; }
+
+    /* ── FACT LIST ── */
+    .fact-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .fact-list li {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+    }
+    .fact-list li:last-child { border-bottom: none; }
+    .fact-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--teal);
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+    .fact-dot.gold  { background: var(--gold); }
+    .fact-dot.blue  { background: var(--blue); }
+    .fact-dot.green { background: var(--accent); }
+
+    /* ── OPT-OUT BOX ── */
+    .optout-steps {
+      counter-reset: steps;
+      list-style: none;
+      padding: 0;
+      margin: 14px 0 0;
+    }
+    .optout-steps li {
+      counter-increment: steps;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      line-height: 1.65;
+      color: #333;
+    }
+    .optout-steps li:last-child { border-bottom: none; }
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── IMPORTANT NOTE ── */
+    .note-box {
+      background: var(--teal-light);
+      border: 1px solid #b2dfdf;
+      border-left: 4px solid var(--teal);
+      border-radius: 3px;
+      padding: 14px 18px;
+      font-size: 13.5px;
+      color: var(--teal-dark);
+      line-height: 1.65;
+      margin-top: 16px;
+    }
+    .note-box strong {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    /* ── SUMMARY ROW ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .summary-chip {
+      border-radius: 3px;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .summary-chip .chip-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      display: block;
+    }
+    .chip-yes { background: var(--accent-light); border: 1px solid #c5e1c6; }
+    .chip-yes .chip-label { color: var(--accent); }
+    .chip-no  { background: #fce4ec; border: 1px solid #f8bbd0; }
+    .chip-no  .chip-label { color: #b71c1c; }
+
+    /* ── FOOTER ── */
+    .page-footer {
+      background: var(--ink);
+      color: rgba(255,255,255,0.45);
+      text-align: center;
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      margin-top: 40px;
+    }
+
+    @media (max-width: 520px) {
+      .summary-grid { grid-template-columns: 1fr; }
+      .header-inner { flex-direction: column; gap: 10px; }
+      .header-meta { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-inner">
+    <div>
+      <div class="lab-tag">CHEM 100 &mdash; Chemistry in Society</div>
+      <div class="page-title">AI Use &amp; Your Privacy</div>
+    </div>
+    <div class="header-meta">
+      Carson-Newman University<br>
+      Dr. C. Keenan<br>
+      Spring 2026
+    </div>
+  </div>
+</header>
+
+<div class="content">
+
+  <!-- WHAT THE LABS DO -->
+  <div class="card">
+    <div class="card-header teal">
+      <div class="card-icon">&#128196;</div>
+      <div class="card-title">What the digital labs do</div>
+    </div>
+    <div class="card-body">
+      <p>The interactive labs and workbooks in this course run entirely in your web browser. When you type a response or answer a question, your work is saved to that device automatically. Nothing leaves your browser until you click <strong>Submit</strong>.</p>
+      <p>When you do submit, two things happen: your score is sent directly to the Canvas gradebook, and a record is logged in a secure spreadsheet. Neither contains your full name &mdash; only your CN email address, your section, and your score.</p>
+    </div>
+  </div>
+
+  <!-- AI FEEDBACK -->
+  <div class="card">
+    <div class="card-header blue">
+      <div class="card-icon">&#129302;</div>
+      <div class="card-title">How AI feedback works</div>
+    </div>
+    <div class="card-body">
+      <p>Several questions offer an optional <strong>Get Feedback</strong> button. When you click it, your typed response is sent to an AI assistant (Claude, made by Anthropic) which reads your answer and replies with a short, encouraging note.</p>
+      <p>Here is exactly what the AI receives:</p>
+      <ul class="fact-list" style="margin-top:12px;">
+        <li><span class="fact-dot"></span>Your written response text only &mdash; the words you typed in that one box</li>
+        <li><span class="fact-dot"></span>The question context, so the AI knows what you were asked</li>
+        <li><span class="fact-dot blue"></span>Nothing else &mdash; no name, no email, no grade, no section</li>
+      </ul>
+      <div class="note-box">
+        <strong>Important</strong>
+        The AI cannot identify you. It sees anonymous text and responds to it. Your response is not stored by Anthropic beyond the single request.
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT IS AND ISN'T SHARED -->
+  <div class="card">
+    <div class="card-header ink">
+      <div class="card-icon">&#128274;</div>
+      <div class="card-title">What is and is not shared</div>
+    </div>
+    <div class="card-body">
+      <div class="summary-grid">
+        <div class="summary-chip chip-yes">
+          <span class="chip-label">Stays in Canvas</span>
+          Your grade, your identity, your enrollment &mdash; all managed by Canvas, which is FERPA-compliant.
+        </div>
+        <div class="summary-chip chip-yes">
+          <span class="chip-label">Stays on your device</span>
+          All your in-progress responses are saved locally until you submit. Clearing your browser history will erase them.
+        </div>
+        <div class="summary-chip chip-no">
+          <span class="chip-label">Never sent to AI</span>
+          Your name, email, student ID, section, or score are never included in any AI request.
+        </div>
+        <div class="summary-chip chip-no">
+          <span class="chip-label">Never sold or shared</span>
+          Your responses are not used by this course for any purpose other than providing feedback on your work.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPT OUT -->
+  <div class="card">
+    <div class="card-header gold">
+      <div class="card-icon">&#9997;</div>
+      <div class="card-title">You can opt out &mdash; no penalty</div>
+    </div>
+    <div class="card-body">
+      <p>If you are not comfortable with the digital submission or AI feedback features, you are welcome to complete the lab in the browser as normal and submit screenshots instead of using the Submit button. Your grade will not be affected in any way.</p>
+      <p style="margin-top:14px; font-weight:600; font-size:13.5px;">To opt out, follow these steps:</p>
+      <ol class="optout-steps">
+        <li>
+          <span class="step-num">1</span>
+          Complete the lab as normal in your browser. Your progress saves automatically as long as you use the same device.
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          Take screenshots of every completed section.
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span style="color:#b71c1c; font-weight:700;">Do not click the Submit button inside the lab.</span>
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          Upload all screenshots directly to the Canvas assignment by the posted deadline.
+        </li>
+      </ol>
+      <div class="note-box">
+        <strong>Note on saving</strong>
+        Your lab progress saves automatically to the device and browser you are using. If you switch devices or clear your browser data, your work will not carry over. Stick to the same browser on the same device until you are ready to submit or screenshot.
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTIONS -->
+  <div class="card">
+    <div class="card-header green">
+      <div class="card-icon">&#10003;</div>
+      <div class="card-title">Questions or concerns</div>
+    </div>
+    <div class="card-body">
+      <p>If you have any questions about how your data is handled, or if something about the digital labs does not feel right to you, please reach out directly.</p>
+      <p style="margin-top:10px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; letter-spacing:0.08em; color:var(--teal-dark);">ckeenan@cn.edu</span>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="page-footer">
+  CHEM 100 &mdash; Carson-Newman University &mdash; Spring 2026
+</div>
+
+</body>
+</html>
