@@ -1940,18 +1940,19 @@
 <div class="student-bar">
   <div class="student-bar-inner">
     <div class="field-group">
-      <label>Student Name</label>
-      <input type="text" id="student-name" placeholder="Last, First" autocomplete="off">
+      <label>Carson-Newman Email</label>
+      <input type="text" id="student-name" placeholder="yourname@cn.edu" autocomplete="off">
     </div>
     <div class="field-group">
       <label>Lab Section</label>
-      <input type="text" id="student-section" placeholder="e.g. CHEM 100-01" autocomplete="off">
+      <input type="text" id="student-section" placeholder="e.g. A, AOL, AOLCP" autocomplete="off">
     </div>
     <div class="field-group">
-      <label>Date</label>
-      <input type="text" id="student-date" placeholder="MM/DD/YYYY">
+      <label>Start Date</label>
+      <input type="date" id="student-date">
     </div>
   </div>
+  <div style="text-align:right; padding:2px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#6fcf6f; letter-spacing:0.06em; min-height:14px;"><span id="autosave-status" style="opacity:0; transition:opacity 1s ease;"></span></div>
 </div>
 
 <!-- TAB NAVIGATION -->
@@ -3314,7 +3315,7 @@
               </tr>
             </tbody>
           </table>
-          <button class="ai-btn" style="margin-top:12px;" onclick="checkMatching(); getAIFeedback('q1-feedback', 'q1-pattern', 'Q1: Student described the periodic table clustering pattern for essential nutrients vs toxic metals, selected the best explanation, and matched toxic metals to nutrient mimics. Evaluate: (1) pattern sentence accuracy — correct answer is that essential nutrients span both s-block AND d-block (Fe, Zn, Cu are d-block nutrients), and the distinguishing factor is PERIOD not block: toxic heavy metals are in Periods 5-6 while their nutrient targets are lighter elements in the same group; (2) whether MC choice B is selected; (3) matching accuracy: correct pairs are Pb-Ca, As-phosphate, Hg-Se, Cd-Zn. For Hg: if student chose Zn instead of Se, note that mercury does interact with zinc-containing thiol groups, but the primary and most documented mechanism is selenoprotein binding (glutathione peroxidase inactivation) which is why Se is the correct match.')">Check Matches &amp; Get Feedback</button>
+          <button class="ai-btn" style="margin-top:12px;" onclick="checkMatching(); getAIFeedback('q1-feedback', 'q1-pattern', 'Q1: Student described the periodic table clustering pattern for essential nutrients vs toxic metals, selected the best explanation, and matched toxic metals to nutrient mimics. Evaluate: (1) whether the student described a general pattern — that essential nutrients and toxic heavy metals often appear in the same region of the periodic table, meaning toxic metals can mimic nutrients the body needs; (2) whether MC choice B is selected; (3) matching accuracy: correct pairs are Pb-Ca, As-phosphate, Hg-Se, Cd-Zn. These were covered in the lab background. If a student matched Hg to Zn instead of Se, acknowledge that both are reasonable and note the lab background identified Se as the primary target. Accept any response that shows the student understood the core idea: heavy metals cause harm because the body mistakes them for nutrients it actually needs. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar.')">Check Matches &amp; Get Feedback</button>
           <div class="ai-feedback-area" id="q1-feedback"></div>
         </div>
 
@@ -3383,7 +3384,7 @@
             <strong>3.</strong> Would you recommend your food for Bracket City? Name which residents benefit most and whether any populations should receive it less frequently.
           </div>
           <textarea class="open-response" id="q2-written" style="min-height:130px;" placeholder="My food is [name]. It provides [element] at [% DV] which is high/adequate/low... The fortification compound in the ingredient list is [name]... Compared to [DT3 item 1], my food has [more/less] [nutrient] because... The whole food I chose, [item], differs in [specific way]... My recommendation for Bracket City is [yes/no/conditional] because... The residents who benefit most are [population] because..."></textarea>
-          <button class="ai-btn" onclick="getAIFeedback('q2-feedback', 'q2-written', 'Q2 (10 pts): Student analyzes their personal food and compares it to two Bracket City inventory items. Award points for: (1) specific % DV values with correct high/adequate/low classification; (2) fortification compound named by chemical name if applicable; (3) direct numerical comparison to the inventory fortified item from DT3; (4) direct numerical comparison to the inventory whole food from DT3; (5) evidence-based distribution recommendation naming a specific population. Penalize responses that are vague, omit specific numbers, or fail to compare against the DT3 inventory items.')">Get Feedback</button>
+          <button class="ai-btn" onclick="getAIFeedback('q2-feedback', 'q2-written', 'Q2 (10 pts): Student analyzes their personal food and compares it to two Bracket City inventory items. Award points for: (1) any % DV value cited with a reasonable high/adequate/low interpretation — exact classification is not required, the concept matters; (2) mention of whether the food is fortified or whole food — naming the specific compound is a bonus, not required; (3) some comparison to the inventory fortified item from DT3 — a general comparison counts, not just exact numbers; (4) some comparison to the inventory whole food from DT3 — same standard; (5) a distribution recommendation with any named population and a reason. Reward genuine engagement with the data. If numbers are absent but the reasoning is sound, award partial credit. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar.')">Get Feedback</button>
           <div class="ai-feedback-area" id="q2-feedback"></div>
         </div>
 
@@ -3447,7 +3448,7 @@
 
           <div class="q-sub">Part C &mdash; Explain your flag using your Q1 matching work as the chemical foundation.</div>
           <textarea class="open-response" id="q6b" style="min-height:110px;" placeholder="I flagged [item] because it contains [element]. In Q1, I matched [element] to [nutrient] it mimics because they share [chemical property]. When [element] substitutes in, it disrupts [body system] by... The most vulnerable population is [group] because... Even low-level repeated exposure through the food bank matters because..."></textarea>
-          <button class="ai-btn" onclick="checkTrueFalse(); getAIFeedback('q3-feedback', 'q6b', 'Q3 (8 pts): Student answered 4 T/F items about food storage chemistry and contamination, then flagged the highest-risk inventory item. Evaluate the written explanation for: (1) correct identification of the nutrient mimicked from Q1 matching with a chemical reason; (2) mechanistic explanation of the biological disruption; (3) correct vulnerable population with justification; (4) explanation of why sub-threshold repeated food bank exposure is still a concern. Award 2 pts per element present. T/F answers: TF1=T, TF2=T, TF3=F, TF4=F. TF3 is FALSE: cadmium accumulates in the kidneys regardless of zinc intake — it is not simply displaced by adequate zinc. It binds irreversibly to metallothionein and causes kidney damage independently of zinc status. TF4 is FALSE: bioavailability of added iron compounds (ferric orthophosphate, reduced iron) is often lower than naturally chelated or heme iron.')">Check T/F &amp; Get Feedback</button>
+          <button class="ai-btn" onclick="checkTrueFalse(); getAIFeedback('q3-feedback', 'q6b', 'Q3 (8 pts): Student answered 4 T/F items about food storage chemistry and contamination, then flagged the highest-risk inventory item. Evaluate the written explanation for: (1) identification of which nutrient the flagged element mimics, using the Q1 matching as a reference; (2) a reasonable explanation of why that mimicry causes harm — any explanation showing the student understands the body gets confused counts, even in informal language; (3) a vulnerable population mentioned with any reasonable justification (children, pregnant people, elderly are all acceptable); (4) some acknowledgment that repeated small exposures at a food bank matter even if each one seems safe. Award 2 pts per element present. T/F answers: TF1=T, TF2=T, TF3=F, TF4=F. For TF3 (cadmium and zinc): the key idea from the lab background is that cadmium accumulates and causes lasting damage — do not expect students to know metallothionein by name. For TF4 (iron bioavailability): the key idea is that added iron in fortified foods may not be absorbed as well as iron from whole foods — do not expect students to know specific compound names like ferric orthophosphate. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar.')">Check T/F &amp; Get Feedback</button>
           <div class="ai-feedback-area" id="q3-feedback"></div>
         </div>
 
@@ -3460,7 +3461,7 @@
             <strong>2.</strong> What is your one actionable recommendation for Bracket City? Name a specific food or category, give a chemical reason, and identify who benefits most.
           </div>
           <textarea class="open-response" id="conclusion" style="min-height:130px;" placeholder="My food, [name], taught me that... because [specific value from label or inventory]. My recommendation for Bracket City is to prioritize [food/category] because chemically... This benefits [population] most because..."></textarea>
-          <button class="ai-btn" onclick="getAIFeedback('conclusion-feedback', 'conclusion', 'Conclusion (6 pts, 3 per part): Part 1 — personal food insight: reward responses that cite a specific % DV, mg value, or inventory comparison and explain what it means chemically (element function, fortification compound, contamination risk, or bioavailability). Part 2 — Bracket City recommendation: reward concrete food or category recommendations with a chemical reason (element function, mimicry, bioavailability, or contamination) and a named benefiting population. Penalize vague responses that omit specific data, skip the chemistry mechanism, or fail to name a real recommendation.')">Get Feedback</button>
+          <button class="ai-btn" onclick="getAIFeedback('conclusion-feedback', 'conclusion', 'Conclusion (6 pts, 3 per part): Part 1 — personal food insight: reward any response that connects what the student found in their food label to something meaningful — a % DV, a general comparison to the inventory, or a comment on whether their food is safe or beneficial. Students do not need to use precise chemical terminology; they need to show they looked at their data and thought about it. Part 2 — Bracket City recommendation: reward any concrete suggestion connected to what was learned — naming a food, a population, or a concern from the lab counts. A student who says 'I would avoid giving canned tuna to young children because of the mercury we found' is demonstrating exactly the right level of reasoning. Award partial credit for any response that shows genuine engagement with the lab findings. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar.')">Get Feedback</button>
           <div class="ai-feedback-area" id="conclusion-feedback"></div>
         </div>
       </div>
@@ -3607,21 +3608,22 @@
             </tr>
           </thead>
           <tbody>
+            <tr><td>Pre-Lab &mdash; 5 questions (1 pt each, participation credit)</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">02</td><td style="text-align:center;">5</td></tr>
             <tr><td>Interactive Periodic Table &mdash; 10 essential nutrients blue, 4 toxic metals red</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">04</td><td style="text-align:center;">5</td></tr>
             <tr><td>Data Table 1 &mdash; Element functions, dangers, and food sources (14 elements)</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">04</td><td style="text-align:center;">10</td></tr>
-            <tr><td>Data Table 2 &mdash; Mineral data from your food&rsquo;s nutrition label</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">04</td><td style="text-align:center;">10</td></tr>
+            <tr><td>Data Table 2 &mdash; Mineral data from your food&rsquo;s nutrition label</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">04</td><td style="text-align:center;">6</td></tr>
             <tr><td>Data Table 3 &mdash; Bracket City inventory comparison (3 foods)</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">04</td><td style="text-align:center;">4</td></tr>
             <tr><td>Q1 &mdash; Periodic table patterns and chemical mimicry</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">06</td><td style="text-align:center;">6</td></tr>
-            <tr><td>Q2 &mdash; Food label analysis and nutrient density</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">06</td><td style="text-align:center;">8</td></tr>
+            <tr><td>Q2 &mdash; Food label analysis and nutrient density</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">06</td><td style="text-align:center;">7</td></tr>
             <tr><td>Q3 &mdash; Contamination risk and storage chemistry</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">06</td><td style="text-align:center;">8</td></tr>
-            <tr><td>Conclusion &mdash; Periodic table chemistry, personal food insight, Bracket City recommendation</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">06</td><td style="text-align:center;">6</td></tr>
+            <tr><td>Conclusion &mdash; Periodic table chemistry, personal food insight, Bracket City recommendation</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">06</td><td style="text-align:center;">4</td></tr>
             <tr><td>Canvas Photo &mdash; Food item on scale, submitted to Canvas assignment</td><td style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;">Canvas</td><td style="text-align:center;">10</td></tr>
             <tr style="background:#f0f8f5;"><td style="font-weight:700;">Total</td><td></td><td style="text-align:center; font-weight:700;">65 pts</td></tr>
           </tbody>
         </table>
         <div class="ref-box" style="margin-top:16px; margin-bottom:0;">
           <div class="ref-box-title">About Scoring</div>
-          <p>Data table fields are scored for completion and accuracy. The periodic table awards points for correctly marking all 14 elements. Written responses are scored on depth and chemistry accuracy &mdash; brief or vague answers receive partial credit. Your Canvas food photo is graded separately by your instructor and is required for full credit on Data Table 2.</p>
+          <p>Your digital score is out of 55 pts and is recorded automatically on submission. Your Canvas food photo is graded separately by your instructor (10 pts) and is not included here. You have <strong>2 submission attempts</strong> &mdash; use your first attempt to review feedback, then revise and submit a final time.</p>
         </div>
       </div>
     </div>
@@ -4096,7 +4098,8 @@ var ATOMIC_RADII = [0,53,31,152,112,85,70,65,60,50,38,186,160,143,117,100,103,99
     var radEl = document.getElementById('ab-el-radius');
     if (radEl) {
       var r = (abP >= 1 && abP <= 118 && ATOMIC_RADII[abP]) ? ATOMIC_RADII[abP] : null;
-      // Contextual trend notes for pedagogically relevant element pairs
+
+      // Contextual trend notes for neutral atoms
       var RADIUS_NOTES = {
         15: 'Period 3 — 3 electron shells',
         33: 'Period 4 — one shell below P, so larger despite more protons',
@@ -4110,10 +4113,98 @@ var ATOMIC_RADII = [0,53,31,152,112,85,70,65,60,50,38,186,160,143,117,100,103,99
         11: 'Period 3 — one outer electron, well-shielded; larger than anything in Period 2',
         3:  'Period 2 — new s-shell; much larger than H despite only 2 more protons'
       };
-      var note = RADIUS_NOTES[abP] || null;
-      if (r) {
-        radEl.innerHTML = 'Atomic radius: ' + r + ' pm'
-          + (note ? '<span style="display:block; font-size:10px; color:rgba(255,255,255,0.38); margin-top:2px; line-height:1.4;">' + note + '</span>' : '');
+
+      // Ionic radii (pm) keyed by Z, then charge. Shannon ionic radii (6-coord where applicable).
+      var IONIC_RADII = {
+         1: { '+1': 0 },                          // H+ (proton — essentially 0)
+         3: { '+1': 76 },                          // Li+
+         4: { '+2': 45 },                          // Be2+
+         6: { '+4': 16, '-4': 260 },               // C4+, C4-
+         7: { '+5': 13, '-3': 146 },               // N5+, N3-
+         8: { '-2': 140 },                         // O2-
+         9: { '-1': 133 },                         // F-
+        11: { '+1': 102 },                         // Na+
+        12: { '+2': 72 },                          // Mg2+
+        13: { '+3': 54 },                          // Al3+
+        14: { '+4': 40, '-4': 271 },               // Si4+, Si4-
+        15: { '+5': 38, '-3': 212 },               // P5+, P3-
+        16: { '+6': 29, '-2': 184 },               // S6+, S2-
+        17: { '+7': 27, '-1': 181 },               // Cl7+, Cl-
+        19: { '+1': 138 },                         // K+
+        20: { '+2': 100 },                         // Ca2+
+        23: { '+5': 54, '+4': 58, '+3': 64 },      // V
+        24: { '+6': 44, '+3': 62, '+2': 73 },      // Cr
+        25: { '+7': 46, '+4': 53, '+3': 65, '+2': 83 }, // Mn
+        26: { '+3': 65, '+2': 78 },                // Fe
+        27: { '+3': 61, '+2': 75 },                // Co
+        28: { '+4': 48, '+2': 69 },                // Ni
+        29: { '+2': 73, '+1': 77 },                // Cu
+        30: { '+2': 74 },                          // Zn
+        33: { '+5': 46, '+3': 58, '-3': 222 },     // As
+        34: { '+6': 42, '-2': 198 },               // Se
+        35: { '+7': 39, '-1': 196 },               // Br
+        37: { '+1': 152 },                         // Rb+
+        38: { '+2': 118 },                         // Sr2+
+        42: { '+6': 59, '+4': 65 },                // Mo
+        47: { '+1': 115 },                         // Ag+
+        48: { '+2': 95 },                          // Cd2+
+        50: { '+4': 69, '+2': 118 },               // Sn
+        51: { '+5': 60, '+3': 76, '-3': 245 },     // Sb
+        52: { '+6': 56, '-2': 221 },               // Te
+        53: { '+7': 53, '-1': 220 },               // I
+        55: { '+1': 167 },                         // Cs+
+        56: { '+2': 135 },                         // Ba2+
+        74: { '+6': 60, '+4': 66 },                // W
+        78: { '+4': 63, '+2': 80 },                // Pt
+        79: { '+3': 85, '+1': 137 },               // Au
+        80: { '+2': 102, '+1': 119 },              // Hg
+        81: { '+3': 89, '+1': 150 },               // Tl
+        82: { '+4': 78, '+2': 119 },               // Pb
+        83: { '+5': 76, '+3': 103 }                // Bi
+      };
+
+      var chargeLabel = charge === 0 ? 'Atomic radius' : 'Ionic radius';
+      var displayR = null;
+      var ionicNote = null;
+
+      if (charge === 0) {
+        displayR = r;
+      } else if (IONIC_RADII[abP] && IONIC_RADII[abP][(charge > 0 ? '+' : '') + charge] !== undefined) {
+        var ionic = IONIC_RADII[abP][(charge > 0 ? '+' : '') + charge];
+        displayR = ionic === 0 ? null : ionic;
+        if (r && displayR) {
+          var pct = Math.round(Math.abs(displayR - r) / r * 100);
+          if (charge > 0) {
+            ionicNote = 'Lost ' + Math.abs(charge) + ' electron' + (Math.abs(charge) > 1 ? 's' : '') +
+              ' — same nuclear charge pulling fewer electrons closer. ' +
+              pct + '% smaller than the neutral atom (' + r + ' pm \u2192 ' + displayR + ' pm).';
+          } else {
+            ionicNote = 'Gained ' + Math.abs(charge) + ' electron' + (Math.abs(charge) > 1 ? 's' : '') +
+              ' — extra electron-electron repulsion pushes the cloud outward. ' +
+              pct + '% larger than the neutral atom (' + r + ' pm \u2192 ' + displayR + ' pm).';
+          }
+        } else if (ionic === 0) {
+          ionicNote = 'H\u207a is a bare proton — no electrons remain, so it has essentially no electron cloud radius.';
+        }
+      } else if (r) {
+        // Fallback: estimate if no tabulated value — ~10% per + charge, ~12% per - charge
+        var scale = charge > 0 ? Math.pow(0.90, charge) : Math.pow(1.12, Math.abs(charge));
+        displayR = Math.round(r * scale);
+        if (charge > 0) {
+          ionicNote = 'Estimated — losing electrons lets the nucleus pull the cloud inward (approx. ' + r + ' pm \u2192 ' + displayR + ' pm).';
+        } else {
+          ionicNote = 'Estimated — gaining electrons increases repulsion, expanding the cloud (approx. ' + r + ' pm \u2192 ' + displayR + ' pm).';
+        }
+      }
+
+      var neutralNote = (charge === 0) ? (RADIUS_NOTES[abP] || null) : null;
+
+      if (displayR) {
+        radEl.innerHTML = chargeLabel + ': ' + displayR + ' pm'
+          + (ionicNote   ? '<span style="display:block; font-size:10px; color:rgba(255,255,255,0.5); margin-top:3px; line-height:1.5;">' + ionicNote + '</span>' : '')
+          + (neutralNote ? '<span style="display:block; font-size:10px; color:rgba(255,255,255,0.38); margin-top:2px; line-height:1.4;">' + neutralNote + '</span>' : '');
+      } else if (charge !== 0 && r) {
+        radEl.innerHTML = '<span style="color:rgba(255,255,255,0.45); font-size:11px;">Ionic radius not tabulated for this ion</span>';
       } else {
         radEl.innerHTML = '';
       }
@@ -4181,6 +4272,8 @@ var ATOMIC_RADII = [0,53,31,152,112,85,70,65,60,50,38,186,160,143,117,100,103,99
   // Init on DOM ready
   document.addEventListener('DOMContentLoaded', function() {
     updateUI();
+    _attachLab2SaveListeners();
+    loadLabState();
   });
 
 })();
@@ -4496,7 +4589,7 @@ function addMineralRow() {
 }
 
 // ====================================================================
-var AI_SYSTEM = 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university, giving feedback on student lab work for CHEM 100: Chemistry in Society. Your students are non-majors \u2014 many are encountering college-level science for the first time and some feel nervous about chemistry. Approach every response with genuine warmth and the assumption that the student is trying their best. Tone and length: Use plain, conversational language. No bullet points. No markdown. Keep feedback to 4-5 sentences. Speak like a patient, encouraging teacher \u2014 not a grader. For strong responses: Name specifically what the student got right and connect it to something they will recognize from everyday life. Extend their thinking one step further with a question or observation that sparks curiosity. For incomplete responses: Begin by affirming whatever correct thinking is present, then use a gentle guiding question to nudge them toward what is missing. Never state the answer outright. Frame the gap as something worth discovering, not a mistake to correct. For responses with a scientific misconception: Gently reframe with a question such as \"What do you think would happen if...\" that helps the student reason toward the accurate idea. The goal is discovery, not correction. Never make the student feel foolish. For off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly. Acknowledge that this does not yet answer the question, restate what is being asked in simple, friendly terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. AI-detection: If the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, sophisticated vocabulary inconsistent with a non-major\'s writing, or hedging language such as \"it is worth noting,\" \"furthermore,\" or \"in conclusion,\" it may have been generated by AI. If so, respond only with: This response reads like it may have been drafted with some outside help \u2014 and I understand the temptation, but I want to hear your own voice. Even a rough, imperfect answer in your own words tells me so much more about what you are learning. Please rewrite this the way you would explain it to a friend. What do you actually understand about this topic?';
+var AI_SYSTEM = 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university, giving feedback on student lab work for CHEM 100: Chemistry in Society. Your students are non-majors \u2014 many are encountering college-level science for the first time and some feel nervous about chemistry. Approach every response with genuine warmth and the assumption that the student is trying their best. Tone and length: Use plain, conversational language. No bullet points. No markdown. Keep feedback to 4-5 sentences. Speak like a patient, encouraging teacher \u2014 not a grader. For strong responses: Name specifically what the student got right and connect it to something they will recognize from everyday life. Extend their thinking one step further with a question or observation that sparks curiosity. For incomplete responses: Begin by affirming whatever correct thinking is present, then use a gentle guiding question to nudge them toward what is missing. Never state the answer outright. Frame the gap as something worth discovering, not a mistake to correct. For responses with a scientific misconception: Gently reframe with a question such as \"What do you think would happen if...\" that helps the student reason toward the accurate idea. The goal is discovery, not correction. Never make the student feel foolish. For off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly. Acknowledge that this does not yet answer the question, restate what is being asked in simple, friendly terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. AI-detection: If the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, sophisticated vocabulary inconsistent with a non-major\'s writing, or hedging language such as \"it is worth noting,\" \"furthermore,\" or \"in conclusion,\" it may have been generated by AI. If so, respond only with: This response reads like it may have been drafted with some outside help \u2014 and I understand the temptation, but I want to hear your own voice. Even a rough, imperfect answer in your own words tells me so much more about what you are learning. Please rewrite this the way you would explain it to a friend. What do you actually understand about this topic? Grading principles for written responses: Accept synonymous or informal language if the scientific meaning is accurate — a student who writes \'gets hotter\' instead of \'temperature increases\' is demonstrating the same understanding and should receive full credit. Award partial credit (at least half) when the core concept is present but a detail or step is missing — do not score incomplete reasoning as zero simply because it is not fully developed. Never penalize a student for missing vocabulary if the underlying concept is demonstrated — correct scientific thinking expressed in everyday language is worth full credit. Spelling and grammatical errors should never reduce a score — evaluate scientific accuracy only. For multi-part questions, score each part independently — a wrong conclusion that follows logically from a correct but flawed premise deserves partial credit on the conclusion. When a response is ambiguous, interpret it charitably — assume the most scientifically reasonable reading before marking it incorrect. These are non-science majors; apply a healthy degree of leniency and reward genuine engagement with the material. Vocabulary level: If the student uses chemistry terms clearly beyond what CHEM 100 covers — such as stoichiometry, molarity, enthalpy, reaction mechanisms, or other upper-division concepts not introduced in this course — flag this gently. Do not penalise them; instead say something like: You used some chemistry terms here that go beyond what we have covered so far in CHEM 100 — which shows real curiosity! I want to make sure you can explain this same idea using the vocabulary from our course. Could you try putting this in your own words, using what we have talked about in class?';
 
 // AI FEEDBACK (INDIVIDUAL QUESTIONS)
 // ====================================================================
@@ -4526,11 +4619,10 @@ async function getAIFeedback(feedbackId, questionIds, questionLabel) {
   const studentName = document.getElementById('student-name').value.trim() || 'Student';
   const combinedResponse = responses.join('\n\n');
 
-  const prompt = `Student: ${studentName}
-Question: ${questionLabel}
+  const prompt = `Question: ${questionLabel}
 Student Response: ${combinedResponse}
 
-Provide brief, specific feedback (3-5 sentences). Be warm and encouraging. Point out what the student did well chemically, and identify any missing details or misconceptions. If they mention the periodic table, food labels, or elemental symbols, address the accuracy of those claims. Do not give the answer outright but guide them toward complete thinking. Use plain text, no markdown, no bullet points.`;
+Provide brief, specific feedback (3-5 sentences). Be warm and encouraging. Point out what the student did well chemically, and identify any missing details or misconceptions. If they mention the periodic table, food labels, or elemental symbols, address the accuracy of those claims. Do not give the answer outright but guide them toward complete thinking. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. Use plain text, no markdown, no bullet points. If the response is entirely generic and does not reference any specific food, element, percentage value, or lab observation, begin your feedback by warmly asking the student to connect their answer to something they actually recorded in the lab.`;
 
   const systemPrompt = AI_SYSTEM;
 
@@ -4737,6 +4829,23 @@ async function submitLab() {
     const srcOk = src && src.value.trim().length > 3;
     if (whyOk && srcOk) dt1CompleteRows++;
   });
+  // Pre-Lab: graded for participation only (1 pt per question answered, not for accuracy)
+  // 5 MC questions = 5 pts
+  const prelabMC2Names = ['ab-pl-mc1','ab-pl-mc2','nutr-pl-mc1','tox-pl-mc1','label-pl-mc1'];
+  const prelabMC2Labels = [
+    'Pre-Lab MC 1 (Atom builder - macronutrients)',
+    'Pre-Lab MC 2 (Atom builder - micronutrients)',
+    'Pre-Lab MC 3 (Nutrition label - nutrients)',
+    'Pre-Lab MC 4 (Toxic elements)',
+    'Pre-Lab MC 5 (Food label - hidden metals)'
+  ];
+  prelabMC2Names.forEach((name, idx) => {
+    const sel = document.querySelector('input[name="' + name + '"]:checked');
+    const pts = sel ? 1 : 0;
+    score += pts;
+    details.push(prelabMC2Labels[idx] + ': ' + pts + '/1 (participation)' + (!sel ? ' (not attempted)' : ' (answered)'));
+  });
+
   // Scale 14 rows -> 10 pts, graduated
   const dt1pts = dt1CompleteRows >= 14 ? 10 :
                  dt1CompleteRows >= 12 ? 9  :
@@ -4847,12 +4956,10 @@ async function submitLab() {
   if (q2fortify)                     q2pts += 1;
   q2pts += Math.min(3, q2MineralPts);
   if (q2invRadio)                    q2pts += 1;
-  if (q2written.length > 100)        q2pts += 1;
-  if (q2written.length > 250)        q2pts += 1;
-  if (q2written.length > 450)        q2pts += 2;
-  q2pts = Math.min(10, q2pts);
+  if (q2written.length > 30)         q2pts += 1;  // 1 pt for any written response
+  q2pts = Math.min(7, q2pts);
   score += q2pts;
-  details.push('Q2 (Food + Inventory Analysis): ' + q2pts + '/10 (grid: ' + (q2foodConfirm||'blank') + ', minerals: ' + q2MineralPts + '/3, inventory path: ' + (q2invRadio ? q2invRadio.value : 'not selected') + ', written: ' + (q2written.length === 0 ? 'blank' : q2written.length + ' chars') + ')');
+  details.push('Q2 (Food + Inventory Analysis): ' + q2pts + '/7 (grid: ' + (q2foodConfirm||'blank') + ', minerals: ' + q2MineralPts + '/3, inventory path: ' + (q2invRadio ? q2invRadio.value : 'not selected') + ', written: ' + (q2written.length === 0 ? 'blank' : q2written.length + ' chars') + ')');
 
   // --- Q3: Contamination T/F + Risk Flag + Written (8 pts) ---
   // 4pts: T/F (1pt each: TF1=T, TF2=T, TF3=F, TF4=F)
@@ -4885,10 +4992,10 @@ async function submitLab() {
   const conclusionText = ((document.getElementById('conclusion')||{}).value||'').trim();
   let concPts = 0;
   if (conclusionText.length > 80)  concPts = 2;
-  if (conclusionText.length > 200) concPts = 4;
-  if (conclusionText.length > 400) concPts = 6;
+  if (conclusionText.length > 200) concPts = 3;
+  if (conclusionText.length > 400) concPts = 4;
   score += concPts;
-  details.push('Conclusion: ' + concPts + '/6 (' + (conclusionText.length === 0 ? 'blank' : conclusionText.length + ' chars') + ')');
+  details.push('Conclusion: ' + concPts + '/4 (' + (conclusionText.length === 0 ? 'blank' : conclusionText.length + ' chars') + ')');
 
   const pct = Math.round((score / total) * 100);
   const timestamp = new Date().toLocaleString();
@@ -4912,7 +5019,7 @@ async function submitLab() {
 
   const payload = {
     lab_id: 'Lab_2',
-    timestamp, name, section, date,
+    timestamp, canvas_login_id: name, section, date,
     score: score.toFixed(1), total, percent: pct,
     // DT2 personal food
     food_item:             foodName.trim() || 'blank',
@@ -5057,7 +5164,7 @@ Tone: warm, specific, constructive. Plain text with ALL CAPS section headers. No
       method: 'POST',
       body: JSON.stringify({
         action: 'feedback',
-        system: 'You are an encouraging CHEM 100 instructor providing personalized post-submission feedback. Be warm, specific, and constructive. Use plain text only, no markdown, no bullet points.',
+        system: 'You are an encouraging CHEM 100 instructor providing personalized post-submission feedback to a non-science major who may be encountering chemistry for the first time. Be warm, specific, and constructive. Use plain text only, no markdown, no bullet points. Prioritize demonstrated understanding over precise wording — informal language and rough phrasing are fine as long as the core concept is present. Award partial credit generously. Never penalize for missing vocabulary if the underlying concept is shown. Never deduct for spelling or grammar.',
         prompt
       })
     });
@@ -5637,6 +5744,207 @@ let invReady = false;
     }
   };
 })();
+
+// =========================================================
+// AUTO-SAVE SYSTEM (field-level, localStorage)
+// =========================================================
+var LAB2_STATE_KEY = 'chem100_lab2_v1_state';
+var _lab2SaveTimer = null;
+
+function _showSaveStatus(msg) {
+  var el = document.getElementById('autosave-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._fadeTimer);
+  el._fadeTimer = setTimeout(function() { el.style.opacity = '0'; }, 3000);
+}
+
+var _LAB2_TEXT_IDS = [
+    'student-name',
+    'student-section',
+    'student-date',
+    'fortification-compounds',
+    'q1-pattern',
+    'q2-written',
+    'q6b',
+    'conclusion',
+    'toxin-pb-organ',
+    'toxin-pb-source',
+    'toxin-as-organ',
+    'toxin-as-source',
+    'toxin-hg-organ',
+    'toxin-hg-source',
+    'toxin-cd-organ',
+    'toxin-cd-source',
+    'dt1-ca-fn',
+    'dt1-ca-src',
+    'dt1-p-fn',
+    'dt1-p-src',
+    'dt1-k-fn',
+    'dt1-k-src',
+    'dt1-na-fn',
+    'dt1-na-src',
+    'dt1-mg-fn',
+    'dt1-mg-src',
+    'dt1-fe-fn',
+    'dt1-fe-src',
+    'dt1-zn-fn',
+    'dt1-zn-src',
+    'dt1-cu-fn',
+    'dt1-cu-src',
+    'dt1-i-fn',
+    'dt1-i-src',
+    'dt1-se-fn',
+    'dt1-se-src',
+    'dt2-pb-why',
+    'dt2-pb-src',
+    'dt2-as-why',
+    'dt2-as-src',
+    'dt2-hg-why',
+    'dt2-hg-src',
+    'dt2-cd-why',
+    'dt2-cd-src',
+    'food-name',
+    'food-serving-labeled',
+    'food-serving-actual',
+    'dt3-r1-food',
+    'dt3-r1-mineral',
+    'dt3-r1-fe',
+    'dt3-r1-ca',
+    'dt3-r1-dv',
+    'dt3-r1-risk',
+    'dt3-r1-shelf',
+    'dt3-r2-food',
+    'dt3-r2-mineral',
+    'dt3-r2-fe',
+    'dt3-r2-ca',
+    'dt3-r2-dv',
+    'dt3-r2-risk',
+    'dt3-r2-shelf',
+    'dt3-r3-food',
+    'dt3-r3-type',
+    'dt3-r3-mineral',
+    'dt3-r3-fe',
+    'dt3-r3-ca',
+    'dt3-r3-dv',
+    'dt3-r3-risk',
+    'dt3-r3-shelf',
+    'q3-food-confirm',
+    'q3-fortify',
+    'q3-m1-name',
+    'q3-m1-sym',
+    'q3-m1-dv',
+    'q3-m2-name',
+    'q3-m2-sym',
+    'q3-m2-dv',
+    'q3-m3-name',
+    'q3-m3-sym',
+    'q3-m3-dv',
+    'q6-item'
+  ];
+var _LAB2_SELECT_IDS = [
+    'food-type',
+    'q2-match-pb',
+    'q2-match-as',
+    'q2-match-hg',
+    'q2-match-cd',
+    'q3-food-type'
+  ];
+var _LAB2_RADIO_NAMES = [
+    'ab-pl-mc1',
+    'ab-pl-mc2',
+    'nutr-pl-mc1',
+    'tox-pl-mc1',
+    'label-pl-mc1',
+    'q1-mc',
+    'q7-in-inv',
+    'q6-toxin'
+  ];
+
+function saveLabState() {
+  clearTimeout(_lab2SaveTimer);
+  _lab2SaveTimer = setTimeout(function() {
+    try {
+      var state = { savedAt: Date.now() };
+      _LAB2_TEXT_IDS.forEach(function(id) {
+        var e = document.getElementById(id); if (e) state[id] = e.value;
+      });
+      _LAB2_SELECT_IDS.forEach(function(id) {
+        var e = document.getElementById(id); if (e) state['sel_' + id] = e.value;
+      });
+      _LAB2_RADIO_NAMES.forEach(function(nm) {
+        var r = document.querySelector('input[name="' + nm + '"]:checked');
+        if (r) state['rad_' + nm] = r.value;
+      });
+      // T/F button selections (stored in hidden inputs)
+      [1,2,3,4].forEach(function(n) {
+        var h = document.getElementById('tf-val-' + n);
+        if (h && h.value) state['tfval_' + n] = h.value;
+      });
+      var cb = document.getElementById('canvas-photos-confirmed');
+      if (cb) state.photosConfirmed = cb.checked;
+      localStorage.setItem(LAB2_STATE_KEY, JSON.stringify(state));
+      _showSaveStatus('Saved just now');
+    } catch(e) { /* storage may be unavailable */ }
+  }, 800);
+}
+
+function loadLabState() {
+  try {
+    var raw = localStorage.getItem(LAB2_STATE_KEY);
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    _LAB2_TEXT_IDS.forEach(function(id) {
+      var e = document.getElementById(id);
+      if (e && s[id] !== undefined && s[id] !== '') e.value = s[id];
+    });
+    _LAB2_SELECT_IDS.forEach(function(id) {
+      var e = document.getElementById(id);
+      if (e && s['sel_' + id]) e.value = s['sel_' + id];
+    });
+    _LAB2_RADIO_NAMES.forEach(function(nm) {
+      var v = s['rad_' + nm];
+      if (!v) return;
+      var r = document.querySelector('input[name="' + nm + '"][value="' + v + '"]');
+      if (r) { r.checked = true; r.dispatchEvent(new Event('change')); }
+    });
+    var cb = document.getElementById('canvas-photos-confirmed');
+    if (cb && s.photosConfirmed) cb.checked = true;
+    // Restore T/F button selections
+    [1,2,3,4].forEach(function(n) {
+      if (s['tfval_' + n]) selectTF(n, s['tfval_' + n]);
+    });
+    // Resize any restored textareas
+    document.querySelectorAll('textarea').forEach(function(ta) {
+      if (ta.value) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
+    });
+    if (s.savedAt) {
+      var ago = Math.round((Date.now() - s.savedAt) / 60000);
+      _showSaveStatus('Restored — last saved ' + (ago < 1 ? 'just now' : ago + ' min ago'));
+    }
+  } catch(e) { /* corrupt state — silently skip */ }
+}
+
+function clearLabState() {
+  if (!confirm('This will clear all saved progress on this device. Are you sure?')) return;
+  try { localStorage.removeItem(LAB2_STATE_KEY); } catch(e) {}
+  location.reload();
+}
+
+function _attachLab2SaveListeners() {
+  _LAB2_TEXT_IDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.addEventListener('input', saveLabState); el.addEventListener('change', saveLabState); }
+  });
+  _LAB2_SELECT_IDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('change', saveLabState);
+  });
+  document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(function(el) {
+    el.addEventListener('change', saveLabState);
+  });
+}
 </script>
 </body>
 </html>
