@@ -1303,12 +1303,12 @@
 <div class="student-bar">
   <div class="student-bar-inner">
     <div class="field-group">
-      <label>Your Name (Last, First)</label>
-      <input type="text" id="studentName" placeholder="e.g. Smith, Jordan">
+      <label>Carson-Newman Email</label>
+      <input type="text" id="studentName" placeholder="yourname@cn.edu">
     </div>
     <div class="field-group">
       <label>Lab Section</label>
-      <input type="text" id="labSection" placeholder="e.g. 100-01">
+      <input type="text" id="labSection" placeholder="e.g. A, AOL, AOLCP">
     </div>
     <div class="field-group">
       <label>Start Date</label>
@@ -3610,7 +3610,7 @@ async function submitLab() {
 
   const payload = {
     lab_id: 'Lab_1',
-    timestamp, name, section, date,
+    timestamp, canvas_login_id: name, section, date,
     score: score.toFixed(1), total, percent: pct,
     prelab_mc1: document.querySelector('input[name="mc1"]:checked') ? document.querySelector('input[name="mc1"]:checked').value : 'blank',
     prelab_mc2: document.querySelector('input[name="mc2"]:checked') ? document.querySelector('input[name="mc2"]:checked').value : 'blank',
