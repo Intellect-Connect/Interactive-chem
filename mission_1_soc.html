@@ -3669,11 +3669,6 @@ async function generateFeedbackReport(name, score, total, pct, details, payload)
 
   const prompt = `You are an encouraging CHEM 100 instructor at a small university providing personalized written feedback to a student after they submitted Lab 1: Food Density Investigation.
 
-Student: ${name}
-Score: ${score.toFixed(1)} / ${total} points (${pct}%)
-Attempt: ${attemptNum} of ${MAX_ATTEMPTS}
-Attempts remaining: ${attemptsLeft}
-
 Item-by-item scoring breakdown:
 ${details.join('\n')}
 
