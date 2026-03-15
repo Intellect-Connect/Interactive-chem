@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tech Check — CHEM 100</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #1a1a2e;
+      --paper:      #faf8f4;
+      --bg:         #f0ece4;
+      --border:     #c8bfa8;
+      --shadow:     0 2px 12px rgba(26,26,46,0.08);
+      --teal:       #0e6b6b;
+      --teal-light: #e0f2f2;
+      --teal-dark:  #094f4f;
+      --gold:       #b8860b;
+      --gold-light: #fdf6e3;
+      --accent:     #2e7d32;
+      --accent-light: #e8f5e9;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    .page-header {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 32px 28px 28px;
+    }
+    .header-inner {
+      max-width: 560px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .lab-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: #6fcf6f;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .page-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.2;
+      color: #fff;
+    }
+    .header-meta {
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.38);
+      line-height: 1.9;
+      flex-shrink: 0;
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+      flex: 1;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .card-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .card-body {
+      padding: 22px 24px;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.75;
+    }
+
+    .card-header.teal { background: var(--teal-light); border-bottom-color: #b2dfdf; }
+    .card-header.teal .card-icon { background: var(--teal); color: #fff; }
+    .card-header.teal .card-title { color: var(--teal-dark); }
+
+    .card-header.ink { background: var(--ink); }
+    .card-header.ink .card-icon { background: rgba(255,255,255,0.12); color: #fff; }
+    .card-header.ink .card-title { color: #fff; }
+
+    /* ── FORM FIELDS ── */
+    .field-group {
+      margin-bottom: 18px;
+    }
+    .field-group label {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 6px;
+    }
+    .field-group input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 3px;
+      background: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      padding: 9px 12px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field-group input:focus { border-color: var(--teal); }
+    .field-hint {
+      font-size: 12px;
+      color: #888;
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    /* ── SUBMIT BUTTON ── */
+    .submit-btn {
+      width: 100%;
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      padding: 13px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s;
+      margin-top: 6px;
+    }
+    .submit-btn:hover { background: var(--teal-dark); }
+    .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
+
+    /* ── STATUS STATES ── */
+    .status-box {
+      display: none;
+      border-radius: 3px;
+      padding: 16px 18px;
+      font-size: 14px;
+      line-height: 1.65;
+      margin-top: 16px;
+    }
+    .status-box.visible { display: block; }
+    .status-box.loading {
+      background: var(--gold-light);
+      border: 1px solid #e8d5a0;
+      color: var(--gold);
+    }
+    .status-box.success {
+      background: var(--accent-light);
+      border: 1px solid #c5e1c6;
+      color: var(--accent);
+    }
+    .status-box.error {
+      background: #fce4ec;
+      border: 1px solid #f8bbd0;
+      color: #b71c1c;
+    }
+    .status-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    /* ── INFO LIST ── */
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .info-list li {
+      display: flex;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13.5px;
+      color: #444;
+      line-height: 1.6;
+    }
+    .info-list li:last-child { border-bottom: none; }
+    .info-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+
+    /* ── FOOTER ── */
+    .page-footer {
+      background: var(--ink);
+      color: rgba(255,255,255,0.38);
+      text-align: center;
+      padding: 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+    }
+
+    @media (max-width: 520px) {
+      .header-inner { flex-direction: column; gap: 8px; }
+      .header-meta { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-inner">
+    <div>
+      <div class="lab-tag">CHEM 100 &mdash; Chemistry in Society</div>
+      <div class="page-title">Tech Check</div>
+    </div>
+    <div class="header-meta">
+      Carson-Newman University<br>
+      Dr. C. Keenan<br>
+      Spring 2026
+    </div>
+  </div>
+</header>
+
+<div class="content">
+
+  <!-- WHAT THIS IS -->
+  <div class="card">
+    <div class="card-header teal">
+      <div class="card-icon">&#128268;</div>
+      <div class="card-title">Before you start the labs</div>
+    </div>
+    <div class="card-body">
+      <p>This is a one-time setup check. It confirms that your CN email is connected to the gradebook correctly so your lab scores post automatically throughout the semester.</p>
+      <p style="margin-top:12px;">It takes about 30 seconds and is worth 5 points.</p>
+      <ul class="info-list" style="margin-top:16px;">
+        <li><span class="info-dot"></span>Enter your full Carson-Newman email address exactly as it appears in Canvas</li>
+        <li><span class="info-dot"></span>Select your section</li>
+        <li><span class="info-dot"></span>Click Submit — you will see a confirmation on screen</li>
+        <li><span class="info-dot"></span>Your 5 points will appear in the Canvas gradebook within a few seconds</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="card">
+    <div class="card-header ink">
+      <div class="card-icon">&#10003;</div>
+      <div class="card-title" style="color:#fff;">Complete your Tech Check</div>
+    </div>
+    <div class="card-body">
+
+      <div class="field-group">
+        <label>Carson-Newman Email</label>
+        <input type="email" id="studentEmail" placeholder="yourname@cn.edu" autocomplete="email">
+        <div class="field-hint">Use your full @cn.edu address. This is how your grades are matched to Canvas.</div>
+      </div>
+
+      <div class="field-group">
+        <label>Section</label>
+        <input type="text" id="studentSection" placeholder="e.g. A, AOL, AOLCP" autocomplete="off">
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitTechCheck()">Submit Tech Check</button>
+
+      <div class="status-box" id="statusBox">
+        <span class="status-label" id="statusLabel"></span>
+        <span id="statusMsg"></span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TROUBLE -->
+  <div class="card">
+    <div class="card-header teal">
+      <div class="card-icon">&#63;</div>
+      <div class="card-title">If something does not work</div>
+    </div>
+    <div class="card-body">
+      <p>If you see an error or your 5 points do not appear in Canvas within a few minutes, email Dr. Keenan at <span style="font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:var(--teal-dark);">ckeenan@cn.edu</span> with a screenshot of the error message. This usually means the email you entered does not match what Canvas has on file.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="page-footer">
+  CHEM 100 &mdash; Carson-Newman University &mdash; Spring 2026
+</div>
+
+<script>
+  var GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyp3N_GTXKVcvEmZuZDlcH9LlVsSac7NLZpHHhqp0bVGyjBdJkQERHpc2ChSLRmTjR9QA/exec';
+  var submitted = false;
+
+  function submitTechCheck() {
+    if (submitted) return;
+
+    var email   = (document.getElementById('studentEmail')  .value || '').trim().toLowerCase();
+    var section = (document.getElementById('studentSection').value || '').trim();
+
+    if (!email || !email.includes('@cn.edu')) {
+      showStatus('error', 'Check your email', 'Please enter your full Carson-Newman email address (yourname@cn.edu).');
+      return;
+    }
+    if (!section) {
+      showStatus('error', 'Missing section', 'Please enter your section before submitting.');
+      return;
+    }
+
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    showStatus('loading', 'Submitting\u2026', 'Sending your Tech Check to Canvas. This takes just a moment.');
+
+    var payload = {
+      action: 'submit',
+      lab_id: 'Tech_Check',
+      canvas_login_id: email,
+      section: section
+    };
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', GAS_ENDPOINT, true);
+    xhr.onload = function() {
+      try {
+        var data = JSON.parse(xhr.responseText);
+        if (data.result === 'success' && data.canvas && data.canvas.ok) {
+          submitted = true;
+          showStatus('success', 'All set!', 'Your Tech Check is complete and 5 points have been posted to your Canvas gradebook. You are ready to start the labs.');
+          btn.style.display = 'none';
+        } else {
+          var reason = (data.canvas && data.canvas.reason) ? data.canvas.reason : (data.message || 'unknown error');
+          showStatus('error', 'Passback failed', 'The submission reached the server but could not post to Canvas. Reason: ' + reason + '. Please email Dr. Keenan with a screenshot.');
+          btn.disabled = false;
+        }
+      } catch(e) {
+        showStatus('error', 'Response error', 'Something went wrong reading the response. Please try again or email Dr. Keenan.');
+        btn.disabled = false;
+      }
+    };
+    xhr.onerror = function() {
+      showStatus('error', 'Connection error', 'Could not reach the server. Check your internet connection and try again.');
+      btn.disabled = false;
+    };
+    xhr.send(JSON.stringify(payload));
+  }
+
+  function showStatus(type, label, msg) {
+    var box  = document.getElementById('statusBox');
+    var lbl  = document.getElementById('statusLabel');
+    var text = document.getElementById('statusMsg');
+    box.className  = 'status-box visible ' + type;
+    lbl.textContent = label;
+    text.textContent = msg;
+  }
+</script>
+
+</body>
+</html>
