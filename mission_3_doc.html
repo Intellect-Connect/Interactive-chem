@@ -412,6 +412,40 @@
     text-align: center;
   }
   .geo-card svg { display: block; margin: 0 auto 6px; }
+
+  /* SORT ACTIVITY */
+  .sort-chip {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: #fff; border: 2px solid #d4dce8;
+    border-radius: 8px; padding: 10px 12px;
+    cursor: grab; transition: box-shadow 0.15s, border-color 0.15s, opacity 0.2s;
+    user-select: none;
+  }
+  .sort-chip:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.10); border-color: var(--teal); }
+  .sort-chip.sort-selected { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(14,107,107,0.18); }
+  .sort-chip.sort-placed   { opacity: 0.45; cursor: default; pointer-events: none; }
+  .sort-chip.sort-correct  { border-color: #1a6b3c; background: #f0faf4; }
+  .sort-chip.sort-wrong    { border-color: #c0392b; background: #fdf2f2; }
+  .sort-chip-letter {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;
+  }
+  .sort-bin {
+    border: 2px dashed #c8d4e0; border-radius: 8px; overflow: hidden;
+    min-height: 100px; transition: border-color 0.15s, background 0.15s;
+  }
+  .sort-bin.drag-over  { border-color: var(--teal); background: #f0f8f8; border-style: solid; }
+  .sort-bin.tap-target { border-color: var(--teal); border-style: solid; box-shadow: 0 0 0 3px rgba(14,107,107,0.18); }
+  .sort-bin-header { padding: 8px 12px; font-size: 13px; }
+  .sort-bin-body   { padding: 10px; display: flex; flex-direction: column; gap: 6px; min-height: 60px; }
+  .sort-bin-empty  { font-size: 12px; color: #aaa; font-style: italic; padding: 6px 4px; }
+  .sort-chip-placed {
+    font-size: 12.5px; font-weight: 600; padding: 6px 9px; border-radius: 5px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sort-chip-placed.correct { background: #e6f5ee; color: #1a6b3c; border: 1px solid #a8d8b8; }
+  .sort-chip-placed.wrong   { background: #fdf2f2; color: #c0392b; border: 1px solid #f0a8a8; }
   .geo-label {
     font-family: 'JetBrains Mono', monospace;
     font-size: 9px;
@@ -1437,16 +1471,16 @@
 <div class="student-bar">
   <div class="student-bar-inner">
     <div class="field-group">
-      <label>Student Name</label>
-      <input type="text" id="student-name" placeholder="Last, First" autocomplete="off">
+      <label>Carson-Newman Email</label>
+      <input type="text" id="student-name" placeholder="yourname@cn.edu" autocomplete="off">
     </div>
     <div class="field-group">
       <label>Lab Section</label>
-      <input type="text" id="student-section" placeholder="e.g. CHEM 100-01" autocomplete="off">
+      <input type="text" id="student-section" placeholder="e.g. A, AOL, AOLCP" autocomplete="off">
     </div>
     <div class="field-group">
-      <label>Date</label>
-      <input type="text" id="student-date" placeholder="MM/DD/YYYY">
+      <label>Start Date</label>
+      <input type="date" id="student-date">
     </div>
   </div>
   <div style="position:absolute; bottom:16px; right:40px; display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
@@ -1701,6 +1735,147 @@
 
     </div>
   </div>
+
+  <!-- ================================================================
+       SECTION 1B — CLASSIFYING MATTER: REFERENCE + INTERACTIVE SORT
+  ================================================================ -->
+  <div class="section-card" style="margin-top:0;">
+    <div class="section-header">
+      <div class="section-num" style="background:var(--teal);">1b</div>
+      <div class="section-title">Classifying Matter — Elements, Compounds, and Mixtures</div>
+      <span class="section-badge badge-teal">Reference + Activity</span>
+    </div>
+    <div class="section-body">
+
+      <!-- THREE REFERENCE CARDS -->
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:20px;">
+
+        <!-- ELEMENT -->
+        <div style="border-radius:8px; border:1px solid #d0d8e0; background:#fff; padding:20px 18px;">
+          <div style="width:34px; height:34px; border-radius:50%; background:#e8f0f8; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:#3a6ea8;">E</span>
+          </div>
+          <div style="font-family:'Source Serif 4',serif; font-size:16px; font-weight:700; color:var(--ink); margin-bottom:8px;">Element</div>
+          <p style="font-size:13px; line-height:1.65; color:#444; margin-bottom:12px;">A pure substance made of only one type of atom. Cannot be broken down into simpler substances by chemical means.</p>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; background:#f2f5f9; color:#3a6ea8; border-radius:4px; padding:7px 10px; line-height:1.6;">Au (gold), O&#x2082; (oxygen gas)</div>
+        </div>
+
+        <!-- COMPOUND -->
+        <div style="border-radius:8px; border:1px solid #d0d8e0; background:#fff; padding:20px 18px;">
+          <div style="width:34px; height:34px; border-radius:50%; background:#e6f5ee; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:#1a6b3c;">C</span>
+          </div>
+          <div style="font-family:'Source Serif 4',serif; font-size:16px; font-weight:700; color:var(--ink); margin-bottom:8px;">Compound</div>
+          <p style="font-size:13px; line-height:1.65; color:#444; margin-bottom:12px;">A pure substance made of two or more elements chemically bonded together in a fixed, definite ratio.</p>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; background:#f0faf4; color:#1a6b3c; border-radius:4px; padding:7px 10px; line-height:1.6;">H&#x2082;O (water), NaCl (table salt), C&#x2086;H&#x2081;&#x2082;O&#x2086; (glucose)</div>
+        </div>
+
+        <!-- MIXTURE -->
+        <div style="border-radius:8px; border:1px solid #d0d8e0; background:#fff; padding:20px 18px;">
+          <div style="width:34px; height:34px; border-radius:50%; background:#fdf5e6; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:#b07a10;">M</span>
+          </div>
+          <div style="font-family:'Source Serif 4',serif; font-size:16px; font-weight:700; color:var(--ink); margin-bottom:8px;">Mixture</div>
+          <p style="font-size:13px; line-height:1.65; color:#444; margin-bottom:12px;">A physical combination of two or more pure substances. Composition can vary. Components retain their individual properties.</p>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; background:#fffbf0; color:#b07a10; border-radius:4px; padding:7px 10px; line-height:1.6;">Dish soap, vinegar, vegetable oil, salt water</div>
+        </div>
+      </div>
+
+      <!-- TWO TYPES OF MIXTURES CALLOUT -->
+      <div class="callout info" style="margin-bottom:24px;">
+        <div class="callout-title">Two Types of Mixtures</div>
+        <p style="margin:0 0 8px;"><strong>Homogeneous mixture (solution):</strong> Uniform throughout — you cannot see the individual components. Examples: salt water, vinegar, clear apple juice.</p>
+        <p style="margin:0 0 8px;"><strong>Heterogeneous mixture:</strong> Not uniform — you can see distinct regions or phases. Examples: Italian salad dressing, chunky salsa, unshaken orange juice.</p>
+        <p style="margin:0;"><strong>Key test:</strong> Most food liquids you will use today are <em>mixtures</em>, not pure compounds. Even something as simple as tap water is technically a mixture because it contains dissolved minerals. Distilled water is a compound.</p>
+      </div>
+
+      <!-- INTERACTIVE SORT ACTIVITY -->
+      <div style="border:2px solid var(--teal); border-radius:8px; overflow:hidden; margin-bottom:4px;" id="sort-activity">
+        <div style="background:var(--teal); padding:12px 18px; display:flex; align-items:center; gap:10px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#fff; letter-spacing:0.1em; text-transform:uppercase;">Activity — Sort These Substances</span>
+        </div>
+        <div style="padding:20px 18px; background:#f8fbfb;">
+          <p style="font-size:13.5px; line-height:1.7; color:#1a3535; margin-bottom:16px;">
+            Four substances are described below. Read each description carefully, then drag it into the correct bin — or tap a substance and tap a bin to place it. Use the reference cards above to guide your reasoning. You will get one check per substance.
+          </p>
+
+          <!-- SUBSTANCE CARDS TO SORT -->
+          <div style="margin-bottom:18px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#555; margin-bottom:8px;">Drag or tap each substance to classify it:</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="sort-source">
+              <div class="sort-chip" draggable="true" id="chip-copper" data-answer="element" ondragstart="sortDragStart(event)" onclick="sortTap('chip-copper')">
+                <span class="sort-chip-letter" style="background:#e8f0f8; color:#3a6ea8;">?</span>
+                <div>
+                  <div style="font-weight:700; font-size:13px; color:var(--ink); margin-bottom:2px;">Copper wire</div>
+                  <div style="font-size:11.5px; color:#555; line-height:1.5;">A shiny reddish metal used in electrical wiring. Its atoms all carry atomic number 29. Symbol: Cu.</div>
+                </div>
+              </div>
+              <div class="sort-chip" draggable="true" id="chip-co2" data-answer="compound" ondragstart="sortDragStart(event)" onclick="sortTap('chip-co2')">
+                <span class="sort-chip-letter" style="background:#e6f5ee; color:#1a6b3c;">?</span>
+                <div>
+                  <div style="font-weight:700; font-size:13px; color:var(--ink); margin-bottom:2px;">Carbon dioxide</div>
+                  <div style="font-size:11.5px; color:#555; line-height:1.5;">The gas you exhale. Every molecule contains exactly one carbon atom bonded to two oxygen atoms (CO&#x2082;). Ratio never changes.</div>
+                </div>
+              </div>
+              <div class="sort-chip" draggable="true" id="chip-oj" data-answer="mixture" ondragstart="sortDragStart(event)" onclick="sortTap('chip-oj')">
+                <span class="sort-chip-letter" style="background:#fdf5e6; color:#b07a10;">?</span>
+                <div>
+                  <div style="font-weight:700; font-size:13px; color:var(--ink); margin-bottom:2px;">Orange juice</div>
+                  <div style="font-size:11.5px; color:#555; line-height:1.5;">A liquid squeezed from oranges containing water, sugars, citric acid, vitamins, and pulp — each keeping its own properties.</div>
+                </div>
+              </div>
+              <div class="sort-chip" draggable="true" id="chip-nitrogen" data-answer="element" ondragstart="sortDragStart(event)" onclick="sortTap('chip-nitrogen')">
+                <span class="sort-chip-letter" style="background:#e8f0f8; color:#3a6ea8;">?</span>
+                <div>
+                  <div style="font-weight:700; font-size:13px; color:var(--ink); margin-bottom:2px;">Nitrogen gas</div>
+                  <div style="font-size:11.5px; color:#555; line-height:1.5;">Makes up 78% of the air you breathe. Exists as N&#x2082; — two nitrogen atoms bonded together, but still only one type of atom.</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- DROP BINS -->
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+            <div class="sort-bin" id="bin-element" data-bin="element" ondragover="event.preventDefault()" ondrop="sortDrop(event,'element')" onclick="sortBinTap('element')">
+              <div class="sort-bin-header" style="background:#e8f0f8; color:#3a6ea8; border-bottom:2px solid #b8d0e8;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;">Element</span>
+              </div>
+              <div class="sort-bin-body" id="bin-element-body">
+                <div class="sort-bin-empty" id="bin-element-empty">Drop here</div>
+              </div>
+            </div>
+            <div class="sort-bin" id="bin-compound" data-bin="compound" ondragover="event.preventDefault()" ondrop="sortDrop(event,'compound')" onclick="sortBinTap('compound')">
+              <div class="sort-bin-header" style="background:#e6f5ee; color:#1a6b3c; border-bottom:2px solid #a8d8b8;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;">Compound</span>
+              </div>
+              <div class="sort-bin-body" id="bin-compound-body">
+                <div class="sort-bin-empty" id="bin-compound-empty">Drop here</div>
+              </div>
+            </div>
+            <div class="sort-bin" id="bin-mixture" data-bin="mixture" ondragover="event.preventDefault()" ondrop="sortDrop(event,'mixture')" onclick="sortBinTap('mixture')">
+              <div class="sort-bin-header" style="background:#fdf5e6; color:#b07a10; border-bottom:2px solid #e8d090;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;">Mixture</span>
+              </div>
+              <div class="sort-bin-body" id="bin-mixture-body">
+                <div class="sort-bin-empty" id="bin-mixture-empty">Drop here</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CHECK + RESET + SCORE -->
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <button onclick="sortCheck()" style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; background:var(--teal); color:#fff; border:none; border-radius:4px; padding:9px 20px; cursor:pointer;">Check My Answers</button>
+            <button onclick="sortReset()" style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; background:#f0f0ec; color:#555; border:1px solid #ccc; border-radius:4px; padding:9px 16px; cursor:pointer;">Reset</button>
+            <span id="sort-score-msg" style="font-size:13px; color:var(--teal-dark); font-weight:600;"></span>
+          </div>
+          <div id="sort-feedback" style="margin-top:14px; font-size:13px; line-height:1.7; display:none;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- PRE-LAB QUESTION 1 -->
   <div class="pl-strip">
     <div class="pl-label">
@@ -2960,7 +3135,7 @@
 <main class="main">
 
   <div class="callout info">
-    <div class="callout-title">Analysis &amp; Conclusion (20 pts total)</div>
+    <div class="callout-title">Analysis &amp; Conclusion (16 pts total)</div>
     Use the Bracket City Inventory alongside your completed data tables to answer the question below. Click "Get Feedback" for instructor guidance.
   </div>
 
@@ -3041,7 +3216,7 @@
     <div class="section-header">
       <div class="section-num">C</div>
       <div class="section-title">Conclusion</div>
-      <span class="section-pts">8 pts</span>
+      <span class="section-pts">4 pts</span>
     </div>
     <div class="section-body">
       <div class="callout teal" style="margin-bottom:14px;">
@@ -3223,7 +3398,7 @@
       </table>
       <div class="ref-box" style="margin-top:16px; margin-bottom:0;">
         <div class="ref-box-title">About Scoring</div>
-        <p>Data table fields are scored for completion and accuracy. The substrate binding challenge awards 4 points per correctly placed molecule (shape and polarity must both match). Written responses are scored on depth and chemistry accuracy — brief answers receive partial credit. Canvas photos are graded separately by your instructor after submission.</p>
+        <p>Your digital score is out of 80 pts and is recorded automatically on submission. Canvas photos are graded separately by your instructor (10 pts) and are not included here. You have <strong>2 submission attempts</strong> &mdash; use your first attempt to review feedback, then revise and submit a final time.</p>
       </div>
     </div>
   </div>
@@ -4288,6 +4463,156 @@ var MC_FEEDBACK = {
   }
 };
 
+// ============================================================
+//  SORT ACTIVITY — Element / Compound / Mixture
+// ============================================================
+var sortSelected = null; // chip id currently tapped
+
+var SORT_FEEDBACK = {
+  'chip-copper':   { name: 'Copper wire',    correct: 'element',  explain: 'Copper is a pure element — every atom is Cu (atomic number 29). No other atoms are present.' },
+  'chip-co2':      { name: 'Carbon dioxide', correct: 'compound', explain: 'CO&#x2082; is a compound: carbon and oxygen atoms chemically bonded in a fixed 1:2 ratio. You cannot vary that ratio and still have CO&#x2082;.' },
+  'chip-oj':       { name: 'Orange juice',   correct: 'mixture',  explain: 'Orange juice is a heterogeneous mixture of water, sugars, citric acid, vitamins, and pulp. Its composition varies and each component keeps its own properties.' },
+  'chip-nitrogen': { name: 'Nitrogen gas',   correct: 'element',  explain: 'N&#x2082; contains only nitrogen atoms — diatomic, but still a single element. Atomic number 7 throughout.' },
+};
+
+var sortPlacements = {}; // chipId -> binId
+
+function sortDragStart(e) {
+  if (sortPlacements[e.currentTarget.id]) { e.preventDefault(); return; }
+  e.dataTransfer.setData('text/plain', e.currentTarget.id);
+  document.querySelectorAll('.sort-bin').forEach(function(b) {
+    b.addEventListener('dragenter', sortBinEnter);
+    b.addEventListener('dragleave', sortBinLeave);
+  });
+}
+
+function sortBinEnter(e) { e.currentTarget.classList.add('drag-over'); }
+function sortBinLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+
+function sortDrop(e, binId) {
+  e.preventDefault();
+  var chipId = e.dataTransfer.getData('text/plain');
+  document.querySelectorAll('.sort-bin').forEach(function(b) { b.classList.remove('drag-over'); });
+  sortPlace(chipId, binId);
+}
+
+function sortTap(chipId) {
+  if (sortPlacements[chipId]) return;
+  if (sortSelected === chipId) {
+    document.getElementById(chipId).classList.remove('sort-selected');
+    sortSelected = null;
+    document.querySelectorAll('.sort-bin').forEach(function(b) { b.classList.remove('tap-target'); });
+    return;
+  }
+  if (sortSelected) document.getElementById(sortSelected).classList.remove('sort-selected');
+  sortSelected = chipId;
+  document.getElementById(chipId).classList.add('sort-selected');
+  document.querySelectorAll('.sort-bin').forEach(function(b) { b.classList.add('tap-target'); });
+}
+
+function sortBinTap(binId) {
+  document.querySelectorAll('.sort-bin').forEach(function(b) { b.classList.remove('tap-target'); });
+  if (sortSelected) {
+    sortPlace(sortSelected, binId);
+    document.getElementById(sortSelected) && document.getElementById(sortSelected).classList.remove('sort-selected');
+    sortSelected = null;
+  }
+}
+
+function sortPlace(chipId, binId) {
+  if (sortPlacements[chipId]) return;
+  sortPlacements[chipId] = binId;
+  var chip = document.getElementById(chipId);
+  if (chip) chip.classList.add('sort-placed');
+
+  var body = document.getElementById('bin-' + binId + '-body');
+  var empty = document.getElementById('bin-' + binId + '-empty');
+  if (empty) empty.style.display = 'none';
+
+  var tag = document.createElement('div');
+  tag.className = 'sort-chip-placed';
+  tag.id = 'placed-' + chipId;
+  tag.innerHTML = '<span style="font-size:15px;">&#8594;</span>' + SORT_FEEDBACK[chipId].name;
+  if (body) body.appendChild(tag);
+
+  // Remove tap-target highlights
+  document.querySelectorAll('.sort-bin').forEach(function(b) { b.classList.remove('tap-target'); });
+  sortSelected = null;
+
+  // Auto-check once all 5 placed
+  if (Object.keys(sortPlacements).length === 4) {
+    setTimeout(sortCheck, 300);
+  }
+}
+
+function sortCheck() {
+  var correct = 0;
+  var feedbackLines = [];
+
+  Object.keys(SORT_FEEDBACK).forEach(function(chipId) {
+    var data   = SORT_FEEDBACK[chipId];
+    var placed = sortPlacements[chipId];
+    var isRight = placed === data.correct;
+    if (isRight) correct++;
+
+    var chip = document.getElementById(chipId);
+    if (chip) chip.classList.add(isRight ? 'sort-correct' : 'sort-wrong');
+
+    var tag = document.getElementById('placed-' + chipId);
+    if (tag) {
+      tag.classList.add(isRight ? 'correct' : 'wrong');
+      tag.innerHTML = (isRight ? '&#10003; ' : '&#10007; ') + data.name;
+    }
+
+    var icon = isRight ? '&#10003;' : '&#10007;';
+    var color = isRight ? '#1a6b3c' : '#c0392b';
+    var label = isRight ? 'Correct' : 'Placed in <em>' + placed + '</em> — correct bin: <em>' + data.correct + '</em>';
+    feedbackLines.push(
+      '<div style="margin-bottom:10px; padding:8px 12px; border-radius:6px; border-left:3px solid ' + color + '; background:' + (isRight ? '#f0faf4' : '#fdf2f2') + ';">' +
+      '<span style="font-weight:700; color:' + color + ';">' + icon + ' ' + data.name + '</span> &mdash; ' + label + '<br>' +
+      '<span style="font-size:12px; color:#444; line-height:1.6;">' + data.explain + '</span>' +
+      '</div>'
+    );
+  });
+
+  var msg = document.getElementById('sort-score-msg');
+  if (msg) msg.textContent = correct + ' / 4 correct';
+
+  var fb = document.getElementById('sort-feedback');
+  if (fb) {
+    fb.style.display = 'block';
+    fb.innerHTML = '<div style="font-family:\'JetBrains Mono\',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#555; margin-bottom:10px;">Feedback</div>' + feedbackLines.join('');
+  }
+}
+
+function sortReset() {
+  sortPlacements = {};
+  sortSelected = null;
+
+  ['chip-copper','chip-co2','chip-oj','chip-nitrogen'].forEach(function(id) {
+    var c = document.getElementById(id);
+    if (c) {
+      c.classList.remove('sort-placed','sort-selected','sort-correct','sort-wrong');
+      var letter = c.querySelector('.sort-chip-letter');
+      if (letter) letter.textContent = '?';
+    }
+    var tag = document.getElementById('placed-' + id);
+    if (tag) tag.remove();
+  });
+
+  ['element','compound','mixture'].forEach(function(bin) {
+    var empty = document.getElementById('bin-' + bin + '-empty');
+    if (empty) empty.style.display = '';
+    var b = document.getElementById('bin-' + bin);
+    if (b) b.classList.remove('tap-target','drag-over');
+  });
+
+  var msg = document.getElementById('sort-score-msg');
+  if (msg) msg.textContent = '';
+  var fb = document.getElementById('sort-feedback');
+  if (fb) { fb.style.display = 'none'; fb.innerHTML = ''; }
+}
+
 function checkMC(groupId, chosen, correct, fbId) {
   var options = document.querySelectorAll('input[name="' + groupId + '"]');
   var labels  = document.querySelectorAll('#' + groupId + ' .mc-option');
@@ -4307,7 +4632,7 @@ function checkMC(groupId, chosen, correct, fbId) {
 // =========================================================
 // AI FEEDBACK
 // =========================================================
-var AI_SYSTEM = 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university, giving feedback on student lab work for CHEM 100: Chemistry in Society. Your students are non-majors \u2014 many are encountering college-level science for the first time and some feel nervous about chemistry. Approach every response with genuine warmth and the assumption that the student is trying their best. Tone and length: Use plain, conversational language. No bullet points. No markdown. Keep feedback to 4-5 sentences. Speak like a patient, encouraging teacher \u2014 not a grader. For strong responses: Name specifically what the student got right and connect it to something they will recognize from everyday life. Extend their thinking one step further with a question or observation that sparks curiosity. For incomplete responses: Begin by affirming whatever correct thinking is present, then use a gentle guiding question to nudge them toward what is missing. Never state the answer outright. Frame the gap as something worth discovering, not a mistake to correct. For responses with a scientific misconception: Gently reframe with a question such as \"What do you think would happen if...\" that helps the student reason toward the accurate idea. The goal is discovery, not correction. Never make the student feel foolish. For off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly. Acknowledge that this does not yet answer the question, restate what is being asked in simple, friendly terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. AI-detection: If the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, sophisticated vocabulary inconsistent with a non-major\'s writing, or hedging language such as \"it is worth noting,\" \"furthermore,\" or \"in conclusion,\" it may have been generated by AI. If so, respond only with: This response reads like it may have been drafted with some outside help \u2014 and I understand the temptation, but I want to hear your own voice. Even a rough, imperfect answer in your own words tells me so much more about what you are learning. Please rewrite this the way you would explain it to a friend. What do you actually understand about this topic?';
+var AI_SYSTEM = 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university, giving feedback on student lab work for CHEM 100: Chemistry in Society. Your students are non-majors \u2014 many are encountering college-level science for the first time and some feel nervous about chemistry. Approach every response with genuine warmth and the assumption that the student is trying their best. Tone and length: Use plain, conversational language. No bullet points. No markdown. Keep feedback to 4-5 sentences. Speak like a patient, encouraging teacher \u2014 not a grader. For strong responses: Name specifically what the student got right and connect it to something they will recognize from everyday life. Extend their thinking one step further with a question or observation that sparks curiosity. For incomplete responses: Begin by affirming whatever correct thinking is present, then use a gentle guiding question to nudge them toward what is missing. Never state the answer outright. Frame the gap as something worth discovering, not a mistake to correct. For responses with a scientific misconception: Gently reframe with a question such as \"What do you think would happen if...\" that helps the student reason toward the accurate idea. The goal is discovery, not correction. Never make the student feel foolish. For off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly. Acknowledge that this does not yet answer the question, restate what is being asked in simple, friendly terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. AI-detection: If the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, sophisticated vocabulary inconsistent with a non-major\'s writing, or hedging language such as \"it is worth noting,\" \"furthermore,\" or \"in conclusion,\" it may have been generated by AI. If so, respond only with: This response reads like it may have been drafted with some outside help \u2014 and I understand the temptation, but I want to hear your own voice. Even a rough, imperfect answer in your own words tells me so much more about what you are learning. Please rewrite this the way you would explain it to a friend. What do you actually understand about this topic? Grading principles for written responses: Accept synonymous or informal language if the scientific meaning is accurate — a student who writes \'gets hotter\' instead of \'temperature increases\' is demonstrating the same understanding and should receive full credit. Award partial credit (at least half) when the core concept is present but a detail or step is missing — do not score incomplete reasoning as zero simply because it is not fully developed. Never penalize a student for missing vocabulary if the underlying concept is demonstrated — correct scientific thinking expressed in everyday language is worth full credit. Spelling and grammatical errors should never reduce a score — evaluate scientific accuracy only. For multi-part questions, score each part independently — a wrong conclusion that follows logically from a correct but flawed premise deserves partial credit on the conclusion. When a response is ambiguous, interpret it charitably — assume the most scientifically reasonable reading before marking it incorrect. These are non-science majors; apply a healthy degree of leniency and reward genuine engagement with the material. Vocabulary level: If the student uses chemistry terms clearly beyond what CHEM 100 covers — such as stoichiometry, molarity, enthalpy, reaction mechanisms, or other upper-division concepts not introduced in this course — flag this gently. Do not penalise them; instead say something like: You used some chemistry terms here that go beyond what we have covered so far in CHEM 100 — which shows real curiosity! I want to make sure you can explain this same idea using the vocabulary from our course. Could you try putting this in your own words, using what we have talked about in class?';
 
 // =========================================================
 // ANALYSIS TAB — populate molecule hints from selection
@@ -4375,14 +4700,14 @@ var Q_PROMPTS = {
       '\n\nEvaluate with warmth and specificity:\n' +
       'Part A: Does the student connect "like dissolves like" to everyday experience? A strong response understands that polar water carries polar minerals the same way a wet sponge picks up water-based spills but not cooking oil. Encourage them if they got the core idea even if the language is imprecise.\n' +
       'Part B: Does the student reason about why children are more vulnerable? Look for body size, developing organs, and proportionally higher intake relative to weight. If they just say "kids are smaller," gently guide them to also think about why smaller size matters chemically. A helpful analogy: the same dose of a drug affects a 20-lb toddler very differently than a 150-lb adult.\n' +
-      'Part C: Does the student see the double-edged nature of polarity? The same chemistry that lets iron fortification work (polar minerals traveling in polar blood) is what makes arsenic contamination in water so insidious. Guide without giving away specific inventory item numbers. Celebrate any response that makes this connection, even imperfectly.';
+      'Part C: Does the student see the double-edged nature of polarity? The same chemistry that lets iron fortification work (polar minerals traveling in polar blood) is what makes arsenic contamination in water so insidious. Guide without giving away specific inventory item numbers. Celebrate any response that makes this connection, even imperfectly. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
   },
 
   conclusion: function() {
     var text = (document.getElementById('conclusion')||{}).value || 'blank';
     var allMols = selectedBeneficial.concat(selectedToxic);
     var molNames = allMols.map(function(k){ return MOLECULES[k].name; }).join(', ');
-    return 'Conclusion (CHEM 100 Lab 3)\n\nThis is a CHEM 100 student (non-major). Their molecules: ' + molNames + '\n\nStudent conclusion: ' + text + '\n\nA strong CHEM 100 conclusion makes a real-world connection: it doesn\'t just recite facts, it says something meaningful like "I was surprised to find that..." or "Now I understand why..." or "This changes how I think about..." Look for whether the student connected shape and polarity to a food safety idea they actually care about. Did they mention a specific molecule from their own data? Did they make a personal connection to their own life (food they eat, products in their home, news they\'ve heard)? Celebrate genuine reflection, even if the language is informal. If the conclusion is vague or generic, gently ask them to name one specific thing they learned that surprised them or that they will actually remember.';
+    return 'Conclusion (CHEM 100 Lab 3)\n\nThis is a CHEM 100 student (non-major). Their molecules: ' + molNames + '\n\nStudent conclusion: ' + text + '\n\nA strong CHEM 100 conclusion makes a real-world connection: it doesn\'t just recite facts, it says something meaningful like "I was surprised to find that..." or "Now I understand why..." or "This changes how I think about..." Look for whether the student connected shape and polarity to a food safety idea they actually care about. Did they mention a specific molecule from their own data? Did they make a personal connection to their own life (food they eat, products in their home, news they\'ve heard)? Celebrate genuine reflection, even if the language is informal. If the conclusion is vague or generic, gently ask them to name one specific thing they learned that surprised them or that they will actually remember. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
   }
 };
 
@@ -5824,7 +6149,7 @@ async function getAIFeedback(qid, btn) {
   var el = document.getElementById(idMap[qid]);
   if (el) responseText = el.value.trim();
 
-  if (!responseText || responseText.length < 3) {
+  if (!responseText || responseText.length < 10) {
     alert('Please write a response before requesting feedback.');
     return;
   }
@@ -5861,6 +6186,22 @@ async function getAIFeedback(qid, btn) {
 function calcScore() {
   var score = 0;
   var details = [];
+
+  // Pre-Lab: graded for participation only (1 pt per question answered, not for accuracy)
+  // pl-mc1, pl-mc2, pl-mc3, pl-mc4 = 4 pts
+  var prelabMC3Names = ['pl-mc1','pl-mc2','pl-mc3','pl-mc4'];
+  var prelabMC3Labels = [
+    'Pre-Lab MC 1 (VSEPR electron domains)',
+    'Pre-Lab MC 2 (Molecular geometry)',
+    'Pre-Lab MC 3 (VSEPR shape application)',
+    'Pre-Lab MC 4 (Polarity and shape)'
+  ];
+  prelabMC3Names.forEach(function(name, idx) {
+    var sel = document.querySelector('input[name="' + name + '"]:checked');
+    var pts = sel ? 1 : 0;
+    score += pts;
+    details.push(prelabMC3Labels[idx] + ': ' + pts + '/1 (participation)' + (!sel ? ' (not attempted)' : ' (answered)'));
+  });
 
   // DT1 — 20 pts
   var dt1pts = 0;
@@ -5919,9 +6260,9 @@ function calcScore() {
   q4pts = Math.min(12, q4pts);
   score += q4pts;
 
-  // Conclusion — 8 pts
+  // Conclusion — 4 pts
   var concl = ((document.getElementById('conclusion')||{value:''}).value).trim();
-  var conclPts = concl.length > 80 ? 8 : concl.length > 40 ? 5 : concl.length > 15 ? 2 : 0;
+  var conclPts = concl.length > 80 ? 4 : concl.length > 40 ? 2 : concl.length > 15 ? 1 : 0;  // reduced 8->4 pts; pre-lab participation now scored
   score += conclPts;
 
   // Canvas photo confirmation — graded separately by instructor in Canvas (0 pts digital)
@@ -6043,7 +6384,7 @@ async function submitLab() {
 
   var payload = {
     action: 'submit', lab_id: 'Lab_3', course: 'chem100',
-    name: name, section: section, date: date,
+    canvas_login_id: name, section: section, date: date,
     score: result.score.toFixed(1), total: result.total, percent: pct,
     molecules_beneficial: selectedBeneficial.join(', '),
     molecules_toxic:      selectedToxic.join(', '),
@@ -6157,7 +6498,7 @@ async function generateFeedbackReport(name, score, total, pct, details, payload)
   try {
     var response = await fetch(AI_PROXY_ENDPOINT, {
       method: 'POST',
-      body: JSON.stringify({ action: 'feedback', system: 'You are an encouraging CHEM 100 instructor providing personalized post-submission feedback. Be warm, specific, and constructive. Use plain text only, no markdown, no bullet points.', prompt: prompt })
+      body: JSON.stringify({ action: 'feedback', system: 'You are an encouraging CHEM 100 instructor providing personalized post-submission feedback to a non-science major who may be encountering chemistry for the first time. Be warm, specific, and constructive. Use plain text only, no markdown, no bullet points. Prioritize demonstrated understanding over precise wording — informal language and rough phrasing are fine as long as the core concept is present. Award partial credit generously. Never penalize for missing vocabulary if the underlying concept is shown. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.', prompt: prompt })
     });
     var data = await response.json();
     var text = data.feedback || null;
@@ -6624,6 +6965,7 @@ function saveLabState() {
         // Identity
         name:    (document.getElementById('student-name')   ||{value:''}).value,
         section: (document.getElementById('student-section')||{value:''}).value,
+        date:    (document.getElementById('student-date')   ||{value:''}).value,
         // Molecule selections
         selectedBeneficial: selectedBeneficial.slice(),
         selectedToxic:      selectedToxic.slice(),
@@ -6633,6 +6975,7 @@ function saveLabState() {
         q4b:          (document.getElementById('q4b')          ||{value:''}).value,
         q4e:          (document.getElementById('q4e')          ||{value:''}).value,
         q4c_justify:  (document.getElementById('q4c-justify')  ||{value:''}).value,
+        q4d_formula:  (document.getElementById('q4d-formula')  ||{value:''}).value,
         conclusion:   (document.getElementById('conclusion')   ||{value:''}).value,
         // Q4 inventory fields
         q4_bev1_num: (document.getElementById('q4-bev1-num') ||{value:''}).value,
@@ -6674,11 +7017,13 @@ function loadLabState() {
     function setVal(id, v) { var el = document.getElementById(id); if (el && v !== undefined && v !== '') el.value = v; }
     setVal('student-name',    s.name);
     setVal('student-section', s.section);
+    setVal('student-date',    s.date);
 
     // Textareas
     setVal('q4b',           s.q4b);
     setVal('q4e',           s.q4e);
     setVal('q4c-justify',   s.q4c_justify);
+    setVal('q4d-formula',   s.q4d_formula);
     setVal('conclusion',    s.conclusion);
     // Q4 inventory fields
     setVal('q4-bev1-num',    s.q4_bev1_num);
