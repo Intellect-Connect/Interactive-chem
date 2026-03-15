@@ -1,0 +1,2213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chemical Audit — Workbook A | CHEM 100</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #faf8f4;
+    --cream: #f2ede3;
+    --rule: #d4c9b0;
+    --accent: #2e7d32;
+    --accent-light: #e8f5e9;
+    --accent-dark: #1b5e20;
+    --red: #c0392b;
+    --red-light: #f9ebea;
+    --blue: #1a4a7a;
+    --blue-light: #e8f0f9;
+    --gold: #b8860b;
+    --gold-light: #fdf6e3;
+    --orange: #e65100;
+    --orange-light: #fff3e0;
+    --canvas-bg: #fffef9;
+    --border: #c8bfa8;
+    --shadow: 0 2px 12px rgba(26,26,46,0.08);
+    --green: #1a6b3c;
+    --green-light: #e8f5ee;
+    --teal: #0e6b6b;
+    --teal-light: #e0f2f2;
+    --teal-dark: #094f4f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #e0ddd6;
+    background-image:
+      radial-gradient(ellipse at 15% 10%, rgba(14,107,107,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 90%, rgba(26,74,122,0.06) 0%, transparent 50%);
+    min-height: 100vh;
+    color: var(--ink);
+  }
+
+  /* HEADER */
+  .lab-header { background: var(--ink); color: var(--paper); padding: 0; position: relative; overflow: hidden; }
+  .lab-header::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,255,255,0.04) 59px, rgba(255,255,255,0.04) 60px);
+  }
+  .header-inner {
+    position: relative; max-width: 960px; margin: 0 auto; padding: 36px 40px 28px;
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 20px;
+  }
+  .lab-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; color: #6fcf6f; text-transform: uppercase; margin-bottom: 8px; }
+  .lab-title { font-family: 'Source Serif 4', serif; font-size: 30px; font-weight: 600; line-height: 1.15; color: #fff; }
+  .lab-subtitle { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 6px; font-style: italic; }
+  .header-meta { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.38); line-height: 1.8; flex-shrink: 0; }
+
+  /* STUDENT BAR */
+  .student-bar { background: var(--cream); border-bottom: 1px solid var(--rule); }
+  .student-bar-inner { max-width: 960px; margin: 0 auto; padding: 16px 40px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; }
+  .field-group label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #888; margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
+  .field-group input { width: 100%; border: none; border-bottom: 1.5px solid var(--border); background: transparent; font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 4px 0; color: var(--ink); outline: none; transition: border-color 0.2s; }
+  .field-group input:focus { border-color: var(--teal); }
+
+  /* TAB NAV */
+  .tab-nav-wrap { background: var(--ink); border-bottom: 2px solid rgba(255,255,255,0.08); position: sticky; top: 0; z-index: 100; }
+  .tab-nav { max-width: 960px; margin: 0 auto; padding: 0 16px; display: flex; gap: 0; justify-content: center; overflow-x: auto; scrollbar-width: none; }
+  .tab-nav::-webkit-scrollbar { display: none; }
+  .tab-btn { padding: 13px 10px; background: transparent; border: none; color: rgba(255,255,255,0.45); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.18s; letter-spacing: 0.01em; white-space: nowrap; position: relative; top: 2px; flex-shrink: 0; }
+  .tab-btn:hover { color: rgba(255,255,255,0.75); }
+  .tab-btn.active { color: #6fcf6f; border-bottom-color: #6fcf6f; }
+  .tab-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; margin-right: 7px; opacity: 0.6; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* MAIN */
+  .main { max-width: 960px; margin: 0 auto; padding: 32px 40px 60px; display: flex; flex-direction: column; gap: 24px; }
+
+  /* SCENARIO BANNER */
+  .scenario-banner { background: var(--ink); border: 1px solid rgba(111,207,111,0.25); border-left: 4px solid #6fcf6f; border-radius: 4px; padding: 22px 26px; position: relative; overflow: hidden; }
+  .scenario-banner::before { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 200px; background: radial-gradient(ellipse at right, rgba(111,207,111,0.06) 0%, transparent 70%); }
+  .scenario-tag { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: 0.2em; color: #6fcf6f; text-transform: uppercase; margin-bottom: 8px; }
+  .scenario-title { font-family: 'Source Serif 4', serif; font-size: 17px; color: #fff; font-weight: 600; margin-bottom: 10px; }
+  .scenario-body { font-size: 13.5px; color: rgba(255,255,255,0.72); line-height: 1.68; }
+  .scenario-mission { margin-top: 14px; padding: 12px 16px; background: rgba(111,207,111,0.1); border-radius: 3px; font-size: 13px; color: #a8e6a8; line-height: 1.6; }
+  .scenario-mission strong { color: #6fcf6f; }
+
+  /* SECTION CARDS */
+  .section-card { background: var(--paper); border: 1px solid var(--border); border-radius: 4px; box-shadow: var(--shadow); overflow: hidden; }
+  .section-header { padding: 14px 24px; border-bottom: 1px solid var(--rule); display: flex; align-items: center; gap: 12px; }
+  .section-num { width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-title { font-family: 'Source Serif 4', serif; font-size: 17px; font-weight: 600; color: var(--ink); }
+  .section-badge { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 2px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .badge-green  { background: var(--green-light);  color: var(--green); }
+  .badge-blue   { background: var(--blue-light);   color: var(--blue); }
+  .badge-gold   { background: var(--gold-light);   color: var(--gold); }
+  .badge-teal   { background: var(--teal-light);   color: var(--teal-dark); }
+  .section-pts  { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--teal-dark); background: var(--teal-light); padding: 3px 8px; border-radius: 2px; letter-spacing: 0.1em; text-transform: uppercase; flex-shrink: 0; }
+  .section-body { padding: 24px; }
+
+  /* REF BOX */
+  .ref-box { background: var(--blue-light); border: 1px solid rgba(26,74,122,0.2); border-left: 3px solid var(--blue); border-radius: 3px; padding: 16px 20px; margin-bottom: 20px; }
+  .ref-box-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+  .ref-box p { font-size: 13.5px; line-height: 1.65; color: #2a3a50; }
+  .ref-box p + p { margin-top: 8px; }
+  .ref-box-gold { background: var(--gold-light); border: 1px solid rgba(184,134,11,0.25); border-left: 3px solid var(--gold); }
+  .ref-box-gold .ref-box-title { color: var(--gold); }
+  .ref-box-gold p { color: #3a2e10; }
+  .ref-box-green { background: var(--green-light); border: 1px solid rgba(26,107,60,0.2); border-left: 3px solid var(--green); }
+  .ref-box-green .ref-box-title { color: var(--green); }
+  .ref-box-green p { color: #1a3a28; }
+
+  /* DATA TABLE */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 16px 0; }
+  .data-table th { background: var(--ink); color: #fff; padding: 10px 14px; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; }
+  .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+  .data-table tr:nth-child(even) td { background: var(--cream); }
+  .data-table td.label { font-weight: 500; color: #333; font-size: 13px; }
+  .data-table input[type="text"], .data-table select { width: 100%; border: 1px solid var(--border); border-radius: 3px; padding: 6px 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #fff; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .data-table select { cursor: pointer; }
+  .data-table input:focus, .data-table select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,74,122,0.1); }
+
+  /* ELEMENT BADGE */
+  .elem-badge { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; color: #fff; background: var(--ink); border: 1.5px solid rgba(255,255,255,0.15); flex-shrink: 0; }
+
+  /* QUESTION BLOCKS */
+  .q-block { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--rule); }
+  .q-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .q-label { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+  .q-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--teal-dark); background: var(--teal-light); padding: 2px 7px; border-radius: 2px; flex-shrink: 0; margin-top: 2px; }
+  .q-points { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: #888; background: var(--cream); padding: 2px 6px; border-radius: 2px; flex-shrink: 0; margin-top: 2px; margin-left: auto; }
+  .q-text { font-size: 14px; line-height: 1.6; color: var(--ink); }
+  .q-hint { font-size: 12px; color: #888; font-style: italic; margin-bottom: 8px; margin-left: 36px; }
+
+  /* CHOICE SELECTOR */
+  .choice-selector { display: flex; gap: 10px; margin: 14px 0 16px 36px; }
+  .choice-btn { padding: 9px 22px; border: 2px solid var(--border); border-radius: 3px; background: #fff; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; color: #888; transition: all 0.18s; }
+  .choice-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .choice-btn.active { border-color: var(--blue); background: var(--blue); color: #fff; }
+  .choice-content { display: none; }
+  .choice-content.visible { display: block; }
+  .choice-prompt { margin: 0 0 12px 36px; padding: 12px 16px; background: var(--cream); border-left: 3px solid var(--border); border-radius: 0 3px 3px 0; font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+  .choice-prompt strong { color: var(--teal-dark); }
+
+  /* OPEN RESPONSE */
+  .open-textarea { width: 100%; min-height: 90px; border: 1.5px solid var(--border); border-radius: 3px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; resize: vertical; background: #fff; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .open-textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,74,122,0.1); }
+  .open-area-wrap { margin-left: 36px; }
+  .ai-feedback-btn { margin-top: 8px; padding: 8px 18px; background: var(--blue); color: #fff; border: none; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+  .ai-feedback-btn:hover { background: #0f3259; }
+  .ai-feedback-btn:disabled { background: #aaa; cursor: not-allowed; }
+  .spinner { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+  .ai-feedback-btn.loading .spinner { display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ai-feedback-box { margin-top: 10px; padding: 14px 16px; background: var(--blue-light); border: 1px solid rgba(26,74,122,0.2); border-radius: 3px; font-size: 13.5px; line-height: 1.65; color: #1a2a3a; display: none; }
+  .ai-feedback-box.visible { display: block; }
+  .ai-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; color: var(--blue); text-transform: uppercase; margin-bottom: 8px; }
+
+  /* INLINE FEEDBACK */
+  .feedback-inline { margin-left: 36px; margin-top: 8px; font-size: 13px; padding: 8px 12px; border-radius: 3px; display: none; line-height: 1.5; }
+  .feedback-inline.correct { background: var(--green-light); border: 1px solid rgba(26,107,60,0.3); color: var(--green); display: block; }
+  .feedback-inline.incorrect { background: var(--red-light); border: 1px solid rgba(192,57,43,0.3); color: var(--red); display: block; }
+  .feedback-inline.partial { background: var(--gold-light); border: 1px solid rgba(184,134,11,0.3); color: var(--gold); display: block; }
+
+  /* VAL MESSAGES */
+  .val-msg { font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.5; padding: 0; margin-top: 3px; min-height: 0; transition: all 0.2s; border-radius: 2px; }
+  .val-msg.ok  { color: var(--green); padding: 3px 6px; background: var(--green-light); border-left: 2px solid var(--green); }
+  .val-msg.err { color: var(--red);   padding: 3px 6px; background: var(--red-light);   border-left: 2px solid var(--red); }
+
+  /* CHECK BUTTON */
+  .check-btn { padding: 7px 16px; background: var(--teal); color: #fff; border: none; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+  .check-btn:hover { background: var(--teal-dark); }
+
+  /* ANSWER INPUT */
+  .answer-input { border: 1.5px solid var(--border); border-radius: 3px; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; font-size: 14px; background: #fff; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; min-width: 80px; max-width: 90px; text-align: center; }
+  .answer-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,74,122,0.1); }
+  .coeff-input { width: 60px; border: 1.5px solid var(--border); border-radius: 3px; padding: 7px 8px; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; background: #fff; color: var(--ink); outline: none; text-align: center; transition: border-color 0.2s, box-shadow 0.2s; }
+  .coeff-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,74,122,0.1); }
+  .coeff-input.correct-coeff { border-color: var(--green); background: var(--green-light); }
+  .coeff-input.wrong-coeff   { border-color: var(--red);   background: var(--red-light); }
+
+  /* EQUATION DISPLAY */
+  .eq-builder { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 16px 0 8px 36px; }
+  .eq-term { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .eq-sub { font-size: 11px; vertical-align: sub; }
+  .eq-plus { color: #888; font-size: 18px; margin: 0 2px; }
+  .eq-arrow { color: #888; font-size: 20px; margin: 0 6px; }
+
+  /* OBJECTIVES LIST */
+  .objectives-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .objectives-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+  .obj-check { width: 22px; height: 22px; border-radius: 50%; background: var(--teal); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+  /* SUBMIT */
+  .submit-section { background: var(--ink); border-radius: 4px; padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .submit-info { color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.6; }
+  .submit-info strong { color: #fff; display: block; margin-bottom: 4px; font-size: 15px; }
+  .submit-main-btn { padding: 14px 32px; background: #6fcf6f; color: var(--ink); border: none; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; flex-shrink: 0; }
+  .submit-main-btn:hover { background: #5ab85a; }
+  .submit-main-btn:disabled { background: #555; color: #888; cursor: not-allowed; }
+
+  /* SCORE PANEL */
+  .score-panel { display: none; background: #0a2a0a; border: 1px solid rgba(111,207,111,0.25); border-left: 4px solid #6fcf6f; border-radius: 4px; padding: 20px 24px; margin-top: 16px; }
+  .score-panel.visible { display: block; }
+  .score-panel-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #6fcf6f; margin-bottom: 10px; }
+  .score-header { font-family: 'Source Serif 4', serif; font-size: 22px; font-weight: 600; margin-bottom: 16px; color: #fff; }
+  .score-bar-wrap { background: rgba(255,255,255,0.12); border-radius: 2px; height: 8px; overflow: hidden; margin-bottom: 8px; }
+  .score-bar { height: 100%; border-radius: 2px; width: 0%; transition: width 0.8s ease; }
+  .score-text { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #6fcf6f; margin-bottom: 16px; }
+  .score-details { font-size: 12px; line-height: 2; color: rgba(255,255,255,0.75); }
+
+  /* CHECKLIST */
+  .checklist-grid { display: flex; flex-direction: column; gap: 8px; }
+  .checklist-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 3px; background: var(--cream); border: 1px solid var(--rule); font-size: 13.5px; }
+  .checklist-item.ready { background: var(--green-light); border-color: rgba(26,107,60,0.25); }
+  .checklist-icon { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .checklist-item.ready .checklist-icon { background: var(--green); color: #fff; }
+  .checklist-item:not(.ready) .checklist-icon { background: var(--border); color: #fff; }
+
+  /* AUTOSAVE STATUS */
+  #autosave-status { position: fixed; bottom: 18px; right: 18px; background: var(--ink); color: rgba(255,255,255,0.7); font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 5px 10px; border-radius: 3px; opacity: 0; transition: opacity 0.4s; pointer-events: none; z-index: 200; }
+  #autosave-status.visible { opacity: 1; }
+
+  /* PART DIVIDER */
+  .part-divider { display: flex; align-items: center; gap: 14px; margin: 8px 0 4px; }
+  .part-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--teal-dark); background: var(--teal-light); padding: 3px 10px; border-radius: 2px; white-space: nowrap; }
+  .part-line { flex: 1; height: 1px; background: var(--rule); }
+
+  /* NAV BUTTONS */
+  .tab-nav-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+
+  /* ---- PERIODIC TABLE ---- */
+  .pt-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .pt-grid {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    gap: 3px;
+    min-width: 680px;
+  }
+  .pt-cell {
+    aspect-ratio: 1;
+    border: 1.5px solid #ddd;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    cursor: default;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.25s, border-color 0.25s;
+    background: #f8f8f8;
+    padding: 2px;
+    position: relative;
+    min-width: 32px;
+    user-select: none;
+  }
+  .pt-cell.clickable { cursor: pointer; }
+  .pt-cell.clickable:hover { transform: scale(1.18); z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.22); }
+  .pt-cell .at-num { font-family: 'JetBrains Mono', monospace; font-size: 5.5px; color: #999; line-height: 1; }
+  .pt-cell .sym    { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--ink); line-height: 1.1; }
+  .pt-cell .el-name { font-size: 5px; color: #777; line-height: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; text-align: center; }
+  .pt-empty { background: transparent !important; border: none !important; cursor: default !important; }
+  .pt-empty:hover { transform: none !important; box-shadow: none !important; }
+
+  /* Block base colors — neutral, block coding not used here */
+  .pt-cell.block-s, .pt-cell.block-p, .pt-cell.block-d, .pt-cell.block-f { background: #f4f4f4; border-color: #d0d0d0; }
+  .pt-cell.block-s .sym, .pt-cell.block-p .sym, .pt-cell.block-d .sym, .pt-cell.block-f .sym { color: #444; }
+
+  /* Audit (flagged, unclassified) */
+  .pt-cell.audit { background: #fff8e1 !important; border-color: #f9a825 !important; box-shadow: 0 0 0 2px rgba(249,168,37,0.25); }
+  .pt-cell.audit .sym { color: #e65100 !important; }
+  .pt-cell.audit .at-num { color: #e65100 !important; }
+
+  /* Classification states */
+  .pt-cell.cls-metal     { background: #e0f2f2 !important; border-color: #00838f !important; box-shadow: 0 0 0 2px rgba(0,131,143,0.2); }
+  .pt-cell.cls-metal .sym { color: #004d5a !important; }
+  .pt-cell.cls-nonmetal  { background: #fce4ec !important; border-color: #c62828 !important; box-shadow: 0 0 0 2px rgba(198,40,40,0.18); }
+  .pt-cell.cls-nonmetal .sym { color: #7f0000 !important; }
+  .pt-cell.cls-metalloid { background: #ede7f6 !important; border-color: #6a1b9a !important; box-shadow: 0 0 0 2px rgba(106,27,154,0.18); }
+  .pt-cell.cls-metalloid .sym { color: #4a148c !important; }
+
+  /* Group column flash */
+  .pt-cell.group-flash { background: #fff9c4 !important; border-color: #f9a825 !important; transition: background 0.08s, border-color 0.08s; }
+  .pt-cell.group-reveal { background: #fff3e0 !important; border-color: #e65100 !important; box-shadow: 0 0 0 2px rgba(230,81,0,0.25) !important; }
+  .pt-cell.group-reveal .sym { color: #bf360c !important; }
+
+  /* Ordering badge */
+  .pt-cell .order-badge {
+    position: absolute;
+    top: 1px; right: 2px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+
+  /* Group label row */
+  .pt-group-label { display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 7.5px; font-weight: 600; color: #999; height: 14px; pointer-events: none; }
+
+  /* Block bar */
+  .pt-block-bar { display: grid; grid-template-columns: repeat(18,1fr); gap: 3px; min-width: 680px; margin-top: 4px; }
+
+  /* Audit chip status strip */
+  .audit-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .audit-chip {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 12px; border-radius: 4px;
+    border: 1.5px solid var(--border); background: #fff;
+    font-size: 12.5px; transition: border-color 0.2s, background 0.2s;
+    min-width: 130px;
+  }
+  .audit-chip.chip-metal     { border-color: #00838f; background: #e0f2f2; }
+  .audit-chip.chip-nonmetal  { border-color: #c62828; background: #fce4ec; }
+  .audit-chip.chip-metalloid { border-color: #6a1b9a; background: #ede7f6; }
+  .audit-chip.chip-wrong     { border-color: var(--red); background: var(--red-light); }
+  .chip-sym { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--ink); min-width: 22px; }
+  .chip-cls { font-size: 11px; color: #777; }
+  .chip-mark { font-size: 13px; margin-left: auto; }
+
+  /* Order sequence display */
+  .order-seq { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0 4px; min-height: 36px; align-items: center; }
+  .order-token {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--teal-light); border: 1px solid rgba(14,107,107,0.3);
+    border-radius: 3px; padding: 4px 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--teal-dark);
+  }
+  .order-token .tok-num { opacity: 0.55; font-size: 10px; }
+
+  .pt-mode-btn {
+    padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 3px; background: #fff;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; color: #666;
+    transition: all 0.15s;
+  }
+  .pt-mode-btn:hover { border-color: var(--teal); color: var(--teal-dark); }
+  .pt-mode-btn.active-mode { border-color: var(--teal); background: var(--teal); color: #fff; }
+
+  @media (max-width: 700px) {
+    .header-inner { padding: 24px 20px 20px; flex-direction: column; align-items: flex-start; }
+    .header-meta { text-align: left; }
+    .student-bar-inner { padding: 14px 20px; grid-template-columns: 1fr 1fr; }
+    .main { padding: 20px 16px 48px; }
+    .eq-builder { gap: 6px; }
+    .choice-selector { margin-left: 0; }
+    .choice-prompt { margin-left: 0; }
+    .open-area-wrap { margin-left: 0; }
+    .feedback-inline { margin-left: 0; }
+    .q-hint { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="lab-header">
+  <div class="header-inner">
+    <div>
+      <div class="lab-tag">CHEM 100 &mdash; Workbook A &mdash; Chapter 1</div>
+      <div class="lab-title">The Bracket City Chemical Audit</div>
+      <div class="lab-subtitle">Periodic table, reactions, balancing, and nomenclature</div>
+    </div>
+    <div class="header-meta">
+      Workbook A<br>
+      Sections 1.2 &ndash; 1.6<br>
+      62 pts total
+    </div>
+  </div>
+</header>
+
+<!-- STUDENT BAR -->
+<div class="student-bar">
+  <div class="student-bar-inner">
+    <div class="field-group">
+      <label for="studentName">Carson-Newman Email</label>
+      <input type="text" id="studentName" placeholder="yourname@cn.edu" oninput="saveLabState()">
+    </div>
+    <div class="field-group">
+      <label for="labSection">Section</label>
+      <input type="text" id="labSection" placeholder="e.g. A, AOL, AOLCP" oninput="saveLabState()">
+    </div>
+    <div class="field-group">
+      <label for="labDate">Date</label>
+      <input type="text" id="labDate" placeholder="MM/DD/YYYY" oninput="saveLabState()">
+    </div>
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<div class="tab-nav-wrap">
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('overview', this)"><span class="tab-num">01</span>Overview</button>
+    <button class="tab-btn" onclick="switchTab('periodic', this)"><span class="tab-num">02</span>Periodic Table</button>
+    <button class="tab-btn" onclick="switchTab('reactions', this)"><span class="tab-num">03</span>Reactions</button>
+    <button class="tab-btn" onclick="switchTab('nomenclature', this)"><span class="tab-num">04</span>Nomenclature</button>
+    <button class="tab-btn" onclick="switchTab('submit', this); buildChecklist(); updateAttemptStatus();"><span class="tab-num">05</span>Submit</button>
+  </nav>
+</div>
+
+<!-- ================================================
+     TAB I: OVERVIEW
+     ================================================ -->
+<div id="tab-overview" class="tab-panel active">
+<main class="main">
+
+  <div class="scenario-banner">
+    <div class="scenario-tag">Bracket City Investigation &mdash; Chemical Audit</div>
+    <div class="scenario-title">The Council Wants Answers</div>
+    <div class="scenario-body">
+      After the food density investigation raised concerns about adulterated cooking oil, Bracket City's city council commissioned a full chemical audit of their food supply and water infrastructure. The audit report has just landed on your desk. It contains an element inventory from food and water samples, data from the aging pipe network, and a list of food label ingredients from products on grocery shelves.<br><br>
+      Your job is not to re-run the density tests &mdash; that work is done. Instead, you will use your Chapter 1 chemistry knowledge to interpret what the audit found: which elements are dangerous and why, what chemical reactions are happening in the water system, and whether the ingredient names on food labels actually tell us anything useful.
+    </div>
+    <div class="scenario-mission">
+      <strong>Your mission:</strong> Work through four sections of the audit report. In each section, you will have at least one choice about how to demonstrate your understanding &mdash; pick the path that plays to your strengths or that you find most interesting.
+    </div>
+  </div>
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">What You Are Working Toward</div>
+      <span class="section-badge badge-teal">Chapter 1, Sections 1.2&ndash;1.6</span>
+    </div>
+    <div class="section-body">
+      <ul class="objectives-list">
+        <li><span class="obj-check">1</span>Use the periodic table to classify elements by type (metal, nonmetal, metalloid) and explain why position on the table predicts chemical behavior</li>
+        <li><span class="obj-check">2</span>Recognize chemical reactions in real-world contexts, convert word equations to formula equations, and balance them using whole-number coefficients</li>
+        <li><span class="obj-check">3</span>Name ionic and covalent compounds using systematic chemical naming rules and use compound names to infer composition</li>
+        <li><span class="obj-check">4</span>Identify and explain the scientific error in "chemical-free" marketing claims</li>
+      </ul>
+      <div class="ref-box" style="margin-top:20px; margin-bottom:0;">
+        <div class="ref-box-title">About This Workbook</div>
+        <p>Your digital score is out of 62 pts and is recorded automatically on submission. You have <strong>2 submission attempts</strong> &mdash; use your first attempt to review feedback, then revise and submit a final time.</p>
+        <p style="margin-top:8px;">Each section includes at least one choice question. Both options for every choice are worth the same points and target the same learning objective &mdash; pick whichever path makes more sense to you.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-nav-bottom">
+    <span></span>
+    <button class="submit-main-btn" style="background:var(--teal);" onclick="switchTab('periodic', document.querySelectorAll('.tab-btn')[1])">Part I &mdash; Periodic Table &rarr;</button>
+  </div>
+
+</main>
+</div>
+
+<!-- ================================================
+     TAB II: PERIODIC TABLE (Part I)
+     ================================================ -->
+<div id="tab-periodic" class="tab-panel">
+<main class="main">
+
+  <div class="scenario-banner">
+    <div class="scenario-tag">Audit Report &mdash; Section A</div>
+    <div class="scenario-title">Element Inventory: Six Flagged Substances</div>
+    <div class="scenario-body">
+      The audit's laboratory analysis detected trace amounts of six elements in Bracket City's food and water samples. The report lists them by symbol only &mdash; Pb, As, Fe, Ca, Cl, Si &mdash; and asks your team to interpret what each one is, where it sits on the periodic table, and what its presence might mean for public health.
+    </div>
+  </div>
+
+  <!-- SHARED PERIODIC TABLE -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num" style="background:var(--teal);">PT</div>
+      <div class="section-title">Interactive Periodic Table</div>
+      <span class="section-badge badge-teal">Used for Items 1, 2, and 3B</span>
+    </div>
+    <div class="section-body" style="padding:18px 20px 20px;">
+      <p style="font-size:12.5px; color:#666; margin-bottom:12px; line-height:1.6;">The six audit elements are highlighted in amber on the table. Each item below tells you what to do with this table.</p>
+      <div class="pt-wrap">
+        <div class="pt-grid" id="ptable-wb"></div>
+        <div class="pt-block-bar" id="pt-block-bar-wb"></div>
+      </div>
+      <!-- PT Legend -->
+      <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:12px; align-items:center;">
+        <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555;">
+          <div style="width:14px;height:14px;border-radius:2px;background:#fff8e1;border:1.5px solid #f9a825;"></div>Audit element (unclassified)
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555;">
+          <div style="width:14px;height:14px;border-radius:2px;background:#e0f2f2;border:1.5px solid #00838f;"></div>Metal
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555;">
+          <div style="width:14px;height:14px;border-radius:2px;background:#fce4ec;border:1.5px solid #c62828;"></div>Nonmetal
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555;">
+          <div style="width:14px;height:14px;border-radius:2px;background:#ede7f6;border:1.5px solid #6a1b9a;"></div>Metalloid
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555; margin-left:auto;">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888;">Click any element to flash its group column</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEM 1: ELEMENT CLASSIFICATION via PT -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">Item 1 &mdash; Classify the Audit Elements</div>
+      <span class="section-pts">6 pts</span>
+    </div>
+    <div class="section-body">
+
+      <div class="ref-box">
+        <div class="ref-box-title">How to Use the Table for This Item</div>
+        <p><strong>Metals</strong> fill the left and center of the table (Groups 1&ndash;12 plus lower-left of Groups 13&ndash;16). They tend to lose electrons. <strong>Nonmetals</strong> cluster in the upper right (Groups 15&ndash;18 plus hydrogen). They tend to gain or share electrons. <strong>Metalloids</strong> run along the staircase boundary (B, Si, Ge, As, Sb, Te, At) and show properties of both.</p>
+        <p style="margin-top:8px;">Find each amber-highlighted element on the periodic table above, then click it to cycle through: <strong style="color:var(--green);">Metal</strong> &rarr; <strong style="color:#1565c0;">Nonmetal</strong> &rarr; <strong style="color:#6a1b9a;">Metalloid</strong> &rarr; unset. The strip below updates as you go.</p>
+      </div>
+
+      <div class="audit-strip" id="audit-strip"></div>
+      <div class="feedback-inline" id="fb-item1" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <!-- ITEM 2: ARSENIC / PHOSPHORUS with Group Reveal -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">Item 2 &mdash; The Arsenic Problem</div>
+      <span class="section-pts">6 pts</span>
+    </div>
+    <div class="section-body">
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">2</span>
+          <span class="q-text">The audit detected arsenic (As) in several food samples at concentrations far below what would cause immediate harm &mdash; yet toxicologists flagged it as a serious concern. One of the key ideas in Section 1.2 is that elements in the same group share similar chemical properties and react in similar ways. Find arsenic on the table above, then use this idea to explain why even trace amounts of arsenic are dangerous to living things.</span>
+          <span class="q-points">6 pts</span>
+        </div>
+        <p class="q-hint">Reveal Group 15 and find another element in that column that your body already depends on. If arsenic behaves chemically like that element, what might happen when arsenic enters the body?</p>
+        <div style="margin: 0 0 14px 36px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <button class="pt-mode-btn" id="btn-reveal-g15" onclick="toggleGroup15Reveal(this)">Reveal Group 15 on table</button>
+          <span id="g15-note" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; display:none;">Group 15 highlighted &mdash; find N, P, As, Sb, Bi in the same column.</span>
+        </div>
+        <div class="open-area-wrap">
+          <textarea class="open-textarea" id="item2-response" placeholder="Explain the connection between arsenic and phosphorus using their group on the periodic table..." oninput="saveLabState()"></textarea>
+          <button class="ai-feedback-btn" onclick="getAIFeedback('item2', this)">
+            <span class="spinner"></span>Get Feedback
+          </button>
+          <div class="ai-feedback-box" id="ai-item2">
+            <div class="ai-label">Instructor Feedback</div>
+            <div class="ai-feedback-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEM 3: CHOICE -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">Item 3 &mdash; Your Choice</div>
+      <span class="section-pts">8 pts</span>
+    </div>
+    <div class="section-body">
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">3</span>
+          <span class="q-text">Choose one option. Both address how periodic table position predicts element behavior.</span>
+        </div>
+        <div class="choice-selector">
+          <button class="choice-btn" onclick="selectChoice('item3', 'A', this)">Option A &mdash; Periodic Trends</button>
+          <button class="choice-btn" onclick="selectChoice('item3', 'B', this)">Option B &mdash; Atomic Number Order</button>
+        </div>
+
+        <div id="item3-A" class="choice-content">
+          <div class="choice-prompt">
+            <strong>Option A:</strong> From the six audit elements (Pb, As, Fe, Ca, Cl, Si), choose <em>one</em> you predict would most readily lose electrons and <em>one</em> you predict would most readily gain electrons. Stick to clear-cut cases &mdash; look for elements on the far left or far right of the table. Use each element's position to explain your choices. Then predict whether each, if paired with fluorine (F), would form an <em>ionic</em> or <em>covalent</em> compound &mdash; and explain why using the metal/nonmetal rule from Section 1.5.
+          </div>
+          <div class="open-area-wrap">
+            <textarea class="open-textarea" id="item3a-response" placeholder="Name one element likely to lose electrons and one likely to gain electrons, explain why using table position, then predict whether each paired with fluorine forms ionic or covalent..." oninput="saveLabState()"></textarea>
+            <button class="ai-feedback-btn" onclick="getAIFeedback('item3a', this)">
+              <span class="spinner"></span>Get Feedback
+            </button>
+            <div class="ai-feedback-box" id="ai-item3a">
+              <div class="ai-label">Instructor Feedback</div>
+              <div class="ai-feedback-content"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="item3-B" class="choice-content">
+          <div class="choice-prompt">
+            <strong>Option B:</strong> The audit report listed the six elements in order of atomic mass, not atomic number. Use the periodic table above to click the six amber elements in order from <em>lowest to highest atomic number</em>. Then explain: why does atomic number define an element's identity more fundamentally than atomic mass? What would happen to an element's identity if you changed its atomic number?
+          </div>
+
+          <!-- Click-to-order interactive -->
+          <div style="margin: 10px 0 6px 36px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--teal-dark); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">Click the amber elements in order (lowest Z first):</div>
+            <div class="order-seq" id="order-seq"></div>
+            <div id="order-feedback" style="font-family:'JetBrains Mono',monospace; font-size:11px; margin-top:6px; padding:5px 8px; border-radius:3px; display:none;"></div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button class="pt-mode-btn" id="btn-order-mode" onclick="toggleOrderMode(this)">Enable click-to-order mode</button>
+              <button class="pt-mode-btn" onclick="resetOrder()" style="display:none;" id="btn-order-reset">Reset order</button>
+              <button class="pt-mode-btn" onclick="checkOrder()" style="display:none;" id="btn-order-check">Check order</button>
+            </div>
+          </div>
+
+          <div class="open-area-wrap" style="margin-top:16px;">
+            <textarea class="open-textarea" id="item3b-response" placeholder="Explain why atomic number is the fundamental identifier of an element &mdash; what would change if you added or removed a proton?" oninput="saveLabState()"></textarea>
+            <button class="ai-feedback-btn" onclick="getAIFeedback('item3b', this)">
+              <span class="spinner"></span>Get Feedback
+            </button>
+            <div class="ai-feedback-box" id="ai-item3b">
+              <div class="ai-label">Instructor Feedback</div>
+              <div class="ai-feedback-content"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-nav-bottom">
+    <button class="check-btn" onclick="switchTab('overview', document.querySelectorAll('.tab-btn')[0])">&larr; Overview</button>
+    <button class="submit-main-btn" style="background:var(--teal);" onclick="switchTab('reactions', document.querySelectorAll('.tab-btn')[2])">Part II &mdash; Reactions &rarr;</button>
+  </div>
+
+</main>
+</div>
+
+<!-- ================================================
+     TAB III: REACTIONS (Part II)
+     ================================================ -->
+<div id="tab-reactions" class="tab-panel">
+<main class="main">
+
+  <div class="scenario-banner">
+    <div class="scenario-tag">Audit Report &mdash; Section B</div>
+    <div class="scenario-title">Water Infrastructure: Treatment Chemistry and Reaction Types</div>
+    <div class="scenario-body">
+      The audit flagged two chemical processes at Bracket City's water treatment facility. First, inspectors found that magnesium anodes used to protect the steel tanks had partially oxidized &mdash; magnesium metal reacting with oxygen in the air to form a white powdery solid. Second, the treatment plant uses additional chemical reactions to make the water safe to drink. Understanding these reactions &mdash; and being able to write and balance them &mdash; is essential for assessing what is actually entering the water supply.
+    </div>
+  </div>
+
+  <!-- ITEM 4: WORD EQUATION + BALANCE -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-title">Item 4 &mdash; The Oxidized Anodes</div>
+      <span class="section-pts">8 pts</span>
+    </div>
+    <div class="section-body">
+
+      <div class="ref-box ref-box-gold">
+        <div class="ref-box-title">Balancing Equations &mdash; Quick Reference</div>
+        <p>A balanced equation has the same number of each type of atom on both sides of the arrow. Adjust coefficients (the numbers in front of each formula) only &mdash; never change subscripts inside a formula. A coefficient of 1 is usually omitted but you should enter it explicitly here. The simplest whole-number ratio is the standard form.</p>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">4A</span>
+          <span class="q-text">The facility's magnesium anodes are oxidizing. Magnesium (Mg) reacts with oxygen gas (O<sub>2</sub>) in the air to form magnesium oxide (MgO), the white powder found coating the tank walls. Identify the correct word equation for this reaction.</span>
+          <span class="q-points">2 pts</span>
+        </div>
+        <p class="q-hint">A word equation names the reactants (left of the arrow) and products (right of the arrow) in plain language. Select one term for each blank.</p>
+
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:14px 0 8px 36px;">
+          <select id="weq-r1" onchange="checkWordEq(); saveLabState()" style="border:1.5px solid var(--border); border-radius:3px; padding:7px 10px; font-family:'DM Sans',sans-serif; font-size:13px; background:#fff; min-width:160px; outline:none;">
+            <option value="">-- Reactant 1 --</option>
+            <option value="magnesium">magnesium</option>
+            <option value="oxygen">oxygen</option>
+            <option value="water">water</option>
+            <option value="sodium fluoride">sodium fluoride</option>
+            <option value="magnesium oxide">magnesium oxide</option>
+          </select>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:18px; color:#888;">+</span>
+          <select id="weq-r2" onchange="checkWordEq(); saveLabState()" style="border:1.5px solid var(--border); border-radius:3px; padding:7px 10px; font-family:'DM Sans',sans-serif; font-size:13px; background:#fff; min-width:160px; outline:none;">
+            <option value="">-- Reactant 2 --</option>
+            <option value="magnesium">magnesium</option>
+            <option value="oxygen">oxygen</option>
+            <option value="water">water</option>
+            <option value="sodium fluoride">sodium fluoride</option>
+            <option value="magnesium oxide">magnesium oxide</option>
+          </select>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:20px; color:#888;">&rarr;</span>
+          <select id="weq-prod" onchange="checkWordEq(); saveLabState()" style="border:1.5px solid var(--border); border-radius:3px; padding:7px 10px; font-family:'DM Sans',sans-serif; font-size:13px; background:#fff; min-width:180px; outline:none;">
+            <option value="">-- Product --</option>
+            <option value="magnesium oxide">magnesium oxide</option>
+            <option value="oxygen gas">oxygen gas</option>
+            <option value="water">water</option>
+            <option value="magnesium">magnesium</option>
+            <option value="sodium chloride">sodium chloride</option>
+          </select>
+        </div>
+        <div class="feedback-inline" id="fb-weq" style="margin-left:36px;"></div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">4B</span>
+          <span class="q-text">Now balance the formula equation. Enter whole-number coefficients for each substance. The equation is: <strong>__ Mg &nbsp;+&nbsp; __ O<sub>2</sub> &nbsp;&rarr;&nbsp; __ MgO</strong></span>
+          <span class="q-points">6 pts</span>
+        </div>
+        <p class="q-hint">Count Mg atoms and O atoms on both sides. Adjust one coefficient at a time until both sides match. The simplest whole-number ratio earns full credit.</p>
+
+        <div class="eq-builder">
+          <input type="number" class="coeff-input" id="coeff-mg" min="1" max="20" placeholder="?" oninput="saveLabState()" style="width:60px;">
+          <span class="eq-term">Mg &nbsp;+</span>
+          <input type="number" class="coeff-input" id="coeff-o2" min="1" max="20" placeholder="?" oninput="saveLabState()" style="width:60px;">
+          <span class="eq-term">O<sub class="eq-sub">2</sub> &nbsp;&rarr;</span>
+          <input type="number" class="coeff-input" id="coeff-mgo" min="1" max="20" placeholder="?" oninput="saveLabState()" style="width:60px;">
+          <span class="eq-term">MgO</span>
+        </div>
+        <button class="check-btn" style="margin-left:36px; margin-top:4px;" onclick="checkBalance()">Check Balance</button>
+        <div class="feedback-inline" id="fb-balance" style="margin-left:36px;"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ITEM 5: CHOICE -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div class="section-title">Item 5 &mdash; Your Choice</div>
+      <span class="section-pts">8 pts</span>
+    </div>
+    <div class="section-body">
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">5</span>
+          <span class="q-text">Choose one option. Both address the same concept: identifying and classifying chemical change.</span>
+        </div>
+        <div class="choice-selector">
+          <button class="choice-btn" onclick="selectChoice('item5', 'A', this)">Option A &mdash; Water Fluoridation</button>
+          <button class="choice-btn" onclick="selectChoice('item5', 'B', this)">Option B &mdash; Disinfection Reaction</button>
+        </div>
+
+        <div id="item5-A" class="choice-content">
+          <div class="choice-prompt">
+            <strong>Option A:</strong> To reduce tooth decay, Bracket City's water plant dissolves sodium fluoride (NaF) into the water supply. When an ionic compound like NaF dissolves in water, it separates into its ions: Na<sup>+</sup>(aq) and F<sup>&minus;</sup>(aq). Is dissolving NaF in water a physical change or a chemical change? Justify your answer using evidence. What does this tell us about whether the fluoridation process creates a new substance or simply redistributes an existing one?
+          </div>
+          <div class="open-area-wrap">
+            <textarea class="open-textarea" id="item5a-response" placeholder="Classify NaF dissolution as physical or chemical change, justify with evidence, and explain what this means for the water's composition..." oninput="saveLabState()"></textarea>
+            <button class="ai-feedback-btn" onclick="getAIFeedback('item5a', this)">
+              <span class="spinner"></span>Get Feedback
+            </button>
+            <div class="ai-feedback-box" id="ai-item5a">
+              <div class="ai-label">Instructor Feedback</div>
+              <div class="ai-feedback-content"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="item5-B" class="choice-content">
+          <div class="choice-prompt">
+            <strong>Option B:</strong> The treatment plant also uses hydrogen peroxide (H<sub>2</sub>O<sub>2</sub>) to remove organic contaminants. It decomposes into water and oxygen gas. <br><br>
+            Step 1 &mdash; Balance the equation: &nbsp; __ H<sub>2</sub>O<sub>2</sub> &rarr; __ H<sub>2</sub>O &nbsp;+&nbsp; __ O<sub>2</sub><br><br>
+            Step 2 &mdash; Is this decomposition reaction a physical or chemical change? Explain using one piece of evidence from the equation itself.
+          </div>
+          <div style="margin:10px 36px 14px;">
+            <div class="eq-builder" style="margin:0 0 8px;">
+              <input type="number" class="coeff-input" id="coeff-h2o2" min="1" max="10" placeholder="?" oninput="saveLabState()">
+              <span class="eq-term">H<sub class="eq-sub">2</sub>O<sub class="eq-sub">2</sub> &nbsp;&rarr;</span>
+              <input type="number" class="coeff-input" id="coeff-h2o" min="1" max="10" placeholder="?" oninput="saveLabState()">
+              <span class="eq-term">H<sub class="eq-sub">2</sub>O &nbsp;+</span>
+              <input type="number" class="coeff-input" id="coeff-b-o2" min="1" max="10" placeholder="?" oninput="saveLabState()">
+              <span class="eq-term">O<sub class="eq-sub">2</sub></span>
+            </div>
+            <button class="check-btn" onclick="checkBalanceB()">Check Balance</button>
+            <div class="feedback-inline" id="fb-balance-b" style="margin-left:0; margin-top:8px;"></div>
+          </div>
+          <div class="open-area-wrap">
+            <textarea class="open-textarea" id="item5b-response" placeholder="After balancing, explain whether this decomposition is a physical or chemical change and support your answer with evidence from the equation..." oninput="saveLabState()"></textarea>
+            <button class="ai-feedback-btn" onclick="getAIFeedback('item5b', this)">
+              <span class="spinner"></span>Get Feedback
+            </button>
+            <div class="ai-feedback-box" id="ai-item5b">
+              <div class="ai-label">Instructor Feedback</div>
+              <div class="ai-feedback-content"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-nav-bottom">
+    <button class="check-btn" onclick="switchTab('periodic', document.querySelectorAll('.tab-btn')[1])">&larr; Periodic Table</button>
+    <button class="submit-main-btn" style="background:var(--teal);" onclick="switchTab('nomenclature', document.querySelectorAll('.tab-btn')[3])">Part III &mdash; Nomenclature &rarr;</button>
+  </div>
+
+</main>
+</div>
+
+<!-- ================================================
+     TAB IV: NOMENCLATURE + CHEMICAL-FREE (Parts III & IV)
+     ================================================ -->
+<div id="tab-nomenclature" class="tab-panel">
+<main class="main">
+
+  <div class="scenario-banner">
+    <div class="scenario-tag">Audit Report &mdash; Section C</div>
+    <div class="scenario-title">Food Labels: What the Names Actually Mean</div>
+    <div class="scenario-body">
+      The label audit flagged four compounds that appear repeatedly in Bracket City's processed foods and water supply. The council also received a complaint about a local grocery advertising "Chemical-Free Organic Produce." Your team needs to decode the compound names on the labels &mdash; and respond to the council's question about the chemical-free claim.
+    </div>
+  </div>
+
+  <!-- ITEM 6: NAMING TABLE -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <div class="section-title">Item 6 &mdash; Decode the Label Compounds</div>
+      <span class="section-pts">8 pts</span>
+    </div>
+    <div class="section-body">
+
+      <div class="ref-box">
+        <div class="ref-box-title">Nomenclature Quick Reference</div>
+        <p><strong>Ionic compounds</strong> form between a metal and a nonmetal (or polyatomic ion). Name the metal first, then the nonmetal with an -ide suffix (or use the polyatomic ion name as given). <strong>Covalent compounds</strong> form between two nonmetals. Use prefixes (mono-, di-, tri-...) to indicate how many of each atom are present.</p>
+      </div>
+
+      <p style="font-size:13.5px; color:#555; margin-bottom:14px; line-height:1.65;">The four compounds below appeared on Bracket City food and water labels. Type the chemical name for each formula, then classify it as ionic or covalent. Each row is worth 2 points (1 for name, 1 for type).</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:100px;">Formula</th>
+            <th>Chemical Name</th>
+            <th style="width:200px;">Ionic or Covalent?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label" style="font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; letter-spacing:0.03em;">NaCl</td>
+            <td>
+              <input type="text" id="name-NaCl" placeholder="Type the chemical name..." oninput="checkNomenclature('NaCl', this); saveLabState()" style="width:100%; border:1.5px solid var(--border); border-radius:3px; padding:7px 10px; font-family:'DM Sans',sans-serif; font-size:13px; outline:none; box-sizing:border-box;">
+              <div class="val-msg" id="val-name-NaCl"></div>
+            </td>
+            <td>
+              <select id="type-NaCl" onchange="checkNomenclature('NaCl', null, this); saveLabState()">
+                <option value="">-- Select --</option>
+                <option value="ionic">Ionic</option>
+                <option value="covalent">Covalent</option>
+              </select>
+              <div class="val-msg" id="val-type-NaCl"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="label" style="font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; letter-spacing:0.03em;">MgCl<sub>2</sub></td>
+            <td>
+              <input type="text" id="name-MgCl2" placeholder="Type the chemical name..." oninput="checkNomenclature('MgCl2', this); saveLabState()" style="width:100%; border:1.5px solid var(--border); border-radius:3px; padding:7px 10px; font-family:'DM Sans',sans-serif; font-size:13px; outline:none; box-sizing:border-box;">
+              <div class="val-msg" id="val-name-MgCl2"></div>
+            </td>
+            <td>
+              <select id="type-MgCl2" onchange="checkNomenclature('MgCl2', null, this); saveLabState()">
+                <option value="">-- Select --</option>
+                <option value="ionic">Ionic</option>
+                <option value="covalent">Covalent</option>
+              </select>
+              <div class="val-msg" id="val-type-MgCl2"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="label" style="font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; letter-spacing:0.03em;">CaCO<sub>3</sub></td>
+            <td>
+              <input type="text" id="name-CaCO3" placeholder="Type the chemical name..." oninput="checkNomenclature('CaCO3', this); saveLabState()" style="width:100%; border:1.5px solid var(--border); border-radius:3px; padding:7px 10px; font-family:'DM Sans',sans-serif; font-size:13px; outline:none; box-sizing:border-box;">
+              <div class="val-msg" id="val-name-CaCO3"></div>
+            </td>
+            <td>
+              <select id="type-CaCO3" onchange="checkNomenclature('CaCO3', null, this); saveLabState()">
+                <option value="">-- Select --</option>
+                <option value="ionic">Ionic</option>
+                <option value="covalent">Covalent</option>
+              </select>
+              <div class="val-msg" id="val-type-CaCO3"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="label" style="font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; letter-spacing:0.03em;">CO<sub>2</sub></td>
+            <td>
+              <input type="text" id="name-CO2" placeholder="Type the chemical name..." oninput="checkNomenclature('CO2', this); saveLabState()" style="width:100%; border:1.5px solid var(--border); border-radius:3px; padding:7px 10px; font-family:'DM Sans',sans-serif; font-size:13px; outline:none; box-sizing:border-box;">
+              <div class="val-msg" id="val-name-CO2"></div>
+            </td>
+            <td>
+              <select id="type-CO2" onchange="checkNomenclature('CO2', null, this); saveLabState()">
+                <option value="">-- Select --</option>
+                <option value="ionic">Ionic</option>
+                <option value="covalent">Covalent</option>
+              </select>
+              <div class="val-msg" id="val-type-CO2"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="feedback-inline" id="fb-item6" style="margin-top:4px; margin-left:0;"></div>
+    </div>
+  </div>
+
+  <!-- ITEM 7: CHOICE -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <div class="section-title">Item 7 &mdash; Your Choice</div>
+      <span class="section-pts">8 pts</span>
+    </div>
+    <div class="section-body">
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">7</span>
+          <span class="q-text">Choose one option. Both ask you to read a compound name off a food label and explain what it tells you.</span>
+        </div>
+        <div class="choice-selector">
+          <button class="choice-btn" onclick="selectChoice('item7', 'A', this)">Option A &mdash; Salt Substitute</button>
+          <button class="choice-btn" onclick="selectChoice('item7', 'B', this)">Option B &mdash; Preservative Label</button>
+        </div>
+
+        <div id="item7-A" class="choice-content">
+          <div class="choice-prompt">
+            <strong>Option A:</strong> A Bracket City grocery store sells a low-sodium salt substitute. The label lists <em>KCl</em> instead of regular table salt (NaCl). Write the chemical name for KCl. Then explain: why is the name different from sodium chloride, and what does the name tell you about what changed between the two compounds?
+          </div>
+          <div class="open-area-wrap">
+            <textarea class="open-textarea" id="item7a-response" placeholder="Write the name of KCl, then explain what changed between NaCl and KCl and how the name shows that..." oninput="saveLabState()"></textarea>
+            <button class="ai-feedback-btn" onclick="getAIFeedback('item7a', this)">
+              <span class="spinner"></span>Get Feedback
+            </button>
+            <div class="ai-feedback-box" id="ai-item7a">
+              <div class="ai-label">Instructor Feedback</div>
+              <div class="ai-feedback-content"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="item7-B" class="choice-content">
+          <div class="choice-prompt">
+            <strong>Option B:</strong> A Bracket City product label lists <em>sodium benzoate</em> as a preservative. Using only the name &mdash; no formula needed &mdash; answer these two questions: (1) Is this compound ionic or covalent? How do you know just from the name? (2) What element makes up the positive part of this compound, and how do you know?
+          </div>
+          <div class="open-area-wrap">
+            <textarea class="open-textarea" id="item7b-response" placeholder="Answer both questions using the name sodium benzoate alone..." oninput="saveLabState()"></textarea>
+            <button class="ai-feedback-btn" onclick="getAIFeedback('item7b', this)">
+              <span class="spinner"></span>Get Feedback
+            </button>
+            <div class="ai-feedback-box" id="ai-item7b">
+              <div class="ai-label">Instructor Feedback</div>
+              <div class="ai-feedback-content"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEM 8: CHEMICAL FREE -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <div class="section-title">Item 8 &mdash; The Chemical-Free Claim</div>
+      <span class="section-pts">10 pts</span>
+    </div>
+    <div class="section-body">
+      <div class="q-block">
+        <div class="q-label">
+          <span class="q-num">8</span>
+          <span class="q-text">A Bracket City grocery store is advertising "Chemical-Free Organic Produce." The council has asked your team to respond. In 2&ndash;3 sentences, explain why the claim is scientifically impossible and suggest a more accurate description of what the store is trying to communicate.</span>
+          <span class="q-points">10 pts</span>
+        </div>
+        <p class="q-hint">Think about what all matter is made of. What would "chemical-free" actually mean? What is the store probably trying to say?</p>
+        <div class="open-area-wrap">
+          <textarea class="open-textarea" id="item8-response" style="min-height:110px;" placeholder="Explain why 'chemical-free' is scientifically impossible and suggest what the store actually means..." oninput="saveLabState()"></textarea>
+          <button class="ai-feedback-btn" onclick="getAIFeedback('item8', this)">
+            <span class="spinner"></span>Get Feedback
+          </button>
+          <div class="ai-feedback-box" id="ai-item8">
+            <div class="ai-label">Instructor Feedback</div>
+            <div class="ai-feedback-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-nav-bottom">
+    <button class="check-btn" onclick="switchTab('reactions', document.querySelectorAll('.tab-btn')[2])">&larr; Reactions</button>
+    <button class="submit-main-btn" style="background:var(--accent);" onclick="switchTab('submit', document.querySelectorAll('.tab-btn')[4]); buildChecklist(); updateAttemptStatus();">Go to Submit &rarr;</button>
+  </div>
+
+</main>
+</div>
+
+<!-- ================================================
+     TAB V: SUBMIT
+     ================================================ -->
+<div id="tab-submit" class="tab-panel">
+<main class="main">
+
+  <!-- COMPLETION CHECKLIST -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">Completion Checklist</div>
+      <span class="section-badge badge-teal">Review Before Submitting</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:13px; color:#555; line-height:1.65; margin-bottom:16px;">Each item updates as you complete the workbook. Green means ready; gray means something still needs attention.</p>
+      <div id="completion-checklist" class="checklist-grid"></div>
+      <div id="attempt-status-msg" style="margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;"></div>
+    </div>
+  </div>
+
+  <!-- RUBRIC -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">Grading Rubric</div>
+      <span class="section-pts">62 pts Total</span>
+    </div>
+    <div class="section-body">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th style="text-align:center; width:110px;">Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="label">Part I, Item 1 &mdash; Element classification (6 elements, metal / nonmetal / metalloid)</td><td style="text-align:center;">6</td></tr>
+          <tr><td class="label">Part I, Item 2 &mdash; Arsenic toxicity via group relationship (written)</td><td style="text-align:center;">6</td></tr>
+          <tr><td class="label">Part I, Item 3 &mdash; Choice: periodic trends or atomic number (written)</td><td style="text-align:center;">8</td></tr>
+          <tr><td class="label">Part II, Item 4 &mdash; Word equation identification + balanced equation</td><td style="text-align:center;">8</td></tr>
+          <tr><td class="label">Part II, Item 5 &mdash; Choice: NaF dissolution or H<sub>2</sub>O<sub>2</sub> decomposition (written + balance)</td><td style="text-align:center;">8</td></tr>
+          <tr><td class="label">Part III, Item 6 &mdash; Chemical naming and ionic/covalent classification (4 compounds)</td><td style="text-align:center;">8</td></tr>
+          <tr><td class="label">Part III, Item 7 &mdash; Choice: KCl nomenclature or sodium benzoate analysis (written)</td><td style="text-align:center;">8</td></tr>
+          <tr><td class="label">Part IV, Item 8 &mdash; Chemical-free claim analysis (written)</td><td style="text-align:center;">10</td></tr>
+          <tr style="background:#f0f8f5;"><td class="label" style="font-weight:700;">Total</td><td style="text-align:center; font-weight:700;">62 pts</td></tr>
+        </tbody>
+      </table>
+      <div class="ref-box" style="margin-top:16px; margin-bottom:0;">
+        <div class="ref-box-title">About Scoring</div>
+        <p>Your digital score is out of 62 pts and is recorded automatically on submission. You have <strong>2 submission attempts</strong> &mdash; use your first attempt to review feedback, then revise and submit a final time.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-section" id="submit-section">
+    <div class="submit-info" style="flex:1; min-width:0;">
+      <strong>Ready to Submit?</strong>
+      Make sure your name and section are filled in at the top of the page. Your score and all responses go to your instructor&rsquo;s gradebook automatically. Written responses receive personalized AI feedback after submission.
+    </div>
+    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px; flex-shrink:0;">
+      <div id="attempt-status" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(255,255,255,0.45); text-align:right; line-height:1.7;"></div>
+      <button class="submit-main-btn" id="submitBtn" onclick="submitWorkbook()">Submit Workbook A</button>
+    </div>
+  </div>
+
+  <div class="score-panel" id="score-panel">
+    <div class="score-panel-title">Submission Received</div>
+    <div class="score-header" id="scoreHeader"></div>
+    <div class="score-bar-wrap"><div class="score-bar" id="scoreBar"></div></div>
+    <div class="score-text" id="scoreText"></div>
+    <div class="score-details" id="scoreDetails"></div>
+  </div>
+
+</main>
+</div>
+
+<div id="autosave-status">Saved</div>
+
+<script>
+// ============================================================
+//  ENDPOINTS
+// ============================================================
+// GAS handler: lab_id 'Workbook_1' routes to handleSubmit_Workbook1 in CHEM100_Code.gs
+var SHEETS_ENDPOINT   = 'https://script.google.com/macros/s/AKfycbyp3N_GTXKVcvEmZuZDlcH9LlVsSac7NLZpHHhqp0bVGyjBdJkQERHpc2ChSLRmTjR9QA/exec';
+var AI_PROXY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyp3N_GTXKVcvEmZuZDlcH9LlVsSac7NLZpHHhqp0bVGyjBdJkQERHpc2ChSLRmTjR9QA/exec';
+
+// ============================================================
+//  AI SYSTEM PROMPT
+// ============================================================
+var AI_SYSTEM = 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university, giving feedback on student lab work for CHEM 100: Chemistry in Society. Your students are non-majors \u2014 many are encountering college-level science for the first time and some feel nervous about chemistry. Approach every response with genuine warmth and the assumption that the student is trying their best. Tone and length: Use plain, conversational language. No bullet points. No markdown. Keep feedback to 4-5 sentences. Speak like a patient, encouraging teacher \u2014 not a grader. For strong responses: Name specifically what the student got right and connect it to something they will recognize from everyday life. Extend their thinking one step further with a question or observation that sparks curiosity. For incomplete responses: Begin by affirming whatever correct thinking is present, then use a gentle guiding question to nudge them toward what is missing. Never state the answer outright. Frame the gap as something worth discovering, not a mistake to correct. For responses with a scientific misconception: Gently reframe with a question such as \"What do you think would happen if...\" that helps the student reason toward the accurate idea. The goal is discovery, not correction. Never make the student feel foolish. For off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly. Acknowledge that this does not yet answer the question, restate what is being asked in simple, friendly terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses. AI-detection: If the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, sophisticated vocabulary inconsistent with a non-major\'s writing, or hedging language such as \"it is worth noting,\" \"furthermore,\" or \"in conclusion,\" it may have been generated by AI. If so, respond only with: This response reads like it may have been drafted with some outside help \u2014 and I understand the temptation, but I want to hear your own voice. Even a rough, imperfect answer in your own words tells me so much more about what you are learning. Please rewrite this the way you would explain it to a friend. What do you actually understand about this topic? Grading principles for written responses: Accept synonymous or informal language if the scientific meaning is accurate. Award partial credit (at least half) when the core concept is present but a detail is missing. Never penalize for missing vocabulary if the underlying concept is demonstrated. Spelling and grammatical errors should never reduce a score. When a response is ambiguous, interpret it charitably. These are non-science majors; apply a healthy degree of leniency and reward genuine engagement with the material.';
+
+// ============================================================
+//  ATTEMPT TRACKING
+// ============================================================
+var MAX_ATTEMPTS = 2;
+var STORAGE_KEY  = 'chem100_workbook_1_state';
+
+function getAttempts() { try { return parseInt(localStorage.getItem(STORAGE_KEY + '_attempts') || '0'); } catch(e) { return 0; } }
+function incAttempts() { try { localStorage.setItem(STORAGE_KEY + '_attempts', getAttempts() + 1); } catch(e) {} }
+function updateAttemptStatus() {
+  var a = getAttempts();
+  var remaining = MAX_ATTEMPTS - a;
+  var msgEl = document.getElementById('attempt-status-msg');
+  var statusEl = document.getElementById('attempt-status');
+  var btn = document.getElementById('submitBtn');
+  var msg = remaining <= 0 ? 'No attempts remaining.' : (remaining === 1 ? '1 attempt remaining.' : remaining + ' attempts remaining.');
+  if (msgEl) msgEl.textContent = msg;
+  if (statusEl) statusEl.textContent = 'Attempt ' + (a + 1) + ' of ' + MAX_ATTEMPTS;
+  if (btn && remaining <= 0) { btn.disabled = true; btn.textContent = 'No Attempts Remaining'; }
+}
+
+// ============================================================
+//  TAB SWITCHING
+// ============================================================
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  var panel = document.getElementById('tab-' + id);
+  if (panel) panel.classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ============================================================
+//  CHOICE SELECTION
+// ============================================================
+var choiceItem3 = null;
+var choiceItem5 = null;
+var choiceItem7 = null;
+
+function selectChoice(item, option, btn) {
+  var a = document.getElementById(item + '-A');
+  var b = document.getElementById(item + '-B');
+  if (a) { a.classList.remove('visible'); a.style.display = 'none'; }
+  if (b) { b.classList.remove('visible'); b.style.display = 'none'; }
+  var sel = document.getElementById(item + '-' + option);
+  if (sel) { sel.style.display = 'block'; sel.classList.add('visible'); }
+  btn.closest('.choice-selector').querySelectorAll('.choice-btn').forEach(function(b2) { b2.classList.remove('active'); });
+  btn.classList.add('active');
+  if (item === 'item3') choiceItem3 = option;
+  if (item === 'item5') choiceItem5 = option;
+  if (item === 'item7') choiceItem7 = option;
+  saveLabState();
+}
+
+// ============================================================
+//  ELEMENT CLASSIFICATION
+// ============================================================
+// ============================================================
+//  PERIODIC TABLE ENGINE
+// ============================================================
+var AUDIT_SYMS = ['Pb','As','Fe','Ca','Cl','Si'];
+var ptElemState = {};   // sym -> '' | 'metal' | 'nonmetal' | 'metalloid'
+var orderMode   = false;
+var orderSeq    = [];   // array of syms in click order
+var g15Revealed = false;
+
+var elemAnswers = {
+  Pb: 'metal', As: 'metalloid', Fe: 'metal',
+  Ca: 'metal', Cl: 'nonmetal', Si: 'metalloid'
+};
+
+var elemNames = {
+  Pb:'Lead', As:'Arsenic', Fe:'Iron', Ca:'Calcium', Cl:'Chlorine', Si:'Silicon'
+};
+
+var elemFeedback = {
+  Pb: {
+    metal:     'Metal \u2014 correct. Lead sits well into the metal region of Group 14, Period 6. Its density and malleability are classic metal traits, and its toxicity in pipes and paint is exactly why the audit flagged it.',
+    nonmetal:  'Not quite. Lead is a metal. It sits in the lower-left of Group 14, far from the staircase boundary where nonmetals live. Its high density and metallic luster are giveaways.',
+    metalloid: 'Close region, but not quite. Germanium (Ge) is the metalloid in Group 14 \u2014 lead sits two periods below it, well into metal territory. Pb is classified as a metal.'
+  },
+  As: {
+    metalloid: 'Metalloid \u2014 correct. Arsenic rides the staircase boundary in Group 15, Period 4. That boundary position is exactly what makes it dangerous \u2014 it can chemically impersonate phosphorus (its nonmetal neighbor one period up).',
+    metal:     'Arsenic is actually a metalloid. Find it on the staircase boundary in Group 15 \u2014 the same column as nitrogen (N) and phosphorus (P), but crossing from nonmetal into mixed-character territory.',
+    nonmetal:  'Arsenic is a metalloid, not a nonmetal. Nitrogen and phosphorus (above it in Group 15) are nonmetals, but arsenic sits right on the staircase boundary where the character shifts.'
+  },
+  Fe: {
+    metal:     'Metal \u2014 correct. Iron is a d-block transition metal in Group 8, Period 4. It is the most abundant element in the Earth\u2019s core and the backbone of Bracket City\u2019s aging pipe network.',
+    nonmetal:  'Iron is a metal \u2014 a transition metal in the center of the table (Group 8). Its shiny surface, electrical conductivity, and tendency to form positive ions are all classic metal properties.',
+    metalloid: 'Iron is a metal, not a metalloid. It occupies Group 8 in the d-block, far from the staircase boundary. Metalloids are only the seven elements lining that diagonal.'
+  },
+  Ca: {
+    metal:     'Metal \u2014 correct. Calcium is an alkaline earth metal in Group 2, Period 4. Your bones and teeth are largely calcium phosphate, and its presence in the audit water is actually a sign of healthy mineral content.',
+    nonmetal:  'Calcium is a metal \u2014 specifically an alkaline earth metal in Group 2. All of Group 2 (Be, Mg, Ca, Sr, Ba, Ra) sits on the far left, solidly in metal territory.',
+    metalloid: 'Calcium is a metal, not a metalloid. Group 2 is on the far left of the table, well away from the staircase boundary. Metalloids are only found along that diagonal dividing line.'
+  },
+  Cl: {
+    nonmetal:  'Nonmetal \u2014 correct. Chlorine is a halogen in Group 17, Period 3. It is highly reactive because it needs just one more electron to complete its outer shell, which makes it an effective water disinfectant \u2014 and a potential concern at high concentrations.',
+    metal:     'Chlorine is a nonmetal. It sits in Group 17 (the halogens) on the upper right side of the table, where nonmetals live. Nonmetals gain or share electrons rather than losing them.',
+    metalloid: 'Chlorine is a nonmetal, not a metalloid. It is in Group 17, Period 3 \u2014 well into the upper-right nonmetal region, several columns away from the staircase boundary.'
+  },
+  Si: {
+    metalloid: 'Metalloid \u2014 correct. Silicon sits right on the staircase boundary in Group 14, Period 3. Its semiconductor properties power modern electronics, and it appears in the audit as a natural silicate mineral dissolved in the water supply.',
+    metal:     'Silicon is a metalloid. Find it on the staircase boundary in Group 14, between the metal aluminum (Al) on its left and the nonmetal phosphorus (P) on its right. That boundary position defines it as a metalloid.',
+    nonmetal:  'Silicon is a metalloid, not a nonmetal. Carbon (C) directly above it in Group 14 is a nonmetal, but silicon crosses to the boundary line. Its semiconductor behavior is the hallmark of metalloid character.'
+  }
+};
+
+var elements = [
+  {sym:'H',  num:1,  name:'Hydrogen',      col:1,  row:1},
+  {sym:'He', num:2,  name:'Helium',        col:18, row:1},
+  {sym:'Li', num:3,  name:'Lithium',       col:1,  row:2},
+  {sym:'Be', num:4,  name:'Beryllium',     col:2,  row:2},
+  {sym:'B',  num:5,  name:'Boron',         col:13, row:2},
+  {sym:'C',  num:6,  name:'Carbon',        col:14, row:2},
+  {sym:'N',  num:7,  name:'Nitrogen',      col:15, row:2},
+  {sym:'O',  num:8,  name:'Oxygen',        col:16, row:2},
+  {sym:'F',  num:9,  name:'Fluorine',      col:17, row:2},
+  {sym:'Ne', num:10, name:'Neon',          col:18, row:2},
+  {sym:'Na', num:11, name:'Sodium',        col:1,  row:3},
+  {sym:'Mg', num:12, name:'Magnesium',     col:2,  row:3},
+  {sym:'Al', num:13, name:'Aluminum',      col:13, row:3},
+  {sym:'Si', num:14, name:'Silicon',       col:14, row:3},
+  {sym:'P',  num:15, name:'Phosphorus',    col:15, row:3},
+  {sym:'S',  num:16, name:'Sulfur',        col:16, row:3},
+  {sym:'Cl', num:17, name:'Chlorine',      col:17, row:3},
+  {sym:'Ar', num:18, name:'Argon',         col:18, row:3},
+  {sym:'K',  num:19, name:'Potassium',     col:1,  row:4},
+  {sym:'Ca', num:20, name:'Calcium',       col:2,  row:4},
+  {sym:'Sc', num:21, name:'Scandium',      col:3,  row:4},
+  {sym:'Ti', num:22, name:'Titanium',      col:4,  row:4},
+  {sym:'V',  num:23, name:'Vanadium',      col:5,  row:4},
+  {sym:'Cr', num:24, name:'Chromium',      col:6,  row:4},
+  {sym:'Mn', num:25, name:'Manganese',     col:7,  row:4},
+  {sym:'Fe', num:26, name:'Iron',          col:8,  row:4},
+  {sym:'Co', num:27, name:'Cobalt',        col:9,  row:4},
+  {sym:'Ni', num:28, name:'Nickel',        col:10, row:4},
+  {sym:'Cu', num:29, name:'Copper',        col:11, row:4},
+  {sym:'Zn', num:30, name:'Zinc',          col:12, row:4},
+  {sym:'Ga', num:31, name:'Gallium',       col:13, row:4},
+  {sym:'Ge', num:32, name:'Germanium',     col:14, row:4},
+  {sym:'As', num:33, name:'Arsenic',       col:15, row:4},
+  {sym:'Se', num:34, name:'Selenium',      col:16, row:4},
+  {sym:'Br', num:35, name:'Bromine',       col:17, row:4},
+  {sym:'Kr', num:36, name:'Krypton',       col:18, row:4},
+  {sym:'Rb', num:37, name:'Rubidium',      col:1,  row:5},
+  {sym:'Sr', num:38, name:'Strontium',     col:2,  row:5},
+  {sym:'Y',  num:39, name:'Yttrium',       col:3,  row:5},
+  {sym:'Zr', num:40, name:'Zirconium',     col:4,  row:5},
+  {sym:'Nb', num:41, name:'Niobium',       col:5,  row:5},
+  {sym:'Mo', num:42, name:'Molybdenum',    col:6,  row:5},
+  {sym:'Tc', num:43, name:'Technetium',    col:7,  row:5},
+  {sym:'Ru', num:44, name:'Ruthenium',     col:8,  row:5},
+  {sym:'Rh', num:45, name:'Rhodium',       col:9,  row:5},
+  {sym:'Pd', num:46, name:'Palladium',     col:10, row:5},
+  {sym:'Ag', num:47, name:'Silver',        col:11, row:5},
+  {sym:'Cd', num:48, name:'Cadmium',       col:12, row:5},
+  {sym:'In', num:49, name:'Indium',        col:13, row:5},
+  {sym:'Sn', num:50, name:'Tin',           col:14, row:5},
+  {sym:'Sb', num:51, name:'Antimony',      col:15, row:5},
+  {sym:'Te', num:52, name:'Tellurium',     col:16, row:5},
+  {sym:'I',  num:53, name:'Iodine',        col:17, row:5},
+  {sym:'Xe', num:54, name:'Xenon',         col:18, row:5},
+  {sym:'Cs', num:55, name:'Cesium',        col:1,  row:6},
+  {sym:'Ba', num:56, name:'Barium',        col:2,  row:6},
+  {sym:'La', num:57, name:'Lanthanum',     col:3,  row:6},
+  {sym:'Hf', num:72, name:'Hafnium',       col:4,  row:6},
+  {sym:'Ta', num:73, name:'Tantalum',      col:5,  row:6},
+  {sym:'W',  num:74, name:'Tungsten',      col:6,  row:6},
+  {sym:'Re', num:75, name:'Rhenium',       col:7,  row:6},
+  {sym:'Os', num:76, name:'Osmium',        col:8,  row:6},
+  {sym:'Ir', num:77, name:'Iridium',       col:9,  row:6},
+  {sym:'Pt', num:78, name:'Platinum',      col:10, row:6},
+  {sym:'Au', num:79, name:'Gold',          col:11, row:6},
+  {sym:'Hg', num:80, name:'Mercury',       col:12, row:6},
+  {sym:'Tl', num:81, name:'Thallium',      col:13, row:6},
+  {sym:'Pb', num:82, name:'Lead',          col:14, row:6},
+  {sym:'Bi', num:83, name:'Bismuth',       col:15, row:6},
+  {sym:'Po', num:84, name:'Polonium',      col:16, row:6},
+  {sym:'At', num:85, name:'Astatine',      col:17, row:6},
+  {sym:'Rn', num:86, name:'Radon',         col:18, row:6},
+  {sym:'Fr', num:87, name:'Francium',      col:1,  row:7},
+  {sym:'Ra', num:88, name:'Radium',        col:2,  row:7},
+  {sym:'Ac', num:89, name:'Actinium',      col:3,  row:7},
+  {sym:'Rf', num:104, name:'Rutherfordium',col:4,  row:7},
+  {sym:'Db', num:105, name:'Dubnium',      col:5,  row:7},
+  {sym:'Sg', num:106, name:'Seaborgium',   col:6,  row:7},
+  {sym:'Bh', num:107, name:'Bohrium',      col:7,  row:7},
+  {sym:'Hs', num:108, name:'Hassium',      col:8,  row:7},
+  {sym:'Mt', num:109, name:'Meitnerium',   col:9,  row:7},
+  {sym:'Ds', num:110, name:'Darmstadtium', col:10, row:7},
+  {sym:'Rg', num:111, name:'Roentgenium',  col:11, row:7},
+  {sym:'Cn', num:112, name:'Copernicium',  col:12, row:7},
+  {sym:'Nh', num:113, name:'Nihonium',     col:13, row:7},
+  {sym:'Fl', num:114, name:'Flerovium',    col:14, row:7},
+  {sym:'Mc', num:115, name:'Moscovium',    col:15, row:7},
+  {sym:'Lv', num:116, name:'Livermorium',  col:16, row:7},
+  {sym:'Ts', num:117, name:'Tennessine',   col:17, row:7},
+  {sym:'Og', num:118, name:'Oganesson',    col:18, row:7}
+];
+
+var elemByCol = {}; // col -> list of {sym, row}
+
+var S_BLOCK = new Set([1,2,3,4,11,12,19,20,37,38,55,56,87,88]);
+var D_BLOCK = new Set([21,22,23,24,25,26,27,28,29,30,39,40,41,42,43,44,45,46,47,48,71,72,73,74,75,76,77,78,79,80,103,104,105,106,107,108,109,110,111,112]);
+var F_BLOCK = new Set([57,58,59,60,61,62,63,64,65,66,67,68,69,70,89,90,91,92,93,94,95,96,97,98,99,100,101,102]);
+function getBlock(num) {
+  if (S_BLOCK.has(num)) return 's';
+  if (F_BLOCK.has(num)) return 'f';
+  if (D_BLOCK.has(num)) return 'd';
+  return 'p';
+}
+
+function buildPeriodicTable() {
+  var grid = document.getElementById('ptable-wb');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  // Build column map for group flashing
+  elemByCol = {};
+  elements.forEach(function(el) {
+    if (!elemByCol[el.col]) elemByCol[el.col] = [];
+    elemByCol[el.col].push(el.sym);
+  });
+
+  // Group number labels row
+  for (var col = 1; col <= 18; col++) {
+    var lbl = document.createElement('div');
+    lbl.className = 'pt-group-label';
+    lbl.textContent = col;
+    if (col >= 3 && col <= 12) lbl.style.fontSize = '6.5px';
+    grid.appendChild(lbl);
+  }
+
+  var cellMap = {};
+  elements.forEach(function(el) { cellMap[el.row + '-' + el.col] = el; });
+  var auditSet = new Set(AUDIT_SYMS);
+
+  for (var row = 1; row <= 7; row++) {
+    for (var c = 1; c <= 18; c++) {
+      var el = cellMap[row + '-' + c];
+      var div = document.createElement('div');
+      if (!el) {
+        div.className = 'pt-cell pt-empty';
+      } else {
+        var block = getBlock(el.num);
+        var isAudit = auditSet.has(el.sym);
+        div.className = 'pt-cell block-' + block + (isAudit ? ' audit clickable' : '');
+        div.id = 'pt-wb-' + el.sym;
+        div.dataset.col = el.col;
+        div.dataset.sym = el.sym;
+        div.dataset.num = el.num;
+        div.innerHTML = '<span class="at-num">' + el.num + '</span><span class="sym">' + el.sym + '</span><span class="el-name">' + el.name + '</span>';
+        div.title = el.name + ' (' + el.sym + ') \u2014 Z=' + el.num + ', Group ' + c + ', Period ' + row;
+        if (isAudit) {
+          ptElemState[el.sym] = ptElemState[el.sym] || '';
+          (function(sym, colNum) {
+            div.addEventListener('click', function() { onPtCellClick(sym, colNum, this); });
+          })(el.sym, el.col);
+        } else {
+          // Non-audit: click still flashes group
+          (function(colNum) {
+            div.addEventListener('click', function() { flashGroupCol(colNum); });
+          })(el.col);
+        }
+        ptElemState[el.sym] = ptElemState[el.sym] || '';
+      }
+      grid.appendChild(div);
+    }
+  }
+
+  // Block bar removed — block color coding not used in this context
+
+  buildAuditStrip();
+}
+
+// ---- Group column flash ----
+var flashTimer = null;
+function flashGroupCol(col) {
+  // Remove old flashes (but not group15 reveals)
+  document.querySelectorAll('.pt-cell.group-flash').forEach(function(c) { c.classList.remove('group-flash'); });
+  clearTimeout(flashTimer);
+  if (!g15Revealed) {
+    var syms = elemByCol[col] || [];
+    syms.forEach(function(s) {
+      var el = document.getElementById('pt-wb-' + s);
+      if (el) el.classList.add('group-flash');
+    });
+    flashTimer = setTimeout(function() {
+      document.querySelectorAll('.pt-cell.group-flash').forEach(function(c) { c.classList.remove('group-flash'); });
+    }, 1200);
+  }
+}
+
+// ---- Group 15 reveal for Item 2 ----
+function toggleGroup15Reveal(btn) {
+  g15Revealed = !g15Revealed;
+  var note = document.getElementById('g15-note');
+  if (g15Revealed) {
+    (elemByCol[15] || []).forEach(function(s) {
+      var el = document.getElementById('pt-wb-' + s);
+      if (el) el.classList.add('group-reveal');
+    });
+    btn.textContent = 'Hide Group 15';
+    btn.classList.add('active-mode');
+    if (note) note.style.display = 'inline';
+  } else {
+    document.querySelectorAll('.pt-cell.group-reveal').forEach(function(c) { c.classList.remove('group-reveal'); });
+    btn.textContent = 'Reveal Group 15 on table';
+    btn.classList.remove('active-mode');
+    if (note) note.style.display = 'none';
+  }
+}
+
+// ---- Audit element click: classify ----
+function onPtCellClick(sym, col, cell) {
+  if (orderMode) {
+    handleOrderClick(sym);
+    return;
+  }
+  // Cycle classification
+  var cur = ptElemState[sym] || '';
+  var next = cur === '' ? 'metal' : cur === 'metal' ? 'nonmetal' : cur === 'nonmetal' ? 'metalloid' : '';
+  ptElemState[sym] = next;
+  updateCellClassification(sym, cell);
+  flashGroupCol(col);
+  buildAuditStrip();
+  updateItem1Summary();
+  saveLabState();
+}
+
+function updateCellClassification(sym, cell) {
+  if (!cell) cell = document.getElementById('pt-wb-' + sym);
+  if (!cell) return;
+  cell.classList.remove('cls-metal','cls-nonmetal','cls-metalloid','audit');
+  var state = ptElemState[sym] || '';
+  if (state === 'metal')     { cell.classList.add('cls-metal'); }
+  else if (state === 'nonmetal')  { cell.classList.add('cls-nonmetal'); }
+  else if (state === 'metalloid') { cell.classList.add('cls-metalloid'); }
+  else { cell.classList.add('audit'); }
+}
+
+// ---- Audit strip ----
+function buildAuditStrip() {
+  var strip = document.getElementById('audit-strip');
+  if (!strip) return;
+  strip.innerHTML = '';
+  AUDIT_SYMS.forEach(function(sym) {
+    var state  = ptElemState[sym] || '';
+    var answer = elemAnswers[sym];
+    var chip   = document.createElement('div');
+    chip.className = 'audit-chip';
+    var classified = state !== '';
+    var correct = classified && state === answer;
+    var wrong   = classified && state !== answer;
+    if (classified) chip.classList.add('chip-' + state);
+    if (wrong) chip.classList.add('chip-wrong');
+    var label = state ? (state.charAt(0).toUpperCase() + state.slice(1)) : 'Unclassified';
+    var mark  = classified ? (correct ? '\u2713' : '\u2717') : '\u25a1';
+    chip.innerHTML = '<span class="chip-sym">' + sym + '</span><div><div style="font-size:11px; font-weight:600; color:var(--ink);">' + (elemNames[sym]||sym) + '</div><div class="chip-cls">' + label + '</div></div><span class="chip-mark" style="color:' + (correct ? 'var(--green)' : wrong ? 'var(--red)' : '#bbb') + ';">' + mark + '</span>';
+    strip.appendChild(chip);
+  });
+}
+
+function updateItem1Summary() {
+  var correct = 0; var attempted = 0;
+  AUDIT_SYMS.forEach(function(s) {
+    var state = ptElemState[s] || '';
+    if (state) { attempted++; if (state === elemAnswers[s]) correct++; }
+  });
+  var fb = document.getElementById('fb-item1');
+  if (!fb) return;
+  if (attempted === 0) { fb.className = 'feedback-inline'; fb.textContent = ''; return; }
+  var txt = '';
+  if (correct === 6) {
+    txt = '6/6 correct. All six audit elements classified correctly \u2014 check the feedback column on each chip.';
+    // Show per-element feedback inline
+    AUDIT_SYMS.forEach(function(s) {
+      var el = document.getElementById('fb-elem-' + s);
+      if (el) { el.textContent = elemFeedback[s][elemAnswers[s]] || ''; el.className = 'val-msg ok'; }
+    });
+    fb.className = 'feedback-inline correct';
+  } else if (attempted === 6) {
+    txt = correct + '/6 correct. The chips with red \u2717 need another look \u2014 click that element on the table to cycle to a different classification.';
+    fb.className = 'feedback-inline partial';
+    if (correct < 4) fb.className = 'feedback-inline incorrect';
+  } else {
+    txt = correct + ' of ' + attempted + ' classified so far. Click the amber elements on the table to classify the rest.';
+    fb.className = 'feedback-inline partial';
+  }
+  fb.textContent = txt;
+}
+
+// ---- Item 3B: click-to-order mode ----
+function toggleOrderMode(btn) {
+  orderMode = !orderMode;
+  if (orderMode) {
+    btn.textContent = 'Exit order mode';
+    btn.classList.add('active-mode');
+    document.getElementById('btn-order-reset').style.display = 'inline-block';
+    document.getElementById('btn-order-check').style.display = 'inline-block';
+    // Make all audit cells clickable in order mode
+    AUDIT_SYMS.forEach(function(s) {
+      var el = document.getElementById('pt-wb-' + s);
+      if (el) el.title = el.title + ' \u2014 Click to add to order';
+    });
+  } else {
+    btn.textContent = 'Enable click-to-order mode';
+    btn.classList.remove('active-mode');
+  }
+}
+
+function handleOrderClick(sym) {
+  if (orderSeq.indexOf(sym) > -1) return; // already placed
+  if (orderSeq.length >= 6) return;
+  orderSeq.push(sym);
+  // Show badge on cell
+  var cell = document.getElementById('pt-wb-' + sym);
+  if (cell) {
+    var badge = document.createElement('div');
+    badge.className = 'order-badge';
+    badge.textContent = orderSeq.length;
+    // Remove existing badge if any
+    var existing = cell.querySelector('.order-badge');
+    if (existing) existing.remove();
+    cell.appendChild(badge);
+  }
+  renderOrderSeq();
+  if (orderSeq.length === 6) checkOrder();
+}
+
+function renderOrderSeq() {
+  var seqEl = document.getElementById('order-seq');
+  if (!seqEl) return;
+  seqEl.innerHTML = '';
+  orderSeq.forEach(function(sym, i) {
+    var elData = elements.find(function(e) { return e.sym === sym; });
+    var tok = document.createElement('div');
+    tok.className = 'order-token';
+    tok.innerHTML = '<span class="tok-num">' + (i+1) + '.</span>' + sym + (elData ? ' <span style="opacity:0.55;font-size:10px;">Z=' + elData.num + '</span>' : '');
+    seqEl.appendChild(tok);
+  });
+  if (orderSeq.length === 0) {
+    seqEl.innerHTML = '<span style="font-family:\'JetBrains Mono\',monospace; font-size:11px; color:#bbb;">Click the six amber elements in order...</span>';
+  }
+}
+
+function checkOrder() {
+  // Correct order by Z: Si(14), Cl(17), Ca(20), Fe(26), As(33), Pb(82)
+  var correct = ['Si','Cl','Ca','Fe','As','Pb'];
+  var fb = document.getElementById('order-feedback');
+  if (!fb) return;
+  if (orderSeq.length < 6) {
+    fb.style.display = 'block'; fb.style.background = 'var(--gold-light)';
+    fb.style.color = 'var(--gold)'; fb.style.borderLeft = '2px solid var(--gold)';
+    fb.textContent = 'Place all 6 elements before checking. ' + (6 - orderSeq.length) + ' remaining.';
+    return;
+  }
+  var matches = 0;
+  for (var i = 0; i < 6; i++) { if (orderSeq[i] === correct[i]) matches++; }
+  fb.style.display = 'block';
+  if (matches === 6) {
+    fb.style.background = 'var(--green-light)'; fb.style.color = 'var(--green)'; fb.style.borderLeft = '2px solid var(--green)';
+    fb.textContent = 'Correct order! Si(14) \u2192 Cl(17) \u2192 Ca(20) \u2192 Fe(26) \u2192 As(33) \u2192 Pb(82). Each atomic number is the number of protons \u2014 find them in the upper-left corner of each cell.';
+  } else {
+    fb.style.background = 'var(--red-light)'; fb.style.color = 'var(--red)'; fb.style.borderLeft = '2px solid var(--red)';
+    fb.textContent = matches + '/6 in the correct position. Reset and try again \u2014 the atomic number (upper-left of each cell) is what you\u2019re ordering by, not the symbol or atomic mass.';
+  }
+  saveLabState();
+}
+
+function resetOrder() {
+  orderSeq = [];
+  AUDIT_SYMS.forEach(function(s) {
+    var cell = document.getElementById('pt-wb-' + s);
+    if (cell) { var b = cell.querySelector('.order-badge'); if (b) b.remove(); }
+  });
+  renderOrderSeq();
+  var fb = document.getElementById('order-feedback');
+  if (fb) { fb.style.display = 'none'; fb.textContent = ''; }
+  saveLabState();
+}
+
+// ---- Item 1 summary trigger ----
+function checkElemClass(sym, el) {
+  // Legacy shim — PT now drives classification directly
+  // Called during loadLabState to restore state
+  if (el && el.value) {
+    ptElemState[sym] = el.value;
+    updateCellClassification(sym);
+  }
+  updateItem1Summary();
+}
+
+
+// ============================================================
+//  WORD EQUATION CHECK
+// ============================================================
+function checkWordEq() {
+  var r1 = (document.getElementById('weq-r1') || {value:''}).value;
+  var r2 = (document.getElementById('weq-r2') || {value:''}).value;
+  var prod = (document.getElementById('weq-prod') || {value:''}).value;
+  var fb = document.getElementById('fb-weq');
+  if (!r1 || !r2 || !prod) { fb.className = 'feedback-inline'; fb.style.display = 'none'; return; }
+  var reactantsOk = (r1 === 'magnesium' && r2 === 'oxygen') || (r1 === 'oxygen' && r2 === 'magnesium');
+  var productOk = prod === 'magnesium oxide';
+  if (reactantsOk && productOk) {
+    fb.className = 'feedback-inline correct';
+    fb.textContent = 'Correct. Magnesium and oxygen are the reactants and magnesium oxide is the product. This is a synthesis reaction \u2014 two elements combining to form a single compound.';
+  } else if (!reactantsOk && productOk) {
+    fb.className = 'feedback-inline partial';
+    fb.textContent = 'The product is correct, but check your reactants. The scenario describes magnesium reacting with oxygen in the air \u2014 those are the two starting materials.';
+  } else if (reactantsOk && !productOk) {
+    fb.className = 'feedback-inline partial';
+    fb.textContent = 'Reactants are correct. Now check the product \u2014 magnesium and oxygen combine to form magnesium oxide, the white powder found on the tank walls.';
+  } else {
+    fb.className = 'feedback-inline incorrect';
+    fb.textContent = 'Not quite. The scenario describes magnesium reacting with oxygen. Magnesium and oxygen are the starting materials, and magnesium oxide is what forms.';
+  }
+  fb.style.display = 'block';
+}
+
+// ============================================================
+//  BALANCE CHECKING (Mg + O2 -> MgO)
+// ============================================================
+function checkBalance() {
+  var mg  = parseInt(document.getElementById('coeff-mg').value)  || 0;
+  var o2  = parseInt(document.getElementById('coeff-o2').value)  || 0;
+  var mgo = parseInt(document.getElementById('coeff-mgo').value) || 0;
+  var fb  = document.getElementById('fb-balance');
+  if (!mg || !o2 || !mgo) {
+    fb.className = 'feedback-inline incorrect'; fb.textContent = 'Please enter a coefficient for all three substances before checking.'; return;
+  }
+  // Mg: mg on left, mgo on right
+  // O:  o2*2 on left, mgo on right
+  var mgOk = (mg === mgo);
+  var oOk  = (o2 * 2 === mgo);
+  if (mgOk && oOk) {
+    var simplified = (mg === 2 && o2 === 1 && mgo === 2);
+    fb.className = 'feedback-inline correct';
+    fb.textContent = 'Balanced! ' + mg + 'Mg + ' + o2 + 'O\u2082 \u2192 ' + mgo + 'MgO. ' + (simplified ? 'This is the simplest whole-number ratio \u2014 well done.' : 'This is mathematically valid, though the simplest whole-number form is 2Mg + O\u2082 \u2192 2MgO.');
+  } else {
+    var mgLeft = mg; var mgRight = mgo;
+    var oLeft  = o2 * 2; var oRight = mgo;
+    var msg = 'Not balanced yet. ';
+    if (!mgOk) msg += 'Magnesium: ' + mgLeft + ' atom(s) on the left, ' + mgRight + ' on the right. ';
+    if (!oOk)  msg += 'Oxygen: ' + oLeft + ' atom(s) on the left, ' + oRight + ' on the right. ';
+    msg += 'Adjust coefficients until both sides match.';
+    fb.className = 'feedback-inline incorrect'; fb.textContent = msg;
+  }
+}
+
+// ============================================================
+//  BALANCE CHECKING (H2O2 -> H2O + O2)
+// ============================================================
+function checkBalanceB() {
+  var h2o2 = parseInt(document.getElementById('coeff-h2o2').value)  || 0;
+  var h2o  = parseInt(document.getElementById('coeff-h2o').value)   || 0;
+  var bo2  = parseInt(document.getElementById('coeff-b-o2').value)  || 0;
+  var fb = document.getElementById('fb-balance-b');
+  if (!h2o2 || !h2o || !bo2) {
+    fb.className = 'feedback-inline incorrect'; fb.textContent = 'Please enter all three coefficients before checking.'; return;
+  }
+  // H: h2o2*2 left, h2o*2 right
+  // O: h2o2*2 left, h2o*1 + bo2*2 right
+  var hOk = (h2o2 * 2 === h2o * 2);
+  var oOk = (h2o2 * 2 === h2o * 1 + bo2 * 2);
+  if (hOk && oOk) {
+    var simplified = (h2o2 === 2 && h2o === 2 && bo2 === 1);
+    fb.className = 'feedback-inline correct';
+    fb.textContent = 'Balanced! ' + h2o2 + 'H\u2082O\u2082 \u2192 ' + h2o + 'H\u2082O + ' + bo2 + 'O\u2082. ' + (simplified ? 'Simplest whole-number form \u2014 perfect.' : 'Valid, though the simplest form is 2H\u2082O\u2082 \u2192 2H\u2082O + O\u2082.');
+  } else {
+    var hLeft = h2o2*2; var hRight = h2o*2;
+    var oLeft = h2o2*2; var oRight = h2o*1 + bo2*2;
+    var msg = 'Not balanced yet. ';
+    if (!hOk) msg += 'Hydrogen: ' + hLeft + ' on the left, ' + hRight + ' on the right. ';
+    if (!oOk) msg += 'Oxygen: ' + oLeft + ' on the left, ' + oRight + ' on the right. ';
+    msg += 'Adjust coefficients and try again.';
+    fb.className = 'feedback-inline incorrect'; fb.textContent = msg;
+  }
+}
+
+// ============================================================
+//  NOMENCLATURE CHECKING
+// ============================================================
+var nomAnswers = {
+  NaCl:  { name: 'sodium chloride', type: 'ionic' },
+  MgCl2: { name: 'magnesium chloride', type: 'ionic' },
+  CaCO3: { name: 'calcium carbonate', type: 'ionic' },
+  CO2:   { name: 'carbon dioxide', type: 'covalent' }
+};
+var nomFeedback = {
+  NaCl: {
+    name: {
+      'sodium chloride':  'Correct. Na\u207a is sodium (a metal) and Cl\u207b is chloride (the nonmetal chlorine with an -ide suffix). This is the same table salt you have in your kitchen.',
+      'sodium oxide':     'Sodium oxide would contain oxygen (O\u00b2\u207b), not chloride. The formula NaCl shows one sodium and one chlorine \u2014 the anion is chloride, not oxide.',
+      'calcium chloride': 'Calcium chloride would have the formula CaCl\u2082 (Ca\u00b2\u207a needs two Cl\u207b to balance). This formula has Na (sodium, not calcium) paired with one chlorine.',
+      'potassium chloride':'Potassium chloride would be KCl. Here the cation is Na (sodium), so the correct name starts with sodium.'
+    },
+    type: {
+      ionic:    'Correct. NaCl is formed from a metal (Na) and a nonmetal (Cl) \u2014 the defining signature of an ionic compound.',
+      covalent: 'NaCl is ionic, not covalent. Covalent compounds form between two nonmetals. Sodium is a metal, so its bond with chlorine is ionic \u2014 an electron is transferred from Na to Cl.'
+    }
+  },
+  MgCl2: {
+    name: {
+      'magnesium chloride': 'Correct. Mg\u00b2\u207a (magnesium, a metal) bonded to two Cl\u207b (chloride). Ionic naming: metal name first, then nonmetal with -ide.',
+      'manganese chloride': 'Manganese is Mn, not Mg. Mg is the symbol for magnesium. The compound is magnesium chloride.',
+      'magnesium oxide':    'Magnesium oxide would contain oxygen (O\u00b2\u207b). The formula MgCl\u2082 shows two chlorine atoms, so the anion is chloride, not oxide.',
+      'calcium dichloride': 'Ionic compounds named with a metal cation do not use prefixes like di-. The correct name is magnesium chloride (not calcium, since Mg \u2260 Ca).'
+    },
+    type: {
+      ionic:    'Correct. Magnesium is a metal and chlorine is a nonmetal \u2014 the combination produces an ionic compound.',
+      covalent: 'MgCl\u2082 is ionic. Magnesium (Mg) is a metal in Group 2, and metals form ionic bonds with nonmetals by transferring electrons.'
+    }
+  },
+  CaCO3: {
+    name: {
+      'calcium carbonate': 'Correct. Ca\u00b2\u207a (calcium) paired with CO\u2083\u00b2\u207b (carbonate, a polyatomic ion). This is the compound in limestone, chalk, and antacid tablets.',
+      'calcium chloride':  'Calcium chloride would be CaCl\u2082. This formula contains CO\u2083 (the carbonate polyatomic ion), not chloride.',
+      'calcium oxide':     'Calcium oxide (CaO) contains only calcium and oxygen in a 1:1 ratio. CaCO\u2083 contains the polyatomic carbonate ion (CO\u2083\u00b2\u207b), so the compound is calcium carbonate.',
+      'sodium carbonate':  'The cation here is Ca\u00b2\u207a (calcium), not Na\u207a (sodium). The carbonate part is correct, but it is calcium carbonate, not sodium carbonate.'
+    },
+    type: {
+      ionic:    'Correct. Calcium is a metal (Ca\u00b2\u207a) and carbonate (CO\u2083\u00b2\u207b) is a polyatomic anion. Ionic compounds can include polyatomic ions alongside metal cations.',
+      covalent: 'CaCO\u2083 is ionic. Even though carbonate (CO\u2083\u00b2\u207b) contains covalent bonds within it, the overall compound is ionic because it is formed by the attraction between Ca\u00b2\u207a and CO\u2083\u00b2\u207b.'
+    }
+  },
+  CO2: {
+    name: {
+      'carbon dioxide':      'Correct. CO\u2082 is a covalent compound: carbon (C) with two oxygen atoms. The prefix di- indicates two oxygens. You exhale it with every breath.',
+      'carbon monoxide':     'Carbon monoxide is CO (one oxygen, prefix mono-). Carbon dioxide is CO\u2082 \u2014 the di- prefix signals two oxygen atoms.',
+      'carbon tetrachloride':'Carbon tetrachloride is CCl\u2084. This formula contains oxygen (O), not chlorine, and only two of them \u2014 making it carbon dioxide.',
+      'silicon dioxide':     'Silicon dioxide is SiO\u2082. This formula has C (carbon), not Si (silicon). The carbon version is carbon dioxide.'
+    },
+    type: {
+      covalent: 'Correct. CO\u2082 forms between two nonmetals (carbon and oxygen), which is the defining characteristic of a covalent compound.',
+      ionic:    'CO\u2082 is covalent. Both carbon and oxygen are nonmetals, and nonmetal-nonmetal combinations form covalent bonds by sharing electrons rather than transferring them.'
+    }
+  }
+};
+
+function normalizeNomName(s) {
+  return s.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
+}
+
+function checkNomenclature(formula, nameEl, typeEl) {
+  var answers = nomAnswers[formula];
+  if (nameEl) {
+    var msgEl = document.getElementById('val-name-' + formula);
+    var raw = nameEl.value || '';
+    if (!raw.trim()) { msgEl.className = 'val-msg'; msgEl.textContent = ''; }
+    else {
+      var correct = normalizeNomName(raw) === normalizeNomName(answers.name);
+      msgEl.className = 'val-msg ' + (correct ? 'ok' : 'err');
+      if (correct) {
+        var fb = nomFeedback[formula];
+        msgEl.textContent = (fb && fb.name && fb.name[answers.name]) || 'Correct.';
+      } else {
+        // Give a nudge without revealing the answer
+        var nudges = {
+          NaCl:  'Check your spelling and the suffix \u2014 the anion name for Cl\u207b ends in -ide.',
+          MgCl2: 'Make sure you are using the name of the metal as it appears on the periodic table, followed by the anion name.',
+          CaCO3: 'CO\u2083\u00b2\u207b is a polyatomic ion with its own name. Check your reference for polyatomic ion names.',
+          CO2:   'Both elements here are nonmetals, so use the prefix system. Count the oxygen atoms and apply the correct prefix.'
+        };
+        msgEl.textContent = nudges[formula] || 'Not quite \u2014 check the naming rules for this compound type.';
+      }
+    }
+  }
+  if (typeEl) {
+    var msgEl2 = document.getElementById('val-type-' + formula);
+    if (!typeEl.value) { msgEl2.className = 'val-msg'; msgEl2.textContent = ''; }
+    else {
+      var correct2 = typeEl.value === answers.type;
+      msgEl2.className = 'val-msg ' + (correct2 ? 'ok' : 'err');
+      var fb2 = nomFeedback[formula];
+      msgEl2.textContent = (fb2 && fb2.type && fb2.type[typeEl.value]) || '';
+    }
+  }
+  updateItem6Summary();
+  saveLabState();
+}
+
+function updateItem6Summary() {
+  var formulas = ['NaCl','MgCl2','CaCO3','CO2'];
+  var correct = 0;
+  formulas.forEach(function(f) {
+    var n = document.getElementById('name-' + f);
+    var t = document.getElementById('type-' + f);
+    if (n && normalizeNomName(n.value) === normalizeNomName(nomAnswers[f].name)) correct++;
+    if (t && t.value === nomAnswers[f].type) correct++;
+  });
+  var fb = document.getElementById('fb-item6');
+  var attempted = formulas.filter(function(f) {
+    var n = document.getElementById('name-' + f);
+    var t = document.getElementById('type-' + f);
+    return (n && n.value.trim()) || (t && t.value);
+  }).length;
+  if (attempted >= 4) {
+    if (correct === 8) { fb.className = 'feedback-inline correct'; fb.textContent = '8/8 correct. All names and types identified correctly.'; }
+    else { fb.className = 'feedback-inline partial'; fb.textContent = correct + '/8 correct. Review items marked in red above.'; }
+  }
+}
+
+// ============================================================
+//  AI FEEDBACK ENGINE
+// ============================================================
+var questionContexts = {
+  'item2': {
+    prompt: function(txt) {
+      return 'A CHEM 100 student answered this question about the Bracket City audit: "Arsenic (As) and phosphorus (P) are in the same group of the periodic table. Use what you know about groups to explain why arsenic is toxic to living things even in very small amounts." Student response: "' + txt + '" Background for scoring only \u2014 do not recite this as a checklist: a complete answer connects same-group elements sharing similar chemical behavior, notes that the body cannot easily tell arsenic apart from phosphorus, and explains how that confusion leads to toxicity even at low doses. Begin your response by warmly affirming whatever reasoning the student offered. Then ask exactly one curious, open question to help them develop their thinking further. Never tell the student what they got wrong or what is missing. No bullet points.';
+    }
+  },
+  'item3a': {
+    prompt: function(txt) {
+      return 'A CHEM 100 student answered: "From Pb, As, Fe, Ca, Cl, Si, choose one element most likely to lose electrons and one most likely to gain electrons. Explain using table position. Then predict whether each, paired with fluorine (F), forms ionic or covalent." Student response: "' + txt + '" Background for scoring only: any left-side metal (Ca, Pb, Fe) is defensible for losing electrons; Cl is the strongest choice for gaining. Metal + F = ionic; nonmetal + F = covalent. Accept informal reasoning. Begin by warmly affirming whatever the student reasoned through. Then ask exactly one curious question to nudge their thinking forward. Never point out what is wrong or missing. No bullet points.';
+    }
+  },
+  'item3b': {
+    prompt: function(txt) {
+      return 'A CHEM 100 student answered: "Reorder Pb, As, Fe, Ca, Cl, Si from lowest to highest atomic number, then explain why atomic number defines elemental identity." Student response: "' + txt + '" Background for scoring only: correct order is Si(14), Cl(17), Ca(20), Fe(26), As(33), Pb(82); atomic number equals proton count, which defines which element something is. Begin by warmly celebrating what the student reasoned through. Then ask exactly one curious question to help them push the idea further. Never indicate what is wrong or missing. No bullet points.';
+    }
+  },
+  'item5a': {
+    prompt: function(txt) {
+      return 'A CHEM 100 student answered: "Is dissolving NaF in water a physical or chemical change? Justify using evidence." Student response: "' + txt + '" Background for scoring only: dissolving is a physical change \u2014 the ions already exist in the crystal and are simply separated by water; the process is reversible and no new substance forms. Begin by warmly affirming whatever evidence or reasoning the student offered. Then ask exactly one curious question to help them develop their thinking. Never reveal the answer or name what is missing. No bullet points.';
+    }
+  },
+  'item5b': {
+    prompt: function(txt) {
+      return 'A CHEM 100 student answered: "Is H\u2082O\u2082 decomposition a physical or chemical change? Give evidence from the equation." Student response: "' + txt + '" Background for scoring only: this is a chemical change \u2014 H\u2082O\u2082 is permanently converted into H\u2082O and O\u2082, two entirely different substances; the reactant no longer exists after the reaction. Begin by warmly affirming whatever reasoning the student offered. Then ask exactly one curious question to help them go further. Never name what is wrong or missing. No bullet points.';
+    }
+  },
+  'item7a': {
+    prompt: function(txt) {
+      return 'A CHEM 100 student answered: "Write the chemical name for KCl, then explain why it is different from sodium chloride and what the name tells you about what changed." Student response: "' + txt + '" Background for scoring only: KCl is potassium chloride; the name changes because the metal changed from sodium to potassium while the chloride part stays the same. Begin by warmly affirming whatever the student reasoned through. Then ask exactly one curious question to help them think further. Never point out what is wrong or missing. No bullet points.';
+    }
+  },
+  'item7b': {
+    prompt: function(txt) {
+      return 'A CHEM 100 student answered: "Using only the name sodium benzoate: (1) Is it ionic or covalent and how do you know? (2) What element makes up the positive part and how do you know?" Student response: "' + txt + '" Background for scoring only: ionic because the name starts with a metal (sodium); sodium is the positive part because it is listed first and is a metal. Accept informal language \u2014 students do not need to use the word cation. Begin by warmly affirming whatever the student noticed in the name. Then ask exactly one curious question to help them build on it. Never indicate what is wrong or missing. No bullet points.';
+    }
+  },
+  'item8': {
+    prompt: function(txt) {
+      return 'A CHEM 100 student answered: "A Bracket City grocery advertises \'Chemical-Free Organic Produce.\' Explain why this claim is scientifically impossible and suggest a more accurate description." Student response: "' + txt + '" Background for scoring only: all matter is made of chemicals \u2014 water, sugars, and vitamins in the produce are all chemicals; \'chemical-free\' has no scientific meaning; a more accurate phrase would be something like \'grown without synthetic pesticides.\' Begin by warmly celebrating what the student got right. Then ask exactly one warm, curious question to help them extend their thinking. Never point out what is wrong or missing. No bullet points.';
+    }
+  }
+};
+
+function getAIFeedback(qId, btn) {
+  var txt = '';
+  var textareaId = qId.replace('item2','item2-response').replace('item3a','item3a-response').replace('item3b','item3b-response').replace('item5a','item5a-response').replace('item5b','item5b-response').replace('item7a','item7a-response').replace('item7b','item7b-response').replace('item8','item8-response');
+  var ta = document.getElementById(textareaId);
+  if (!ta) {
+    // Try direct ID match
+    ta = document.getElementById(qId + '-response') || document.getElementById(qId);
+  }
+  if (ta) txt = ta.value.trim();
+  if (txt.length < 3) { alert('Please write a response before requesting feedback.'); return; }
+
+  var ctx = questionContexts[qId];
+  if (!ctx) { alert('Feedback not available for this item.'); return; }
+
+  var feedbackBox = btn.closest('.open-area-wrap').querySelector('.ai-feedback-box');
+  var contentEl = feedbackBox ? feedbackBox.querySelector('.ai-feedback-content') : null;
+  if (!feedbackBox || !contentEl) return;
+
+  btn.disabled = true; btn.classList.add('loading');
+  feedbackBox.classList.add('visible');
+  contentEl.textContent = 'Getting feedback\u2026';
+
+  var promptText = ctx.prompt(txt);
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', AI_PROXY_ENDPOINT, true);
+  xhr.setRequestHeader('Content-Type', 'text/plain');
+  xhr.onload = function() {
+    try {
+      var data = JSON.parse(xhr.responseText);
+      contentEl.textContent = data.result === 'success' ? data.feedback : ('Feedback unavailable: ' + (data.message || 'unknown error'));
+    } catch(e) {
+      contentEl.textContent = 'Could not parse feedback. Your response is saved and will be reviewed by your instructor.';
+    }
+    btn.disabled = false; btn.classList.remove('loading');
+  };
+  xhr.onerror = function() {
+    contentEl.textContent = 'Could not reach the feedback service. Your response is saved and will be reviewed by your instructor.';
+    btn.disabled = false; btn.classList.remove('loading');
+  };
+  xhr.send(JSON.stringify({ action: 'feedback', system: AI_SYSTEM, prompt: promptText }));
+}
+
+// ============================================================
+//  AUTOSAVE
+// ============================================================
+var saveTimer = null;
+function saveLabState() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function() {
+    try {
+      var state = {
+        name: (document.getElementById('studentName')||{value:''}).value,
+        section: (document.getElementById('labSection')||{value:''}).value,
+        date: (document.getElementById('labDate')||{value:''}).value,
+        ptElemState: ptElemState,
+        orderSeq: orderSeq,
+        item2: (document.getElementById('item2-response')||{value:''}).value,
+        choice3: choiceItem3,
+        item3a: (document.getElementById('item3a-response')||{value:''}).value,
+        item3b: (document.getElementById('item3b-response')||{value:''}).value,
+        weqR1: (document.getElementById('weq-r1')||{value:''}).value,
+        weqR2: (document.getElementById('weq-r2')||{value:''}).value,
+        weqProd: (document.getElementById('weq-prod')||{value:''}).value,
+        coeffMg: (document.getElementById('coeff-mg')||{value:''}).value,
+        coeffO2: (document.getElementById('coeff-o2')||{value:''}).value,
+        coeffMgO: (document.getElementById('coeff-mgo')||{value:''}).value,
+        choice5: choiceItem5,
+        item5a: (document.getElementById('item5a-response')||{value:''}).value,
+        coeffH2O2: (document.getElementById('coeff-h2o2')||{value:''}).value,
+        coeffH2O: (document.getElementById('coeff-h2o')||{value:''}).value,
+        coeffBO2: (document.getElementById('coeff-b-o2')||{value:''}).value,
+        item5b: (document.getElementById('item5b-response')||{value:''}).value,
+        nomNames: {}, nomTypes: {},
+        choice7: choiceItem7,
+        item7a: (document.getElementById('item7a-response')||{value:''}).value,
+        item7b: (document.getElementById('item7b-response')||{value:''}).value,
+        item8: (document.getElementById('item8-response')||{value:''}).value
+      };
+      ['NaCl','MgCl2','CaCO3','CO2'].forEach(function(f) {
+        var n = document.getElementById('name-' + f); var t = document.getElementById('type-' + f);
+        if (n) state.nomNames[f] = n.value;
+        if (t) state.nomTypes[f] = t.value;
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      var el = document.getElementById('autosave-status');
+      if (el) { el.classList.add('visible'); setTimeout(function() { el.classList.remove('visible'); }, 1400); }
+    } catch(e) {}
+  }, 600);
+}
+
+function loadLabState() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    function sv(id, val) { var el = document.getElementById(id); if (el && val !== undefined) el.value = val; }
+    sv('studentName', s.name); sv('labSection', s.section); sv('labDate', s.date);
+
+    // Restore PT classifications
+    if (s.ptElemState) {
+      Object.keys(s.ptElemState).forEach(function(sym) {
+        ptElemState[sym] = s.ptElemState[sym] || '';
+        updateCellClassification(sym);
+      });
+      buildAuditStrip();
+      updateItem1Summary();
+    }
+    // Restore order sequence
+    if (s.orderSeq && s.orderSeq.length) {
+      orderSeq = s.orderSeq;
+      orderSeq.forEach(function(sym, i) {
+        var cell = document.getElementById('pt-wb-' + sym);
+        if (cell) {
+          var badge = document.createElement('div');
+          badge.className = 'order-badge';
+          badge.textContent = i + 1;
+          var existing = cell.querySelector('.order-badge');
+          if (existing) existing.remove();
+          cell.appendChild(badge);
+        }
+      });
+      renderOrderSeq();
+    }
+
+    sv('item2-response', s.item2);
+    if (s.choice3) {
+      document.querySelectorAll('#tab-periodic .choice-selector .choice-btn').forEach(function(b) {
+        if (b.textContent.indexOf('Option ' + s.choice3) > -1) selectChoice('item3', s.choice3, b);
+      });
+    }
+    sv('item3a-response', s.item3a); sv('item3b-response', s.item3b);
+    sv('weq-r1', s.weqR1); sv('weq-r2', s.weqR2); sv('weq-prod', s.weqProd);
+    if (s.weqR1 || s.weqR2 || s.weqProd) checkWordEq();
+    sv('coeff-mg', s.coeffMg); sv('coeff-o2', s.coeffO2); sv('coeff-mgo', s.coeffMgO);
+    if (s.choice5) {
+      document.querySelectorAll('#tab-reactions .choice-selector .choice-btn').forEach(function(b) {
+        if (b.textContent.indexOf('Option ' + s.choice5) > -1) selectChoice('item5', s.choice5, b);
+      });
+    }
+    sv('item5a-response', s.item5a);
+    sv('coeff-h2o2', s.coeffH2O2); sv('coeff-h2o', s.coeffH2O); sv('coeff-b-o2', s.coeffBO2);
+    sv('item5b-response', s.item5b);
+    if (s.nomNames) ['NaCl','MgCl2','CaCO3','CO2'].forEach(function(f) {
+      var n = document.getElementById('name-' + f); var t = document.getElementById('type-' + f);
+      if (n && s.nomNames[f]) { n.value = s.nomNames[f]; checkNomenclature(f, n, null); }
+      if (t && s.nomTypes[f]) { t.value = s.nomTypes[f]; checkNomenclature(f, null, t); }
+    });
+    if (s.choice7) {
+      document.querySelectorAll('#tab-nomenclature .choice-selector .choice-btn').forEach(function(b) {
+        if (b.textContent.indexOf('Option ' + s.choice7) > -1) selectChoice('item7', s.choice7, b);
+      });
+    }
+    sv('item7a-response', s.item7a); sv('item7b-response', s.item7b);
+    sv('item8-response', s.item8);
+  } catch(e) {}
+}
+
+function clearLabState() {
+  if (!confirm('Clear all saved responses and start over? This cannot be undone.')) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+  location.reload();
+}
+
+// ============================================================
+//  COMPLETION CHECKLIST
+// ============================================================
+function buildChecklist() {
+  var syms = ['Pb','As','Fe','Ca','Cl','Si'];
+  var item1ok = syms.filter(function(s) { return (ptElemState[s] || '') !== ''; }).length === 6;
+  var item2ok = ((document.getElementById('item2-response')||{value:''}).value||'').trim().length > 40;
+  var item3ok = choiceItem3 && ((document.getElementById('item3' + choiceItem3.toLowerCase() + '-response')||{value:''}).value||'').trim().length > 40;
+  var weqOk = !!(document.getElementById('weq-r1').value && document.getElementById('weq-r2').value && document.getElementById('weq-prod').value);
+  var balOk = !!(document.getElementById('coeff-mg').value && document.getElementById('coeff-o2').value && document.getElementById('coeff-mgo').value);
+  var item4ok = weqOk && balOk;
+  var item5ok = choiceItem5 && (
+    (choiceItem5 === 'A' && ((document.getElementById('item5a-response')||{value:''}).value||'').trim().length > 40) ||
+    (choiceItem5 === 'B' && (document.getElementById('coeff-h2o2').value) && ((document.getElementById('item5b-response')||{value:''}).value||'').trim().length > 40)
+  );
+  var formulas = ['NaCl','MgCl2','CaCO3','CO2'];
+  var item6ok = formulas.filter(function(f) {
+    var n = document.getElementById('name-' + f); var t = document.getElementById('type-' + f);
+    return (n && n.value) && (t && t.value);
+  }).length === 4;
+  var item7ok = choiceItem7 && ((document.getElementById('item7' + choiceItem7.toLowerCase() + '-response')||{value:''}).value||'').trim().length > 40;
+  var item8ok = ((document.getElementById('item8-response')||{value:''}).value||'').trim().length > 40;
+
+  var items = [
+    { label: 'Item 1 &mdash; Element classifications completed (all 6)', ok: item1ok },
+    { label: 'Item 2 &mdash; Arsenic toxicity response written', ok: item2ok },
+    { label: 'Item 3 &mdash; Choice selected and response written', ok: !!item3ok },
+    { label: 'Item 4 &mdash; Word equation and balance completed', ok: item4ok },
+    { label: 'Item 5 &mdash; Choice selected and response written', ok: !!item5ok },
+    { label: 'Item 6 &mdash; All four compounds named and classified', ok: item6ok },
+    { label: 'Item 7 &mdash; Choice selected and response written', ok: !!item7ok },
+    { label: 'Item 8 &mdash; Chemical-free response written', ok: item8ok }
+  ];
+
+  var container = document.getElementById('completion-checklist');
+  if (!container) return;
+  container.innerHTML = '';
+  items.forEach(function(item) {
+    var div = document.createElement('div');
+    div.className = 'checklist-item' + (item.ok ? ' ready' : '');
+    div.innerHTML = '<div class="checklist-icon">' + (item.ok ? '&#10003;' : '&#9633;') + '</div><span>' + item.label + '</span>';
+    container.appendChild(div);
+  });
+}
+
+// ============================================================
+//  SCORING
+// ============================================================
+function calculateScore() {
+  var score = 0; var details = []; var total = 62;
+
+  // Item 1: 6 classification clicks on PT (1 pt each)
+  var syms = ['Pb','As','Fe','Ca','Cl','Si'];
+  var item1pts = 0;
+  syms.forEach(function(s) {
+    if ((ptElemState[s] || '') === elemAnswers[s]) item1pts++;
+  });
+  score += item1pts;
+  details.push('Item 1 (Element classification): ' + item1pts + '/6');
+
+  // Item 2: written (length-gated, 6 pts)
+  var i2 = ((document.getElementById('item2-response')||{value:''}).value||'').trim();
+  var i2pts = i2.length > 100 ? 6 : i2.length > 40 ? 3 : 0;
+  score += i2pts;
+  details.push('Item 2 (Arsenic/group relationship): ' + i2pts + '/6' + (!i2.length ? ' (not attempted)' : ''));
+
+  // Item 3: choice written (8 pts)
+  var i3txt = choiceItem3 ? ((document.getElementById('item3' + choiceItem3.toLowerCase() + '-response')||{value:''}).value||'').trim() : '';
+  var i3pts = i3txt.length > 100 ? 8 : i3txt.length > 40 ? 4 : 0;
+  score += i3pts;
+  details.push('Item 3 (Choice ' + (choiceItem3||'none selected') + '): ' + i3pts + '/8' + (!choiceItem3 ? ' (no choice made)' : ''));
+
+  // Item 4: word eq (2 pts) + balance (6 pts)
+  var r1 = (document.getElementById('weq-r1')||{value:''}).value;
+  var r2 = (document.getElementById('weq-r2')||{value:''}).value;
+  var pr = (document.getElementById('weq-prod')||{value:''}).value;
+  var weqOk = ((r1==='magnesium'&&r2==='oxygen')||(r1==='oxygen'&&r2==='magnesium')) && pr==='magnesium oxide';
+  var weqPts = weqOk ? 2 : 0;
+  var mg  = parseInt((document.getElementById('coeff-mg') ||{value:''}).value) || 0;
+  var o2  = parseInt((document.getElementById('coeff-o2') ||{value:''}).value) || 0;
+  var mgo = parseInt((document.getElementById('coeff-mgo')||{value:''}).value) || 0;
+  var balOk = mg && o2 && mgo && (mg === mgo) && (o2*2 === mgo);
+  var balPts = balOk ? 6 : 0;
+  score += weqPts + balPts;
+  details.push('Item 4 (Word eq + balance): ' + (weqPts+balPts) + '/8 (' + weqPts + '/2 word eq, ' + balPts + '/6 balance)');
+
+  // Item 5: choice (8 pts)
+  var i5pts = 0;
+  if (choiceItem5 === 'A') {
+    var i5a = ((document.getElementById('item5a-response')||{value:''}).value||'').trim();
+    i5pts = i5a.length > 100 ? 8 : i5a.length > 40 ? 4 : 0;
+  } else if (choiceItem5 === 'B') {
+    var h2o2 = parseInt((document.getElementById('coeff-h2o2')||{value:''}).value)||0;
+    var h2o  = parseInt((document.getElementById('coeff-h2o')||{value:''}).value)||0;
+    var bo2  = parseInt((document.getElementById('coeff-b-o2')||{value:''}).value)||0;
+    var bBal = h2o2 && h2o && bo2 && (h2o2*2===h2o*2) && (h2o2*2===h2o+bo2*2);
+    var bBalPts = bBal ? 4 : 0;
+    var i5b = ((document.getElementById('item5b-response')||{value:''}).value||'').trim();
+    var i5bWrit = i5b.length > 60 ? 4 : i5b.length > 20 ? 2 : 0;
+    i5pts = bBalPts + i5bWrit;
+  }
+  score += i5pts;
+  details.push('Item 5 (Choice ' + (choiceItem5||'none selected') + '): ' + i5pts + '/8' + (!choiceItem5 ? ' (no choice made)' : ''));
+
+  // Item 6: 4 names (1 pt each) + 4 types (1 pt each) = 8 pts
+  var formulas = ['NaCl','MgCl2','CaCO3','CO2'];
+  var i6pts = 0;
+  formulas.forEach(function(f) {
+    var n = document.getElementById('name-' + f); var t = document.getElementById('type-' + f);
+    if (n && normalizeNomName(n.value) === normalizeNomName(nomAnswers[f].name)) i6pts++;
+    if (t && t.value === nomAnswers[f].type) i6pts++;
+  });
+  score += i6pts;
+  details.push('Item 6 (Nomenclature): ' + i6pts + '/8');
+
+  // Item 7: choice written (8 pts)
+  var i7txt = choiceItem7 ? ((document.getElementById('item7' + choiceItem7.toLowerCase() + '-response')||{value:''}).value||'').trim() : '';
+  var i7pts = i7txt.length > 100 ? 8 : i7txt.length > 40 ? 4 : 0;
+  score += i7pts;
+  details.push('Item 7 (Choice ' + (choiceItem7||'none selected') + '): ' + i7pts + '/8' + (!choiceItem7 ? ' (no choice made)' : ''));
+
+  // Item 8: written (10 pts)
+  var i8 = ((document.getElementById('item8-response')||{value:''}).value||'').trim();
+  var i8pts = i8.length > 100 ? 10 : i8.length > 40 ? 5 : 0;
+  score += i8pts;
+  details.push('Item 8 (Chemical-free claim): ' + i8pts + '/10' + (!i8.length ? ' (not attempted)' : ''));
+
+  return { score: score, total: total, percent: Math.round(score/total*100), details: details };
+}
+
+// ============================================================
+//  SUBMIT
+// ============================================================
+function submitWorkbook() {
+  if (getAttempts() >= MAX_ATTEMPTS) { alert('You have used all ' + MAX_ATTEMPTS + ' submission attempts.'); return; }
+  var name    = (document.getElementById('studentName')||{value:''}).value.trim();
+  var section = (document.getElementById('labSection')||{value:''}).value.trim();
+  var date    = (document.getElementById('labDate')||{value:''}).value.trim();
+  if (!name) { alert('Please enter your full name before submitting.'); return; }
+
+  var result  = calculateScore();
+  var btn     = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'Submitting\u2026';
+
+  incAttempts();
+  updateAttemptStatus();
+
+  var payload = {
+    action: 'submit',
+    lab_id: 'Workbook_1',
+    canvas_login_id: name, section: section, date: date,
+    score: result.score.toFixed(1), total: result.total, percent: result.percent,
+    item1_classifications: ['Pb','As','Fe','Ca','Cl','Si'].map(function(s) {
+      return s + ':' + (ptElemState[s] || 'blank');
+    }).join(', '),
+    item2_response: (document.getElementById('item2-response')||{value:''}).value.trim(),
+    item3_choice: choiceItem3 || 'none',
+    item3_response: choiceItem3 ? ((document.getElementById('item3' + choiceItem3.toLowerCase() + '-response')||{value:''}).value.trim()) : '',
+    item4_word_eq: 'R1=' + (document.getElementById('weq-r1')||{value:''}).value + ', R2=' + (document.getElementById('weq-r2')||{value:''}).value + ', Prod=' + (document.getElementById('weq-prod')||{value:''}).value,
+    item4_coefficients: 'Mg=' + (document.getElementById('coeff-mg')||{value:''}).value + ', O2=' + (document.getElementById('coeff-o2')||{value:''}).value + ', MgO=' + (document.getElementById('coeff-mgo')||{value:''}).value,
+    item5_choice: choiceItem5 || 'none',
+    item5_response: choiceItem5 === 'A' ? ((document.getElementById('item5a-response')||{value:''}).value.trim()) : ((document.getElementById('item5b-response')||{value:''}).value.trim()),
+    item6_names: ['NaCl','MgCl2','CaCO3','CO2'].map(function(f) { var el = document.getElementById('name-' + f); return f + ':' + (el ? el.value : 'blank'); }).join(', '),
+    item6_types: ['NaCl','MgCl2','CaCO3','CO2'].map(function(f) { var el = document.getElementById('type-' + f); return f + ':' + (el ? el.value : 'blank'); }).join(', '),
+    item7_choice: choiceItem7 || 'none',
+    item7_response: choiceItem7 ? ((document.getElementById('item7' + choiceItem7.toLowerCase() + '-response')||{value:''}).value.trim()) : '',
+    item8_response: (document.getElementById('item8-response')||{value:''}).value.trim(),
+    details: result.details.join(' | ')
+  };
+
+  // Clear autosave on successful submission
+  function onSuccess() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    showScorePanel(name, result);
+    btn.textContent = 'Submitted';
+    updateAttemptStatus();
+  }
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', SHEETS_ENDPOINT, true);
+  xhr.setRequestHeader('Content-Type', 'text/plain');
+  xhr.onload = function() { onSuccess(); };
+  xhr.onerror = function() { onSuccess(); };
+  xhr.send(JSON.stringify(payload));
+}
+
+function showScorePanel(name, result) {
+  var panel = document.getElementById('score-panel');
+  if (!panel) return;
+  panel.classList.add('visible');
+  var pct = result.percent;
+  var color = pct >= 80 ? '#6fcf6f' : pct >= 60 ? '#f2c94c' : '#eb5757';
+  document.getElementById('scoreHeader').textContent = name + ' \u2014 ' + result.score.toFixed(1) + ' / ' + result.total + ' pts (' + pct + '%)';
+  var bar = document.getElementById('scoreBar');
+  bar.style.background = color;
+  setTimeout(function() { bar.style.width = pct + '%'; }, 80);
+  document.getElementById('scoreText').textContent = pct + '% \u2014 ' + (pct >= 90 ? 'Excellent work.' : pct >= 75 ? 'Strong effort.' : pct >= 60 ? 'Good start \u2014 review any flagged items.' : 'Keep working through the material.');
+  document.getElementById('scoreDetails').innerHTML = result.details.join('<br>');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+  updateAttemptStatus();
+  buildPeriodicTable();
+  renderOrderSeq();
+  loadLabState();
+});
+</script>
+</body>
+</html>
