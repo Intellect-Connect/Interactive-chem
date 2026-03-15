@@ -498,16 +498,16 @@
 <div class="student-bar">
   <div class="student-bar-inner">
     <div class="field-group">
-      <label>Student Name</label>
-      <input type="text" id="student-name" placeholder="Last, First" autocomplete="off">
+      <label>Carson-Newman Email</label>
+      <input type="text" id="student-name" placeholder="yourname@cn.edu" autocomplete="off">
     </div>
     <div class="field-group">
       <label>Lab Section</label>
-      <input type="text" id="student-section" placeholder="e.g. CHEM 100-01" autocomplete="off">
+      <input type="text" id="student-section" placeholder="e.g. A, AOL, AOLCP" autocomplete="off">
     </div>
     <div class="field-group">
-      <label>Date</label>
-      <input type="text" id="student-date" placeholder="MM/DD/YYYY">
+      <label>Start Date</label>
+      <input type="date" id="student-date">
     </div>
   </div>
   <div style="position:absolute; bottom:16px; right:40px; display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
@@ -1669,7 +1669,7 @@
       </table>
       <div class="ref-box" style="margin-top:16px; margin-bottom:0;">
         <div class="ref-box-title">About Scoring</div>
-        <p>Data table fields and recipe builder elements are scored for completion and accuracy. Written analysis responses are scored on depth and chemistry accuracy &mdash; brief answers receive partial credit. Your nutrition label and Canvas photos are graded separately by your instructor after submission. You have <strong>2 submission attempts</strong> &mdash; use your first to review feedback, then refine and resubmit.</p>
+        <p>Your digital score is out of 72 pts and is recorded automatically on submission. Your nutrition label and Canvas photos are graded separately by your instructor (18 pts) and are not included here. You have <strong>2 submission attempts</strong> &mdash; use your first attempt to review feedback, then revise and submit a final time.</p>
       </div>
     </div>
   </div>
@@ -1746,6 +1746,12 @@ function saveLabState() {
       // Persist all text/number inputs by id (excluding student fields already captured)
       document.querySelectorAll('input[id]:not(#student-name):not(#student-section):not(#student-date)').forEach(function(inp) {
         if (inp.type === 'text' || inp.type === 'number') state['inp_' + inp.id] = inp.value;
+        if (inp.type === 'range') state['rng_' + inp.id] = inp.value;
+        if (inp.type === 'checkbox') state['chk_' + inp.id] = inp.checked;
+      });
+      // Persist select values
+      document.querySelectorAll('select[id]').forEach(function(sel) {
+        state['sel_' + sel.id] = sel.value;
       });
       localStorage.setItem(LAB_STATE_KEY, JSON.stringify(state));
       _showSaveStatus('Saved just now');
@@ -1774,6 +1780,18 @@ function loadLabState() {
     Object.keys(s).forEach(function(k) {
       if (k.indexOf('ta_') === 0)  setVal(k.slice(3), s[k]);
       if (k.indexOf('inp_') === 0) setVal(k.slice(4), s[k]);
+      if (k.indexOf('rng_') === 0) {
+        var el = document.getElementById(k.slice(4));
+        if (el && s[k] !== undefined && s[k] !== '') { el.value = s[k]; el.dispatchEvent(new Event('input')); }
+      }
+      if (k.indexOf('chk_') === 0) {
+        var el = document.getElementById(k.slice(4));
+        if (el) el.checked = !!s[k];
+      }
+      if (k.indexOf('sel_') === 0) {
+        var el = document.getElementById(k.slice(4));
+        if (el && s[k]) { el.value = s[k]; el.dispatchEvent(new Event('change')); }
+      }
     });
     if (s.savedAt) {
       var ago = Math.round((Date.now() - s.savedAt) / 60000);
@@ -1791,7 +1809,7 @@ function clearLabState() {
 // =========================================================
 // AI SYSTEM PROMPT (canonical CHEM 100 version)
 // =========================================================
-var AI_SYSTEM = 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university, giving feedback on student lab work for CHEM 100: Chemistry in Society. Your students are non-majors — many are encountering college-level science for the first time and some feel nervous about chemistry. Approach every response with genuine warmth and the assumption that the student is trying their best.\n\nTone and length: Use plain, conversational language. No bullet points. No markdown. Keep feedback to 4-5 sentences. Speak like a patient, encouraging teacher — not a grader.\n\nFor strong responses: Name specifically what the student got right and connect it to something they will recognize from everyday life. Extend their thinking one step further with a question or observation that sparks curiosity.\n\nFor incomplete responses: Begin by affirming whatever correct thinking is present, then use a gentle guiding question to nudge them toward what is missing. Never state the answer outright. Frame the gap as something worth discovering, not a mistake to correct.\n\nFor responses with a scientific misconception: Gently reframe with a question such as "What do you think would happen if..." that helps the student reason toward the accurate idea. The goal is discovery, not correction. Never make the student feel foolish.\n\nFor off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly. Acknowledge that this does not yet answer the question, restate what is being asked in simple, friendly terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses.\n\nAI-detection: If the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, sophisticated vocabulary inconsistent with a non-major\'s writing, or hedging language such as "it is worth noting," "furthermore," or "in conclusion," it may have been generated by AI. If so, respond only with: This response reads like it may have been drafted with some outside help — and I understand the temptation, but I want to hear your own voice. Even a rough, imperfect answer in your own words tells me so much more about what you are learning. Please rewrite this the way you would explain it to a friend. What do you actually understand about this topic?';
+var AI_SYSTEM = 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university, giving feedback on student lab work for CHEM 100: Chemistry in Society. Your students are non-majors — many are encountering college-level science for the first time and some feel nervous about chemistry. Approach every response with genuine warmth and the assumption that the student is trying their best.\n\nTone and length: Use plain, conversational language. No bullet points. No markdown. Keep feedback to 4-5 sentences. Speak like a patient, encouraging teacher — not a grader.\n\nFor strong responses: Name specifically what the student got right and connect it to something they will recognize from everyday life. Extend their thinking one step further with a question or observation that sparks curiosity.\n\nFor incomplete responses: Begin by affirming whatever correct thinking is present, then use a gentle guiding question to nudge them toward what is missing. Never state the answer outright. Frame the gap as something worth discovering, not a mistake to correct.\n\nFor responses with a scientific misconception: Gently reframe with a question such as "What do you think would happen if..." that helps the student reason toward the accurate idea. The goal is discovery, not correction. Never make the student feel foolish.\n\nFor off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly. Acknowledge that this does not yet answer the question, restate what is being asked in simple, friendly terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses.\n\nAI-detection: If the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, sophisticated vocabulary inconsistent with a non-major\'s writing, or hedging language such as "it is worth noting," "furthermore," or "in conclusion," it may have been generated by AI. If so, respond only with: This response reads like it may have been drafted with some outside help — and I understand the temptation, but I want to hear your own voice. Even a rough, imperfect answer in your own words tells me so much more about what you are learning. Please rewrite this the way you would explain it to a friend. What do you actually understand about this topic? Grading principles for written responses: Accept synonymous or informal language if the scientific meaning is accurate — a student who writes \'gets hotter\' instead of \'temperature increases\' is demonstrating the same understanding and should receive full credit. Award partial credit (at least half) when the core concept is present but a detail or step is missing — do not score incomplete reasoning as zero simply because it is not fully developed. Never penalize a student for missing vocabulary if the underlying concept is demonstrated — correct scientific thinking expressed in everyday language is worth full credit. Spelling and grammatical errors should never reduce a score — evaluate scientific accuracy only. For multi-part questions, score each part independently — a wrong conclusion that follows logically from a correct but flawed premise deserves partial credit on the conclusion. When a response is ambiguous, interpret it charitably — assume the most scientifically reasonable reading before marking it incorrect. These are non-science majors; apply a healthy degree of leniency and reward genuine engagement with the material. Vocabulary level: If the student uses chemistry terms clearly beyond what CHEM 100 covers — such as stoichiometry, molarity, enthalpy, reaction mechanisms, or other upper-division concepts not introduced in this course — flag this gently. Do not penalise them; instead say something like: You used some chemistry terms here that go beyond what we have covered so far in CHEM 100 — which shows real curiosity! I want to make sure you can explain this same idea using the vocabulary from our course. Could you try putting this in your own words, using what we have talked about in class?';
 
 // =========================================================
 // TAB SWITCHING
@@ -2834,7 +2852,7 @@ function addPantryItem(slot) {
   customPantryItems.push({
     id:        id,
     item:      id,          // unified key used by chem/nutrition tables
-    name:      name,
+    canvas_login_id: name,
     category:  'Pantry Staple',
     cost:      0,
     compounds: 'Enter manually',
@@ -3205,52 +3223,52 @@ function renderInventoryTable(data) {
 var questionContexts = {
   'q1-polarity': {
     prompt: function(r) {
-      return 'A CHEM 100 non-major student was asked: "What does \'like dissolves like\' mean in your own words? Give a specific food example from the inventory." Student response: ' + r + '\n\nEvaluate: Does the student use their own words (not textbook language)? Do they correctly identify that polar dissolves polar and nonpolar dissolves nonpolar? Does their food example actually illustrate the principle correctly? Strong responses connect this to a specific ingredient in the recipe they are building (e.g., honey dissolves in milk because both are polar). If they mention oil and water, do they explain why they stay separate? Encourage any genuine attempt to connect this to real food experience.';
+      return 'A CHEM 100 non-major student was asked: "What does \'like dissolves like\' mean in your own words? Give a specific food example from the inventory." Student response: ' + r + '\n\nEvaluate: Does the student use their own words (not textbook language)? Do they correctly identify that polar dissolves polar and nonpolar dissolves nonpolar? Does their food example actually illustrate the principle correctly? Strong responses connect this to a specific ingredient in the recipe they are building (e.g., honey dissolves in milk because both are polar). If they mention oil and water, do they explain why they stay separate? Encourage any genuine attempt to connect this to real food experience. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
     }
   },
   'q2-mixture-explain': {
     prompt: function(r) {
-      return 'A CHEM 100 non-major student was asked to identify the mixture type in their recipe and explain how temperature affects it. Student response: ' + r + '\n\nEvaluate: Did the student correctly identify a mixture type (solution, suspension, emulsion, or heterogeneous)? Did they explain how their chosen temperature tier (cold, room temp, or hot water) specifically affects that mixture? A strong response might say something like "my overnight oats form a suspension because the starch particles absorb cold water slowly, giving them time to set." Look for a genuine connection between the mixture type and what happens physically in their recipe at that temperature.';
+      return 'A CHEM 100 non-major student was asked to identify the mixture type in their recipe and explain how temperature affects it. Student response: ' + r + '\n\nEvaluate: Did the student correctly identify a mixture type (solution, suspension, emulsion, or heterogeneous)? Did they explain how their chosen temperature tier (cold, room temp, or hot water) specifically affects that mixture? A strong response might say something like "my overnight oats form a suspension because the starch particles absorb cold water slowly, giving them time to set." Look for a genuine connection between the mixture type and what happens physically in their recipe at that temperature. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
     }
   },
   'q3-electrolytes': {
     prompt: function(r) {
-      return 'A CHEM 100 non-major student was asked to name electrolytes in their recipe and explain why they matter for food bank families. Student response: ' + r + '\n\nEvaluate: Does the student correctly identify at least two ingredients containing electrolytes? Do they name the specific ions? (Strong: Na+ from iodized salt, K+ from bananas, Ca2+ from milk or yogurt, Mg2+ from almonds or oats.) Do they connect electrolyte importance to real human needs like hydration, muscle function, or nerve signaling in a way that would resonate with food bank context? If they just list ingredients without naming ions, gently ask them to go one step further and write out the chemical formula.';
+      return 'A CHEM 100 non-major student was asked to name electrolytes in their recipe and explain why they matter for food bank families. Student response: ' + r + '\n\nEvaluate: Does the student identify at least two ingredients that contain electrolytes? Do they connect electrolytes to a real human need — hydration, muscle function, or nerve function are all covered in the lab background, and any of these counts. Strong responses name specific ingredients and explain why they matter for food bank families. If the student names the ions (Na+, K+, Ca2+), that is excellent — but naming the ingredient and its role is sufficient for full credit. If they list ingredients with no explanation at all, gently ask what electrolytes actually do in the body. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
     }
   },
   'q4-nutrition-predict': {
     prompt: function(r) {
-      return 'A CHEM 100 non-major student was asked to predict which macronutrient will be highest in their recipe and explain why. Student response: ' + r + '\n\nEvaluate: Does the student make a specific prediction (carbohydrates, protein, or fat) and give a reason connected to their actual ingredient choices? Strong responses explain why at the molecular level (e.g., "oats are high in starch, which is a polysaccharide, so I expect carbs to be highest") and consider the nutritional needs of food bank families. If they just guess without reasoning, encourage them to think about which ingredients are starch-heavy, protein-heavy, or fat-heavy based on what they learned about macronutrients.';
+      return 'A CHEM 100 non-major student was asked to predict which macronutrient will be highest in their recipe and explain why. Student response: ' + r + '\n\nEvaluate: Does the student make a specific prediction — carbohydrates, protein, or fat — and connect it to their actual ingredient choices? Any reasoning that shows the student thought about what is in their recipe counts: mentioning grains or oats for carbs, peanut butter or beans for protein, or oil and nuts for fat is exactly the level of reasoning expected. Molecular vocabulary like polysaccharide or triglyceride is not required — reward any student who can explain in their own words why they picked the macronutrient they did. If they predict with no reasoning at all, gently ask them to point to one ingredient that made them choose that answer. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
     }
   },
   'q5-ai-eval': {
     prompt: function(r) {
-      return 'A CHEM 100 non-major student was asked to evaluate the AI recipe response they received, describing what they accepted, what they changed or rejected, and whether the AI\'s chemistry explanation was accurate. Student response: ' + r + '\n\nEvaluate: Does the student demonstrate critical thinking about the AI output, rather than just accepting everything? Did they identify at least one thing they changed or rejected? Did they verify the ingredient safety (no flagged items)? Did they assess the chemistry explanation? Strong responses show the student understood that the AI is a brainstorming tool, not a final authority. If the response seems to uncritically accept everything, ask: "What would you change if you made this recipe for a real family? Did you check all the ingredients against the safe list?"';
+      return 'A CHEM 100 non-major student was asked to evaluate the AI recipe response they received, describing what they accepted, what they changed or rejected, and whether the AI\'s chemistry explanation was accurate. Student response: ' + r + '\n\nEvaluate: Does the student demonstrate critical thinking about the AI output, rather than just accepting everything? Did they identify at least one thing they changed or rejected? Did they verify the ingredient safety (no flagged items)? Did they assess the chemistry explanation? Strong responses show the student understood that the AI is a brainstorming tool, not a final authority. If the response seems to uncritically accept everything, ask: "What would you change if you made this recipe for a real family? Did you check all the ingredients against the safe list?".  When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
     }
   },
   'q6-nutrition-reflect': {
     prompt: function(r) {
-      return 'A CHEM 100 non-major student compared their predicted dominant macronutrient to their actual calculated values and reflected on what surprised them. Student response: ' + r + '\n\nEvaluate: Does the student reference their actual numbers from the data table? Do they make a specific comparison to their original prediction? Strong responses identify a genuine surprise and connect it to chemistry (e.g., "I was surprised that fat was so high because peanut butter contributes a lot of triglycerides even in small amounts"). If the response is vague or does not reference specific numbers, invite them to check their data table and name the actual values.';
+      return 'A CHEM 100 non-major student compared their predicted dominant macronutrient to their actual calculated values and reflected on what surprised them. Student response: ' + r + '\n\nEvaluate: Does the student reference their actual numbers from the data table? Do they make a specific comparison to their original prediction? Strong responses identify a genuine surprise and connect it to chemistry (e.g., "I was surprised that fat was so high because peanut butter contributes a lot of triglycerides even in small amounts"). If the response is vague or does not reference specific numbers, invite them to check their data table and name the actual values. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
     }
   },
   'qa1-temp': {
     prompt: function(r) {
-      return 'A CHEM 100 non-major student was asked to describe how temperature affected their recipe and connect it to a chemistry concept. Student response: ' + r + '\n\nEvaluate: Does the student describe an actual observable change (texture, thickness, mixing, separation)? Do they name a chemistry concept like solubility, starch gelatinization, emulsion stability, or particle settling? Strong responses show genuine observation: "When I added hot water to the oats, they got thick almost immediately, which I learned is starch gelatinization." Encourage them if they made a real observation even if the chemistry vocabulary is rough. If they describe no observation at all, gently ask: "What did you actually see or feel when you made your recipe?"';
+      return 'A CHEM 100 non-major student was asked to describe how temperature affected their recipe and connect it to a chemistry concept. Student response: ' + r + '\n\nEvaluate: Does the student describe an actual observable change (texture, thickness, mixing, separation)? Do they name a chemistry concept like solubility, starch gelatinization, emulsion stability, or particle settling? Strong responses show genuine observation: "When I added hot water to the oats, they got thick almost immediately, which I learned is starch gelatinization." Encourage them if they made a real observation even if the chemistry vocabulary is rough. If they describe no observation at all, gently ask: "What did you actually see or feel when you made your recipe?".  When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
     }
   },
   'qa2-polarity': {
     prompt: function(r) {
-      return 'A CHEM 100 non-major student was asked to identify a polar-nonpolar interaction in their recipe and explain its effect on texture or appearance. Student response: ' + r + '\n\nEvaluate: Does the student correctly identify two ingredients, one polar and one nonpolar? Do they explain the molecular reason (charge distribution, partial charges, or "like dissolves like")? Do they connect it to something you can actually see in the food (separation, layering, emulsification)? Strong responses notice things like oil floating on top of a dressing, peanut butter acting as an emulsifier, or honey mixing in but oil staying separate. If the answer is very abstract, ask: "What does this actually look like in the bowl or jar?"';
+      return 'A CHEM 100 non-major student was asked to identify a polar-nonpolar interaction in their recipe and explain its effect on texture or appearance. Student response: ' + r + '\n\nEvaluate: Does the student correctly identify two ingredients, one polar and one nonpolar? Do they explain the molecular reason (charge distribution, partial charges, or "like dissolves like")? Do they connect it to something you can actually see in the food (separation, layering, emulsification)? Strong responses notice things like oil floating on top of a dressing, peanut butter acting as an emulsifier, or honey mixing in but oil staying separate. If the answer is very abstract, ask: "What does this actually look like in the bowl or jar?".  When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
     }
   },
   'qa3-synthesis': {
     prompt: function(r) {
-      return 'A CHEM 100 non-major student was asked to give a chemistry-based recommendation for the Bracket City food bank, connecting it to findings from across the lab series. Student response: ' + r + '\n\nEvaluate: Does the student make a genuine, chemistry-grounded recommendation? Do they reference a specific finding from a previous lab (contamination, fortification, water quality, etc.)? Strong responses cross at least two labs and show that chemistry has changed how the student thinks about food access. For example: "Since we found in Lab 2 that arsenic levels in rice are a concern for infants, I would recommend the food bank switch to oats as the primary grain since they have similar nutritional value and lower contamination risk." Celebrate any response that shows the student took the science personally and applied it to real human needs.';
+      return 'A CHEM 100 non-major student was asked to give a chemistry-based recommendation for the Bracket City food bank, connecting it to findings from across the lab series. Student response: ' + r + '\n\nEvaluate: Does the student make a genuine, chemistry-grounded recommendation? Do they reference a specific finding from a previous lab (contamination, fortification, water quality, etc.)? Strong responses cross at least two labs and show that chemistry has changed how the student thinks about food access. For example: "Since we found in Lab 2 that arsenic levels in rice are a concern for infants, I would recommend the food bank switch to oats as the primary grain since they have similar nutritional value and lower contamination risk." Celebrate any response that shows the student took the science personally and applied it to real human needs. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
     }
   },
   'classmate-feedback-given': {
     prompt: function(r) {
-      return 'A CHEM 100 non-major student summarized the peer feedback they gave on a classmate\'s recipe card in the community discussion board. Student response: ' + r + '\n\nEvaluate: Does the student show they actually engaged with the classmate\'s chemistry (not just said "looks good!")? Did they ask a chemistry question? Did they make a specific, actionable suggestion? Strong responses reference something specific in the classmate\'s recipe (a particular ingredient, the mixture type, the temperature tier). If the reflection is generic ("I said I liked it and suggested they add more protein"), ask: "What specifically caught your attention about the chemistry in their recipe? What was the most interesting thing you noticed?"';
+      return 'A CHEM 100 non-major student summarized the peer feedback they gave on a classmate\'s recipe card in the community discussion board. Student response: ' + r + '\n\nEvaluate: Does the student show they actually engaged with the classmate\'s chemistry (not just said "looks good!")? Did they ask a chemistry question? Did they make a specific, actionable suggestion? Strong responses reference something specific in the classmate\'s recipe (a particular ingredient, the mixture type, the temperature tier). If the reflection is generic ("I said I liked it and suggested they add more protein"), ask: "What specifically caught your attention about the chemistry in their recipe? What was the most interesting thing you noticed?".  When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
     }
   }
 };
@@ -3259,7 +3277,7 @@ function getAIFeedback(qId, btn) {
   var textarea = document.getElementById(qId);
   if (!textarea) return;
   var response = textarea.value.trim();
-  if (!response || response.length < 3) {
+  if (!response || response.length < 15) {
     alert('Please write a response before requesting feedback.');
     return;
   }
@@ -3370,12 +3388,23 @@ function scoreSubmission() {
     else { details.push(label + ': 0/' + pts + ' pts' + (sel ? ' (incorrect)' : ' (not answered)')); }
   }
 
-  // Pre-Lab MCs (1 pt each)
-  checkMCScore('pl-mc-salt',     'C', 1, 'Pre-Lab 2 (NaCl solubility)');
-  checkMCScore('pl-mc-starch',   'B', 1, 'Pre-Lab 3 (Starch gelatinization)');
-  checkMCScore('pl-mc-explorer', 'C', 1, 'Pre-Lab 4 (Temperature explorer)');
+  // Pre-Lab: graded for participation only (1 pt per question answered/attempted, not for accuracy)
+  // Pre-Lab 1 (temperature converter) + MC 2-4 = 4 pts
+  var plTcWork = document.getElementById('pl-tc-work');
+  var plTcVal = plTcWork ? plTcWork.value.trim() : '';
+  var plTcPts = plTcVal.length > 2 ? 1 : 0;
+  score += plTcPts;
+  details.push('Pre-Lab 1 (Temperature conversion): ' + plTcPts + '/1 (participation)' + (!plTcVal ? ' (not attempted)' : ' (answered)'));
+  var prelabMC5Names = ['pl-mc-salt','pl-mc-starch','pl-mc-explorer'];
+  var prelabMC5Labels = ['Pre-Lab 2 (NaCl solubility)','Pre-Lab 3 (Starch gelatinization)','Pre-Lab 4 (Temperature explorer)'];
+  prelabMC5Names.forEach(function(name, idx) {
+    var sel = document.querySelector('input[name="' + name + '"]:checked');
+    var pts = sel ? 1 : 0;
+    score += pts;
+    details.push(prelabMC5Labels[idx] + ': ' + pts + '/1 (participation)' + (!sel ? ' (not attempted)' : ' (answered)'));
+  });
 
-  check('q1-polarity', 3, 'S1 Polarity explanation');
+  check('q1-polarity', 2, 'S1 Polarity explanation');  // reduced 3->2; pre-lab participation now scored
   check('q2-mixture-explain', 3, 'S1 Mixture type + temperature');
   check('q3-electrolytes', 2, 'S1 Electrolytes');
   check('q4-nutrition-predict', 2, 'S1 Nutrition prediction');
@@ -3499,8 +3528,9 @@ function submitLab() {
   var payload = {
     lab:         'CHEM100_Lab5',
     timestamp:   timestamp,
-    name:        name,
+    canvas_login_id: name,
     section:     section,
+    date:        (document.getElementById('student-date')||{value:''}).value,
     score:       result.score,
     total:       result.total,
     percent:     pct,
