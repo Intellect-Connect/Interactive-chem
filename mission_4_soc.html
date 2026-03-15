@@ -1117,16 +1117,16 @@
 <div class="student-bar">
   <div class="student-bar-inner">
     <div class="field-group">
-      <label>Student Name</label>
-      <input type="text" id="student-name" placeholder="Last, First">
+      <label>Carson-Newman Email</label>
+      <input type="text" id="student-name" placeholder="yourname@cn.edu">
     </div>
     <div class="field-group">
       <label>Lab Section</label>
-      <input type="text" id="student-section" placeholder="e.g. CHEM 100-01">
+      <input type="text" id="student-section" placeholder="e.g. A, AOL, AOLCP">
     </div>
     <div class="field-group">
-      <label>Date</label>
-      <input type="text" id="student-date" placeholder="MM/DD/YYYY">
+      <label>Start Date</label>
+      <input type="date" id="student-date">
     </div>
   </div>
   <div style="position:absolute; bottom:16px; right:40px; display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
@@ -2435,7 +2435,7 @@
       <div class="section-header">
         <div class="section-num">1</div>
         <div class="section-title">What Did You Actually Find?</div>
-        <span class="section-pts">6 pts</span>
+        <span class="section-pts">5 pts</span>
       </div>
       <div class="section-body">
         <div class="callout info">
@@ -2478,7 +2478,7 @@
       <div class="section-header">
         <div class="section-num">2</div>
         <div class="section-title">Why Did Each Substance Behave That Way?</div>
-        <span class="section-pts">6 pts</span>
+        <span class="section-pts">5 pts</span>
       </div>
       <div class="section-body">
         <div class="callout info">
@@ -2521,7 +2521,7 @@
       <div class="section-header">
         <div class="section-num">3</div>
         <div class="section-title">What Can Simple Methods Fix &mdash; and What Can&rsquo;t They Touch?</div>
-        <span class="section-pts">6 pts</span>
+        <span class="section-pts">5 pts</span>
       </div>
       <div class="section-body">
         <div class="callout info">
@@ -2583,7 +2583,7 @@
       <div class="section-header">
         <div class="section-num">5</div>
         <div class="section-title">Conclusion</div>
-        <span class="section-pts">3 pts</span>
+        <span class="section-pts">2 pts</span>
       </div>
       <div class="section-body">
         <div class="callout green">
@@ -2667,7 +2667,7 @@
         </table>
       <div class="ref-box" style="margin-top:16px; margin-bottom:0;">
         <div class="ref-box-title">About Scoring</div>
-        <p>Data table fields are scored for completion and accuracy. Written responses are scored on depth and chemistry accuracy — brief answers receive partial credit. Canvas photos are graded separately by your instructor after submission.</p>
+        <p>Your digital score is out of 62 pts and is recorded automatically on submission. Canvas photos are graded separately by your instructor (10 pts) and are not included here. You have <strong>2 submission attempts</strong> &mdash; use your first attempt to review feedback, then revise and submit a final time.</p>
       </div>
       </div>
     </div>
@@ -2728,7 +2728,7 @@ var STORAGE_KEY   = 'chem100_lab4_attempts';
 // =========================================================
 // AI SYSTEM PROMPT (canonical CHEM 100 version)
 // =========================================================
-var AI_SYSTEM = 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university, giving feedback on student lab work for CHEM 100: Chemistry in Society. Your students are non-majors — many are encountering college-level science for the first time and some feel nervous about chemistry. Approach every response with genuine warmth and the assumption that the student is trying their best.\n\nTone and length: Use plain, conversational language. No bullet points. No markdown. Keep feedback to 4-5 sentences. Speak like a patient, encouraging teacher — not a grader.\n\nFor strong responses: Name specifically what the student got right and connect it to something they will recognize from everyday life. Extend their thinking one step further with a question or observation that sparks curiosity.\n\nFor incomplete responses: Begin by affirming whatever correct thinking is present, then use a gentle guiding question to nudge them toward what is missing. Never state the answer outright. Frame the gap as something worth discovering, not a mistake to correct.\n\nFor responses with a scientific misconception: Gently reframe with a question such as "What do you think would happen if..." that helps the student reason toward the accurate idea. The goal is discovery, not correction. Never make the student feel foolish.\n\nFor off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly. Acknowledge that this does not yet answer the question, restate what is being asked in simple, friendly terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses.\n\nAI-detection: If the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, sophisticated vocabulary inconsistent with a non-major\'s writing, or hedging language such as "it is worth noting," "furthermore," or "in conclusion," it may have been generated by AI. If so, respond only with: This response reads like it may have been drafted with some outside help — and I understand the temptation, but I want to hear your own voice. Even a rough, imperfect answer in your own words tells me so much more about what you are learning. Please rewrite this the way you would explain it to a friend. What do you actually understand about this topic?';
+var AI_SYSTEM = 'You are a chemistry instructor at Carson-Newman University, a Christian liberal arts university, giving feedback on student lab work for CHEM 100: Chemistry in Society. Your students are non-majors — many are encountering college-level science for the first time and some feel nervous about chemistry. Approach every response with genuine warmth and the assumption that the student is trying their best.\n\nTone and length: Use plain, conversational language. No bullet points. No markdown. Keep feedback to 4-5 sentences. Speak like a patient, encouraging teacher — not a grader.\n\nFor strong responses: Name specifically what the student got right and connect it to something they will recognize from everyday life. Extend their thinking one step further with a question or observation that sparks curiosity.\n\nFor incomplete responses: Begin by affirming whatever correct thinking is present, then use a gentle guiding question to nudge them toward what is missing. Never state the answer outright. Frame the gap as something worth discovering, not a mistake to correct.\n\nFor responses with a scientific misconception: Gently reframe with a question such as "What do you think would happen if..." that helps the student reason toward the accurate idea. The goal is discovery, not correction. Never make the student feel foolish.\n\nFor off-task responses (random text, jokes, complaints, or content clearly unrelated to chemistry): Respond warmly. Acknowledge that this does not yet answer the question, restate what is being asked in simple, friendly terms, and invite a genuine attempt. Do not provide chemistry content feedback on off-task responses.\n\nAI-detection: If the response uses unusually formal academic phrasing, perfectly structured arguments with no personal voice, sophisticated vocabulary inconsistent with a non-major\'s writing, or hedging language such as "it is worth noting," "furthermore," or "in conclusion," it may have been generated by AI. If so, respond only with: This response reads like it may have been drafted with some outside help — and I understand the temptation, but I want to hear your own voice. Even a rough, imperfect answer in your own words tells me so much more about what you are learning. Please rewrite this the way you would explain it to a friend. What do you actually understand about this topic? Grading principles for written responses: Accept synonymous or informal language if the scientific meaning is accurate — a student who writes \'gets hotter\' instead of \'temperature increases\' is demonstrating the same understanding and should receive full credit. Award partial credit (at least half) when the core concept is present but a detail or step is missing — do not score incomplete reasoning as zero simply because it is not fully developed. Never penalize a student for missing vocabulary if the underlying concept is demonstrated — correct scientific thinking expressed in everyday language is worth full credit. Spelling and grammatical errors should never reduce a score — evaluate scientific accuracy only. For multi-part questions, score each part independently — a wrong conclusion that follows logically from a correct but flawed premise deserves partial credit on the conclusion. When a response is ambiguous, interpret it charitably — assume the most scientifically reasonable reading before marking it incorrect. These are non-science majors; apply a healthy degree of leniency and reward genuine engagement with the material. Vocabulary level: If the student uses chemistry terms clearly beyond what CHEM 100 covers — such as stoichiometry, molarity, enthalpy, reaction mechanisms, or other upper-division concepts not introduced in this course — flag this gently. Do not penalise them; instead say something like: You used some chemistry terms here that go beyond what we have covered so far in CHEM 100 — which shows real curiosity! I want to make sure you can explain this same idea using the vocabulary from our course. Could you try putting this in your own words, using what we have talked about in class?';
 
 // =========================================================
 // PER-QUESTION AI PROMPTS
@@ -2741,7 +2741,7 @@ AI_PROMPTS.q1 = function(txt) {
   var dt3 = (document.getElementById('q1-dt3') || {value:''}).value;
   var dt4 = (document.getElementById('q1-dt4') || {value:''}).value;
   var combined = 'DT1: ' + (dt1||'blank') + ' | DT2: ' + (dt2||'blank') + ' | DT3: ' + (dt3||'blank') + ' | DT4: ' + (dt4||'blank');
-  return 'A CHEM 100 student (non-major) summarized their four data tables from a water quality lab. Summaries: ' + combined + '. Evaluate: (1) DT1 includes a specific ppm number compared to the 500 ppm EPA limit, (2) DT2 correctly identifies flour and oil were partially removed while salt and vinegar were not, (3) DT3 addresses whether dilution was practical, (4) DT4 notes whether pH fell outside the EPA safe range of 6.5-8.5 and whether settling or filtration changed it. If any summary is vague, gently guide them back to their data. Warm, encouraging tone. Do not use bullet points. Do not give the answer away.';
+  return 'A CHEM 100 student (non-major) summarized their four data tables from a water quality lab. Summaries: ' + combined + '. Evaluate: (1) DT1 includes a specific ppm number compared to the 500 ppm EPA limit, (2) DT2 correctly identifies flour and oil were partially removed while salt and vinegar were not, (3) DT3 addresses whether dilution was practical, (4) DT4 notes whether pH fell outside the EPA safe range of 6.5-8.5 and whether settling or filtration changed it. If any summary is vague, gently guide them back to their data. Warm, encouraging tone. Do not use bullet points. Do not give the answer away. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
 };
 
 AI_PROMPTS.q2 = function(txt) {
@@ -2750,22 +2750,22 @@ AI_PROMPTS.q2 = function(txt) {
   var oil = (document.getElementById('q2-oil') || {value:''}).value;
   var flour = (document.getElementById('q2-flour') || {value:''}).value;
   var combined = 'Salt: ' + (salt||'blank') + ' | Vinegar: ' + (vinegar||'blank') + ' | Oil: ' + (oil||'blank') + ' | Flour: ' + (flour||'blank');
-  return 'A CHEM 100 student (non-major) explained why each substance behaved as it did in their water quality lab. Responses: ' + combined + '. Evaluate: (1) Salt should mention ionic dissolution, no pH effect; (2) Vinegar key insight is pH dropped even though water looked clear because acetic acid releases H+ ions; (3) Oil should mention nonpolar nature, layer on top; (4) Flour should distinguish suspended particles from dissolved substances and explain why filter caught it but not salt or vinegar. Core concept: dissolved is invisible and passes through filters; suspended is visible and can be caught. Warm, encouraging tone. Do not use bullet points. Do not give the answer away.';
+  return 'A CHEM 100 student (non-major) explained why each substance behaved as it did in their water quality lab. Responses: ' + combined + '. Evaluate: (1) Salt should mention ionic dissolution, no pH effect; (2) Vinegar key insight is pH dropped even though water looked clear because acetic acid releases H+ ions; (3) Oil should mention nonpolar nature, layer on top; (4) Flour should distinguish suspended particles from dissolved substances and explain why filter caught it but not salt or vinegar. Core concept: dissolved is invisible and passes through filters; suspended is visible and can be caught. Warm, encouraging tone. Do not use bullet points. Do not give the answer away. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
 };
 
 AI_PROMPTS.q3 = function(txt) {
   var can = (document.getElementById('q3-can') || {value:''}).value;
   var cannot = (document.getElementById('q3-cannot') || {value:''}).value;
   var combined = 'CAN remove: ' + (can||'blank') + ' | CANNOT remove: ' + (cannot||'blank') + ' | Explanation: ' + (txt||'blank');
-  return 'A CHEM 100 student (non-major) evaluated what settling and filtration can and cannot remove from water affected by agricultural runoff. Response: ' + combined + '. Evaluate: (1) correctly identified settling and filtration handle suspended particles like soil and debris, connecting to flour results from DT2, (2) correctly identified dissolved agricultural chemicals pass straight through any filter, connecting to salt and vinegar results, (3) explanation addresses why dissolved contamination is specifically dangerous: invisible, cannot be removed cheaply, may include nitrates or acidic compounds. A strong response connects lab results directly to the real-world runoff problem. Warm, encouraging tone. Do not use bullet points. Do not give the answer away.';
+  return 'A CHEM 100 student (non-major) evaluated what settling and filtration can and cannot remove from water affected by agricultural runoff. Response: ' + combined + '. Evaluate: (1) correctly identified settling and filtration handle suspended particles like soil and debris, connecting to flour results from DT2, (2) correctly identified dissolved agricultural chemicals pass straight through any filter, connecting to salt and vinegar results, (3) explanation addresses why dissolved contamination is specifically dangerous: invisible, cannot be removed cheaply, may include nitrates or acidic compounds. A strong response connects lab results directly to the real-world runoff problem. Warm, encouraging tone. Do not use bullet points. Do not give the answer away. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
 };
 
 AI_PROMPTS.q4 = function(txt) {
-  return 'A CHEM 100 student (non-major) wrote a recommendation to the Bracket City Food Bank director about the well water safety problem. The director has a limited budget, no chemistry background, and 500 people depending on safe water daily. Student response: "' + txt + '" Evaluate: (1) communicated clearly to a non-technical audience, (2) cited specific data such as a ppm value or pH reading, (3) was honest that dissolved contaminants from agricultural runoff cannot be removed by settling or filtration, (4) recommendation is realistic and honestly acknowledges what cannot be fixed cheaply. A student recommending filtration without acknowledging its limits for dissolved substances has missed the central lesson. Guide them gently toward that limitation if missing. Warm, encouraging tone. Do not use bullet points. Do not give the answer away.';
+  return 'A CHEM 100 student (non-major) wrote a recommendation to the Bracket City Food Bank director about the well water safety problem. The director has a limited budget, no chemistry background, and 500 people depending on safe water daily. Student response: "' + txt + '" Evaluate: (1) communicated clearly to a non-technical audience, (2) cited specific data such as a ppm value or pH reading, (3) was honest that dissolved contaminants from agricultural runoff cannot be removed by settling or filtration, (4) recommendation is realistic and honestly acknowledges what cannot be fixed cheaply. A student recommending filtration without acknowledging its limits for dissolved substances has missed the central lesson. Guide them gently toward that limitation if missing. Warm, encouraging tone. Do not use bullet points. Do not give the answer away. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
 };
 
 AI_PROMPTS.conclusion = function(txt) {
-  return 'A CHEM 100 student (non-major) wrote this conclusion for Lab 4 (Water Quality Testing for the Bracket City Food Bank): "' + txt + '" Evaluate: (1) identified a clear takeaway connecting chemistry to the real-world water safety problem, (2) genuine learning rather than restating the procedure, (3) acknowledges limits of simple purification, (4) has personal voice. Look for the moment where chemistry becomes personal. Do not use bullet points. Do not give the answer away.';
+  return 'A CHEM 100 student (non-major) wrote this conclusion for Lab 4 (Water Quality Testing for the Bracket City Food Bank): "' + txt + '" Evaluate: (1) identified a clear takeaway connecting chemistry to the real-world water safety problem, (2) genuine learning rather than restating the procedure, (3) acknowledges limits of simple purification, (4) has personal voice. Look for the moment where chemistry becomes personal. Do not use bullet points. Do not give the answer away. When scoring, prioritize demonstrated understanding over precise wording — informal language, incomplete sentences, and rough phrasing are fine as long as the core concept is present. Award partial credit generously for partially correct reasoning. Never deduct for spelling or grammar. If the response is entirely generic and does not reference any specific measurement, observation, ingredient, or data from this lab, begin your feedback by warmly asking the student to connect their answer to something they actually recorded or observed.';
 };
 
 
@@ -3325,6 +3325,22 @@ function calcScore() {
   var score = 0;
   var details = [];
 
+  // Pre-Lab: graded for participation only (1 pt per question answered, not for accuracy)
+  // pl-mc-purif, pl-mc-ppm, pl-mc-filter, pl-mc-ph = 4 pts
+  var prelabMC4Names = ['pl-mc-purif','pl-mc-ppm','pl-mc-filter','pl-mc-ph'];
+  var prelabMC4Labels = [
+    'Pre-Lab MC 1 (Water purification methods)',
+    'Pre-Lab MC 2 (Parts per million)',
+    'Pre-Lab MC 3 (Filter limits)',
+    'Pre-Lab MC 4 (pH and safety)'
+  ];
+  prelabMC4Names.forEach(function(name, idx) {
+    var sel = document.querySelector('input[name="' + name + '"]:checked');
+    var pts = sel ? 1 : 0;
+    score += pts;
+    details.push(prelabMC4Labels[idx] + ': ' + pts + '/1 (participation)' + (!sel ? ' (not attempted)' : ' (answered)'));
+  });
+
   // DT1 — 10 pts
   var dt1pts = 0;
   var hasCup  = document.getElementById('m-cup').value.trim();
@@ -3394,27 +3410,27 @@ function calcScore() {
   details.push('Photos confirmed: ' + photosChecked + '/3 (graded by instructor in Canvas)');
 
   // Q1 — 3 pts
-  // Q1 — 6 pts (4 sub-fields)
+  // Q1 — 5 pts (4 sub-fields; 1 pt redistributed to pre-lab)
   var q1pts = 0;
   ['q1-dt1','q1-dt2','q1-dt3','q1-dt4'].forEach(function(id) {
     var v = (document.getElementById(id) || {value:''}).value.trim();
     if (v.length > 30) q1pts += 1.5; else if (v.length > 10) q1pts += 0.75;
   });
-  q1pts = Math.min(6, q1pts);
+  q1pts = Math.min(5, q1pts);
   score += q1pts;
-  details.push('Q1: ' + q1pts.toFixed(1) + '/6');
+  details.push('Q1: ' + q1pts.toFixed(1) + '/5');
 
-  // Q2 — 6 pts (4 substance fields)
+  // Q2 — 5 pts (4 substance fields; 1 pt redistributed to pre-lab)
   var q2pts = 0;
   ['q2-salt','q2-vinegar','q2-oil','q2-flour'].forEach(function(id) {
     var v = (document.getElementById(id) || {value:''}).value.trim();
     if (v.length > 30) q2pts += 1.5; else if (v.length > 10) q2pts += 0.75;
   });
-  q2pts = Math.min(6, q2pts);
+  q2pts = Math.min(5, q2pts);
   score += q2pts;
-  details.push('Q2: ' + q2pts.toFixed(1) + '/6');
+  details.push('Q2: ' + q2pts.toFixed(1) + '/5');
 
-  // Q3 — 6 pts
+  // Q3 — 5 pts (1 pt redistributed to pre-lab)
   var q3pts = 0;
   var q3can    = (document.getElementById('q3-can')     || {value:''}).value.trim();
   var q3cannot = (document.getElementById('q3-cannot')  || {value:''}).value.trim();
@@ -3422,15 +3438,15 @@ function calcScore() {
   if (q3can.length > 20) q3pts += 1.5; else if (q3can.length > 5) q3pts += 0.75;
   if (q3cannot.length > 20) q3pts += 1.5; else if (q3cannot.length > 5) q3pts += 0.75;
   if (q3exp.length > 60) q3pts += 3; else if (q3exp.length > 20) q3pts += 1.5;
-  q3pts = Math.min(6, q3pts);
+  q3pts = Math.min(5, q3pts);
   score += q3pts;
-  details.push('Q3: ' + q3pts.toFixed(1) + '/6');
+  details.push('Q3: ' + q3pts.toFixed(1) + '/5');
 
-  // Conclusion — 3 pts
+  // Conclusion — 2 pts (1 pt redistributed to pre-lab)
   var concl = (document.getElementById('conclusion') || {value:''}).value.trim();
-  var conclPts = concl.length > 80 ? 3 : concl.length > 30 ? 1.5 : 0;
+  var conclPts = concl.length > 80 ? 2 : concl.length > 30 ? 1 : 0;  // reduced 3->2; pre-lab participation now scored
   score += conclPts;
-  details.push('Conclusion: ' + conclPts + '/3');
+  details.push('Conclusion: ' + conclPts + '/2');
 
   // Q4 — 6 pts (recommendation)
   var q4pts = 0;
@@ -3584,7 +3600,7 @@ async function submitLab() {
 
   var payload = {
     action: 'submit', lab_id: 'Lab_4', course: 'chem100',
-    name: name, section: section, date: date,
+    canvas_login_id: name, section: section, date: date,
     score: result.score.toFixed(1), total: result.total, percent: pct,
     ppm_calculated: (document.getElementById('calc-ppm-display') || {textContent:''}).textContent,
     filt_trapped:   (document.getElementById('filt-trapped')     || {textContent:''}).textContent,
@@ -3901,6 +3917,9 @@ function saveLabState() {
         q2salt:gv('q2-salt'), q2vinegar:gv('q2-vinegar'), q2oil:gv('q2-oil'), q2flour:gv('q2-flour'),
         q3can:gv('q3-can'), q3cannot:gv('q3-cannot'), q3explain:gv('q3-explain'),
         q4resp:gv('q4-response'), conclusion:gv('conclusion'),
+        calcSub:gv('calc-sub'), calcWater:gv('calc-water'),
+        phSlider:gv('ph-slider'), phNum:gv('ph-num'),
+        feasCost:gv('feas-cost'), feasGallons:gv('feas-gallons'), feasMl:gv('feas-ml'),
         plMCPurif:gr('pl-mc-purif'), plMCPpm:gr('pl-mc-ppm'),
         plMCFilter:gr('pl-mc-filter'), plMCPh:gr('pl-mc-ph'),
         savedAt: Date.now()
@@ -3946,6 +3965,12 @@ function loadLabState() {
     sv('q2-salt',s.q2salt); sv('q2-vinegar',s.q2vinegar); sv('q2-oil',s.q2oil); sv('q2-flour',s.q2flour);
     sv('q3-can',s.q3can); sv('q3-cannot',s.q3cannot); sv('q3-explain',s.q3explain);
     sv('q4-response',s.q4resp); sv('conclusion',s.conclusion);
+    sv('calc-sub',s.calcSub); sv('calc-water',s.calcWater);
+    sv('feas-cost',s.feasCost); sv('feas-gallons',s.feasGallons); sv('feas-ml',s.feasMl);
+    if (s.phSlider !== undefined || s.phNum !== undefined) {
+      sv('ph-slider', s.phSlider); sv('ph-num', s.phNum || s.phSlider);
+      try { syncPHInput('slider'); } catch(e) {}
+    }
     sr('pl-mc-purif',s.plMCPurif); sr('pl-mc-ppm',s.plMCPpm);
     sr('pl-mc-filter',s.plMCFilter); sr('pl-mc-ph',s.plMCPh);
     try{ if(s.mCup||s.mWater||s.mSalt) updateCalcs(); }catch(e){}
